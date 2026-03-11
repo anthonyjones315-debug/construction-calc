@@ -692,8 +692,8 @@ const WASTE = [
 
 // ─── APP ───────────────────────────────────────────────────────────────────
 export default function ConstructionCalculator() {
-  const [activeCat, setActiveCat] = useState("concrete");
-  const [activeCalc, setActiveCalc] = useState("slab");
+  const [activeCat, setActiveCat] = useState(() => localStorage.getItem("bcp_cat") || "concrete");
+  const [activeCalc, setActiveCalc] = useState(() => localStorage.getItem("bcp_calc") || "slab");
   const [values, setValues] = useState({});
   const [toggles, setToggles] = useState({});
   const [result, setResult] = useState(null);
@@ -708,12 +708,15 @@ export default function ConstructionCalculator() {
 
   const switchCat = (id) => {
     const cat = CATEGORIES.find((c) => c.id === id);
+    localStorage.setItem("bcp_cat", id);
+    localStorage.setItem("bcp_calc", cat.calcs[0].id);
     setActiveCat(id);
     setActiveCalc(cat.calcs[0].id);
     setValues({}); setToggles({}); setResult(null); setError("");
   };
 
   const switchCalc = (id) => {
+    localStorage.setItem("bcp_calc", id);
     setActiveCalc(id);
     setValues({}); setToggles({}); setResult(null); setError("");
   };

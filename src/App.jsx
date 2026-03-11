@@ -1,3 +1,6 @@
+import SplashPopup from './SplashPopup.jsx'
+import Blog from './Blog.jsx'
+import FAQ from './FAQ.jsx'
 import { useState, useEffect } from 'react'
 import ConstructionCalculator from './Calculator.jsx'
 import PrivacyPolicy from './PrivacyPolicy.jsx'
@@ -28,10 +31,20 @@ export default function App() {
   }, [])
 
   if (path === '/privacy') return <PrivacyPolicy />
+  if (path === '/faq') return <FAQ />
+  if (path === '/blog' || path.startsWith('/blog/')) {
+    const slug = path.startsWith('/blog/') ? path.replace('/blog/', '') : null
+    return (
+      <div style={{ minHeight: '100vh', background: '#111318' }}>
+        <Blog slug={slug} />
+      </div>
+    )
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#111318' }}>
 
+      <SplashPopup />
       <div style={{ flex: 1 }}>
         <ConstructionCalculator />
       </div>
@@ -50,8 +63,20 @@ export default function App() {
           © {new Date().getFullYear()} Build Calc Pro — Free Construction Estimating Tool
         </span>
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+          <a href="/blog" style={{ fontSize: '12px', color: '#6b7280', fontFamily: "'Inter', system-ui, sans-serif", textDecoration: 'none' }}>
+            Resources
+          </a>
+          <a href="/faq" style={{ fontSize: '12px', color: '#6b7280', fontFamily: "'Inter', system-ui, sans-serif", textDecoration: 'none' }}>
+            FAQ
+          </a>
           <a href="/privacy" style={{ fontSize: '12px', color: '#6b7280', fontFamily: "'Inter', system-ui, sans-serif", textDecoration: 'none' }}>
             Privacy Policy
+          </a>
+          <a href="https://forms.gle/GSKYzCR5pKsAdUfx6" target="_blank" rel="noopener noreferrer" style={{
+            fontSize: '12px', color: '#f59e0b', fontFamily: "'Inter', system-ui, sans-serif",
+            textDecoration: 'none', fontWeight: '600',
+          }}>
+            💬 Feedback / Request a Calculator
           </a>
           <span style={{ fontSize: '12px', color: '#6b7280', fontFamily: "'Inter', system-ui, sans-serif" }}>
             Results are estimates. Always verify with a licensed professional.
