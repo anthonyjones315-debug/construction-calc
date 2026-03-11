@@ -1,12 +1,14 @@
 import SplashPopup from './SplashPopup.jsx'
 import Blog from './Blog.jsx'
 import FAQ from './FAQ.jsx'
+import FeedbackModal from './FeedbackModal.jsx'
 import { useState, useEffect } from 'react'
 import ConstructionCalculator from './Calculator.jsx'
 import PrivacyPolicy from './PrivacyPolicy.jsx'
 
 export default function App() {
   const [path, setPath] = useState(window.location.pathname)
+  const [showFeedback, setShowFeedback] = useState(false)
 
   useEffect(() => {
     const onPop = () => setPath(window.location.pathname)
@@ -49,6 +51,8 @@ export default function App() {
         <ConstructionCalculator />
       </div>
 
+      {showFeedback && <FeedbackModal onClose={() => setShowFeedback(false)} />}
+
       <footer style={{
         borderTop: '1px solid #2e3347',
         padding: '14px 24px',
@@ -72,12 +76,12 @@ export default function App() {
           <a href="/privacy" style={{ fontSize: '12px', color: '#6b7280', fontFamily: "'Inter', system-ui, sans-serif", textDecoration: 'none' }}>
             Privacy Policy
           </a>
-          <a href="https://forms.gle/GSKYzCR5pKsAdUfx6" target="_blank" rel="noopener noreferrer" style={{
+          <button onClick={() => setShowFeedback(true)} style={{
             fontSize: '12px', color: '#f59e0b', fontFamily: "'Inter', system-ui, sans-serif",
-            textDecoration: 'none', fontWeight: '600',
+            fontWeight: '600', background: 'none', border: 'none', cursor: 'pointer', padding: 0,
           }}>
             💬 Feedback / Request a Calculator
-          </a>
+          </button>
           <span style={{ fontSize: '12px', color: '#6b7280', fontFamily: "'Inter', system-ui, sans-serif" }}>
             Results are estimates. Always verify with a licensed professional.
           </span>
