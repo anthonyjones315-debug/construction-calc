@@ -58,6 +58,8 @@ const TIMELINE = [
 export default function About() {
   useEffect(() => {
     document.title = 'About — Built by a Union Carpenter | Build Calc Pro'
+    const canonical = document.getElementById('canonical-tag')
+    if (canonical) canonical.setAttribute('href', 'https://proconstructioncalc.com/about')
     const desc = 'Build Calc Pro was built by a union carpenter turned project manager, estimator, HVAC and insulation sales rep, and digital marketing professional. Free construction calculators built the way the trades actually work.'
     let m = document.querySelector('meta[name="description"]')
     if (m) m.setAttribute('content', desc)

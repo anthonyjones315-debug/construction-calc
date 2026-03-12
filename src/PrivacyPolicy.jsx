@@ -13,6 +13,8 @@ const fontDisplay = "'Barlow Condensed', 'DM Sans', system-ui, sans-serif"
 export default function PrivacyPolicy() {
   useEffect(() => {
     document.title = 'Privacy Policy | Build Calc Pro'
+    const canonical = document.getElementById('canonical-tag')
+    if (canonical) canonical.setAttribute('href', 'https://proconstructioncalc.com/privacy')
     const desc = 'Privacy policy for Build Calc Pro. Learn how we collect, use, and protect your data on our free construction calculator website.'
     let m = document.querySelector('meta[name="description"]')
     if (m) m.setAttribute('content', desc)

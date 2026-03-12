@@ -155,6 +155,8 @@ export default function FAQ({ onFeedback, onNavigate }) {
     el.text = JSON.stringify(schema)
     document.head.appendChild(el)
     document.title = 'FAQ — Construction Calculator Questions Answered | Build Calc Pro'
+    const canonical = document.getElementById('canonical-tag')
+    if (canonical) canonical.setAttribute('href', 'https://proconstructioncalc.com/faq')
     return () => {
       document.getElementById('faq-schema')?.remove()
       document.title = 'Build Calc Pro — Free Construction Calculators'

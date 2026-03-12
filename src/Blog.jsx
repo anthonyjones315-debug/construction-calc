@@ -167,6 +167,8 @@ function renderContent(md) {
 function BlogIndex({ onPost }) {
   useEffect(() => {
     document.title = 'Resources & Guides — Construction Tips for Contractors | Build Calc Pro'
+    const canonical = document.getElementById('canonical-tag')
+    if (canonical) canonical.setAttribute('href', 'https://proconstructioncalc.com/blog')
     const desc = 'Practical construction guides for contractors, builders, and DIYers. Roofing, concrete, insulation, and framing articles with free calculator links.'
     let m = document.querySelector('meta[name="description"]')
     if (m) m.setAttribute('content', desc)
@@ -252,6 +254,8 @@ function BlogPost({ slug, onBack }) {
   useEffect(() => {
     if (!post) return
     document.title = post.title + ' | Build Calc Pro'
+    const canonical = document.getElementById('canonical-tag')
+    if (canonical) canonical.setAttribute('href', 'https://proconstructioncalc.com/blog/' + post.slug)
     let m = document.querySelector('meta[name="description"]')
     if (m) m.setAttribute('content', post.description)
 

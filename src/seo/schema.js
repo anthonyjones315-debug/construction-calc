@@ -34,6 +34,11 @@ export function removeSchema(id) {
   if (existing) existing.remove()
 }
 
+export function setCanonical(path) {
+  const tag = document.getElementById('canonical-tag')
+  if (tag) tag.setAttribute('href', SITE_URL + path)
+}
+
 // ─── 1. WEB APPLICATION (site-wide) ───────────────────────────────────────
 // Tells Google this is a free tool. Eligible for the "Try it" SERP feature.
 export const webAppSchema = {
