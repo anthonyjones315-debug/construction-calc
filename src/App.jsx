@@ -24,7 +24,7 @@ export default function App() {
     return () => window.removeEventListener('popstate', onPop)
   }, [])
 
-  // Intercept internal <a href="/..."> clicks so they go through navigate()
+  // Intercept internal <a href="/..."> clicks
   useEffect(() => {
     const onClick = (e) => {
       const a = e.target.closest('a[href]')
@@ -39,15 +39,31 @@ export default function App() {
     return () => document.removeEventListener('click', onClick)
   }, [])
 
-  if (path === '/privacy') return <PrivacyPolicy />
+  const openFeedback = () => setShowFeedback(true)
+  const closeFeedback = () => setShowFeedback(false)
+
+  if (path === '/privacy') return (
+    <>
+      <PrivacyPolicy />
+      {showFeedback && <FeedbackModal onClose={closeFeedback} />}
+    </>
+  )
 
   if (path === '/faq') return (
-    <FAQ onFeedback={() => setShowFeedback(true)} onNavigate={navigate} />
+    <>
+      <FAQ onFeedback={openFeedback} />
+      {showFeedback && <FeedbackModal onClose={closeFeedback} />}
+    </>
   )
 
   if (path === '/blog' || path.startsWith('/blog/')) {
     const slug = path.startsWith('/blog/') ? path.replace('/blog/', '') : null
-    return <Blog slug={slug} navigate={navigate} onFeedback={() => setShowFeedback(true)} />
+    return (
+      <>
+        <Blog slug={slug} navigate={navigate} onFeedback={openFeedback} />
+        {showFeedback && <FeedbackModal onClose={closeFeedback} />}
+      </>
+    )
   }
 
   return (
@@ -56,7 +72,7 @@ export default function App() {
       <div style={{ flex: 1 }}>
         <ConstructionCalculator />
       </div>
-      {showFeedback && <FeedbackModal onClose={() => setShowFeedback(false)} />}
+      {showFeedback && <FeedbackModal onClose={closeFeedback} />}
       <footer style={{
         borderTop: '1px solid #d9d4c7',
         padding: '14px 24px',
@@ -74,7 +90,7 @@ export default function App() {
           <a href="/blog" style={{ fontSize: '12px', color: '#555248', fontFamily: font, textDecoration: 'none' }}>Resources</a>
           <a href="/faq" style={{ fontSize: '12px', color: '#555248', fontFamily: font, textDecoration: 'none' }}>FAQ</a>
           <a href="/privacy" style={{ fontSize: '12px', color: '#555248', fontFamily: font, textDecoration: 'none' }}>Privacy Policy</a>
-          <button onClick={() => setShowFeedback(true)} style={{
+          <button onClick={openFeedback} style={{
             fontSize: '12px', color: '#e8820c', fontFamily: font,
             fontWeight: '600', background: 'none', border: 'none', cursor: 'pointer', padding: 0,
           }}>
