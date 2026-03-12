@@ -192,6 +192,7 @@ const font = "'Inter', 'Segoe UI', system-ui, sans-serif"
  * AffiliateSuggestions — shows 2–3 relevant product links after a result
  */
 export function AffiliateSuggestions({ calcId }) {
+  return null
   const products = AFFILIATE_PRODUCTS[calcId]
   if (!products?.length) return null
 
