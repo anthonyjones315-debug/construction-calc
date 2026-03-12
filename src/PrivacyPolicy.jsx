@@ -1,3 +1,7 @@
+import { useEffect } from 'react'
+
+const SITE_URL = 'https://proconstructioncalc.com'
+
 const C = {
   bg: '#f4f1eb', surface: '#ffffff', border: '#d9d4c7',
   navBg: '#1a1a1a', accent: '#e8820c',
@@ -7,6 +11,27 @@ const font = "'DM Sans', 'Segoe UI', system-ui, sans-serif"
 const fontDisplay = "'Barlow Condensed', 'DM Sans', system-ui, sans-serif"
 
 export default function PrivacyPolicy() {
+  useEffect(() => {
+    document.title = 'Privacy Policy | Build Calc Pro'
+    const desc = 'Privacy policy for Build Calc Pro. Learn how we collect, use, and protect your data on our free construction calculator website.'
+    let m = document.querySelector('meta[name="description"]')
+    if (m) m.setAttribute('content', desc)
+
+    const el = document.createElement('script')
+    el.type = 'application/ld+json'
+    el.id = 'schema-privacy'
+    el.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: 'Privacy Policy — Build Calc Pro',
+      url: SITE_URL + '/privacy',
+      description: desc,
+      publisher: { '@type': 'Organization', name: 'Build Calc Pro', url: SITE_URL },
+    })
+    document.head.appendChild(el)
+    return () => document.getElementById('schema-privacy')?.remove()
+  }, [])
+
   return (
     <div style={{ minHeight: '100vh', background: C.bg, fontFamily: font, color: C.text }}>
       {/* Nav */}

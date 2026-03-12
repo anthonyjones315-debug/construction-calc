@@ -1,4 +1,21 @@
+import { useEffect } from 'react'
 import { POSTS, getPost } from './posts/index.js'
+
+const SITE_URL = 'https://proconstructioncalc.com'
+const SITE_NAME = 'Build Calc Pro'
+
+function injectSchema(id, schema) {
+  let el = document.getElementById('schema-' + id)
+  if (el) el.remove()
+  el = document.createElement('script')
+  el.type = 'application/ld+json'
+  el.id = 'schema-' + id
+  el.textContent = JSON.stringify(schema)
+  document.head.appendChild(el)
+}
+function removeSchema(id) {
+  document.getElementById('schema-' + id)?.remove()
+}
 
 const C = {
   bg: '#f4f1eb', surface: '#ffffff', surfaceAlt: '#f9f7f3',
@@ -148,6 +165,40 @@ function renderContent(md) {
 
 // ── Blog Index ────────────────────────────────────────────────────────────────
 function BlogIndex({ onPost }) {
+  useEffect(() => {
+    document.title = 'Resources & Guides — Construction Tips for Contractors | Build Calc Pro'
+    const desc = 'Practical construction guides for contractors, builders, and DIYers. Roofing, concrete, insulation, and framing articles with free calculator links.'
+    let m = document.querySelector('meta[name="description"]')
+    if (m) m.setAttribute('content', desc)
+
+    injectSchema('collection', {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: 'Resources & Guides — Build Calc Pro',
+      description: desc,
+      url: SITE_URL + '/blog',
+      publisher: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+      hasPart: POSTS.map(p => ({
+        '@type': 'Article',
+        headline: p.title,
+        url: SITE_URL + '/blog/' + p.slug,
+        datePublished: p.date,
+        description: p.description,
+      }))
+    })
+
+    injectSchema('breadcrumb-blog', {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Build Calc Pro', item: SITE_URL },
+        { '@type': 'ListItem', position: 2, name: 'Resources & Guides', item: SITE_URL + '/blog' },
+      ]
+    })
+
+    return () => { removeSchema('collection'); removeSchema('breadcrumb-blog') }
+  }, [])
+
   return (
     <div style={{ minHeight: '100vh', background: C.bg }}>
       <div style={{ maxWidth: '800px', margin: '0 auto', padding: '40px 24px', fontFamily: font }}>
@@ -197,6 +248,50 @@ function BlogIndex({ onPost }) {
 // ── Blog Post ─────────────────────────────────────────────────────────────────
 function BlogPost({ slug, onBack }) {
   const post = getPost(slug)
+
+  useEffect(() => {
+    if (!post) return
+    document.title = post.title + ' | Build Calc Pro'
+    let m = document.querySelector('meta[name="description"]')
+    if (m) m.setAttribute('content', post.description)
+
+    injectSchema('article', {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: post.title,
+      description: post.description,
+      datePublished: post.date,
+      dateModified: post.date,
+      url: SITE_URL + '/blog/' + post.slug,
+      publisher: {
+        '@type': 'Organization',
+        name: SITE_NAME,
+        url: SITE_URL,
+      },
+      author: {
+        '@type': 'Person',
+        name: 'Build Calc Pro',
+        url: SITE_URL + '/about',
+      },
+      mainEntityOfPage: {
+        '@type': 'WebPage',
+        '@id': SITE_URL + '/blog/' + post.slug,
+      },
+    })
+
+    injectSchema('breadcrumb-post', {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Build Calc Pro', item: SITE_URL },
+        { '@type': 'ListItem', position: 2, name: 'Resources & Guides', item: SITE_URL + '/blog' },
+        { '@type': 'ListItem', position: 3, name: post.title, item: SITE_URL + '/blog/' + post.slug },
+      ]
+    })
+
+    return () => { removeSchema('article'); removeSchema('breadcrumb-post') }
+  }, [post])
+
 
   if (!post) return (
     <div style={{ minHeight: '100vh', background: C.bg }}>

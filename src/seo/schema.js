@@ -16,7 +16,7 @@
  */
 
 // ─── BASE SITE URL — update when you have a custom domain ─────────────────
-export const SITE_URL = 'https://buildcalcpro.com'
+export const SITE_URL = 'https://proconstructioncalc.com'
 export const SITE_NAME = 'Build Calc Pro'
 
 // ─── INJECT / REMOVE HELPERS ──────────────────────────────────────────────

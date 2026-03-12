@@ -1,3 +1,20 @@
+import { useEffect } from 'react'
+
+const SITE_URL = 'https://proconstructioncalc.com'
+
+function injectSchema(id, schema) {
+  let el = document.getElementById('schema-' + id)
+  if (el) el.remove()
+  el = document.createElement('script')
+  el.type = 'application/ld+json'
+  el.id = 'schema-' + id
+  el.textContent = JSON.stringify(schema)
+  document.head.appendChild(el)
+}
+function removeSchema(id) {
+  document.getElementById('schema-' + id)?.remove()
+}
+
 const C = {
   bg: '#f4f1eb', surface: '#ffffff', surfaceAlt: '#f9f7f3',
   border: '#d9d4c7', navBg: '#1a1a1a',
@@ -39,6 +56,60 @@ const TIMELINE = [
 ]
 
 export default function About() {
+  useEffect(() => {
+    document.title = 'About — Built by a Union Carpenter | Build Calc Pro'
+    const desc = 'Build Calc Pro was built by a union carpenter turned project manager, estimator, HVAC and insulation sales rep, and digital marketing professional. Free construction calculators built the way the trades actually work.'
+    let m = document.querySelector('meta[name="description"]')
+    if (m) m.setAttribute('content', desc)
+
+    injectSchema('about-page', {
+      '@context': 'https://schema.org',
+      '@type': 'AboutPage',
+      name: 'About Build Calc Pro',
+      url: SITE_URL + '/about',
+      description: desc,
+      publisher: {
+        '@type': 'Organization',
+        name: 'Build Calc Pro',
+        url: SITE_URL,
+      }
+    })
+
+    injectSchema('person', {
+      '@context': 'https://schema.org',
+      '@type': 'Person',
+      name: 'Build Calc Pro Founder',
+      url: SITE_URL + '/about',
+      jobTitle: 'Digital Marketing & Construction Estimating',
+      description: 'Former union carpenter with 3 years field experience, followed by project management and estimation, HVAC and insulation residential sales, and digital presence for trades businesses.',
+      knowsAbout: [
+        'Residential Construction',
+        'Construction Estimating',
+        'Roof Framing',
+        'Concrete Work',
+        'Spray Foam Insulation',
+        'HVAC Systems',
+        'Project Management',
+        'Digital Marketing',
+      ],
+    })
+
+    injectSchema('breadcrumb-about', {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Build Calc Pro', item: SITE_URL },
+        { '@type': 'ListItem', position: 2, name: 'About', item: SITE_URL + '/about' },
+      ]
+    })
+
+    return () => {
+      removeSchema('about-page')
+      removeSchema('person')
+      removeSchema('breadcrumb-about')
+    }
+  }, [])
+
   return (
     <div style={{ minHeight: '100vh', background: C.bg, fontFamily: font, color: C.text }}>
 
