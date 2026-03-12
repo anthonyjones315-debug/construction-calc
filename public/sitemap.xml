@@ -1,87 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://buildcalcpro.com/</loc>
+    <loc>https://construction-calc-chi.vercel.app/</loc>
     <lastmod>2026-03-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://buildcalcpro.com/roofing/roof-pitch-calculator</loc>
+    <loc>https://construction-calc-chi.vercel.app/blog</loc>
     <lastmod>2026-03-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.95</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://buildcalcpro.com/roofing/roofing-squares-calculator</loc>
-    <lastmod>2026-03-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.90</priority>
-  </url>
-  <url>
-    <loc>https://buildcalcpro.com/concrete/concrete-slab-calculator</loc>
-    <lastmod>2026-03-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.90</priority>
-  </url>
-  <url>
-    <loc>https://buildcalcpro.com/concrete/concrete-footing-calculator</loc>
+    <loc>https://construction-calc-chi.vercel.app/blog/how-to-calculate-roof-pitch</loc>
     <lastmod>2026-03-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://buildcalcpro.com/insulation/spray-foam-calculator</loc>
-    <lastmod>2026-03-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.88</priority>
-  </url>
-  <url>
-    <loc>https://buildcalcpro.com/insulation/cellulose-insulation-calculator</loc>
+    <loc>https://construction-calc-chi.vercel.app/blog/how-to-calculate-concrete-for-a-slab</loc>
     <lastmod>2026-03-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://buildcalcpro.com/framing/wall-stud-calculator</loc>
+    <loc>https://construction-calc-chi.vercel.app/blog/open-cell-vs-closed-cell-spray-foam</loc>
     <lastmod>2026-03-11</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.82</priority>
+    <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://buildcalcpro.com/framing/rafter-length-calculator</loc>
+    <loc>https://construction-calc-chi.vercel.app/faq</loc>
     <lastmod>2026-03-11</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.82</priority>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://buildcalcpro.com/electrical/wire-gauge-ampacity-calculator</loc>
+    <loc>https://construction-calc-chi.vercel.app/privacy</loc>
     <lastmod>2026-03-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.80</priority>
-  </url>
-  <url>
-    <loc>https://buildcalcpro.com/materials/brick-calculator</loc>
-    <lastmod>2026-03-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.78</priority>
-  </url>
-  <url>
-    <loc>https://buildcalcpro.com/materials/drywall-calculator</loc>
-    <lastmod>2026-03-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.78</priority>
-  </url>
-  <url>
-    <loc>https://buildcalcpro.com/area/room-area-calculator</loc>
-    <lastmod>2026-03-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.75</priority>
-  </url>
-  <url>
-    <loc>https://buildcalcpro.com/area/triangle-area-calculator</loc>
-    <lastmod>2026-03-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.70</priority>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
   </url>
 </urlset>
