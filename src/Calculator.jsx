@@ -5,7 +5,7 @@ import { AffiliateSuggestions, LeadGenCTA } from "./monetization.jsx";
 // ─── THEME ─────────────────────────────────────────────────────────────────
 const C = {
   bg: "#f4f1eb", surface: "#ffffff", surfaceAlt: "#f9f7f3",
-  border: "#d9d4c7", borderLight: "#c4bfb4",
+  border: "#908a83", borderLight: "#7e7870",
   ink: "#1a1a1a", inkMid: "#555248", inkDim: "#8c887f",
   accent: "#e8820c", accentDark: "#c96d08", accentSoft: "rgba(232,130,12,0.10)",
   green: "#1a7a4a", greenSoft: "rgba(26,122,74,0.10)",
@@ -230,11 +230,13 @@ function RoofPitchCalc({ onSendToSquares }) {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(170px, 1fr))", gap: "16px", marginBottom: "20px" }}>
         {modeFields[mode].map((f) => (
           <div key={f.id}>
-            <label style={{ display: "block", fontSize: "11px", fontWeight: "600", color: C.textDim, textTransform: "uppercase", letterSpacing: "0.9px", marginBottom: "7px" }}>
+            <label htmlFor={"pitch-" + f.id} style={{ display: "block", fontSize: "11px", fontWeight: "600", color: C.textDim, textTransform: "uppercase", letterSpacing: "0.9px", marginBottom: "7px" }}>
               {f.label} <span style={{ fontWeight: "400", textTransform: "none", letterSpacing: 0 }}>({f.unit})</span>
             </label>
             <input
+              id={"pitch-" + f.id}
               type="number" step="any" min="0"
+              aria-label={f.label + " in " + f.unit}
               placeholder={f.placeholder}
               value={inputs[f.id] ?? ""}
               onChange={(e) => setVal(f.id, e.target.value)}
@@ -820,6 +822,22 @@ export default function ConstructionCalculator() {
         }
       `}</style>
 
+      {/* Skip to main content — accessibility */}
+      <a
+        href="#main-content"
+        style={{
+          position: "absolute", top: "-100px", left: "16px", zIndex: 9999,
+          background: "#e8820c", color: "#fff", padding: "8px 16px",
+          borderRadius: "4px", fontWeight: "700", fontSize: "14px",
+          textDecoration: "none", fontFamily: font,
+          transition: "top 0.2s",
+        }}
+        onFocus={(e) => e.target.style.top = "8px"}
+        onBlur={(e) => e.target.style.top = "-100px"}
+      >
+        Skip to main content
+      </a>
+
       {/* Header */}
       <header style={{
         display: "flex", alignItems: "center", gap: "16px",
@@ -945,7 +963,7 @@ export default function ConstructionCalculator() {
         </>
 
         {/* Main */}
-        <main className="main-content" style={{ flex: 1, overflowY: "auto", background: C.bg, padding: isMobile ? "20px 16px" : "32px 36px", width: isMobile ? "100%" : "auto" }}>
+        <main id="main-content" className="main-content" style={{ flex: 1, overflowY: "auto", background: C.bg, padding: isMobile ? "20px 16px" : "32px 36px", width: isMobile ? "100%" : "auto" }}>
 
           {/* Special: Roof Pitch Calc */}
           {calc?.isSpecial && calc.id === "pitch" && (
@@ -1015,11 +1033,13 @@ export default function ConstructionCalculator() {
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(175px, 1fr))", gap: "18px", marginBottom: "24px" }}>
                   {calc.fields.map((f) => (
                     <div key={f.id}>
-                      <label style={{ display: "block", fontSize: "11px", fontWeight: "700", color: C.inkDim, textTransform: "uppercase", letterSpacing: "1px", marginBottom: "7px" }}>
+                      <label htmlFor={calc.id + "-" + f.id} style={{ display: "block", fontSize: "11px", fontWeight: "700", color: C.inkDim, textTransform: "uppercase", letterSpacing: "1px", marginBottom: "7px" }}>
                         {f.label} <span style={{ fontWeight: "400", textTransform: "none", letterSpacing: 0, color: C.inkDim }}>({f.unit})</span>
                       </label>
                       <input
+                        id={calc.id + "-" + f.id}
                         type="number" step="any" min="0" className="calc-input"
+                        aria-label={f.label + " in " + f.unit}
                         placeholder={f.placeholder ?? (f.default !== undefined ? String(f.default) : "")}
                         value={values[f.id] ?? ""}
                         onChange={(e) => handleInput(f.id, e.target.value)}
