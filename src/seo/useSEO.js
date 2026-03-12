@@ -107,8 +107,8 @@ const CALC_SEO = {
 }
 
 const DEFAULT_SEO = {
-  title: `${SITE_NAME} — Free Professional Construction Calculator`,
-  description: 'Free construction calculators for contractors and builders. Concrete, framing, roofing, roof pitch, insulation, electrical, and more.',
+  title: `${SITE_NAME} — Free Construction Calculators`,
+  description: 'Free construction calculators for contractors and builders. Concrete, roofing, insulation, framing, and more. No login, no paywall.',
   keywords: 'construction calculator, contractor calculator, building calculator, free construction estimator',
 }
 
