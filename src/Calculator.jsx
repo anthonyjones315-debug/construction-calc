@@ -4,16 +4,20 @@ import { AffiliateSuggestions, LeadGenCTA } from "./monetization.jsx";
 
 // ─── THEME ─────────────────────────────────────────────────────────────────
 const C = {
-  bg: "#111318", surface: "#1c1f2b", surfaceAlt: "#23273a",
-  border: "#2e3347", borderLight: "#3a3f57",
-  accent: "#f59e0b", accentDark: "#d97706", accentSoft: "rgba(245,158,11,0.12)",
-  text: "#f0efe8", textMid: "#9ca3af", textDim: "#6b7280",
-  green: "#10b981", greenSoft: "rgba(16,185,129,0.12)",
-  red: "#ef4444", redSoft: "rgba(239,68,68,0.12)",
-  blue: "#60a5fa", blueSoft: "rgba(96,165,250,0.10)",
-  purple: "#a78bfa", purpleSoft: "rgba(167,139,250,0.10)",
+  bg: "#f4f1eb", surface: "#ffffff", surfaceAlt: "#f9f7f3",
+  border: "#d9d4c7", borderLight: "#c4bfb4",
+  ink: "#1a1a1a", inkMid: "#555248", inkDim: "#8c887f",
+  accent: "#e8820c", accentDark: "#c96d08", accentSoft: "rgba(232,130,12,0.10)",
+  green: "#1a7a4a", greenSoft: "rgba(26,122,74,0.10)",
+  red: "#c0392b", redSoft: "rgba(192,57,43,0.10)",
+  blue: "#1d6fa4", blueSoft: "rgba(29,111,164,0.10)",
+  purple: "#7c4dab", purpleSoft: "rgba(124,77,171,0.10)",
+  navBg: "#1a1a1a", navText: "#c4bfb4", navActive: "#e8820c",
+  // legacy aliases so inner components still work
+  text: "#1a1a1a", textMid: "#555248", textDim: "#8c887f",
 };
-const font = "'Inter', 'Segoe UI', system-ui, sans-serif";
+const font = "'DM Sans', 'Segoe UI', system-ui, sans-serif";
+const fontDisplay = "'Barlow Condensed', 'DM Sans', system-ui, sans-serif";
 
 // ─── PITCH MATERIAL GUIDE ──────────────────────────────────────────────────
 const PITCH_MATERIALS = [
@@ -756,91 +760,106 @@ export default function ConstructionCalculator() {
   const reset = () => { setValues({}); setToggles({}); setResult(null); setError(""); };
 
   const inputStyle = {
-    width: "100%", background: C.surfaceAlt, border: "1.5px solid " + C.border,
-    borderRadius: "8px", color: C.text, fontSize: "17px", fontFamily: font,
-    fontWeight: "500", padding: "10px 13px", outline: "none",
+    width: "100%", background: C.bg, border: "2px solid " + C.border,
+    borderRadius: "8px", color: C.ink, fontSize: "18px", fontFamily: font,
+    fontWeight: "600", padding: "10px 13px", outline: "none",
     transition: "border-color 0.15s, box-shadow 0.15s",
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: C.bg, fontFamily: font, color: C.text, fontSize: "15px" }}>
+    <div style={{ minHeight: "100vh", background: C.bg, fontFamily: font, color: C.ink, fontSize: "15px" }}>
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
         input[type=number]::-webkit-inner-spin-button,
-        input[type=number]::-webkit-outer-spin-button { opacity: 0.4; }
-        @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
-        ::-webkit-scrollbar { width: 5px; }
+        input[type=number]::-webkit-outer-spin-button { opacity: 0.3; }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes popIn { from { opacity:0; transform:scale(0.96); } to { opacity:1; transform:scale(1); } }
+        ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #2e3347; border-radius: 3px; }
-        button:focus-visible { outline: 2px solid #f59e0b; outline-offset: 2px; }
+        ::-webkit-scrollbar-thumb { background: #d9d4c7; border-radius: 4px; }
+        button:focus-visible { outline: 2px solid #e8820c; outline-offset: 2px; }
+        .calc-input:focus { border-color: #e8820c !important; box-shadow: 0 0 0 3px rgba(232,130,12,0.12) !important; }
+        .nav-btn:hover { background: rgba(255,255,255,0.06) !important; }
+        .cat-btn:hover { background: rgba(255,255,255,0.08) !important; }
       `}</style>
 
       {/* Header */}
       <header style={{
-        display: "flex", alignItems: "center", gap: "14px",
-        padding: "14px 24px", background: C.surface,
-        borderBottom: "1px solid " + C.border,
+        display: "flex", alignItems: "center", gap: "16px",
+        padding: "0 24px", height: "60px",
+        background: C.navBg,
+        borderBottom: "3px solid " + C.accent,
         position: "sticky", top: 0, zIndex: 100,
       }}>
-        <div style={{ background: C.accent, color: "#000", fontWeight: "800", fontSize: "11px", letterSpacing: "2px", padding: "5px 10px", borderRadius: "4px", textTransform: "uppercase" }}>Build</div>
-        <div>
-          <div style={{ fontWeight: "700", fontSize: "16px", color: C.text }}>Construction Calculator</div>
-          <div style={{ fontSize: "12px", color: C.textDim, marginTop: "1px" }}>Professional estimating tool</div>
+        {/* Logo */}
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <div style={{
+            background: C.accent, color: "#fff",
+            width: "34px", height: "34px", borderRadius: "6px",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: "18px", fontWeight: "800", lineHeight: 1,
+          }}>⚒</div>
+          <div>
+            <div style={{ fontFamily: fontDisplay, fontWeight: "700", fontSize: "20px", color: "#fff", letterSpacing: "0.5px", lineHeight: 1 }}>BUILD CALC PRO</div>
+            <div style={{ fontSize: "10px", color: C.navText, letterSpacing: "1.5px", textTransform: "uppercase", marginTop: "1px" }}>Construction Estimating</div>
+          </div>
         </div>
+
         <button onClick={() => setShowRef(!showRef)} style={{
           marginLeft: "auto",
-          background: showRef ? C.accentSoft : "transparent",
-          border: "1.5px solid " + (showRef ? C.accent : C.border),
-          color: showRef ? C.accent : C.textMid,
-          padding: "7px 16px", borderRadius: "7px",
-          cursor: "pointer", fontSize: "13px", fontFamily: font, fontWeight: "500",
-          transition: "all 0.15s",
+          background: showRef ? C.accent : "transparent",
+          border: "1.5px solid " + (showRef ? C.accent : "rgba(255,255,255,0.2)"),
+          color: showRef ? "#fff" : C.navText,
+          padding: "7px 16px", borderRadius: "6px",
+          cursor: "pointer", fontSize: "12px", fontFamily: font, fontWeight: "600",
+          letterSpacing: "0.5px", transition: "all 0.15s", textTransform: "uppercase",
         }}>
-          {showRef ? "✕ Close Ref" : "📋 Quick Ref"}
+          {showRef ? "✕ Close" : "📋 Quick Ref"}
         </button>
       </header>
 
-      <div style={{ display: "flex", height: "calc(100vh - 57px)" }}>
+      <div style={{ display: "flex", height: "calc(100vh - 60px)" }}>
 
-        {/* Sidebar */}
-        <nav style={{ width: "185px", flexShrink: 0, background: C.surface, borderRight: "1px solid " + C.border, overflowY: "auto", paddingTop: "10px" }}>
-          <div style={{ padding: "4px 16px 10px", fontSize: "10px", color: C.textDim, letterSpacing: "1.5px", textTransform: "uppercase", fontWeight: "600" }}>Category</div>
+        {/* Sidebar — dark nav */}
+        <nav style={{ width: "200px", flexShrink: 0, background: C.navBg, overflowY: "auto", paddingTop: "16px", borderRight: "none" }}>
+          <div style={{ padding: "0 16px 10px", fontSize: "10px", color: "rgba(196,191,180,0.5)", letterSpacing: "2px", textTransform: "uppercase", fontWeight: "600" }}>Categories</div>
           {CATEGORIES.map((cat) => {
             const active = cat.id === activeCat;
             return (
-              <button key={cat.id} onClick={() => switchCat(cat.id)} style={{
-                display: "flex", alignItems: "center", gap: "9px",
-                width: "100%", textAlign: "left", padding: "10px 16px",
-                background: active ? C.accentSoft : "transparent",
-                color: active ? C.accent : C.textMid,
+              <button key={cat.id} onClick={() => switchCat(cat.id)} className="cat-btn" style={{
+                display: "flex", alignItems: "center", gap: "10px",
+                width: "100%", textAlign: "left", padding: "11px 16px",
+                background: active ? "rgba(232,130,12,0.15)" : "transparent",
+                color: active ? C.accent : C.navText,
                 border: "none", borderLeft: "3px solid " + (active ? C.accent : "transparent"),
-                cursor: "pointer", fontSize: "13.5px", fontFamily: font,
-                fontWeight: active ? "600" : "400", transition: "all 0.12s",
+                cursor: "pointer", fontSize: "13px", fontFamily: font,
+                fontWeight: active ? "700" : "400", transition: "all 0.12s",
               }}>
-                <span style={{ fontSize: "11px", opacity: 0.6 }}>{cat.icon}</span>
+                <span style={{ fontSize: "14px" }}>{cat.icon}</span>
                 {cat.label}
               </button>
             );
           })}
 
           {category?.calcs.length > 1 && (
-            <div style={{ marginTop: "10px" }}>
-              <div style={{ margin: "0 16px", paddingTop: "12px", borderTop: "1px solid " + C.border, fontSize: "10px", color: C.textDim, letterSpacing: "1.5px", textTransform: "uppercase", fontWeight: "600", paddingBottom: "8px" }}>
-                Calculator
+            <div style={{ marginTop: "8px" }}>
+              <div style={{ margin: "0 16px", paddingTop: "14px", borderTop: "1px solid rgba(255,255,255,0.08)", fontSize: "10px", color: "rgba(196,191,180,0.5)", letterSpacing: "2px", textTransform: "uppercase", fontWeight: "600", paddingBottom: "8px" }}>
+                Tools
               </div>
               {category.calcs.map((c) => {
                 const active = c.id === activeCalc;
                 return (
-                  <button key={c.id} onClick={() => switchCalc(c.id)} style={{
-                    display: "flex", alignItems: "center", gap: "7px",
-                    width: "100%", textAlign: "left", padding: "8px 16px 8px 32px",
-                    background: active ? C.surfaceAlt : "transparent",
-                    color: active ? C.text : C.textDim,
-                    border: "none", borderLeft: "3px solid " + (active ? C.borderLight : "transparent"),
-                    cursor: "pointer", fontSize: "13px", fontFamily: font,
-                    fontWeight: active ? "500" : "400", transition: "all 0.1s",
+                  <button key={c.id} onClick={() => switchCalc(c.id)} className="nav-btn" style={{
+                    display: "flex", alignItems: "center", gap: "8px",
+                    width: "100%", textAlign: "left", padding: "9px 16px 9px 34px",
+                    background: active ? "rgba(255,255,255,0.06)" : "transparent",
+                    color: active ? "#fff" : "rgba(196,191,180,0.65)",
+                    border: "none", borderLeft: "3px solid " + (active ? "rgba(255,255,255,0.3)" : "transparent"),
+                    cursor: "pointer", fontSize: "12.5px", fontFamily: font,
+                    fontWeight: active ? "600" : "400", transition: "all 0.1s",
                   }}>
-                    {c.id === "pitch" && <span style={{ fontSize: "10px", background: C.accentSoft, color: C.accent, padding: "1px 5px", borderRadius: "3px", fontWeight: "700", flexShrink: 0 }}>NEW</span>}
+                    {c.id === "pitch" && <span style={{ fontSize: "9px", background: C.accent, color: "#fff", padding: "1px 5px", borderRadius: "3px", fontWeight: "700", flexShrink: 0, letterSpacing: "0.5px" }}>NEW</span>}
                     {c.label}
                   </button>
                 );
@@ -850,7 +869,7 @@ export default function ConstructionCalculator() {
         </nav>
 
         {/* Main */}
-        <main style={{ flex: 1, overflowY: "auto", padding: "36px 40px" }}>
+        <main style={{ flex: 1, overflowY: "auto", background: C.bg, padding: "32px 36px" }}>
 
           {/* Special: Roof Pitch Calc */}
           {calc?.isSpecial && calc.id === "pitch" && (
@@ -859,102 +878,159 @@ export default function ConstructionCalculator() {
 
           {/* Standard calcs */}
           {calc && !calc.isSpecial && (
-            <div style={{ maxWidth: "580px" }}>
-              <div style={{ fontSize: "12px", color: C.textDim, marginBottom: "8px" }}>{category.label} / {calc.label}</div>
-              <h1 style={{ fontSize: "22px", fontWeight: "700", color: C.text, marginBottom: "4px" }}>{calc.label}</h1>
-              <p style={{ fontSize: "14px", color: C.textMid, marginBottom: "28px", lineHeight: "1.5" }}>{calc.desc}</p>
+            <div style={{ maxWidth: "620px" }}>
+
+              {/* Breadcrumb */}
+              <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "20px" }}>
+                <span style={{ fontSize: "11px", color: C.inkDim, fontWeight: "600", textTransform: "uppercase", letterSpacing: "1px" }}>{category.label}</span>
+                <span style={{ fontSize: "11px", color: C.inkDim }}>›</span>
+                <span style={{ fontSize: "11px", color: C.accent, fontWeight: "700", textTransform: "uppercase", letterSpacing: "1px" }}>{calc.label}</span>
+              </div>
+
+              {/* Title card */}
+              <div style={{
+                background: C.navBg, borderRadius: "12px",
+                padding: "24px 28px", marginBottom: "20px",
+                borderLeft: "5px solid " + C.accent,
+              }}>
+                <h1 style={{ fontFamily: fontDisplay, fontSize: "30px", fontWeight: "700", color: "#fff", letterSpacing: "0.5px", marginBottom: "6px", lineHeight: 1.1 }}>{calc.label.toUpperCase()}</h1>
+                <p style={{ fontSize: "13px", color: "rgba(196,191,180,0.8)", lineHeight: "1.5", margin: 0 }}>{calc.desc}</p>
+              </div>
 
               {/* Pitch pre-fill notice */}
               {activeCalc === "squares" && values.pitch && (
-                <div style={{ display: "flex", alignItems: "center", gap: "10px", background: C.accentSoft, border: "1px solid " + C.accent, borderRadius: "8px", padding: "10px 16px", marginBottom: "20px", fontSize: "13px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", background: C.accentSoft, border: "2px solid " + C.accent, borderRadius: "8px", padding: "10px 16px", marginBottom: "20px", fontSize: "13px" }}>
                   <span>🔗</span>
-                  <span style={{ color: C.accent, fontWeight: "600" }}>Pitch pre-filled from Roof Pitch Calculator ({values.pitch}/12)</span>
-                  <button onClick={() => setValues((p) => ({ ...p, pitch: "" }))} style={{ marginLeft: "auto", background: "transparent", border: "none", color: C.textDim, cursor: "pointer", fontSize: "13px", fontFamily: font }}>✕ Clear</button>
+                  <span style={{ color: C.accentDark, fontWeight: "600" }}>Pitch pre-filled from Roof Pitch Calculator ({values.pitch}/12)</span>
+                  <button onClick={() => setValues((p) => ({ ...p, pitch: "" }))} style={{ marginLeft: "auto", background: "transparent", border: "none", color: C.inkDim, cursor: "pointer", fontSize: "13px", fontFamily: font }}>✕ Clear</button>
                 </div>
               )}
 
-              {/* Toggles */}
-              {calc.toggles?.map((tog) => (
-                <div key={tog.id} style={{ marginBottom: "24px" }}>
-                  <div style={{ fontSize: "11px", color: C.textDim, fontWeight: "600", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "9px" }}>{tog.label}</div>
-                  <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                    {tog.options.map((opt, idx) => {
-                      const sel = (toggles[tog.id] ?? 0) === idx;
-                      return (
-                        <button key={idx} onClick={() => handleToggle(tog.id, idx)} style={{
-                          padding: "9px 18px", border: "1.5px solid " + (sel ? C.accent : C.border),
-                          borderRadius: "8px", background: sel ? C.accentSoft : C.surfaceAlt,
-                          color: sel ? C.accent : C.textMid, fontSize: "13px", fontFamily: font,
-                          fontWeight: sel ? "600" : "400", cursor: "pointer", transition: "all 0.12s",
-                        }}>{opt}</button>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
-
-              {/* Fields */}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(170px, 1fr))", gap: "16px", marginBottom: "24px" }}>
-                {calc.fields.map((f) => (
-                  <div key={f.id}>
-                    <label style={{ display: "block", fontSize: "11px", fontWeight: "600", color: C.textDim, textTransform: "uppercase", letterSpacing: "0.9px", marginBottom: "7px" }}>
-                      {f.label} <span style={{ fontWeight: "400", textTransform: "none", letterSpacing: 0 }}>({f.unit})</span>
-                    </label>
-                    <input
-                      type="number" step="any" min="0"
-                      placeholder={f.placeholder ?? (f.default !== undefined ? String(f.default) : "")}
-                      value={values[f.id] ?? ""}
-                      onChange={(e) => handleInput(f.id, e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && calculate()}
-                      style={inputStyle}
-                      onFocus={(e) => { e.target.style.borderColor = C.accent; e.target.style.boxShadow = "0 0 0 3px " + C.accentSoft; }}
-                      onBlur={(e) => { e.target.style.borderColor = C.border; e.target.style.boxShadow = "none"; }}
-                    />
+              {/* Input card */}
+              <div style={{
+                background: C.surface, border: "2px solid " + C.border,
+                borderRadius: "12px", padding: "28px", marginBottom: "20px",
+                boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
+              }}>
+                {/* Toggles */}
+                {calc.toggles?.map((tog) => (
+                  <div key={tog.id} style={{ marginBottom: "24px" }}>
+                    <div style={{ fontSize: "11px", color: C.inkDim, fontWeight: "700", textTransform: "uppercase", letterSpacing: "1.2px", marginBottom: "10px" }}>{tog.label}</div>
+                    <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                      {tog.options.map((opt, idx) => {
+                        const sel = (toggles[tog.id] ?? 0) === idx;
+                        return (
+                          <button key={idx} onClick={() => handleToggle(tog.id, idx)} style={{
+                            padding: "9px 20px",
+                            border: "2px solid " + (sel ? C.accent : C.border),
+                            borderRadius: "8px",
+                            background: sel ? C.accent : C.bg,
+                            color: sel ? "#fff" : C.inkMid,
+                            fontSize: "13px", fontFamily: font,
+                            fontWeight: "600", cursor: "pointer", transition: "all 0.12s",
+                          }}>{opt}</button>
+                        );
+                      })}
+                    </div>
                   </div>
                 ))}
-              </div>
 
-              {/* Buttons */}
-              <div style={{ display: "flex", gap: "10px", marginBottom: "28px" }}>
-                <button onClick={calculate} style={{ background: C.accent, color: "#000", border: "none", borderRadius: "8px", padding: "12px 28px", fontSize: "14px", fontFamily: font, fontWeight: "700", cursor: "pointer", transition: "background 0.15s, transform 0.1s" }}
-                  onMouseEnter={(e) => e.target.style.background = C.accentDark}
-                  onMouseLeave={(e) => e.target.style.background = C.accent}
-                  onMouseDown={(e) => e.target.style.transform = "scale(0.97)"}
-                  onMouseUp={(e) => e.target.style.transform = "scale(1)"}
-                >Calculate</button>
-                <button onClick={reset} style={{ background: "transparent", border: "1.5px solid " + C.border, borderRadius: "8px", color: C.textMid, padding: "12px 20px", fontSize: "14px", fontFamily: font, cursor: "pointer", transition: "all 0.15s" }}
-                  onMouseEnter={(e) => { e.target.style.borderColor = C.borderLight; e.target.style.color = C.text; }}
-                  onMouseLeave={(e) => { e.target.style.borderColor = C.border; e.target.style.color = C.textMid; }}
-                >Clear</button>
+                {/* Fields grid */}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(175px, 1fr))", gap: "18px", marginBottom: "24px" }}>
+                  {calc.fields.map((f) => (
+                    <div key={f.id}>
+                      <label style={{ display: "block", fontSize: "11px", fontWeight: "700", color: C.inkDim, textTransform: "uppercase", letterSpacing: "1px", marginBottom: "7px" }}>
+                        {f.label} <span style={{ fontWeight: "400", textTransform: "none", letterSpacing: 0, color: C.inkDim }}>({f.unit})</span>
+                      </label>
+                      <input
+                        type="number" step="any" min="0" className="calc-input"
+                        placeholder={f.placeholder ?? (f.default !== undefined ? String(f.default) : "")}
+                        value={values[f.id] ?? ""}
+                        onChange={(e) => handleInput(f.id, e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && calculate()}
+                        style={{
+                          width: "100%", background: C.bg,
+                          border: "2px solid " + C.border,
+                          borderRadius: "8px", color: C.ink,
+                          fontSize: "18px", fontFamily: font,
+                          fontWeight: "600", padding: "10px 13px",
+                          outline: "none", transition: "border-color 0.15s, box-shadow 0.15s",
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Action buttons */}
+                <div style={{ display: "flex", gap: "10px" }}>
+                  <button onClick={calculate} style={{
+                    background: C.accent, color: "#fff",
+                    border: "none", borderRadius: "8px",
+                    padding: "13px 32px", fontSize: "14px",
+                    fontFamily: fontDisplay, fontWeight: "700",
+                    letterSpacing: "1px", textTransform: "uppercase",
+                    cursor: "pointer", transition: "background 0.15s, transform 0.1s",
+                    flex: 1,
+                  }}
+                    onMouseEnter={(e) => e.target.style.background = C.accentDark}
+                    onMouseLeave={(e) => e.target.style.background = C.accent}
+                    onMouseDown={(e) => e.target.style.transform = "scale(0.98)"}
+                    onMouseUp={(e) => e.target.style.transform = "scale(1)"}
+                  >Calculate</button>
+                  <button onClick={reset} style={{
+                    background: "transparent",
+                    border: "2px solid " + C.border,
+                    borderRadius: "8px", color: C.inkMid,
+                    padding: "13px 20px", fontSize: "13px",
+                    fontFamily: font, fontWeight: "600",
+                    cursor: "pointer", transition: "all 0.15s",
+                  }}
+                    onMouseEnter={(e) => { e.target.style.borderColor = C.ink; e.target.style.color = C.ink; }}
+                    onMouseLeave={(e) => { e.target.style.borderColor = C.border; e.target.style.color = C.inkMid; }}
+                  >Clear</button>
+                </div>
               </div>
 
               {error && (
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", background: C.redSoft, border: "1px solid " + C.red, borderRadius: "8px", color: C.red, padding: "11px 16px", fontSize: "14px", marginBottom: "20px" }}>⚠ {error}</div>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", background: C.redSoft, border: "2px solid " + C.red, borderRadius: "8px", color: C.red, padding: "12px 16px", fontSize: "14px", marginBottom: "20px", fontWeight: "600" }}>⚠ {error}</div>
               )}
 
+              {/* Results card */}
               {result && (
-                <div style={{ animation: "fadeUp 0.22s ease" }}>
-                  <div style={{ background: C.surface, border: "1px solid " + C.border, borderRadius: "12px", padding: "22px 24px", marginBottom: "10px" }}>
-                    <div style={{ fontSize: "11px", color: C.textDim, fontWeight: "600", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "10px" }}>{result.mainLabel}</div>
-                    <div style={{ display: "flex", alignItems: "baseline", gap: "10px" }}>
-                      <span style={{ fontSize: "46px", fontWeight: "800", color: C.accent, letterSpacing: "-1.5px", lineHeight: "1" }}>{result.main}</span>
-                      <span style={{ fontSize: "19px", color: C.textMid, fontWeight: "500" }}>{result.mainUnit}</span>
+                <div style={{ animation: "popIn 0.2s ease" }}>
+                  {/* Main result */}
+                  <div style={{
+                    background: C.navBg, borderRadius: "12px",
+                    padding: "28px", marginBottom: "12px",
+                    borderLeft: "5px solid " + C.accent,
+                  }}>
+                    <div style={{ fontSize: "10px", color: "rgba(196,191,180,0.6)", fontWeight: "700", textTransform: "uppercase", letterSpacing: "1.5px", marginBottom: "12px" }}>{result.mainLabel}</div>
+                    <div style={{ display: "flex", alignItems: "baseline", gap: "12px" }}>
+                      <span style={{ fontFamily: fontDisplay, fontSize: "56px", fontWeight: "700", color: C.accent, letterSpacing: "-1px", lineHeight: "1" }}>{result.main}</span>
+                      <span style={{ fontSize: "20px", color: "rgba(196,191,180,0.7)", fontWeight: "500" }}>{result.mainUnit}</span>
                     </div>
                   </div>
+
+                  {/* Extra stats */}
                   {result.extras?.length > 0 && (
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(162px, 1fr))", gap: "8px", marginBottom: "14px" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(168px, 1fr))", gap: "10px", marginBottom: "16px" }}>
                       {result.extras.map((ex, i) => {
                         const isG = ex.status === "green", isR = ex.status === "red";
                         return (
-                          <div key={i} style={{ background: isG ? C.greenSoft : isR ? C.redSoft : C.surfaceAlt, border: "1px solid " + (isG ? C.green : isR ? C.red : C.border), borderRadius: "10px", padding: "13px 15px" }}>
-                            <div style={{ fontSize: "10px", color: isG ? C.green : isR ? C.red : C.textDim, fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.7px", marginBottom: "5px" }}>{ex.label}</div>
-                            <div style={{ fontSize: "15px", fontWeight: "600", color: isG ? C.green : isR ? C.red : C.text, lineHeight: "1.3" }}>{ex.value}</div>
+                          <div key={i} style={{
+                            background: isG ? C.greenSoft : isR ? C.redSoft : C.surface,
+                            border: "2px solid " + (isG ? C.green : isR ? C.red : C.border),
+                            borderRadius: "10px", padding: "14px 16px",
+                            boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
+                          }}>
+                            <div style={{ fontSize: "10px", color: isG ? C.green : isR ? C.red : C.inkDim, fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: "6px" }}>{ex.label}</div>
+                            <div style={{ fontSize: "16px", fontWeight: "700", color: isG ? C.green : isR ? C.red : C.ink, lineHeight: "1.3" }}>{ex.value}</div>
                           </div>
                         );
                       })}
                     </div>
                   )}
-                  <div style={{ fontSize: "12px", color: C.textDim }}>ℹ Estimates only — always verify with a licensed professional.</div>
+                  <div style={{ fontSize: "12px", color: C.inkDim, marginBottom: "4px" }}>ℹ Estimates only — always verify with a licensed professional.</div>
                   <LeadGenCTA calcId={activeCalc} />
                   <AffiliateSuggestions calcId={activeCalc} />
                 </div>
@@ -965,18 +1041,18 @@ export default function ConstructionCalculator() {
 
         {/* Quick Ref */}
         {showRef && (
-          <aside style={{ width: "220px", flexShrink: 0, background: C.surface, borderLeft: "1px solid " + C.border, padding: "22px 18px", overflowY: "auto", animation: "fadeUp 0.2s ease" }}>
-            <div style={{ fontSize: "11px", fontWeight: "700", color: C.textDim, textTransform: "uppercase", letterSpacing: "1.2px", marginBottom: "14px" }}>Quick References</div>
+          <aside style={{ width: "220px", flexShrink: 0, background: C.surface, borderLeft: "2px solid " + C.border, padding: "22px 18px", overflowY: "auto", animation: "fadeUp 0.2s ease" }}>
+            <div style={{ fontFamily: fontDisplay, fontSize: "14px", fontWeight: "700", color: C.ink, textTransform: "uppercase", letterSpacing: "1.5px", marginBottom: "14px" }}>Quick Ref</div>
             {QUICK_REFS.map((r, i) => (
-              <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid " + C.border, gap: "8px" }}>
-                <span style={{ fontSize: "12px", color: C.textDim, lineHeight: "1.3" }}>{r.label}</span>
-                <span style={{ fontSize: "12px", fontWeight: "700", color: C.text, whiteSpace: "nowrap" }}>{r.val}</span>
+              <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 0", borderBottom: "1px solid " + C.border, gap: "8px" }}>
+                <span style={{ fontSize: "12px", color: C.inkDim, lineHeight: "1.3" }}>{r.label}</span>
+                <span style={{ fontSize: "12px", fontWeight: "700", color: C.ink, whiteSpace: "nowrap" }}>{r.val}</span>
               </div>
             ))}
-            <div style={{ fontSize: "11px", fontWeight: "700", color: C.textDim, textTransform: "uppercase", letterSpacing: "1.2px", margin: "22px 0 12px" }}>Waste Factors</div>
+            <div style={{ fontFamily: fontDisplay, fontSize: "14px", fontWeight: "700", color: C.ink, textTransform: "uppercase", letterSpacing: "1.5px", margin: "22px 0 12px" }}>Waste Factors</div>
             {WASTE.map((r, i) => (
-              <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid " + C.border }}>
-                <span style={{ fontSize: "12px", color: C.textDim }}>{r.label}</span>
+              <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 0", borderBottom: "1px solid " + C.border }}>
+                <span style={{ fontSize: "12px", color: C.inkDim }}>{r.label}</span>
                 <span style={{ fontSize: "12px", fontWeight: "700", color: C.accent }}>{r.val}</span>
               </div>
             ))}

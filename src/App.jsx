@@ -10,6 +10,12 @@ export default function App() {
   const [path, setPath] = useState(window.location.pathname)
   const [showFeedback, setShowFeedback] = useState(false)
 
+  function navigate(href) {
+    window.history.pushState({}, '', href)
+    setPath(href)
+    window.scrollTo(0, 0)
+  }
+
   useEffect(() => {
     const onPop = () => setPath(window.location.pathname)
     window.addEventListener('popstate', onPop)
@@ -38,7 +44,7 @@ export default function App() {
     const slug = path.startsWith('/blog/') ? path.replace('/blog/', '') : null
     return (
       <div style={{ minHeight: '100vh', background: '#111318' }}>
-        <Blog slug={slug} />
+        <Blog slug={slug} navigate={navigate} />
       </div>
     )
   }

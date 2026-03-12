@@ -241,7 +241,7 @@ function BlogPost({ slug, onBack }) {
 }
 
 // ── Main Blog Component ───────────────────────────────────────────────────────
-export default function Blog({ slug }) {
-  if (slug) return <BlogPost slug={slug} onBack={() => window.history.pushState({}, '', '/blog')} />
-  return <BlogIndex onPost={(s) => window.history.pushState({}, '', `/blog/${s}`)} />
+export default function Blog({ slug, navigate }) {
+  if (slug) return <BlogPost slug={slug} onBack={() => navigate('/blog')} />
+  return <BlogIndex onPost={(s) => navigate(`/blog/${s}`)} />
 }
