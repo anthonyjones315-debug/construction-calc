@@ -1,20 +1,29 @@
 const C = {
-  bg: '#111318', surface: '#1c1f2b', border: '#2e3347',
-  text: '#f0efe8', textMid: '#9ca3af', textDim: '#6b7280',
-  accent: '#f59e0b',
+  bg: '#f4f1eb', surface: '#ffffff', border: '#d9d4c7',
+  navBg: '#1a1a1a', accent: '#e8820c',
+  text: '#1a1a1a', textMid: '#555248', textDim: '#8c887f',
 }
-const font = "'Inter', 'Segoe UI', system-ui, sans-serif"
+const font = "'DM Sans', 'Segoe UI', system-ui, sans-serif"
+const fontDisplay = "'Barlow Condensed', 'DM Sans', system-ui, sans-serif"
 
 export default function PrivacyPolicy() {
   return (
-    <div style={{ minHeight: '100vh', background: C.bg, fontFamily: font, color: C.text, padding: '48px 24px' }}>
-      <div style={{ maxWidth: '680px', margin: '0 auto' }}>
-
-        <a href="/" style={{ fontSize: '13px', color: C.accent, textDecoration: 'none', display: 'block', marginBottom: '32px' }}>
-          ← Back to Calculator
+    <div style={{ minHeight: '100vh', background: C.bg, fontFamily: font, color: C.text }}>
+      {/* Nav */}
+      <div style={{
+        background: C.navBg, padding: '0 24px', height: '56px',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      }}>
+        <a href="/" style={{ fontFamily: fontDisplay, fontSize: '20px', fontWeight: '700', color: '#fff', textDecoration: 'none', letterSpacing: '0.5px' }}>
+          ⚒ BUILD CALC PRO
         </a>
+        <a href="/" style={{ fontSize: '13px', color: '#e8820c', fontWeight: '700', textDecoration: 'none', fontFamily: font }}>
+          ← Back to Calculators
+        </a>
+      </div>
 
-        <h1 style={{ fontSize: '28px', fontWeight: '800', marginBottom: '8px' }}>Privacy Policy</h1>
+      <div style={{ maxWidth: '680px', margin: '0 auto', padding: '48px 24px' }}>
+        <h1 style={{ fontFamily: fontDisplay, fontSize: '36px', fontWeight: '700', marginBottom: '8px', letterSpacing: '0.5px' }}>PRIVACY POLICY</h1>
         <p style={{ fontSize: '13px', color: C.textDim, marginBottom: '40px' }}>
           Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
         </p>
@@ -22,7 +31,7 @@ export default function PrivacyPolicy() {
         {[
           {
             heading: 'Overview',
-            body: `Build Calc Pro ("we", "us", "our") operates buildcalcpro.com. This page explains what information we collect, how we use it, and your rights regarding that information. We are committed to protecting your privacy.`,
+            body: `Build Calc Pro ("we", "us", "our") operates proconstructioncalc.com. This page explains what information we collect, how we use it, and your rights regarding that information. We are committed to protecting your privacy.`,
           },
           {
             heading: 'Information We Collect',
@@ -49,7 +58,7 @@ export default function PrivacyPolicy() {
             body: `All calculator results on Build Calc Pro are estimates only and are provided for informational purposes. Results should not be used as the sole basis for purchasing materials, planning construction, or making engineering decisions. Always verify calculations with a licensed contractor, engineer, or other qualified professional. Build Calc Pro is not liable for any errors, omissions, or outcomes resulting from use of this tool.`,
           },
           {
-            heading: 'Children\'s Privacy',
+            heading: "Children's Privacy",
             body: `This site is not directed at children under 13. We do not knowingly collect personal information from children under 13. If you believe a child has provided us with personal information, please contact us so we can delete it.`,
           },
           {
@@ -62,13 +71,13 @@ export default function PrivacyPolicy() {
           },
         ].map((s, i) => (
           <div key={i} style={{ marginBottom: '32px' }}>
-            <h2 style={{ fontSize: '16px', fontWeight: '700', color: C.text, marginBottom: '10px' }}>{s.heading}</h2>
-            <p style={{ fontSize: '14px', color: C.textMid, lineHeight: '1.7' }}>{s.body}</p>
+            <h2 style={{ fontSize: '15px', fontWeight: '700', color: C.text, marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{s.heading}</h2>
+            <p style={{ fontSize: '14px', color: C.textMid, lineHeight: '1.75' }}>{s.body}</p>
           </div>
         ))}
 
         <div style={{ borderTop: '1px solid ' + C.border, paddingTop: '24px', fontSize: '12px', color: C.textDim }}>
-          © {new Date().getFullYear()} Build Calc Pro — buildcalcpro.com
+          © {new Date().getFullYear()} Build Calc Pro — proconstructioncalc.com
         </div>
       </div>
     </div>

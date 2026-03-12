@@ -180,13 +180,13 @@ export const LEAD_GEN = {
 // ─── COMPONENTS ────────────────────────────────────────────────────────────
 
 const C = {
-  surface: '#1c1f2b', surfaceAlt: '#23273a', border: '#2e3347',
-  accent: '#f59e0b', accentDark: '#d97706', accentSoft: 'rgba(245,158,11,0.12)',
-  text: '#f0efe8', textMid: '#9ca3af', textDim: '#6b7280',
-  green: '#10b981', greenSoft: 'rgba(16,185,129,0.12)',
-  blue: '#60a5fa', blueSoft: 'rgba(96,165,250,0.10)',
+  surface: '#ffffff', surfaceAlt: '#f9f7f3', border: '#d9d4c7',
+  accent: '#e8820c', accentDark: '#c96d08', accentSoft: 'rgba(232,130,12,0.10)',
+  text: '#1a1a1a', textMid: '#555248', textDim: '#8c887f',
+  green: '#1a7a4a', greenSoft: 'rgba(26,122,74,0.10)',
+  blue: '#1d6fa4', blueSoft: 'rgba(29,111,164,0.10)',
 }
-const font = "'Inter', 'Segoe UI', system-ui, sans-serif"
+const font = "'DM Sans', 'Segoe UI', system-ui, sans-serif"
 
 /**
  * AffiliateSuggestions — shows 2–3 relevant product links after a result
