@@ -1,28 +1,16 @@
 import { useEffect } from 'react'
-
-const SITE_URL = 'https://proconstructioncalc.com'
-
-const C = {
-  bg: '#f4f1eb', surface: '#ffffff', border: '#d9d4c7',
-  navBg: '#1a1a1a', accent: '#e8820c',
-  text: '#1a1a1a', textMid: '#555248', textDim: '#8c887f',
-}
-const font = "'DM Sans', 'Segoe UI', system-ui, sans-serif"
-const fontDisplay = "'Barlow Condensed', 'DM Sans', system-ui, sans-serif"
+import { C, font, fontDisplay } from './theme.js'
+import { injectSchema, removeSchema, setCanonical, SITE_URL } from './seo/schema.js'
 
 export default function PrivacyPolicy() {
   useEffect(() => {
-    document.title = 'Privacy Policy | Build Calc Pro'
-    const canonical = document.getElementById('canonical-tag')
-    if (canonical) canonical.setAttribute('href', 'https://proconstructioncalc.com/privacy')
     const desc = 'Privacy policy for Build Calc Pro. Learn how we collect, use, and protect your data on our free construction calculator website.'
+    document.title = 'Privacy Policy | Build Calc Pro'
+    setCanonical('/privacy')
     let m = document.querySelector('meta[name="description"]')
     if (m) m.setAttribute('content', desc)
 
-    const el = document.createElement('script')
-    el.type = 'application/ld+json'
-    el.id = 'schema-privacy'
-    el.textContent = JSON.stringify({
+    injectSchema('privacy', {
       '@context': 'https://schema.org',
       '@type': 'WebPage',
       name: 'Privacy Policy — Build Calc Pro',
@@ -30,8 +18,7 @@ export default function PrivacyPolicy() {
       description: desc,
       publisher: { '@type': 'Organization', name: 'Build Calc Pro', url: SITE_URL },
     })
-    document.head.appendChild(el)
-    return () => document.getElementById('schema-privacy')?.remove()
+    return () => removeSchema('privacy')
   }, [])
 
   return (

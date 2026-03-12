@@ -1,13 +1,6 @@
 import { useState, useEffect } from 'react'
-
-const C = {
-  bg: '#f4f1eb', surface: '#ffffff', surfaceAlt: '#f9f7f3',
-  border: '#d9d4c7', navBg: '#1a1a1a',
-  accent: '#e8820c', accentDark: '#c96d08',
-  text: '#1a1a1a', textMid: '#555248', textDim: '#8c887f',
-}
-const font = "'DM Sans', 'Segoe UI', system-ui, sans-serif"
-const fontDisplay = "'Barlow Condensed', 'DM Sans', system-ui, sans-serif"
+import { C, font, fontDisplay } from './theme.js'
+import { injectSchema, removeSchema, setCanonical, SITE_URL } from './seo/schema.js'
 
 const FAQS = [
   {
@@ -138,7 +131,13 @@ function FAQItem({ q, a }) {
 
 export default function FAQ({ onFeedback, onNavigate }) {
   useEffect(() => {
-    const schema = {
+    const desc = 'Answers to common questions about roofing, concrete, insulation, framing, and our construction calculators.'
+    document.title = 'FAQ — Construction Calculator Questions Answered | Build Calc Pro'
+    setCanonical('/faq')
+    let m = document.querySelector('meta[name="description"]')
+    if (m) m.setAttribute('content', desc)
+
+    injectSchema('page-faq', {
       '@context': 'https://schema.org',
       '@type': 'FAQPage',
       mainEntity: FAQS.flatMap(cat =>
@@ -148,18 +147,20 @@ export default function FAQ({ onFeedback, onNavigate }) {
           acceptedAnswer: { '@type': 'Answer', text: item.a }
         }))
       )
-    }
-    const el = document.createElement('script')
-    el.type = 'application/ld+json'
-    el.id = 'faq-schema'
-    el.text = JSON.stringify(schema)
-    document.head.appendChild(el)
-    document.title = 'FAQ — Construction Calculator Questions Answered | Build Calc Pro'
-    const canonical = document.getElementById('canonical-tag')
-    if (canonical) canonical.setAttribute('href', 'https://proconstructioncalc.com/faq')
+    })
+
+    injectSchema('breadcrumb-faq', {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Build Calc Pro', item: SITE_URL },
+        { '@type': 'ListItem', position: 2, name: 'FAQ', item: SITE_URL + '/faq' },
+      ]
+    })
+
     return () => {
-      document.getElementById('faq-schema')?.remove()
-      document.title = 'Build Calc Pro — Free Construction Calculators'
+      removeSchema('page-faq')
+      removeSchema('breadcrumb-faq')
     }
   }, [])
 

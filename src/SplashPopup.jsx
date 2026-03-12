@@ -1,13 +1,5 @@
 import { useState, useEffect } from 'react'
-
-const C = {
-  surface: '#ffffff', border: '#d9d4c7', borderLight: '#c4bfb4',
-  accent: '#e8820c', accentDark: '#c96d08', accentSoft: 'rgba(232,130,12,0.10)',
-  text: '#1a1a1a', textMid: '#555248', textDim: '#8c887f',
-  surfaceAlt: '#f9f7f3',
-}
-const font = "'DM Sans', 'Segoe UI', system-ui, sans-serif"
-const fontDisplay = "'Barlow Condensed', 'DM Sans', system-ui, sans-serif"
+import { C, font, fontDisplay } from './theme.js'
 
 const ENDPOINT = 'https://formspree.io/f/xyknwlrz'
 const STORAGE_KEY = 'bcp_splash_dismissed'

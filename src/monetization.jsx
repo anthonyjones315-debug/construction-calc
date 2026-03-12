@@ -1,3 +1,5 @@
+import { C, font } from './theme.js'
+
 /**
  * Monetization config — affiliate links, lead gen, and referral CTAs
  *
@@ -179,15 +181,6 @@ export const LEAD_GEN = {
 
 // ─── COMPONENTS ────────────────────────────────────────────────────────────
 
-const C = {
-  surface: '#ffffff', surfaceAlt: '#f9f7f3', border: '#d9d4c7',
-  accent: '#e8820c', accentDark: '#c96d08', accentSoft: 'rgba(232,130,12,0.10)',
-  text: '#1a1a1a', textMid: '#555248', textDim: '#8c887f',
-  green: '#1a7a4a', greenSoft: 'rgba(26,122,74,0.10)',
-  blue: '#1d6fa4', blueSoft: 'rgba(29,111,164,0.10)',
-}
-const font = "'DM Sans', 'Segoe UI', system-ui, sans-serif"
-
 /**
  * AffiliateSuggestions — shows 2–3 relevant product links after a result
  */
@@ -286,7 +279,7 @@ export function LeadGenCTA({ calcId }) {
         target="_blank"
         rel="noopener noreferrer sponsored"
         style={{
-          background: C.blue, color: '#000',
+          background: C.blue, color: '#fff',
           padding: '10px 20px', borderRadius: '8px',
           fontSize: '13px', fontWeight: '700', fontFamily: font,
           textDecoration: 'none', whiteSpace: 'nowrap', flexShrink: 0,

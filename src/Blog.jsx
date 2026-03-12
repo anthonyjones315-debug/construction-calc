@@ -1,30 +1,7 @@
 import { useEffect } from 'react'
 import { POSTS, getPost } from './posts/index.js'
-
-const SITE_URL = 'https://proconstructioncalc.com'
-const SITE_NAME = 'Build Calc Pro'
-
-function injectSchema(id, schema) {
-  let el = document.getElementById('schema-' + id)
-  if (el) el.remove()
-  el = document.createElement('script')
-  el.type = 'application/ld+json'
-  el.id = 'schema-' + id
-  el.textContent = JSON.stringify(schema)
-  document.head.appendChild(el)
-}
-function removeSchema(id) {
-  document.getElementById('schema-' + id)?.remove()
-}
-
-const C = {
-  bg: '#f4f1eb', surface: '#ffffff', surfaceAlt: '#f9f7f3',
-  border: '#d9d4c7', navBg: '#1a1a1a',
-  accent: '#e8820c', accentDark: '#c96d08', accentSoft: 'rgba(232,130,12,0.10)',
-  text: '#1a1a1a', textMid: '#555248', textDim: '#8c887f',
-}
-const font = "'DM Sans', 'Segoe UI', system-ui, sans-serif"
-const fontDisplay = "'Barlow Condensed', 'DM Sans', system-ui, sans-serif"
+import { C, font, fontDisplay } from './theme.js'
+import { injectSchema, removeSchema, SITE_URL, SITE_NAME } from './seo/schema.js'
 
 // ── Shared nav bar ────────────────────────────────────────────────────────────
 function NavBar({ onBack, backLabel }) {
