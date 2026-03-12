@@ -5,6 +5,7 @@ import FAQ from './FAQ.jsx'
 import FeedbackModal from './FeedbackModal.jsx'
 import ConstructionCalculator from './Calculator.jsx'
 import PrivacyPolicy from './PrivacyPolicy.jsx'
+import About from './About.jsx'
 
 const font = "'DM Sans', 'Segoe UI', system-ui, sans-serif"
 
@@ -41,6 +42,13 @@ export default function App() {
 
   const openFeedback = () => setShowFeedback(true)
   const closeFeedback = () => setShowFeedback(false)
+
+  if (path === '/about') return (
+    <>
+      <About />
+      {showFeedback && <FeedbackModal onClose={closeFeedback} />}
+    </>
+  )
 
   if (path === '/privacy') return (
     <>
@@ -87,6 +95,7 @@ export default function App() {
           © {new Date().getFullYear()} Build Calc Pro — Free Construction Estimating Tool
         </span>
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+          <a href="/about" style={{ fontSize: '12px', color: '#555248', fontFamily: font, textDecoration: 'none' }}>About</a>
           <a href="/blog" style={{ fontSize: '12px', color: '#555248', fontFamily: font, textDecoration: 'none' }}>Resources</a>
           <a href="/faq" style={{ fontSize: '12px', color: '#555248', fontFamily: font, textDecoration: 'none' }}>FAQ</a>
           <a href="/privacy" style={{ fontSize: '12px', color: '#555248', fontFamily: font, textDecoration: 'none' }}>Privacy Policy</a>
