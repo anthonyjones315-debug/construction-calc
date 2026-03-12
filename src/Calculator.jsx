@@ -186,11 +186,24 @@ function RoofPitchCalc({ onSendToSquares }) {
 
   return (
     <div style={{ maxWidth: "620px" }}>
-      <div style={{ fontSize: "12px", color: C.textDim, marginBottom: "8px" }}>Roofing / Roof Pitch</div>
-      <h1 style={{ fontSize: "22px", fontWeight: "700", color: C.text, marginBottom: "4px" }}>Roof Pitch Calculator</h1>
-      <p style={{ fontSize: "14px", color: C.textMid, marginBottom: "24px", lineHeight: "1.5" }}>
-        Calculate pitch from rise/run, actual measurements, or angle. Results link directly to Roofing Squares.
-      </p>
+      {/* Breadcrumb */}
+      <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "20px" }}>
+        <span style={{ fontSize: "11px", color: C.inkDim, fontWeight: "600", textTransform: "uppercase", letterSpacing: "1px" }}>Roofing</span>
+        <span style={{ fontSize: "11px", color: C.inkDim }}>›</span>
+        <span style={{ fontSize: "11px", color: C.accent, fontWeight: "700", textTransform: "uppercase", letterSpacing: "1px" }}>Roof Pitch</span>
+      </div>
+
+      {/* Title card */}
+      <div style={{
+        background: C.navBg, borderRadius: "12px",
+        padding: "24px 28px", marginBottom: "24px",
+        borderLeft: "5px solid " + C.accent,
+      }}>
+        <h1 style={{ fontFamily: fontDisplay, fontSize: "30px", fontWeight: "700", color: "#fff", letterSpacing: "0.5px", marginBottom: "6px", lineHeight: 1.1 }}>ROOF PITCH</h1>
+        <p style={{ fontSize: "13px", color: "rgba(196,191,180,0.8)", lineHeight: "1.5", margin: 0 }}>
+          Calculate pitch from rise/run, actual measurements, or angle. Links directly to Roofing Squares.
+        </p>
+      </div>
 
       {/* Mode Selector */}
       <div style={{ marginBottom: "24px" }}>
@@ -242,18 +255,20 @@ function RoofPitchCalc({ onSendToSquares }) {
       {/* Buttons */}
       <div style={{ display: "flex", gap: "10px", marginBottom: "24px" }}>
         <button onClick={compute} style={{
-          background: C.accent, color: "#000", border: "none", borderRadius: "8px",
-          padding: "12px 28px", fontSize: "14px", fontFamily: font, fontWeight: "700",
+          background: C.accent, color: "#fff", border: "none", borderRadius: "8px",
+          padding: "14px 0", fontSize: "14px", fontFamily: fontDisplay, fontWeight: "700",
+          letterSpacing: "1px", textTransform: "uppercase",
           cursor: "pointer", transition: "background 0.15s, transform 0.1s",
+          flex: 1,
         }}
           onMouseEnter={(e) => e.target.style.background = C.accentDark}
           onMouseLeave={(e) => e.target.style.background = C.accent}
           onMouseDown={(e) => e.target.style.transform = "scale(0.97)"}
           onMouseUp={(e) => e.target.style.transform = "scale(1)"}
-        >Calculate</button>
+        >CALCULATE</button>
         <button onClick={() => { setInputs({}); setResult(null); setError(""); setMaterialIdx(null); }} style={{
           background: "transparent", border: "1.5px solid " + C.border, borderRadius: "8px",
-          color: C.textMid, padding: "12px 20px", fontSize: "14px", fontFamily: font, cursor: "pointer",
+          color: C.textMid, padding: "14px 24px", fontSize: "14px", fontFamily: font, cursor: "pointer",
         }}
           onMouseEnter={(e) => { e.target.style.borderColor = C.borderLight; e.target.style.color = C.text; }}
           onMouseLeave={(e) => { e.target.style.borderColor = C.border; e.target.style.color = C.textMid; }}
@@ -703,6 +718,13 @@ export default function ConstructionCalculator() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
   const [showRef, setShowRef] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 700);
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth <= 700);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
 
   const category = CATEGORIES.find((c) => c.id === activeCat);
   const calc = category?.calcs.find((c) => c.id === activeCalc);
@@ -779,9 +801,23 @@ export default function ConstructionCalculator() {
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #d9d4c7; border-radius: 4px; }
         button:focus-visible { outline: 2px solid #e8820c; outline-offset: 2px; }
+        @media (max-width: 600px) {
+          .sidebar-nav { display: none !important; }
+          .sidebar-nav.mobile-open { display: flex !important; position: fixed; left: 0; top: 60px; bottom: 0; z-index: 200; width: 240px !important; box-shadow: 4px 0 24px rgba(0,0,0,0.4); }
+          .mobile-overlay { display: block !important; }
+          .main-content { width: 100% !important; }
+        }
         .calc-input:focus { border-color: #e8820c !important; box-shadow: 0 0 0 3px rgba(232,130,12,0.12) !important; }
         .nav-btn:hover { background: rgba(255,255,255,0.06) !important; }
         .cat-btn:hover { background: rgba(255,255,255,0.08) !important; }
+        @media (max-width: 600px) {
+          .mobile-hamburger { display: flex !important; align-items: center; justify-content: center; }
+          .mobile-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 190; top: 60px; }
+        }
+        @media (min-width: 601px) {
+          .mobile-hamburger { display: none !important; }
+          .mobile-overlay { display: none !important; }
+        }
       `}</style>
 
       {/* Header */}
@@ -817,12 +853,51 @@ export default function ConstructionCalculator() {
         }}>
           {showRef ? "✕ Close" : "📋 Quick Ref"}
         </button>
+
+        {/* Mobile hamburger */}
+        <button
+          onClick={() => setMobileNavOpen(!mobileNavOpen)}
+          style={{ display: "none" }}
+          className="mobile-hamburger"
+          aria-label="Toggle navigation"
+          style={{
+            display: isMobile ? "flex" : "none",
+            alignItems: "center", justifyContent: "center",
+            background: "transparent", border: "1.5px solid rgba(255,255,255,0.2)",
+            color: C.navText, padding: "7px 12px", borderRadius: "6px",
+            cursor: "pointer", fontSize: "18px", lineHeight: 1, marginLeft: "8px",
+          }}
+        >☰</button>
       </header>
 
       <div style={{ display: "flex", height: "calc(100vh - 60px)" }}>
 
         {/* Sidebar — dark nav */}
-        <nav style={{ width: "200px", flexShrink: 0, background: C.navBg, overflowY: "auto", paddingTop: "16px", borderRight: "none" }}>
+        <>
+        {/* Mobile overlay */}
+        {mobileNavOpen && (
+          <div
+            className="mobile-overlay"
+            onClick={() => setMobileNavOpen(false)}
+            style={{ display: "block", position: "fixed", inset: 0, top: "60px", background: "rgba(0,0,0,0.5)", zIndex: 190 }}
+          />
+        )}
+        <nav className={"sidebar-nav" + (mobileNavOpen ? " mobile-open" : "")} style={{
+          width: isMobile ? "240px" : "200px",
+          flexShrink: 0,
+          background: C.navBg,
+          overflowY: "auto",
+          paddingTop: "16px",
+          borderRight: "none",
+          display: (!isMobile || mobileNavOpen) ? "flex" : "none",
+          flexDirection: "column",
+          position: isMobile ? "fixed" : "relative",
+          left: isMobile ? 0 : "auto",
+          top: isMobile ? "60px" : "auto",
+          bottom: isMobile ? 0 : "auto",
+          zIndex: isMobile ? 200 : "auto",
+          boxShadow: isMobile && mobileNavOpen ? "4px 0 24px rgba(0,0,0,0.4)" : "none",
+        }}>
           <div style={{ padding: "0 16px 10px", fontSize: "10px", color: "rgba(196,191,180,0.5)", letterSpacing: "2px", textTransform: "uppercase", fontWeight: "600" }}>Categories</div>
           {CATEGORIES.map((cat) => {
             const active = cat.id === activeCat;
@@ -859,7 +934,7 @@ export default function ConstructionCalculator() {
                     cursor: "pointer", fontSize: "12.5px", fontFamily: font,
                     fontWeight: active ? "600" : "400", transition: "all 0.1s",
                   }}>
-                    {c.id === "pitch" && <span style={{ fontSize: "9px", background: C.accent, color: "#fff", padding: "1px 5px", borderRadius: "3px", fontWeight: "700", flexShrink: 0, letterSpacing: "0.5px" }}>NEW</span>}
+                    
                     {c.label}
                   </button>
                 );
@@ -867,9 +942,10 @@ export default function ConstructionCalculator() {
             </div>
           )}
         </nav>
+        </>
 
         {/* Main */}
-        <main style={{ flex: 1, overflowY: "auto", background: C.bg, padding: "32px 36px" }}>
+        <main className="main-content" style={{ flex: 1, overflowY: "auto", background: C.bg, padding: isMobile ? "20px 16px" : "32px 36px", width: isMobile ? "100%" : "auto" }}>
 
           {/* Special: Roof Pitch Calc */}
           {calc?.isSpecial && calc.id === "pitch" && (
