@@ -1,0 +1,82 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+
+    // ── 1. Debug in Chrome (most common) ──────────────────────────────────
+    // Start your app first with: npm run dev
+    // Then press F5 or click Run → Start Debugging
+    // Breakpoints you set in VS Code will hit live in the browser
+    {
+      "name": "Debug in Chrome",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/src",
+      "sourceMapPathOverrides": {
+        "/@fs/*": "${workspaceFolder}/*",
+        "/src/*": "${workspaceFolder}/src/*"
+      },
+      "skipFiles": [
+        "<node_internals>/**",
+        "${workspaceFolder}/node_modules/**"
+      ]
+    },
+
+    // ── 2. Attach to existing Chrome tab ─────────────────────────────────
+    // Useful if Chrome is already open with your app running.
+    // First launch Chrome with remote debugging:
+    //   Mac:  /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222
+    //   Win:  chrome.exe --remote-debugging-port=9222
+    {
+      "name": "Attach to Chrome",
+      "type": "chrome",
+      "request": "attach",
+      "port": 9222,
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/src",
+      "sourceMapPathOverrides": {
+        "/@fs/*": "${workspaceFolder}/*",
+        "/src/*": "${workspaceFolder}/src/*"
+      }
+    },
+
+    // ── 3. Debug in Edge ──────────────────────────────────────────────────
+    // Same as Chrome config but uses Edge — handy on Windows
+    {
+      "name": "Debug in Edge",
+      "type": "msedge",
+      "request": "launch",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/src",
+      "sourceMapPathOverrides": {
+        "/@fs/*": "${workspaceFolder}/*",
+        "/src/*": "${workspaceFolder}/src/*"
+      },
+      "skipFiles": [
+        "<node_internals>/**",
+        "${workspaceFolder}/node_modules/**"
+      ]
+    },
+
+    // ── 4. Debug Node scripts (e.g. sitemap generator) ────────────────────
+    // Select this config to step through generateSitemap.js or any Node script
+    {
+      "name": "Debug Node Script",
+      "type": "node",
+      "request": "launch",
+      "program": "${file}",
+      "runtimeArgs": ["--experimental-vm-modules"],
+      "skipFiles": ["<node_internals>/**"]
+    }
+
+  ],
+
+  // ── Compound: launch dev server + open debugger together ─────────────────
+  // This requires the "Vite" VS Code extension (optional but handy)
+  "compounds": [
+    {
+      "name": "Full Stack Debug",
+      "configurations": ["Debug in Chrome"]
+    }
+  ]
+}
