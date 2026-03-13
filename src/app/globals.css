@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, "Fira Code", monospace;
+  --font-display: "Barlow Condensed", "Arial Narrow", ui-sans-serif, sans-serif;
+
+  --color-orange-brand: #e8820c;
+  --color-orange-dark: #b5620a;
+  --color-orange-deep: #8c4a07;
+  --color-orange-soft: #fef3e2;
+
+  --color-ink: #1a1a1a;
+  --color-ink-mid: #4a4640;
+  --color-ink-dim: #6b6560;
+
+  --color-surface: #ffffff;
+  --color-surface-alt: #f9f7f3;
+  --color-bg: #f4f1eb;
+  --color-border: #9a9389;
+
+  --color-nav-bg: #1a1a1a;
+  --color-nav-text: #c4bfb4;
+  --color-nav-active: #e8820c;
+}
+
+@layer base {
+  * { box-sizing: border-box; }
+  
+  body {
+    @apply antialiased bg-[--color-bg] text-[--color-ink] font-sans;
+  }
+
+  /* Focus visible - accessibility */
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 3px solid var(--color-orange-brand);
+    outline-offset: 2px;
+  }
+
+  /* Skip to main */
+  .skip-link {
+    position: absolute;
+    top: -100%;
+    left: 1rem;
+    padding: 0.5rem 1rem;
+    background: var(--color-orange-brand);
+    color: white;
+    font-weight: 700;
+    border-radius: 0 0 6px 6px;
+    z-index: 9999;
+    transition: top 0.1s;
+  }
+  .skip-link:focus { top: 0; }
+}
+
+@layer utilities {
+  .font-display { font-family: var(--font-display); }
+  
+  /* Animate in */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-up { animation: fadeUp 0.2s ease forwards; }
+
+  @keyframes splashUp {
+    from { opacity: 0; transform: translate(-50%, -46%); }
+    to   { opacity: 1; transform: translate(-50%, -50%); }
+  }
+}
