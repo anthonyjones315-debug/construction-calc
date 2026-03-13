@@ -14,8 +14,7 @@
  * write a blog post about spray foam costs and link it everywhere.
  */
 
-// Replace with your real GA4 Measurement ID
-export const GA_MEASUREMENT_ID = 'G-XXXXXXXXXX'
+export const GA_MEASUREMENT_ID = 'G-X2G03GC8GL'
 
 /**
  * Track a calculator being used

@@ -41,31 +41,31 @@ const CALC_SEO = {
     keywords: 'wall stud calculator, how many studs, stud spacing calculator, framing calculator',
   },
   rafters: {
-    title: 'Rafter Length Calculator — Roof Pitch & Span | Build Calc Pro',
+    title: 'Rafter Length Calculator — Span & Pitch | Build Calc Pro',
     description: 'Calculate rafter length from building span and roof pitch. Returns rafter length, ridge height, and roof angle.',
     keywords: 'rafter length calculator, roof rafter calculator, rafter span calculator, framing rafter',
   },
 
   // ── Area ──────────────────────────────────────────────────────────────
   room: {
-    title: 'Room Area Calculator — Floor, Wall & Paint | Build Calc Pro',
+    title: 'Room Area Calculator — Floor & Wall Sq Ft | Build Calc Pro',
     description: 'Calculate floor area, wall area, volume, paint gallons, and flooring square footage for any room. Free construction estimating tool.',
     keywords: 'room area calculator, wall area calculator, how much paint for a room, flooring calculator',
   },
   triangle: {
-    title: 'Triangle Area Calculator — Gables & Hip Roofs | Build Calc Pro',
+    title: 'Triangle Area Calculator — Gables & Hips | Build Calc Pro',
     description: 'Calculate the area of a triangular surface for gable ends, hip roof sections, and odd-shaped areas.',
     keywords: 'triangle area calculator, gable area calculator, hip roof calculator',
   },
 
   // ── Materials ─────────────────────────────────────────────────────────
   brick: {
-    title: 'Brick Calculator — How Many Bricks Do I Need? | Build Calc Pro',
+    title: 'Brick Calculator — Count & Mortar | Build Calc Pro',
     description: 'Calculate how many bricks you need for a wall. Enter wall dimensions and brick size. Includes mortar joint and waste factor.',
     keywords: 'brick calculator, how many bricks, masonry calculator, brick estimator',
   },
   drywall: {
-    title: 'Drywall Calculator — Sheets & Square Footage | Build Calc Pro',
+    title: 'Drywall Calculator — Sheet Count | Build Calc Pro',
     description: 'Calculate how many 4×8 or 4×12 drywall sheets you need. Enter total wall area and sheet size. Includes 12% waste.',
     keywords: 'drywall calculator, how many sheets of drywall, sheetrock calculator, drywall estimator',
   },
@@ -79,27 +79,27 @@ const CALC_SEO = {
 
   // ── Insulation ────────────────────────────────────────────────────────
   sprayfoam: {
-    title: 'Spray Foam Insulation Calculator — Board Feet & R-Value | Build Calc Pro',
+    title: 'Spray Foam Calculator — Board Feet | Build Calc Pro',
     description: 'Calculate board feet of spray foam needed, R-value achieved, kit count, and installed cost for open-cell and closed-cell foam.',
     keywords: 'spray foam calculator, board feet spray foam, spray foam insulation calculator, closed cell open cell foam',
     faqKey: 'sprayFoam',
   },
   cellulose: {
-    title: 'Cellulose Insulation Calculator — Bags & R-Value | Build Calc Pro',
+    title: 'Cellulose Insulation Calculator — Bag Count | Build Calc Pro',
     description: 'Calculate how many 30 lb bags of blown-in cellulose insulation you need for attics or dense-pack walls. Enter area and target R-value.',
     keywords: 'cellulose insulation calculator, blown in insulation calculator, how many bags of insulation, dense pack cellulose',
   },
 
   // ── Roofing ───────────────────────────────────────────────────────────
   pitch: {
-    title: 'Roof Pitch Calculator — Angle, Rise/Run & Materials | Build Calc Pro',
+    title: 'Roof Pitch Calculator — Angle & Materials | Build Calc Pro',
     description: 'Calculate roof pitch from rise/run, span, or angle. Get compatible roofing materials, pitch factor, and direct link to shingle estimator. Free tool.',
     keywords: 'roof pitch calculator, roof slope calculator, how to calculate roof pitch, roofing pitch angle, rise over run roof',
     faqKey: 'roofPitch',
     howToKey: 'roofPitch',
   },
   squares: {
-    title: 'Roofing Squares Calculator — Shingles & Bundles | Build Calc Pro',
+    title: 'Roofing Squares Calculator — Shingles | Build Calc Pro',
     description: 'Calculate roofing squares, total roof area, and bundle count for any pitched roof. Includes pitch factor and 15% waste.',
     keywords: 'roofing squares calculator, how many shingles do I need, roofing material calculator, bundle calculator roofing',
     faqKey: 'roofingSquares',
@@ -140,13 +140,12 @@ export function useSEO(categoryLabel, calcId) {
   useEffect(() => {
     const seo = CALC_SEO[calcId] ?? DEFAULT_SEO
 
-    // Title + canonical
+    // Title + canonical (use actual path)
     document.title = seo.title
-    setCanonical('/')
+    setCanonical(window.location.pathname || '/')
 
     // Standard meta
     setMeta('description', seo.description)
-    setMeta('keywords', seo.keywords ?? '')
     setMeta('robots', 'index, follow')
 
     // Open Graph (Facebook, LinkedIn shares)
@@ -154,11 +153,15 @@ export function useSEO(categoryLabel, calcId) {
     setOG('og:description', seo.description)
     setOG('og:type', 'website')
     setOG('og:site_name', SITE_NAME)
+    setOG('og:image', SITE_URL + '/og-image.png')
+    setOG('og:image:width', '1200')
+    setOG('og:image:height', '630')
 
     // Twitter Card
-    setMeta('twitter:card', 'summary')
+    setMeta('twitter:card', 'summary_large_image')
     setMeta('twitter:title', seo.title)
     setMeta('twitter:description', seo.description)
+    setMeta('twitter:image', SITE_URL + '/og-image.png')
 
     // Inject structured data
     injectSchema('webapp', webAppSchema)
