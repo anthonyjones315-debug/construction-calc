@@ -129,6 +129,22 @@ export function getSEOMetadata(page: string): Metadata {
 
 // ─── Structured Data / JSON-LD ────────────────────────────────────────────────
 
+export function getWebSiteSchema() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Build Calc Pro",
+    url: "https://proconstructioncalc.com",
+    description:
+      "Free construction calculators for concrete, framing, roofing, insulation, flooring, electrical and more.",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: "https://proconstructioncalc.com/calculators?c={search_term_string}",
+      "query-input": "required name=search_term_string",
+    },
+  };
+}
+
 export function getWebAppSchema() {
   return {
     "@context": "https://schema.org",
