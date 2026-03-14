@@ -33,7 +33,7 @@ export default function HomePage() {
                 <span className="text-[--color-orange-brand]">Built for the Field</span>
               </h1>
               <p className="text-lg text-white/70 max-w-2xl mx-auto mb-8 leading-relaxed">
-                Free, accurate estimates for concrete, framing, roofing, insulation, electrical and more.
+                Free planning calculators for concrete, framing, roofing, insulation, electrical and more.
                 No sign-up required.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -176,9 +176,9 @@ export default function HomePage() {
           <section className="bg-[--color-nav-bg] py-14 px-4 text-center">
             <div className="max-w-xl mx-auto">
               <h2 className="text-2xl font-display font-bold text-white mb-3">Ready to build smarter?</h2>
-              <p className="text-white/60 mb-6 text-sm">Free forever. Sign in only to save estimates.</p>
+              <p className="text-white/60 mb-6 text-sm">Free to use. Sign in only to save estimates.</p>
               <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
-                {['No credit card', 'No ads', 'Free PDF export'].map(f => (
+                {['No credit card', 'Cookie controls', 'Free PDF export'].map(f => (
                   <span key={f} className="flex items-center gap-1.5 text-xs text-white/70 bg-white/10 px-3 py-1.5 rounded-full">
                     <Check className="w-3 h-3 text-[--color-orange-brand]" aria-hidden />
                     {f}

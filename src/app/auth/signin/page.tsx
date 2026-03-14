@@ -134,8 +134,18 @@ function SignInForm() {
             </div>
           </div>
 
-          <p className="text-center text-neutral-300 text-xs">
-            More sign-in options coming soon
+          <div className="rounded-lg border border-neutral-700 bg-neutral-950/70 p-3 text-xs leading-relaxed text-neutral-300">
+            Google sign-in shares your name, email address, and profile photo
+            with us. We use that information to create and secure your account,
+            save estimates you choose to keep, and send service-related messages
+            about your account. We do not add your Google email to marketing
+            lists unless you opt in separately.
+          </div>
+
+          <p className="text-[11px] text-neutral-400">
+            Necessary authentication cookies are used to keep you signed in.
+            Optional analytics and advertising cookies are controlled through
+            the site cookie banner.
           </p>
         </section>
 
@@ -146,7 +156,7 @@ function SignInForm() {
           </Link>
         </p>
 
-        <p className="text-center mt-4 text-neutral-300 text-xs">
+        <p className="text-center mt-4 text-neutral-300 text-xs leading-relaxed">
           By signing in you agree to our{" "}
           <Link
             href="/terms"
@@ -161,6 +171,7 @@ function SignInForm() {
           >
             Privacy Policy
           </Link>
+          . Marketing emails require separate opt-in.
         </p>
       </div>
     </main>

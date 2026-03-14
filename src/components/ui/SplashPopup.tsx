@@ -1,15 +1,18 @@
 'use client'
+import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { X, FileDown } from 'lucide-react'
 
 const STORAGE_KEY = 'bcp_beta_splash_v3'
 const EMAIL_RE = /^[^\s@]{1,64}@[^\s@]{1,253}\.[^\s@]{2,}$/
+const CONSENT_VERSION = '2026-03-13'
 
 export function SplashPopup() {
   const [show, setShow] = useState(false)
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
   const [error, setError] = useState('')
+  const [marketingConsent, setMarketingConsent] = useState(false)
 
   useEffect(() => {
     try {
@@ -35,12 +38,22 @@ export function SplashPopup() {
       return
     }
 
+    if (!marketingConsent) {
+      setError('Please confirm that you want product update emails before joining the list.')
+      return
+    }
+
     setStatus('loading')
     try {
       const res = await fetch('/api/leads/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: trimmed, source: 'splash_popup' }),
+        body: JSON.stringify({
+          email: trimmed,
+          source: 'splash_popup',
+          marketingConsent: true,
+          consentVersion: CONSENT_VERSION,
+        }),
       })
 
       if (!res.ok) {
@@ -96,7 +109,7 @@ export function SplashPopup() {
           </div>
 
           <p className="text-sm text-[--color-ink-dim] mb-4 leading-relaxed">
-            Export any calculation as a professional PDF — great for bids, clients, and the job site.
+            Join the product updates list for launch notices, feature releases, and PDF workflow updates.
           </p>
 
           <div className="flex flex-wrap gap-2 mb-5">
@@ -134,9 +147,18 @@ export function SplashPopup() {
                 </button>
               </div>
               {error && <p className="text-xs text-red-500 mt-1.5">{error}</p>}
-              <p className="text-[10px] text-[--color-ink-dim] mt-2 text-center">
-                No spam. Unsubscribe any time.
-              </p>
+              <label className="mt-3 flex items-start gap-2 text-[11px] leading-relaxed text-[--color-ink-dim]">
+                <input
+                  type="checkbox"
+                  checked={marketingConsent}
+                  onChange={e => setMarketingConsent(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 shrink-0 accent-[--color-orange-brand]"
+                  aria-label="Consent to product update emails"
+                />
+                <span>
+                  I agree to receive product updates and launch emails at this address. If marketing emails are sent, they will include unsubscribe instructions. See the <Link href="/privacy" className="font-medium text-[--color-orange-brand] hover:underline">Privacy Policy</Link>.
+                </span>
+              </label>
             </form>
           )}
 

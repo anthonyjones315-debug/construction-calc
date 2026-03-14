@@ -44,6 +44,11 @@ create table if not exists users (
   image           text
 );
 
+revoke all on verification_tokens from anon, authenticated;
+revoke all on accounts from anon, authenticated;
+revoke all on sessions from anon, authenticated;
+revoke all on users from anon, authenticated;
+
 alter table accounts add constraint fk_accounts_user
   foreign key ("userId") references users(id) on delete cascade not valid;
 
@@ -69,6 +74,7 @@ create table if not exists saved_estimates (
 );
 
 alter table saved_estimates enable row level security;
+alter table saved_estimates force row level security;
 
 drop policy if exists "Users can view own estimates"   on saved_estimates;
 drop policy if exists "Users can insert own estimates" on saved_estimates;
@@ -80,9 +86,13 @@ create policy "Users can view own estimates"
 create policy "Users can insert own estimates"
   on saved_estimates for insert with check (user_id = auth.uid()::uuid);
 create policy "Users can update own estimates"
-  on saved_estimates for update using (user_id = auth.uid()::uuid);
+  on saved_estimates for update using (user_id = auth.uid()::uuid) with check (user_id = auth.uid()::uuid);
 create policy "Users can delete own estimates"
   on saved_estimates for delete using (user_id = auth.uid()::uuid);
+
+revoke all on saved_estimates from anon;
+revoke all on saved_estimates from authenticated;
+grant select, insert, update, delete on saved_estimates to authenticated;
 
 -- ─── Business Profiles (one per user, for PDF branding) ────────
 create table if not exists business_profiles (
@@ -98,6 +108,7 @@ create table if not exists business_profiles (
 );
 
 alter table business_profiles enable row level security;
+alter table business_profiles force row level security;
 
 drop policy if exists "Users can view their own profile"   on business_profiles;
 drop policy if exists "Users can insert their own profile" on business_profiles;
@@ -108,7 +119,11 @@ create policy "Users can view their own profile"
 create policy "Users can insert their own profile"
   on business_profiles for insert with check (auth.uid()::uuid = user_id);
 create policy "Users can update their own profile"
-  on business_profiles for update using (auth.uid()::uuid = user_id);
+  on business_profiles for update using (auth.uid()::uuid = user_id) with check (auth.uid()::uuid = user_id);
+
+revoke all on business_profiles from anon;
+revoke all on business_profiles from authenticated;
+grant select, insert, update on business_profiles to authenticated;
 
 -- ─── User Materials / Price Book ──────────────────────────────
 create table if not exists user_materials (
@@ -123,10 +138,21 @@ create table if not exists user_materials (
 );
 
 alter table user_materials enable row level security;
+alter table user_materials force row level security;
 
 drop policy if exists "Users can manage own materials" on user_materials;
-create policy "Users can manage own materials"
-  on user_materials for all using (auth.uid()::uuid = user_id);
+create policy "Users can view own materials"
+  on user_materials for select using (auth.uid()::uuid = user_id);
+create policy "Users can insert own materials"
+  on user_materials for insert with check (auth.uid()::uuid = user_id);
+create policy "Users can update own materials"
+  on user_materials for update using (auth.uid()::uuid = user_id) with check (auth.uid()::uuid = user_id);
+create policy "Users can delete own materials"
+  on user_materials for delete using (auth.uid()::uuid = user_id);
+
+revoke all on user_materials from anon;
+revoke all on user_materials from authenticated;
+grant select, insert, update, delete on user_materials to authenticated;
 
 -- ─── Email Signups ─────────────────────────────────────────────
 create table if not exists email_signups (
@@ -136,10 +162,23 @@ create table if not exists email_signups (
   created_at timestamptz not null default now()
 );
 
+alter table email_signups
+  add column if not exists marketing_consent boolean not null default false,
+  add column if not exists consent_text text,
+  add column if not exists consent_version text,
+  add column if not exists consent_recorded_at timestamptz,
+  add column if not exists ip_address text,
+  add column if not exists user_agent text,
+  add column if not exists unsubscribed_at timestamptz;
+
 alter table email_signups enable row level security;
+alter table email_signups force row level security;
 drop policy if exists "Anyone can sign up" on email_signups;
 create policy "Anyone can sign up"
   on email_signups for insert with check (true);
+
+revoke all on email_signups from anon;
+revoke all on email_signups from authenticated;
 
 -- ─── Triggers: auto-update updated_at ─────────────────────────
 create or replace function update_updated_at()

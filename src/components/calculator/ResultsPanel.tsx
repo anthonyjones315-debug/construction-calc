@@ -2,6 +2,7 @@
 import type { CalculationResult } from '@/types'
 import { useStore } from '@/lib/store'
 import { cn } from '@/utils/cn'
+import { EstimateDisclaimer } from '@/components/legal/EstimateDisclaimer'
 
 interface ResultsPanelProps {
   results: CalculationResult[]
@@ -131,6 +132,8 @@ export function ResultsPanel({ results }: ResultsPanelProps) {
           )}
         </div>
       )}
+
+      <EstimateDisclaimer />
     </div>
   )
 }

@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { HardHat } from 'lucide-react'
+import { CookiePreferencesButton } from '@/components/layout/CookiePreferencesButton'
 
 export function Footer() {
   return (
@@ -73,11 +74,12 @@ export function Footer() {
             © {new Date().getFullYear()} Build Calc Pro. All rights reserved.
           </p>
           <p className="text-xs text-white/40">
-            Calculator results are estimates only. Verify quantities with your supplier before ordering.
+            Calculator outputs are for estimating purposes only. Verify quantities, site conditions, and local code before ordering or building.
           </p>
           <div className="flex items-center gap-4 text-xs">
             <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
             <Link href="/terms"   className="hover:text-white transition-colors">Terms</Link>
+            <CookiePreferencesButton />
           </div>
         </div>
       </div>

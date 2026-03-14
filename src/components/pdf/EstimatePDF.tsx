@@ -45,7 +45,7 @@ export function EstimatePDF({ data }: Props) {
           </View>
           <View style={styles.meta}>
             <Text style={styles.metaText}>Generated: {data.generatedAt}</Text>
-            <Text style={styles.metaText}>Professional Estimate</Text>
+            <Text style={styles.metaText}>Planning Estimate</Text>
           </View>
         </View>
 

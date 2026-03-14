@@ -32,7 +32,7 @@ export function AIOptimizer({ results, context }: AIOptimizerProps) {
       setExpanded(true);
       setAiAnalysis(
         activeCalculator,
-        "**You're offline.** AI analysis requires an internet connection. Your calculations above are fully accurate — AI tips will be available when you're back online.",
+        "**You're offline.** AI analysis requires an internet connection. Your calculator results are still available for review, and AI tips will return when you're back online.",
       );
       return;
     }

@@ -1,7 +1,6 @@
 import { auth } from "@/lib/auth/config";
 import { NextResponse } from "next/server";
 
-// Routes that require authentication
 const PROTECTED = ["/saved", "/pricebook", "/settings"];
 const CANONICAL_HOST = "proconstructioncalc.com";
 const LEGACY_HOSTS = new Set(["www.proconstructioncalc.com"]);

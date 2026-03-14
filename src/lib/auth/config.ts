@@ -22,6 +22,10 @@ const authSiteUrl =
 const redirectProxyUrl =
   process.env.AUTH_REDIRECT_PROXY_URL ??
   (authSiteUrl ? new URL("/api/auth", authSiteUrl).toString() : undefined);
+const googleClientId =
+  process.env.GOOGLE_CLIENT_ID ?? process.env.AUTH_GOOGLE_ID ?? "";
+const googleClientSecret =
+  process.env.GOOGLE_CLIENT_SECRET ?? process.env.AUTH_GOOGLE_SECRET ?? "";
 
 function toSameOriginRedirect(url: string, baseUrl: string): string {
   const expectedBaseUrl = authSiteUrl ?? baseUrl;
@@ -51,8 +55,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
   providers: [
     Google({
-      clientId: process.env.AUTH_GOOGLE_ID ?? "",
-      clientSecret: process.env.AUTH_GOOGLE_SECRET ?? "",
+      clientId: googleClientId,
+      clientSecret: googleClientSecret,
+      checks: ["none"],
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code",
+        },
+      },
     }),
   ],
 

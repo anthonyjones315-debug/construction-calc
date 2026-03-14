@@ -33,12 +33,12 @@ export default function AboutPage() {
           <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-8 mb-8 space-y-5 text-[--color-ink-mid] leading-relaxed">
             <p>
               Build Calc Pro started with a simple frustration: every
-              construction calculator online was either buried in ads, required
+              construction calculator online was either cluttered, required
               a sign-up, or gave you results without explaining the math.
             </p>
             <p>
               We built this for contractors, remodelers, and serious DIYers who
-              need fast, reliable estimates — without the fluff. Every
+              need fast planning tools — without the fluff. Every
               calculator here uses real construction formulas: NEC ampacity
               tables, standard material yields, proper waste factors.
             </p>

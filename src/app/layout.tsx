@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { Barlow_Condensed, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { Analytics } from "@/components/layout/Analytics";
+import { CookieConsentBanner } from "@/components/layout/CookieConsentBanner";
+import { OptionalTracking } from "@/components/layout/OptionalTracking";
 import { ServiceWorker } from "@/components/layout/ServiceWorker";
 import { ScrollToTop } from "@/components/layout/ScrollToTop";
 import { Providers } from "./providers";
@@ -79,13 +79,9 @@ export default function RootLayout({
           <ScrollToTop />
           {children}
         </Providers>
+        <CookieConsentBanner />
         <ServiceWorker />
-        <Script
-          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_ID}`}
-          strategy="lazyOnload"
-          crossOrigin="anonymous"
-        />
-        <Analytics />
+        <OptionalTracking />
       </body>
     </html>
   );

@@ -28,7 +28,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "How do I export a PDF estimate?",
-    a: 'Sign in with Google or your email to unlock PDF export. Once signed in, a "Save PDF" button appears at the top of every calculator. Click it to generate a professional estimate PDF you can share with clients or use on the job site.',
+    a: "Use Export PDF for a quick download, or sign in with Google to save estimates to your account before downloading. Every PDF should be treated as a planning estimate and verified before ordering materials or starting work.",
   },
   {
     q: "Can I save estimates for later?",
@@ -67,9 +67,9 @@ export default function FAQPage() {
           </p>
 
           <div className="space-y-4">
-            {FAQ_ITEMS.map((item, i) => (
+            {FAQ_ITEMS.map((item) => (
               <details
-                key={i}
+                key={item.q}
                 className="group bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden"
               >
                 <summary className="flex items-center justify-between px-6 py-4 cursor-pointer list-none font-semibold text-[--color-ink] hover:text-[--color-orange-brand] transition-colors select-none">

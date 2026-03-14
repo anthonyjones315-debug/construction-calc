@@ -42,7 +42,6 @@ export default function BlogPage() {
                 <h2 className="text-xl font-display font-bold text-[--color-ink] mb-2">
                   <Link
                     href={`/blog/${post.slug}`}
-                    scroll={true}
                     className="hover:text-[--color-orange-brand] transition-colors"
                   >
                     {post.title}
@@ -53,7 +52,6 @@ export default function BlogPage() {
                 </p>
                 <Link
                   href={`/blog/${post.slug}`}
-                  scroll={true}
                   className="text-sm font-semibold text-[--color-orange-brand] hover:text-[--color-orange-dark] transition-colors"
                 >
                   Read more →

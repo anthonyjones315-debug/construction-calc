@@ -1,115 +1,72 @@
-# Build Calc Pro — Construction Calculator
+# Build Calc Pro — Launch Operations Guide
 
-Free professional construction estimating tool with Google AdSense monetization.
+Production Next.js app for construction estimating, lead capture, auth, and pricing workflows.
 
----
+## Stack
 
-## 🚀 Deploy to Vercel (15 minutes)
+- Framework: Next.js (App Router)
+- Runtime: Node.js
+- Hosting: Vercel
+- Auth: Auth.js + Google OAuth
+- Data: Supabase
 
-### 1. Install Node.js (if you haven't)
-Download from https://nodejs.org — get the LTS version.
+## Local validation
 
-### 2. Test locally first
-Open a terminal in this folder and run:
-```
+```bash
 npm install
+npm run lint
+npx tsc --noEmit
+npm run build
+```
+
+Run locally:
+
+```bash
 npm run dev
-```
-Visit http://localhost:5173 — you should see the app running with ad placeholders.
-
-### 3. Push to GitHub
-- Go to https://github.com and create a free account
-- Click "New Repository" → name it `construction-calculator` → Create
-- On your computer, open a terminal in this project folder and run:
-```
-git init
-git add .
-git commit -m "initial commit"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/construction-calculator.git
-git push -u origin main
+# http://localhost:3000
 ```
 
-### 4. Deploy on Vercel
-- Go to https://vercel.com and sign in with GitHub
-- Click "Add New Project" → Import your `construction-calculator` repo
-- Framework preset: **Vite** (auto-detected)
-- Click **Deploy** — done in ~60 seconds
-- You'll get a live URL like `construction-calculator.vercel.app`
+## Required environment variables
 
-### 5. Custom domain (optional, ~$12/yr)
-- Buy a domain at https://namecheap.com (e.g. `buildcalcpro.com`)
-- In Vercel → your project → Settings → Domains → Add your domain
-- Follow Vercel's DNS instructions (copy 2 records into Namecheap)
+Copy `.env.local.example` to `.env.local` and set values.
 
----
+Critical:
 
-## 💰 Set Up Google AdSense
+- `AUTH_SECRET`
+- `AUTH_URL` (production: `https://proconstructioncalc.com`)
+- `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` (or `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET`)
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
 
-### 1. Apply for AdSense
-- Go to https://adsense.google.com
-- Sign in with a Google account
-- Enter your live Vercel URL as your website
-- Paste the AdSense verification code snippet into `index.html` (it's already stubbed in)
-- Wait for approval (typically 1–2 weeks)
+Optional by feature:
 
-### 2. After approval — update your Publisher ID
-Open `src/AdBanner.jsx` and replace:
-```
-const PUBLISHER_ID = 'ca-pub-XXXXXXXXXXXXXXXX'
-```
-With your real Publisher ID from AdSense (looks like `ca-pub-1234567890123456`).
+- `ANTHROPIC_API_KEY` (AI optimizer endpoint)
+- `NEXT_PUBLIC_GA_MEASUREMENT_ID`
+- `NEXT_PUBLIC_ADSENSE_ID`
+- `NEXT_PUBLIC_AMAZON_TAG`
 
-### 3. Create ad units in AdSense
-- In AdSense dashboard → Ads → By ad unit → Display ads
-- Create two units: "Top Banner" and "Sidebar"
-- Copy the slot IDs and update in `AdBanner.jsx`:
-```
-const AD_SLOTS = {
-  banner: '1234567890',   // your top banner slot ID
-  sidebar: '0987654321',  // your sidebar slot ID
-}
-```
+## Vercel deploy checklist
 
-### 4. Redeploy
-```
-git add .
-git commit -m "add adsense IDs"
-git push
-```
-Vercel auto-redeploys on every push.
+1. Import repo into Vercel (framework auto-detects Next.js).
+2. Add all required environment variables for Production.
+3. Set project domain to `proconstructioncalc.com`.
+4. Ensure DNS for apex domain is configured.
+5. Confirm redirect behavior from `www.proconstructioncalc.com` to apex.
+6. Deploy and verify build logs are clean of errors.
 
----
+## Launch-day smoke tests
 
-## 📱 Ad Placement Summary
+After deploy, verify:
 
-| Placement | Format | Shows On |
-|-----------|--------|----------|
-| Top of page | Leaderboard (728×90 / responsive) | All screens |
-| Right rail | Rectangle (160×600) | Desktop only (1200px+) |
+- Home page and calculators load.
+- Google sign-in works end-to-end.
+- Protected routes redirect to sign-in when logged out.
+- `/api/prices/update` returns `200`.
+- `/api/leads/signup` accepts valid consented signup.
+- `/api/ai/optimize` returns `503` when `ANTHROPIC_API_KEY` is missing (expected) or valid response when set.
 
----
+## Notes
 
-## 💡 Tips for Maximizing Ad Revenue
-
-- **More calculators = more pages = more traffic.** Add new calc types over time.
-- **Target long-tail keywords** in your page title/description: "free concrete calculator", "roof pitch calculator contractor", etc.
-- **Submit to Google Search Console** (search.google.com/search-console) to get indexed faster.
-- **Share in trade communities** — Facebook contractor groups, Reddit r/Construction, local trade forums.
-
----
-
-## 🗂 Project Structure
-
-```
-construction-calc/
-├── index.html          ← AdSense script tag goes here
-├── package.json
-├── vite.config.js
-├── vercel.json
-└── src/
-    ├── main.jsx        ← React entry point
-    ├── App.jsx         ← Layout + ad placement
-    ├── AdBanner.jsx    ← Reusable ad component (update IDs here)
-    └── Calculator.jsx  ← The full calculator app
-```
+- `npm run lint` uses `next lint` (deprecated warning in Next.js 15, still functional).
+- Runtime telemetry TODOs exist in error boundaries for future Sentry wiring.
