@@ -89,6 +89,7 @@ function toSameOriginRedirect(url: string, baseUrl: string): string {
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  debug: process.env.AUTH_DEBUG === "true",
   secret: process.env.AUTH_SECRET,
   trustHost: true,
   useSecureCookies:
@@ -100,6 +101,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Google({
       clientId: googleClientId,
       clientSecret: googleClientSecret,
+      checks: ["state"],
       authorization: {
         params: {
           prompt: "consent",
@@ -135,5 +137,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   // JWT sessions when no adapter (local dev fallback), DB sessions when Supabase is active
   session: {
     strategy: supabaseReady ? "database" : "jwt",
+  },
+
+  logger: {
+    error(code, ...message) {
+      console.error("[auth][logger][error]", code, ...message);
+    },
+    warn(code, ...message) {
+      console.warn("[auth][logger][warn]", code, ...message);
+    },
   },
 });
