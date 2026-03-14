@@ -27,7 +27,7 @@ revoke all on public.users from anon, authenticated;
 -- ─── Saved Estimates (with CRM fields) ────────────────────────
 create table if not exists saved_estimates (
   id               uuid primary key default uuid_generate_v4(),
-  user_id          uuid not null references users(id) on delete cascade,
+  user_id          uuid not null references public.users(id) on delete cascade,
   name             text not null default 'Untitled Estimate',
   calculator_id    text not null,
   inputs           jsonb not null default '{}',
@@ -45,27 +45,20 @@ create table if not exists saved_estimates (
 alter table saved_estimates enable row level security;
 alter table saved_estimates force row level security;
 
+-- No RLS policies — auth.uid() is always NULL with NextAuth.
+-- All access is via server-side API routes using service_role key.
+-- RLS enabled + no policies = hard deny for any direct client access.
 drop policy if exists "Users can view own estimates"   on saved_estimates;
 drop policy if exists "Users can insert own estimates" on saved_estimates;
 drop policy if exists "Users can update own estimates" on saved_estimates;
 drop policy if exists "Users can delete own estimates" on saved_estimates;
 
-create policy "Users can view own estimates"
-  on saved_estimates for select using (user_id = auth.uid()::uuid);
-create policy "Users can insert own estimates"
-  on saved_estimates for insert with check (user_id = auth.uid()::uuid);
-create policy "Users can update own estimates"
-  on saved_estimates for update using (user_id = auth.uid()::uuid) with check (user_id = auth.uid()::uuid);
-create policy "Users can delete own estimates"
-  on saved_estimates for delete using (user_id = auth.uid()::uuid);
-
 revoke all on saved_estimates from anon;
 revoke all on saved_estimates from authenticated;
-grant select, insert, update, delete on saved_estimates to authenticated;
 
 -- ─── Business Profiles (one per user, for PDF branding) ────────
 create table if not exists business_profiles (
-  user_id          uuid references users(id) primary key,
+  user_id          uuid references public.users(id) primary key,
   business_name    text,
   business_phone   text,
   business_email   text,
@@ -79,25 +72,19 @@ create table if not exists business_profiles (
 alter table business_profiles enable row level security;
 alter table business_profiles force row level security;
 
+-- No RLS policies — auth.uid() is always NULL with NextAuth.
+-- All access is via server-side API routes using service_role key.
 drop policy if exists "Users can view their own profile"   on business_profiles;
 drop policy if exists "Users can insert their own profile" on business_profiles;
 drop policy if exists "Users can update their own profile" on business_profiles;
 
-create policy "Users can view their own profile"
-  on business_profiles for select using (auth.uid()::uuid = user_id);
-create policy "Users can insert their own profile"
-  on business_profiles for insert with check (auth.uid()::uuid = user_id);
-create policy "Users can update their own profile"
-  on business_profiles for update using (auth.uid()::uuid = user_id) with check (auth.uid()::uuid = user_id);
-
 revoke all on business_profiles from anon;
 revoke all on business_profiles from authenticated;
-grant select, insert, update on business_profiles to authenticated;
 
 -- ─── User Materials / Price Book ──────────────────────────────
 create table if not exists user_materials (
   id            uuid primary key default uuid_generate_v4(),
-  user_id       uuid not null references users(id) on delete cascade,
+  user_id       uuid not null references public.users(id) on delete cascade,
   material_name text not null,
   category      text,
   unit_type     text,
@@ -109,19 +96,16 @@ create table if not exists user_materials (
 alter table user_materials enable row level security;
 alter table user_materials force row level security;
 
-drop policy if exists "Users can manage own materials" on user_materials;
-create policy "Users can view own materials"
-  on user_materials for select using (auth.uid()::uuid = user_id);
-create policy "Users can insert own materials"
-  on user_materials for insert with check (auth.uid()::uuid = user_id);
-create policy "Users can update own materials"
-  on user_materials for update using (auth.uid()::uuid = user_id) with check (auth.uid()::uuid = user_id);
-create policy "Users can delete own materials"
-  on user_materials for delete using (auth.uid()::uuid = user_id);
+-- No RLS policies — auth.uid() is always NULL with NextAuth.
+-- All access is via server-side API routes using service_role key.
+drop policy if exists "Users can manage own materials"  on user_materials;
+drop policy if exists "Users can view own materials"    on user_materials;
+drop policy if exists "Users can insert own materials"  on user_materials;
+drop policy if exists "Users can update own materials"  on user_materials;
+drop policy if exists "Users can delete own materials"  on user_materials;
 
 revoke all on user_materials from anon;
 revoke all on user_materials from authenticated;
-grant select, insert, update, delete on user_materials to authenticated;
 
 -- ─── Email Signups ─────────────────────────────────────────────
 create table if not exists email_signups (
@@ -148,6 +132,8 @@ create policy "Anyone can sign up"
 
 revoke all on email_signups from anon;
 revoke all on email_signups from authenticated;
+grant insert on email_signups to anon;
+-- anon can insert (sign up) but cannot read the list
 
 -- ─── Triggers: auto-update updated_at ─────────────────────────
 create or replace function update_updated_at()

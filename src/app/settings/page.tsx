@@ -3,13 +3,11 @@ export const dynamic = 'force-dynamic'
 
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { supabase, type BusinessProfile } from '@/lib/supabase/client'
+import type { BusinessProfile } from '@/lib/supabase/client'
 import { useEffect, useState, useRef } from 'react'
 import { useSession } from 'next-auth/react'
 import { Building2, Phone, Mail, MapPin, Globe, Upload, Save, Loader2, LogIn } from 'lucide-react'
 import Link from 'next/link'
-
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
 
 function SettingsContent() {
   const { data: session, status } = useSession()
@@ -22,16 +20,12 @@ function SettingsContent() {
   const fileRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    if (status === 'loading' || !session?.user?.id) { setLoading(false); return }
-    supabase
-      .from('business_profiles')
-      .select('*')
-      .eq('user_id', session.user.id)
-      .single()
-      .then(({ data }) => {
-        if (data) setProfile(data)
-        setLoading(false)
-      })
+    if (status === 'loading') return
+    if (!session?.user?.id) { setLoading(false); return }
+    fetch('/api/business-profile')
+      .then(r => r.json())
+      .then(({ profile: p }) => { if (p) setProfile(p) })
+      .finally(() => setLoading(false))
   }, [session, status])
 
   async function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -43,18 +37,17 @@ function SettingsContent() {
     setUploading(true)
     setError('')
     try {
-      const ext = file.name.split('.').pop()
-      const path = `${session.user.id}/logo.${ext}`
-      const { error: upErr } = await supabase.storage
-        .from('business_logos')
-        .upload(path, file, { upsert: true, contentType: file.type })
-      if (upErr) throw upErr
-      const logoUrl = `${SUPABASE_URL}/storage/v1/object/public/business_logos/${path}`
-      setProfile(p => ({ ...p, logo_url: logoUrl }))
-    } catch {
-      setError('Logo upload failed — make sure the business_logos bucket exists in Supabase Storage')
+      const form = new FormData()
+      form.append('logo', file)
+      const res = await fetch('/api/business-profile/logo', { method: 'POST', body: form })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error ?? 'Upload failed')
+      setProfile(p => ({ ...p, logo_url: json.url }))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Logo upload failed')
     } finally {
       setUploading(false)
+      if (fileRef.current) fileRef.current.value = ''
     }
   }
 
@@ -64,14 +57,17 @@ function SettingsContent() {
     setSaving(true)
     setError('')
     try {
-      const { error: upsertErr } = await supabase
-        .from('business_profiles')
-        .upsert({ ...profile, user_id: session.user.id }, { onConflict: 'user_id' })
-      if (upsertErr) throw upsertErr
+      const res = await fetch('/api/business-profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(profile),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error ?? 'Save failed')
       setSaved(true)
       setTimeout(() => setSaved(false), 3000)
-    } catch {
-      setError('Save failed — check your Supabase connection')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Save failed')
     } finally {
       setSaving(false)
     }
@@ -166,12 +162,10 @@ function SettingsContent() {
 
 export default function SettingsPage() {
   return (
-
-      <div className="flex flex-col min-h-screen bg-[--color-bg]">
-        <Header />
-        <main id="main-content" className="flex-1"><SettingsContent /></main>
-        <Footer />
-      </div>
-
+    <div className="flex flex-col min-h-screen bg-[--color-bg]">
+      <Header />
+      <main id="main-content" className="flex-1"><SettingsContent /></main>
+      <Footer />
+    </div>
   )
 }

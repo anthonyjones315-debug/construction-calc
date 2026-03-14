@@ -6,8 +6,6 @@ import { Bookmark, FileDown, Trash2, Calculator, LogIn } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase/client'
-
 interface SavedEstimate {
   id: string
   name: string
@@ -28,20 +26,15 @@ function SavedContent() {
     if (status === 'loading') return
     if (!session?.user?.id) { setLoading(false); return }
 
-    supabase
-      .from('saved_estimates')
-      .select('id, name, calculator_id, total_cost, created_at, results')
-      .eq('user_id', session.user.id)
-      .order('created_at', { ascending: false })
-      .then(({ data, error }) => {
-        if (!error && data) setEstimates(data as SavedEstimate[])
-        setLoading(false)
-      })
+    fetch('/api/estimates')
+      .then(r => r.json())
+      .then(({ estimates }) => { if (estimates) setEstimates(estimates) })
+      .finally(() => setLoading(false))
   }, [session, status])
 
   async function deleteEstimate(id: string) {
     setDeleting(id)
-    await supabase.from('saved_estimates').delete().eq('id', id)
+    await fetch(`/api/estimates/${id}`, { method: 'DELETE' })
     setEstimates(prev => prev.filter(e => e.id !== id))
     setDeleting(null)
   }
