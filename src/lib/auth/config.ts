@@ -140,11 +140,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
 
   logger: {
-    error(code, ...message) {
-      console.error("[auth][logger][error]", code, ...message);
+    error(error) {
+      console.error(
+        "[auth][logger][error]",
+        error?.name ?? "unknown",
+        error?.message ?? "",
+        // Log the root cause which contains the actual DB/adapter error
+        (error as { cause?: unknown })?.cause ?? "",
+      );
     },
-    warn(code, ...message) {
-      console.warn("[auth][logger][warn]", code, ...message);
+    warn(code) {
+      console.warn("[auth][logger][warn]", code);
     },
   },
 });
