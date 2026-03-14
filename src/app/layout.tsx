@@ -4,6 +4,7 @@ import { Barlow_Condensed, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@/components/layout/Analytics";
 import { ServiceWorker } from "@/components/layout/ServiceWorker";
+import { ScrollToTop } from "@/components/layout/ScrollToTop";
 import { Providers } from "./providers";
 
 const inter = Inter({
@@ -74,7 +75,10 @@ export default function RootLayout({
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
-        <Providers>{children}</Providers>
+        <Providers>
+          <ScrollToTop />
+          {children}
+        </Providers>
         <ServiceWorker />
         <Script
           src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_ID}`}

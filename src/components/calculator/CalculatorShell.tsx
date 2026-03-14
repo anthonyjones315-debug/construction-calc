@@ -1,4 +1,5 @@
 'use client'
+import { useEffect, useRef } from 'react'
 import { useStore } from '@/lib/store'
 import { CALCULATORS } from '@/data'
 import { ResultsPanel } from './ResultsPanel'
@@ -197,6 +198,19 @@ export function InputGroup({ label, unit, description, children }: { label?: str
 export function CalculatorShell({ children, results, showPDF = true }: CalculatorShellProps) {
   const { activeCalculator } = useStore()
   const calc = CALCULATORS.find(c => c.id === activeCalculator)
+  const resultsRef = useRef<HTMLDivElement>(null)
+  const isFirstRender = useRef(true)
+
+  // On mobile, scroll results into view when they first populate
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
+    if (results.length > 0 && resultsRef.current && window.innerWidth < 1024) {
+      resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }, [results])
 
   if (!calc) return null
 
@@ -231,7 +245,7 @@ export function CalculatorShell({ children, results, showPDF = true }: Calculato
         </div>
 
         {/* Results + AI */}
-        <div className="flex flex-col gap-4">
+        <div ref={resultsRef} className="flex flex-col gap-4">
           <ResultsPanel results={results} />
           <AIOptimizer results={results} />
         </div>

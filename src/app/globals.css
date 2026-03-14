@@ -69,6 +69,7 @@
 
   html {
     color-scheme: light dark;
+    scroll-padding-top: 80px; /* sticky header height */
   }
 
   body {
