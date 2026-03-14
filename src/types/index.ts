@@ -16,6 +16,7 @@ export type CalculatorId =
   | 'wireGauge'
   | 'labor'
   | 'budget'
+  | 'unitConverter'
 
 export type CategoryId =
   | 'concrete'
