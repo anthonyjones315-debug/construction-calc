@@ -19,9 +19,11 @@ const CANONICAL_SITE_URL = "https://proconstructioncalc.com";
 const authSiteUrl =
   process.env.AUTH_URL ??
   (process.env.VERCEL_ENV === "production" ? CANONICAL_SITE_URL : undefined);
+const authRedirectProxyEnv = process.env.AUTH_REDIRECT_PROXY_URL;
 const redirectProxyUrl =
-  process.env.AUTH_REDIRECT_PROXY_URL ??
-  (authSiteUrl ? new URL("/api/auth", authSiteUrl).toString() : undefined);
+  authRedirectProxyEnv && isValidHttpUrl(authRedirectProxyEnv)
+    ? authRedirectProxyEnv
+    : undefined;
 const googleClientId =
   process.env.GOOGLE_CLIENT_ID ?? process.env.AUTH_GOOGLE_ID ?? "";
 const googleClientSecret =
@@ -98,7 +100,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Google({
       clientId: googleClientId,
       clientSecret: googleClientSecret,
-      checks: ["none"],
       authorization: {
         params: {
           prompt: "consent",
