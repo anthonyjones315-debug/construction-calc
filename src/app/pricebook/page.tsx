@@ -3,7 +3,7 @@ export const dynamic = "force-dynamic";
 
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { supabase, type UserMaterial } from "@/lib/supabase/client";
+import type { UserMaterial } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
@@ -65,12 +65,8 @@ function PriceBookContent() {
     if (status !== "authenticated" || !session?.user?.id) return;
 
     let active = true;
-    supabase
-      .from("user_materials")
-      .select("*")
-      .eq("user_id", session.user.id)
-      .order("category")
-      .order("material_name")
+    fetch("/api/materials")
+      .then((r) => r.json())
       .then(({ data }) => {
         if (!active) return;
         setMaterials((data as UserMaterial[]) ?? []);
@@ -83,32 +79,31 @@ function PriceBookContent() {
 
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
-    if (!newRow.material_name.trim() || !session?.user?.id) return;
+    if (!newRow.material_name.trim()) return;
     setSaving(true);
-    const { data, error: err } = await supabase
-      .from("user_materials")
-      .insert({
-        ...newRow,
-        user_id: session.user.id,
-        unit_cost: Number(newRow.unit_cost),
-      })
-      .select()
-      .single();
-    if (!err && data) {
+    const res = await fetch("/api/materials", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...newRow, unit_cost: Number(newRow.unit_cost) }),
+    });
+    const { data, error: err } = await res.json();
+    if (res.ok && data) {
       setMaterials((m) => [...(m ?? []), data as UserMaterial]);
       setNewRow({ ...emptyRow });
       setAdding(false);
-    } else setError(err?.message ?? "Add failed");
+    } else setError(err ?? "Add failed");
     setSaving(false);
   }
 
   async function handleUpdate(id: string) {
     setSaving(true);
-    const { error: err } = await supabase
-      .from("user_materials")
-      .update({ ...editRow, unit_cost: Number(editRow.unit_cost) })
-      .eq("id", id);
-    if (!err) {
+    const res = await fetch(`/api/materials/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...editRow, unit_cost: Number(editRow.unit_cost) }),
+    });
+    const { error: err } = await res.json();
+    if (res.ok) {
       setMaterials((m) =>
         (m ?? []).map((r) =>
           r.id === id
@@ -117,12 +112,12 @@ function PriceBookContent() {
         ),
       );
       setEditId(null);
-    } else setError(err.message);
+    } else setError(err ?? "Update failed");
     setSaving(false);
   }
 
   async function handleDelete(id: string) {
-    await supabase.from("user_materials").delete().eq("id", id);
+    await fetch(`/api/materials/${id}`, { method: "DELETE" });
     setMaterials((m) => (m ?? []).filter((r) => r.id !== id));
   }
 

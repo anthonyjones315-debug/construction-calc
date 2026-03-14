@@ -93,17 +93,21 @@ export function SavePDFButton({ results, calculatorLabel, projectName }: PDFButt
     setLoading(true)
     setError('')
     try {
-      // Save to Supabase
-      if (session?.user?.id) {
-        const { supabase } = await import('@/lib/supabase/client')
-        await supabase.from('saved_estimates').insert({
-          user_id: session.user.id,
+      // Save to Supabase via API route (uses service role key, bypasses RLS)
+      const res = await fetch('/api/estimates/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           name: projectName ?? `${calculatorLabel} Estimate`,
           calculator_id: calculatorLabel.toLowerCase().replace(/\s+/g, '_'),
           inputs: {},
-          results: results as unknown as Record<string, unknown>[],
+          results,
           total_cost: null,
-        })
+        }),
+      })
+      if (!res.ok) {
+        const { error } = await res.json()
+        throw new Error(error ?? 'Save failed')
       }
       // Download PDF
       await generateAndDownload(results, calculatorLabel, projectName)
