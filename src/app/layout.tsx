@@ -1,29 +1,31 @@
-import type { Metadata, Viewport } from "next";
+import type { Metadata } from "next";
 import Script from "next/script";
 import { Barlow_Condensed, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@/components/layout/Analytics";
+import { ServiceWorker } from "@/components/layout/ServiceWorker";
 import { ScrollToTop } from "@/components/layout/ScrollToTop";
+import { Providers } from "./providers";
 
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   display: "swap",
-  variable: "--font-inter",
+  variable: "--font-sans",
 });
 
 const barlowCondensed = Barlow_Condensed({
   subsets: ["latin"],
   weight: ["600", "700", "800"],
   display: "swap",
-  variable: "--font-barlow-condensed",
+  variable: "--font-display",
 });
 
 const jetBrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["400", "700"],
   display: "swap",
-  variable: "--font-jetbrains-mono",
+  variable: "--font-mono",
 });
 
 export const metadata: Metadata = {
@@ -56,12 +58,6 @@ export const metadata: Metadata = {
   },
 };
 
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  viewportFit: "cover",
-};
-
 export default function RootLayout({
   children,
 }: {
@@ -70,18 +66,20 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="manifest" href="/site.webmanifest" />
       </head>
       <body
-        className={`${inter.className} ${inter.variable} ${barlowCondensed.variable} ${jetBrainsMono.variable}`}
+        className={`${inter.variable} ${barlowCondensed.variable} ${jetBrainsMono.variable}`}
       >
-        <ScrollToTop />
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
-        {children}
+        <Providers>
+          <ScrollToTop />
+          {children}
+        </Providers>
+        <ServiceWorker />
         <Script
           src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_ID}`}
           strategy="lazyOnload"
