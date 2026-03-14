@@ -96,6 +96,30 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     authSiteUrl?.startsWith("https://") ??
     process.env.NODE_ENV === "production",
   redirectProxyUrl,
+  cookies: {
+    state: {
+      options: {
+        httpOnly: true,
+        sameSite: "lax" as const,
+        path: "/",
+        secure:
+          authSiteUrl?.startsWith("https://") ??
+          process.env.NODE_ENV === "production",
+        maxAge: 60 * 15, // 15 minutes — enough for an OAuth round-trip
+      },
+    },
+    pkceCodeVerifier: {
+      options: {
+        httpOnly: true,
+        sameSite: "lax" as const,
+        path: "/",
+        secure:
+          authSiteUrl?.startsWith("https://") ??
+          process.env.NODE_ENV === "production",
+        maxAge: 60 * 15,
+      },
+    },
+  },
 
   providers: [
     Google({
