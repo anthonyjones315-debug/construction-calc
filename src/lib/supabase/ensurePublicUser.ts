@@ -9,7 +9,7 @@ import type { Session } from 'next-auth'
 export async function ensurePublicUser(db: SupabaseClient, session: Session) {
   const { user } = session
   if (!user?.id) return
-  await db.from('users').upsert(
+  const { error } = await db.from('users').upsert(
     {
       id: user.id,
       name: user.name ?? null,
@@ -18,4 +18,5 @@ export async function ensurePublicUser(db: SupabaseClient, session: Session) {
     },
     { onConflict: 'id' }
   )
+  if (error) throw new Error(`ensurePublicUser failed [uid:${user.id}]: ${error.message}`)
 }
