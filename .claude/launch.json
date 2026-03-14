@@ -3,6 +3,7 @@
   "configurations": [
     {
       "name": "nextjs",
+      "cwd": "/Users/anthonyjones/Documents/Documents - Anthony's MacBook/GitHub/construction-calc",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
       "port": 3000
