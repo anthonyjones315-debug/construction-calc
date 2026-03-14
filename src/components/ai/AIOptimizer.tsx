@@ -27,6 +27,16 @@ export function AIOptimizer({ results, context }: AIOptimizerProps) {
 
   async function handleOptimize() {
     if (!results.length) return;
+
+    if (!navigator.onLine) {
+      setExpanded(true);
+      setAiAnalysis(
+        activeCalculator,
+        "**You're offline.** AI analysis requires an internet connection. Your calculations above are fully accurate — AI tips will be available when you're back online.",
+      );
+      return;
+    }
+
     setAnalyzingTab(activeCalculator, true);
     setExpanded(true);
 
@@ -51,10 +61,10 @@ export function AIOptimizer({ results, context }: AIOptimizerProps) {
       if (!res.ok) throw new Error("API error");
       const data = (await res.json()) as { content: string };
       setAiAnalysis(activeCalculator, data.content);
-    } catch (err) {
+    } catch {
       setAiAnalysis(
         activeCalculator,
-        "Unable to get AI analysis right now. Please try again.",
+        "Unable to reach AI right now. Check your connection and try again. Your calculations above are unaffected.",
       );
     } finally {
       setAnalyzingTab(activeCalculator, false);

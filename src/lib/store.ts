@@ -74,6 +74,7 @@ interface AppState {
   isAnalyzing: boolean
   analyzingTabs: Record<string, boolean>
   showScrollTop: boolean
+  taxRate: number // persisted %: 0 = no tax
 
   // Calculator inputs
   concrete: ConcreteState
@@ -101,6 +102,7 @@ interface AppActions {
   setAiAnalysis: (id: string, content: string) => void
   clearAiAnalysis: (id: string) => void
   setShowScrollTop: (v: boolean) => void
+  setTaxRate: (rate: number) => void
   addBudgetItem: (item: BudgetItem) => void
   removeBudgetItem: (id: string) => void
   updateBudgetItemPrice: (id: string, price: number) => void
@@ -137,6 +139,7 @@ export const useStore = create<AppState & AppActions>()(
     isAnalyzing: false,
     analyzingTabs: {},
     showScrollTop: false,
+    taxRate: 0,
 
     // Default calculator inputs
     concrete: { type: 'slab', length: 10, width: 10, thickness: 4, bagSize: 80, waste: 10, includeWaste: true },
@@ -163,6 +166,7 @@ export const useStore = create<AppState & AppActions>()(
     setAiAnalysis: (id, content) => set((s) => { s.aiAnalyses[id] = { calculatorId: id as CalculatorId, content, timestamp: Date.now() } }),
     clearAiAnalysis: (id) => set((s) => { delete s.aiAnalyses[id] }),
     setShowScrollTop: (v) => set((s) => { s.showScrollTop = v }),
+    setTaxRate: (rate) => set((s) => { s.taxRate = rate }),
     addBudgetItem: (item) => set((s) => { s.budgetItems.push(item) }),
     removeBudgetItem: (id) => set((s) => { s.budgetItems = s.budgetItems.filter(i => i.id !== id) }),
     updateBudgetItemPrice: (id, price) => set((s) => {
@@ -207,6 +211,7 @@ export const useStore = create<AppState & AppActions>()(
       wireGauge:        state.wireGauge,
       labor:            state.labor,
       budgetItems:      state.budgetItems,
+      taxRate:          state.taxRate,
     }),
   }
   )
