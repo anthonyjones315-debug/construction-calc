@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useRef } from 'react'
+import { useEffect, useId, useRef } from 'react'
 import { useStore } from '@/lib/store'
 import { CALCULATORS } from '@/data'
 import { ResultsPanel } from './ResultsPanel'
@@ -7,6 +7,37 @@ import { AIOptimizer } from '@/components/ai/AIOptimizer'
 import { PDFButton } from '@/components/pdf/PDFButton'
 import type { CalculationResult } from '@/types'
 import { cn } from '@/utils/cn'
+
+const AFFILIATE_ADS: Partial<Record<string, { label: string; cta: string; href: string }>> = {
+  sprayfoam:  { label: 'Spray Foam Insulation Kit', cta: 'Shop on Amazon',  href: 'https://amzn.to/4cGL1qN' },
+  flooring:   { label: 'Flooring & Underlayment',   cta: 'Shop on Amazon',  href: 'https://amzn.to/4br0GZ4' },
+  roofPitch:  { label: 'Roof Pitch Gauge & Tools',  cta: 'Shop on Amazon',  href: 'https://amzn.to/411y17Z' },
+  framing:    { label: 'Framing Nailers & Guns',    cta: 'Shop on Amazon',  href: 'https://amzn.to/3P4YsXS' },
+  paint:      { label: 'Paint Sprayers & Supplies', cta: 'Shop on Amazon',  href: 'https://amzn.to/4lsT3Wo' },
+}
+
+function AffiliateAd({ calcId }: { calcId: string }) {
+  const ad = AFFILIATE_ADS[calcId]
+  if (!ad) return null
+  return (
+    <a
+      href={ad.href}
+      target="_blank"
+      rel="noopener noreferrer sponsored"
+      className="mt-6 flex items-center justify-between gap-4 rounded-2xl border border-gray-200/80 bg-[--color-surface] px-5 py-3.5 shadow-sm hover:border-[--color-orange-brand]/40 hover:shadow-md transition-all group"
+      aria-label={`Sponsored: ${ad.label} — ${ad.cta}`}
+    >
+      <div className="flex items-center gap-3 min-w-0">
+        <span className="text-xl" aria-hidden>🛒</span>
+        <div className="min-w-0">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[--color-ink-dim]">Sponsored</p>
+          <p className="text-sm font-semibold text-[--color-ink] truncate">{ad.label}</p>
+        </div>
+      </div>
+      <span className="shrink-0 text-xs font-bold text-[--color-orange-brand] group-hover:underline whitespace-nowrap">{ad.cta} →</span>
+    </a>
+  )
+}
 
 interface CalculatorShellProps {
   children: React.ReactNode
@@ -28,7 +59,8 @@ interface NumInputProps {
 }
 
 export function NumInput({ label, value, onChange, min = 0, max = 10000, step = 1, unit, id }: NumInputProps) {
-  const inputId = id ?? (label ? label.toLowerCase().replace(/\s+/g, '-') : Math.random().toString(36).slice(2))
+  const autoId = useId()
+  const inputId = id ?? (label ? label.toLowerCase().replace(/\s+/g, '-') : autoId)
   return (
     <div className="flex flex-col gap-1">
       {label && (
@@ -63,7 +95,8 @@ interface SelectInputProps {
 }
 
 export function SelectInput({ label, value, onChange, options, id }: SelectInputProps) {
-  const inputId = id ?? (label ? label.toLowerCase().replace(/\s+/g, '-') : Math.random().toString(36).slice(2))
+  const autoId = useId()
+  const inputId = id ?? (label ? label.toLowerCase().replace(/\s+/g, '-') : autoId)
   return (
     <div className="flex flex-col gap-1">
       {label && <label htmlFor={inputId} className="text-sm font-medium text-[--color-ink-mid]">{label}</label>}
@@ -168,7 +201,8 @@ interface CheckboxProps {
 }
 
 export function Checkbox({ label, checked, onChange, id }: CheckboxProps) {
-  const inputId = id ?? (label ? label.toLowerCase().replace(/\s+/g, '-') : Math.random().toString(36).slice(2))
+  const autoId = useId()
+  const inputId = id ?? (label ? label.toLowerCase().replace(/\s+/g, '-') : autoId)
   return (
     <label htmlFor={inputId} className="flex items-center gap-2 text-sm text-[--color-ink-mid] cursor-pointer select-none">
       <input
@@ -250,6 +284,8 @@ export function CalculatorShell({ children, results, showPDF = true }: Calculato
           <AIOptimizer results={results} />
         </div>
       </div>
+
+      <AffiliateAd calcId={activeCalculator} />
     </div>
   )
 }

@@ -2,6 +2,17 @@ import NextAuth from 'next-auth'
 import Google from 'next-auth/providers/google'
 import { SupabaseAdapter } from '@auth/supabase-adapter'
 
+function isValidHttpUrl(s: string): boolean {
+  try {
+    const u = new URL(s)
+    return u.protocol === 'http:' || u.protocol === 'https:'
+  } catch { return false }
+}
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? ''
+const supabaseReady = isValidHttpUrl(supabaseUrl) && supabaseServiceKey.length > 0
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Google({
@@ -11,12 +22,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
 
   // Wire Supabase as the database adapter — saves users/sessions to your Supabase DB
-  // Only active when env vars are present (safe for local dev without Supabase)
-  adapter: process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY
-    ? SupabaseAdapter({
-        url: process.env.NEXT_PUBLIC_SUPABASE_URL,
-        secret: process.env.SUPABASE_SERVICE_ROLE_KEY,
-      })
+  // Only active when env vars are present AND the URL is a valid HTTP/S URL
+  adapter: supabaseReady
+    ? SupabaseAdapter({ url: supabaseUrl, secret: supabaseServiceKey })
     : undefined,
 
   callbacks: {
@@ -34,6 +42,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
   // JWT sessions when no adapter (local dev fallback), DB sessions when Supabase is active
   session: {
-    strategy: process.env.NEXT_PUBLIC_SUPABASE_URL ? 'database' : 'jwt',
+    strategy: supabaseReady ? 'database' : 'jwt',
   },
 })

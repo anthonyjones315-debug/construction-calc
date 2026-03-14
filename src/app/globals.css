@@ -67,6 +67,8 @@
 @layer base {
   * { box-sizing: border-box; }
 
+  button, a, [role="button"], label[for], select { cursor: pointer; }
+
   html {
     color-scheme: light dark;
     scroll-padding-top: 80px; /* sticky header height */
@@ -148,8 +150,8 @@
   .animate-fade-up { animation: fadeUp 0.2s ease forwards; }
 
   @keyframes splashUp {
-    from { opacity: 0; transform: translate(-50%, -46%); }
-    to   { opacity: 1; transform: translate(-50%, -50%); }
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
   /* ADA-compliant contrast helpers */

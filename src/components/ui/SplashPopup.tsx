@@ -79,7 +79,7 @@ export function SplashPopup() {
           {/* Close */}
           <button
             onClick={dismiss}
-            className="absolute top-3 right-3 flex items-center justify-center w-10 h-10 rounded-lg text-[--color-ink-dim] hover:text-[--color-ink] hover:bg-[--color-surface-alt] transition-colors"
+            className="absolute top-3 right-3 flex items-center justify-center w-10 h-10 rounded-lg text-[--color-ink-dim] hover:text-[--color-ink] hover:bg-[--color-surface-alt] transition-colors cursor-pointer"
             aria-label="Close"
           >
             <X className="w-5 h-5" aria-hidden />
@@ -128,7 +128,7 @@ export function SplashPopup() {
                 <button
                   type="submit"
                   disabled={status === 'loading'}
-                  className="px-4 py-2.5 bg-[--color-orange-brand] hover:bg-[--color-orange-dark] text-white text-sm font-bold rounded-xl transition-colors disabled:opacity-50 whitespace-nowrap"
+                  className="px-4 py-2.5 bg-[--color-orange-brand] hover:bg-[--color-orange-dark] text-white text-sm font-bold rounded-xl transition-colors disabled:opacity-50 whitespace-nowrap cursor-pointer"
                 >
                   {status === 'loading' ? '…' : 'Notify Me'}
                 </button>
@@ -142,7 +142,7 @@ export function SplashPopup() {
 
           <button
             onClick={dismiss}
-            className="w-full mt-3 text-xs text-[--color-ink-dim] hover:text-[--color-ink] transition-colors min-h-[44px] rounded-xl hover:bg-[--color-surface-alt]"
+            className="w-full mt-3 text-xs text-[--color-ink-dim] hover:text-[--color-ink] transition-colors min-h-[44px] rounded-xl hover:bg-[--color-surface-alt] cursor-pointer"
           >
             No thanks, just use the calculators
           </button>
