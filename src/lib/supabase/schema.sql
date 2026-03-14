@@ -49,11 +49,37 @@ revoke all on accounts from anon, authenticated;
 revoke all on sessions from anon, authenticated;
 revoke all on users from anon, authenticated;
 
-alter table accounts add constraint fk_accounts_user
-  foreign key ("userId") references users(id) on delete cascade not valid;
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_constraint c
+    join pg_class t on t.oid = c.conrelid
+    join pg_namespace n on n.oid = t.relnamespace
+    where n.nspname = 'public'
+      and t.relname = 'accounts'
+      and c.conname = 'fk_accounts_user'
+  ) then
+    alter table accounts add constraint fk_accounts_user
+      foreign key ("userId") references users(id) on delete cascade not valid;
+  end if;
+end $$;
 
-alter table sessions add constraint fk_sessions_user
-  foreign key ("userId") references users(id) on delete cascade not valid;
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_constraint c
+    join pg_class t on t.oid = c.conrelid
+    join pg_namespace n on n.oid = t.relnamespace
+    where n.nspname = 'public'
+      and t.relname = 'sessions'
+      and c.conname = 'fk_sessions_user'
+  ) then
+    alter table sessions add constraint fk_sessions_user
+      foreign key ("userId") references users(id) on delete cascade not valid;
+  end if;
+end $$;
 
 -- ─── Saved Estimates (with CRM fields) ────────────────────────
 create table if not exists saved_estimates (

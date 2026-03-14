@@ -27,6 +27,47 @@ const googleClientId =
 const googleClientSecret =
   process.env.GOOGLE_CLIENT_SECRET ?? process.env.AUTH_GOOGLE_SECRET ?? "";
 
+function reportAuthConfigIssues() {
+  const issues: string[] = [];
+
+  if (!process.env.AUTH_SECRET) {
+    issues.push("AUTH_SECRET is missing");
+  }
+
+  if (process.env.VERCEL_ENV === "production" && !authSiteUrl) {
+    issues.push("AUTH_URL is missing in production");
+  }
+
+  if (!googleClientId) {
+    issues.push(
+      "Google client id missing (set GOOGLE_CLIENT_ID or AUTH_GOOGLE_ID)",
+    );
+  }
+
+  if (!googleClientSecret) {
+    issues.push(
+      "Google client secret missing (set GOOGLE_CLIENT_SECRET or AUTH_GOOGLE_SECRET)",
+    );
+  }
+
+  if (!isValidHttpUrl(supabaseUrl)) {
+    issues.push("NEXT_PUBLIC_SUPABASE_URL is missing or invalid");
+  }
+
+  if (!supabaseServiceKey) {
+    issues.push("SUPABASE_SERVICE_ROLE_KEY is missing");
+  }
+
+  if (!issues.length) return;
+
+  console.error("[auth] configuration issues detected:");
+  for (const issue of issues) {
+    console.error(`[auth] - ${issue}`);
+  }
+}
+
+reportAuthConfigIssues();
+
 function toSameOriginRedirect(url: string, baseUrl: string): string {
   const expectedBaseUrl = authSiteUrl ?? baseUrl;
   const expectedOrigin = new URL(expectedBaseUrl).origin;
