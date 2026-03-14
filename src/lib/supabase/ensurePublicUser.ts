@@ -8,6 +8,7 @@ import type { Session } from 'next-auth'
  */
 export async function ensurePublicUser(db: SupabaseClient, session: Session) {
   const { user } = session
+  if (!user?.id) return
   await db.from('users').upsert(
     {
       id: user.id,
