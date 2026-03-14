@@ -6,6 +6,10 @@ const PROTECTED = ["/saved", "/pricebook", "/settings"];
 const CANONICAL_HOST = "proconstructioncalc.com";
 const LEGACY_HOSTS = new Set(["www.proconstructioncalc.com"]);
 
+function getRelativeCallbackUrl(pathname: string, search: string): string {
+  return `${pathname}${search}` || "/";
+}
+
 export default auth((req) => {
   const { pathname, search } = req.nextUrl;
   const host = req.nextUrl.hostname.toLowerCase();
@@ -18,14 +22,19 @@ export default auth((req) => {
   }
 
   if (PROTECTED.some((p) => pathname.startsWith(p)) && !req.auth) {
-    const signIn = new URL("/auth/signin", req.url);
-    signIn.searchParams.set("callbackUrl", req.url);
+    const signIn = req.nextUrl.clone();
+    signIn.pathname = "/auth/signin";
+    signIn.search = "";
+    signIn.searchParams.set(
+      "callbackUrl",
+      getRelativeCallbackUrl(pathname, search),
+    );
     return NextResponse.redirect(signIn);
   }
 });
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|site.webmanifest|sw.js|.*\\..*).*)",
+    "/((?!api/auth|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|site.webmanifest|sw.js|.*\\..*).*)",
   ],
 };
