@@ -1,0 +1,15 @@
+<svg width="1200" height="700" viewBox="0 0 1200 700" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Construction material price book and calculator">
+  <rect width="1200" height="700" fill="#F8FAFC"/>
+  <rect x="120" y="120" width="520" height="460" rx="24" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="4"/>
+  <rect x="170" y="200" width="420" height="28" rx="8" fill="#E5E7EB"/>
+  <rect x="170" y="250" width="300" height="22" rx="8" fill="#D1D5DB"/>
+  <rect x="170" y="295" width="360" height="22" rx="8" fill="#D1D5DB"/>
+  <rect x="170" y="340" width="280" height="22" rx="8" fill="#D1D5DB"/>
+  <rect x="170" y="385" width="330" height="22" rx="8" fill="#D1D5DB"/>
+  <rect x="170" y="455" width="160" height="50" rx="12" fill="#F97316"/>
+  <rect x="700" y="180" width="360" height="110" rx="16" fill="#FFEDD5"/>
+  <rect x="700" y="320" width="360" height="110" rx="16" fill="#E0F2FE"/>
+  <rect x="700" y="460" width="360" height="110" rx="16" fill="#ECFCCB"/>
+  <text x="120" y="80" fill="#111827" font-family="Arial, sans-serif" font-size="52" font-weight="700">Price Book Management</text>
+  <text x="120" y="620" fill="#4B5563" font-family="Arial, sans-serif" font-size="28">Track local material costs and keep estimates accurate.</text>
+</svg>

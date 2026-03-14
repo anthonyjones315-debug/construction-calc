@@ -1,5 +1,6 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import Image from "next/image";
 import type { Metadata } from "next";
 
 const LAST_UPDATED = "March 13, 2026";
@@ -21,6 +22,16 @@ export default function PrivacyPage() {
           <p className="text-sm text-[--color-ink-dim] mb-8">
             Last updated: {LAST_UPDATED}
           </p>
+
+          <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden mb-8">
+            <Image
+              src="/images/data-privacy.svg"
+              alt="Privacy shield and lock representing secure handling of account data"
+              width={1200}
+              height={700}
+              className="w-full h-44 object-cover"
+            />
+          </div>
 
           <div className="space-y-6 text-[--color-ink-mid] text-sm leading-relaxed">
             <section>

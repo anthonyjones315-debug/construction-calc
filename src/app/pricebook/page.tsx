@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/Footer";
 import { supabase, type UserMaterial } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
 import {
   Plus,
   Trash2,
@@ -182,6 +183,16 @@ function PriceBookContent() {
         >
           <Plus className="w-4 h-4" /> Add Material
         </button>
+      </div>
+
+      <div className="bg-[--color-surface] rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden mb-6">
+        <Image
+          src="/images/pricebook-materials.svg"
+          alt="Price book illustration showing material rows and unit costs"
+          width={1200}
+          height={700}
+          className="w-full h-40 object-cover"
+        />
       </div>
 
       {error && (

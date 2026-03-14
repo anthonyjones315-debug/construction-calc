@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { HardHat, Calculator, Sparkles, FileDown } from "lucide-react";
@@ -30,17 +31,27 @@ export default function AboutPage() {
             </div>
           </div>
 
+          <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden mb-8">
+            <Image
+              src="/images/wall-framing.svg"
+              alt="Framing crew layout used to plan stud counts and materials"
+              width={1200}
+              height={700}
+              className="w-full h-52 object-cover"
+            />
+          </div>
+
           <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-8 mb-8 space-y-5 text-[--color-ink-mid] leading-relaxed">
             <p>
               Build Calc Pro started with a simple frustration: every
-              construction calculator online was either cluttered, required
-              a sign-up, or gave you results without explaining the math.
+              construction calculator online was either cluttered, required a
+              sign-up, or gave you results without explaining the math.
             </p>
             <p>
               We built this for contractors, remodelers, and serious DIYers who
-              need fast planning tools — without the fluff. Every
-              calculator here uses real construction formulas: NEC ampacity
-              tables, standard material yields, proper waste factors.
+              need fast planning tools — without the fluff. Every calculator
+              here uses real construction formulas: NEC ampacity tables,
+              standard material yields, proper waste factors.
             </p>
             <p>
               The app is free. There are no paywalls on the calculators. Sign in

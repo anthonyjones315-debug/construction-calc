@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { JsonLD, getFAQSchema } from "@/seo";
@@ -65,6 +66,16 @@ export default function FAQPage() {
           <p className="text-[--color-ink-dim] mb-10">
             Everything you need to know about Build Calc Pro.
           </p>
+
+          <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden mb-8">
+            <Image
+              src="/images/safety-estimate.svg"
+              alt="Hard hat and checklist representing practical estimating guidance"
+              width={1200}
+              height={700}
+              className="w-full h-44 object-cover"
+            />
+          </div>
 
           <div className="space-y-4">
             {FAQ_ITEMS.map((item) => (

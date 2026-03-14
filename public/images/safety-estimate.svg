@@ -1,0 +1,14 @@
+<svg width="1200" height="700" viewBox="0 0 1200 700" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Hard hat, clipboard, and estimate checklist">
+  <rect width="1200" height="700" fill="#FFF7ED"/>
+  <rect x="650" y="130" width="380" height="460" rx="24" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="4"/>
+  <rect x="700" y="220" width="280" height="24" rx="8" fill="#E5E7EB"/>
+  <rect x="700" y="270" width="230" height="20" rx="8" fill="#D1D5DB"/>
+  <rect x="700" y="315" width="250" height="20" rx="8" fill="#D1D5DB"/>
+  <rect x="700" y="360" width="210" height="20" rx="8" fill="#D1D5DB"/>
+  <path d="M290 490C220 490 170 445 170 390V360C170 260 250 180 350 180C450 180 530 260 530 360V390C530 445 480 490 410 490H290Z" fill="#F97316"/>
+  <rect x="190" y="490" width="320" height="56" rx="18" fill="#EA580C"/>
+  <circle cx="360" cy="350" r="36" fill="#FDBA74"/>
+  <path d="M810 470L850 510L930 430" stroke="#16A34A" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="120" y="100" fill="#111827" font-family="Arial, sans-serif" font-size="52" font-weight="700">Planning &amp; Verification</text>
+  <text x="120" y="150" fill="#4B5563" font-family="Arial, sans-serif" font-size="28">Use calculators as estimates, then verify on site before ordering.</text>
+</svg>
