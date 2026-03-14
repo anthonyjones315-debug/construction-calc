@@ -1,42 +1,20 @@
 -- ============================================================
 -- proconstructioncalc.com — Full Supabase Schema v2
 -- Run ENTIRE file in Supabase SQL Editor
+--
+-- PREREQUISITE: Run nextauth-schema-fix.sql FIRST.
+-- Auth.js adapter tables (users/accounts/sessions/verification_tokens)
+-- live in the "next_auth" schema, not public.
+-- That file also installs a trigger that syncs next_auth.users → public.users
+-- so the foreign keys below continue to work.
 -- ============================================================
 
 create extension if not exists "uuid-ossp";
 
--- ─── Auth.js adapter tables (required — do NOT skip) ─────────
-create table if not exists verification_tokens (
-  identifier text not null,
-  expires    timestamptz not null,
-  token      text not null,
-  primary key (identifier, token)
-);
-
-create table if not exists accounts (
-  id                  uuid not null default uuid_generate_v4(),
-  type                text not null,
-  provider            text not null,
-  "providerAccountId" text not null,
-  refresh_token       text,
-  access_token        text,
-  expires_at          bigint,
-  token_type          text,
-  scope               text,
-  id_token            text,
-  session_state       text,
-  "userId"            uuid,
-  primary key (provider, "providerAccountId")
-);
-
-create table if not exists sessions (
-  id             uuid not null default uuid_generate_v4() primary key,
-  "userId"       uuid not null,
-  expires        timestamptz not null,
-  "sessionToken" text not null unique
-);
-
-create table if not exists users (
+-- ─── public.users — synced from next_auth.users via trigger ──
+-- Exists so saved_estimates / business_profiles / user_materials
+-- can foreign-key to a stable public-schema table.
+create table if not exists public.users (
   id              uuid not null default uuid_generate_v4() primary key,
   name            text,
   email           text unique,
@@ -44,42 +22,7 @@ create table if not exists users (
   image           text
 );
 
-revoke all on verification_tokens from anon, authenticated;
-revoke all on accounts from anon, authenticated;
-revoke all on sessions from anon, authenticated;
-revoke all on users from anon, authenticated;
-
-do $$
-begin
-  if not exists (
-    select 1
-    from pg_constraint c
-    join pg_class t on t.oid = c.conrelid
-    join pg_namespace n on n.oid = t.relnamespace
-    where n.nspname = 'public'
-      and t.relname = 'accounts'
-      and c.conname = 'fk_accounts_user'
-  ) then
-    alter table accounts add constraint fk_accounts_user
-      foreign key ("userId") references users(id) on delete cascade not valid;
-  end if;
-end $$;
-
-do $$
-begin
-  if not exists (
-    select 1
-    from pg_constraint c
-    join pg_class t on t.oid = c.conrelid
-    join pg_namespace n on n.oid = t.relnamespace
-    where n.nspname = 'public'
-      and t.relname = 'sessions'
-      and c.conname = 'fk_sessions_user'
-  ) then
-    alter table sessions add constraint fk_sessions_user
-      foreign key ("userId") references users(id) on delete cascade not valid;
-  end if;
-end $$;
+revoke all on public.users from anon, authenticated;
 
 -- ─── Saved Estimates (with CRM fields) ────────────────────────
 create table if not exists saved_estimates (
