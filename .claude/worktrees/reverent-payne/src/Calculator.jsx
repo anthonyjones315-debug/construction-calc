@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useSEO } from "./seo/useSEO.js";
 import { AffiliateSuggestions, LeadGenCTA } from "./monetization.jsx";
 
@@ -719,6 +719,7 @@ export default function ConstructionCalculator() {
   const [toggles, setToggles] = useState({});
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
+  const resultRef = useRef(null);
   const [showRef, setShowRef] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 700);
@@ -780,6 +781,11 @@ export default function ConstructionCalculator() {
       setError("");
     } catch { setError("Calculation error — check your inputs."); }
   }, [calc, values, toggles]);
+
+  useEffect(() => {
+    if (!result || !resultRef.current) return;
+    resultRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [result]);
 
   const reset = () => { setValues({}); setToggles({}); setResult(null); setError(""); };
 
@@ -888,7 +894,7 @@ export default function ConstructionCalculator() {
         >☰</button>
       </header>
 
-      <div style={{ display: "flex", height: "calc(100vh - 60px)" }}>
+      <div style={{ display: "flex", minHeight: "calc(100vh - 60px)" }}>
 
         {/* Sidebar — dark nav */}
         <>
@@ -963,7 +969,7 @@ export default function ConstructionCalculator() {
         </>
 
         {/* Main */}
-        <main id="main-content" className="main-content" style={{ flex: 1, overflowY: "auto", background: C.bg, padding: isMobile ? "20px 16px" : "32px 36px", width: isMobile ? "100%" : "auto" }}>
+        <main id="main-content" className="main-content" style={{ flex: 1, background: C.bg, padding: isMobile ? "20px 16px" : "32px 36px", width: isMobile ? "100%" : "auto" }}>
 
           {/* Special: Roof Pitch Calc */}
           {calc?.isSpecial && calc.id === "pitch" && (
@@ -1093,7 +1099,7 @@ export default function ConstructionCalculator() {
 
               {/* Results card */}
               {result && (
-                <div style={{ animation: "popIn 0.2s ease" }}>
+                <div ref={resultRef} style={{ animation: "popIn 0.2s ease" }}>
                   {/* Main result */}
                   <div style={{
                     background: C.navBg, borderRadius: "12px",

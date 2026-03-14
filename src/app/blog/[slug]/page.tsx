@@ -31,7 +31,7 @@ function renderInline(text: string): ReactNode[] {
     } else {
       const linkText = token.slice(1, token.indexOf("]"));
       nodes.push(
-        <Link key={`link-${key++}`} href="/">
+        <Link key={`link-${key++}`} href="/" scroll={true}>
           {linkText}
         </Link>,
       );
@@ -78,6 +78,7 @@ export default async function BlogPost({ params }: Props) {
         <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
           <Link
             href="/blog"
+            scroll={true}
             className="inline-flex items-center gap-1.5 text-sm text-[--color-ink-dim] hover:text-[--color-ink] mb-8 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -178,6 +179,7 @@ export default async function BlogPost({ params }: Props) {
             </p>
             <Link
               href="/"
+              scroll={true}
               className="inline-flex items-center gap-1.5 bg-[--color-orange-brand] hover:bg-[--color-orange-dark] text-white text-sm font-bold px-4 py-2 rounded-xl transition-all"
             >
               Open Calculator →

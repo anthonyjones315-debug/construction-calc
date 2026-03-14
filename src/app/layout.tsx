@@ -1,8 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { Barlow_Condensed, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@/components/layout/Analytics";
+import { ScrollToTop } from "@/components/layout/ScrollToTop";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -55,6 +56,12 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -70,6 +77,7 @@ export default function RootLayout({
       <body
         className={`${inter.className} ${inter.variable} ${barlowCondensed.variable} ${jetBrainsMono.variable}`}
       >
+        <ScrollToTop />
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
