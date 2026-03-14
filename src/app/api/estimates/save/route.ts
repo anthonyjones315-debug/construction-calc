@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth/config'
 import { createServerClient } from '@/lib/supabase/server'
+import { ensurePublicUser } from '@/lib/supabase/ensurePublicUser'
 
 export async function POST(req: NextRequest) {
   const session = await auth()
@@ -22,6 +23,7 @@ export async function POST(req: NextRequest) {
   }
 
   const db = createServerClient()
+  await ensurePublicUser(db, session)
   const { data, error } = await db.from('saved_estimates').insert({
     user_id: session.user.id,
     name: (body.name ?? 'Untitled Estimate').slice(0, 200),

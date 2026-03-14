@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth/config'
 import { createServerClient } from '@/lib/supabase/server'
+import { ensurePublicUser } from '@/lib/supabase/ensurePublicUser'
 
 export async function GET() {
   const session = await auth()
   if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const db = createServerClient()
+  await ensurePublicUser(db, session)
   const { data, error } = await db
     .from('user_materials')
     .select('*')
@@ -22,10 +24,9 @@ export async function POST(req: NextRequest) {
   const session = await auth()
   if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  console.log('[materials POST] session.user.id:', session.user.id)
-
   const body = await req.json()
   const db = createServerClient()
+  await ensurePublicUser(db, session)
   const { data, error } = await db
     .from('user_materials')
     .insert({
