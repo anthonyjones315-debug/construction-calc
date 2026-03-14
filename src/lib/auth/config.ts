@@ -1,23 +1,29 @@
-import NextAuth from 'next-auth'
-import Google from 'next-auth/providers/google'
-import { SupabaseAdapter } from '@auth/supabase-adapter'
+import NextAuth from "next-auth";
+import Google from "next-auth/providers/google";
+import { SupabaseAdapter } from "@auth/supabase-adapter";
 
 function isValidHttpUrl(s: string): boolean {
   try {
-    const u = new URL(s)
-    return u.protocol === 'http:' || u.protocol === 'https:'
-  } catch { return false }
+    const u = new URL(s);
+    return u.protocol === "http:" || u.protocol === "https:";
+  } catch {
+    return false;
+  }
 }
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? ''
-const supabaseReady = isValidHttpUrl(supabaseUrl) && supabaseServiceKey.length > 0
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
+const supabaseReady =
+  isValidHttpUrl(supabaseUrl) && supabaseServiceKey.length > 0;
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  secret: process.env.AUTH_SECRET,
+  trustHost: true,
+
   providers: [
     Google({
-      clientId: process.env.AUTH_GOOGLE_ID ?? '',
-      clientSecret: process.env.AUTH_GOOGLE_SECRET ?? '',
+      clientId: process.env.AUTH_GOOGLE_ID ?? "",
+      clientSecret: process.env.AUTH_GOOGLE_SECRET ?? "",
     }),
   ],
 
@@ -30,18 +36,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     session({ session, user }) {
       // Attach user ID to session so components can query saved estimates
-      if (user?.id) session.user.id = user.id
-      return session
+      if (user?.id) session.user.id = user.id;
+      return session;
     },
   },
 
   pages: {
-    signIn: '/auth/signin',
-    error: '/auth/error',
+    signIn: "/auth/signin",
+    error: "/auth/error",
   },
 
   // JWT sessions when no adapter (local dev fallback), DB sessions when Supabase is active
   session: {
-    strategy: supabaseReady ? 'database' : 'jwt',
+    strategy: supabaseReady ? "database" : "jwt",
   },
-})
+});
