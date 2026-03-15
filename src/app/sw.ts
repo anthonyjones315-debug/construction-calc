@@ -10,8 +10,24 @@ declare global {
 
 declare const self: ServiceWorkerGlobalScope;
 
+// --- 1. THE "INDUSTRIAL" FILTER ---
+// Intercept the manifest from Next.js and strip out any static media or fonts
+// that cause the "bad-precaching-response" 404 crashes.
+const rawManifest = self.__SW_MANIFEST || [];
+const cleanManifest = rawManifest.filter((entry) => {
+  const url = typeof entry === "string" ? entry : entry.url;
+
+  // If the URL contains an image/font extension OR is in the static/media folder, KILL IT.
+  const isBadAsset =
+    url.match(/\.(?:woff2?|eot|ttf|otf|png|jpg|jpeg|svg|gif|webp)$/i) ||
+    url.includes("_next/static/media/");
+
+  return !isBadAsset; // Only return true (keep) if it's NOT a bad asset
+});
+
+// --- 2. INITIALIZE SERWIST ---
 const serwist = new Serwist({
-  precacheEntries: self.__SW_MANIFEST,
+  precacheEntries: cleanManifest, // Pass the scrubbed list here
   cacheId: "precache-v3",
   skipWaiting: true,
   clientsClaim: true,
