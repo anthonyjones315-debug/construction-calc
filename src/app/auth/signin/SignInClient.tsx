@@ -4,6 +4,7 @@ import Link from "next/link";
 import { getSession, signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { HardHat } from "lucide-react";
 import { routes } from "@routes";
 
 const callbackHandlerErrorCodes = new Set([
@@ -100,19 +101,17 @@ export default function SignInClient({
   return (
     <main
       id="main-content"
-      className="min-h-screen bg-[#0A0A0B] flex items-center justify-center px-4 py-10 font-sans"
+      className="min-h-screen bg-slate-950 flex items-center justify-center px-4 py-10 font-sans"
     >
       <div className="w-full max-w-sm">
-        {/* Brand header — high-vis P mark */}
+        {/* Brand header — Orange Hard Hat logo (matches main header) */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2.5 mb-3">
-            <div
-              className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#FF8C00] text-white font-display font-black text-lg shadow-[0_4px_20px_rgba(255,140,0,0.4)]"
+            <HardHat
+              className="h-10 w-10 text-orange-600 shrink-0"
               aria-hidden
-            >
-              P
-            </div>
-            <span className="text-white font-display font-black text-xl tracking-wide uppercase">
+            />
+            <span className="text-white font-display font-bold text-xl tracking-tight uppercase">
               Pro Construction Calc
             </span>
           </div>
@@ -135,7 +134,7 @@ export default function SignInClient({
         )}
 
         <section
-          className="rounded-2xl border border-slate-800 bg-[#111318] p-6 space-y-4 shadow-[0_24px_50px_rgba(0,0,0,0.6)]"
+          className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6 space-y-4 shadow-[0_24px_50px_rgba(0,0,0,0.6)]"
           aria-labelledby="oauth-sign-in-heading"
         >
           <h2 id="oauth-sign-in-heading" className="sr-only">
@@ -146,7 +145,7 @@ export default function SignInClient({
             onClick={handleGoogleSignIn}
             disabled={isSigningIn || isCredentialsSigningIn}
             aria-busy={isSigningIn}
-            className="w-full flex items-center justify-center gap-3 rounded-xl border border-slate-700 bg-[#0A0A0B] px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/10 hover:border-[#FF8C00]/40 focus:outline-none focus:ring-2 focus:ring-[#FF8C00]/50 disabled:cursor-wait disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-3 rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-orange-600/50 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:cursor-wait disabled:opacity-50"
           >
             <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
               <path
@@ -191,7 +190,7 @@ export default function SignInClient({
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 required
-                className="w-full rounded-xl border border-slate-700 bg-[#0A0A0B] px-3.5 py-2.5 text-sm text-white placeholder-white/40 outline-none focus:border-[#FF8C00] focus:ring-2 focus:ring-[#FF8C00]/30 transition"
+                className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm text-white placeholder-white/40 outline-none focus:border-orange-600 focus:ring-2 focus:ring-orange-600/30 transition"
               />
             </div>
 
@@ -204,9 +203,9 @@ export default function SignInClient({
                   Password
                 </label>
                 <Link
-                  href={routes.settings}
-                  className="text-xs font-medium text-[#FF8C00] transition-colors hover:text-[#FF8C00]/90 focus:outline-none focus:ring-2 focus:ring-[#FF8C00]/40 rounded"
-                  aria-label="Reset password in Settings after sign-in"
+                  href={routes.auth.forgotPassword}
+                  className="text-xs font-medium text-orange-500 transition-colors hover:text-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500/40 rounded"
+                  aria-label="Send a password reset link to your email"
                 >
                   Forgot password?
                 </Link>
@@ -220,14 +219,14 @@ export default function SignInClient({
                 onChange={(event) => setPassword(event.target.value)}
                 minLength={8}
                 required
-                className="w-full rounded-xl border border-slate-700 bg-[#0A0A0B] px-3.5 py-2.5 text-sm text-white placeholder-white/40 outline-none focus:border-[#FF8C00] focus:ring-2 focus:ring-[#FF8C00]/30 transition"
+                className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm text-white placeholder-white/40 outline-none focus:border-orange-600 focus:ring-2 focus:ring-orange-600/30 transition"
               />
             </div>
 
             <button
               type="submit"
               disabled={isSigningIn || isCredentialsSigningIn}
-              className="w-full rounded-xl bg-[#FF8C00] px-4 py-3 text-sm font-bold text-black uppercase tracking-wide transition hover:bg-[#e67e00] focus:outline-none focus:ring-2 focus:ring-[#FF8C00] focus:ring-offset-2 focus:ring-offset-[#0A0A0B] disabled:cursor-wait disabled:opacity-60"
+              className="w-full rounded-lg bg-orange-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:cursor-wait disabled:opacity-60"
             >
               {isCredentialsSigningIn ? "Signing in…" : "Continue with Email"}
             </button>
@@ -237,13 +236,13 @@ export default function SignInClient({
             Don&apos;t have an account?{" "}
             <Link
               href={routes.register}
-              className="font-semibold text-[#FF8C00] transition-colors hover:text-[#FF8C00]/90 focus:outline-none focus:ring-2 focus:ring-[#FF8C00]/40 rounded"
+              className="font-semibold text-orange-500 transition-colors hover:text-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500/40 rounded"
             >
               Sign Up
             </Link>
           </p>
 
-          <div className="rounded-xl border border-white/10 bg-[#0A0A0B]/80 p-3 text-xs leading-relaxed text-white/55">
+          <div className="rounded-lg border border-slate-800 bg-slate-950/80 p-3 text-xs leading-relaxed text-white/55">
             Social sign-in shares your name and email with us to create and
             secure your account. We do not add your email to marketing lists
             unless you opt in separately.
@@ -256,7 +255,7 @@ export default function SignInClient({
             onClick={() =>
               router.push(session?.user?.id ? routes.commandCenter : routes.home)
             }
-            className="inline-flex w-full items-center justify-center rounded-xl border border-slate-700 bg-[#0A0A0B] px-4 py-2.5 text-sm font-medium text-white/90 transition-colors hover:border-[#FF8C00] hover:bg-white/5 hover:text-[#FF8C00] focus:outline-none focus:ring-2 focus:ring-[#FF8C00]/50 focus:ring-offset-2 focus:ring-offset-[#0A0A0B]"
+            className="inline-flex w-full items-center justify-center rounded-lg border border-slate-800 bg-transparent px-4 py-2.5 text-sm font-medium text-slate-400 transition-colors hover:bg-slate-800/50 hover:text-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2 focus:ring-offset-slate-950"
           >
             Back to Command Center
           </button>
@@ -264,20 +263,20 @@ export default function SignInClient({
             By signing in you agree to our{" "}
             <Link
               href={routes.terms}
-              className="underline underline-offset-2 text-white/60 transition-colors hover:text-[#FF8C00]"
+              className="underline underline-offset-2 text-orange-500 transition-colors hover:text-orange-400"
             >
               Terms
             </Link>{" "}
             and{" "}
             <Link
               href={routes.privacy}
-              className="underline underline-offset-2 text-white/60 transition-colors hover:text-[#FF8C00]"
+              className="underline underline-offset-2 text-orange-500 transition-colors hover:text-orange-400"
             >
               Privacy Policy
             </Link>
             .
           </p>
-          <p className="pt-2 text-[10px] uppercase tracking-widest text-white/40 font-display">
+          <p className="pt-2 text-center text-[10px] font-display uppercase tracking-widest text-slate-500">
             Designed for the Mohawk Valley · Rome, NY
           </p>
         </div>

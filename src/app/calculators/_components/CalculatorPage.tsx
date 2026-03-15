@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import type { Route } from "next";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { LucideIcon } from "lucide-react";
@@ -169,24 +168,21 @@ function clampValue(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
 }
 
-/** Maps calculator category/slug to known SVG assets in /public/images. No image = gradient-only fallback. */
-const HERO_IMAGE_MAP: Record<string, string> = {
-  concrete: "/images/concrete-slab.svg",
-  framing: "/images/wall-framing.svg",
-  roofing: "/images/roof-pitch.svg",
-  mechanical: "/images/spray-foam.svg",
-  insulation: "/images/cellulose-insulation.svg",
-  finish: "/images/wall-framing.svg",
-  interior: "/images/wall-framing.svg",
-  management: "/images/pricebook-materials.svg",
-  business: "/images/pricebook-materials.svg",
+/** Category icon for the input card — consistent visual language across all calculators. */
+const CATEGORY_ICON_MAP: Record<TradePageDefinition["category"], LucideIcon> = {
+  concrete: BrickWall,
+  framing: Hammer,
+  roofing: Triangle,
+  mechanical: Thermometer,
+  insulation: Layers3,
+  finish: Layout,
+  interior: Layout,
+  management: ClipboardList,
+  business: BarChart3,
 };
 
-function getHeroImage(page: TradePageDefinition): string | null {
-  const byCategory = HERO_IMAGE_MAP[page.category];
-  if (byCategory) return byCategory;
-  const byKey = HERO_IMAGE_MAP[page.key];
-  return byKey ?? null;
+function getCategoryIcon(page: TradePageDefinition): LucideIcon {
+  return CATEGORY_ICON_MAP[page.category] ?? HardHat;
 }
 
 /** Shorten long SEO titles for the visual h1; full title remains in metadata. */
@@ -228,6 +224,7 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
   const hapticTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isFirstCalcRender = useRef(true);
   const resultsCardRef = useRef<HTMLElement | null>(null);
+  const [iconPulse, setIconPulse] = useState(false);
 
   const breadcrumbs = useMemo(
     () => buildBreadcrumbs(page.canonicalPath),
@@ -260,19 +257,23 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
   // Debounced haptic — fires 300 ms after inputs settle so the user feels a
   // physical "click" when the live calculation stabilises on a new result.
   // Skipped on the very first render to avoid a buzz on page load.
-  // When haptic fires, scroll the results card into view if it's not fully visible.
+  // When haptic fires, scroll the results card into view and trigger icon pulse (100ms).
   useEffect(() => {
     if (isFirstCalcRender.current) {
       isFirstCalcRender.current = false;
       return;
     }
     if (hapticTimerRef.current) clearTimeout(hapticTimerRef.current);
+    let iconPulseTimeout: ReturnType<typeof setTimeout> | null = null;
     hapticTimerRef.current = setTimeout(() => {
       haptic(10);
       resultsCardRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      setIconPulse(true);
+      iconPulseTimeout = setTimeout(() => setIconPulse(false), 100);
     }, 300);
     return () => {
       if (hapticTimerRef.current) clearTimeout(hapticTimerRef.current);
+      if (iconPulseTimeout) clearTimeout(iconPulseTimeout);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [volumeCubicFeet, adjustedVolume, materialQty]);
@@ -473,19 +474,7 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
 
         <div className="overflow-hidden rounded-3xl border trim-nav-border bg-[--color-nav-bg] shadow-[0_18px_40px_rgba(0,0,0,0.38)]">
           <div
-            className={`grid grid-cols-1 gap-8 px-5 py-7 sm:px-7 sm:py-9 lg:grid-cols-2 lg:items-center ${
-              getHeroImage(page)
-                ? ""
-                : "bg-[radial-gradient(ellipse_at_top_right,rgba(30,35,45,0.95),#0a0a0b_70%),linear-gradient(180deg,#0d0f14_0%,#0A0A0B_100%)]"
-            }`}
-            style={
-              getHeroImage(page)
-                ? {
-                    background:
-                      "radial-gradient(circle_at_top_left,rgba(247,148,29,0.18),transparent_50%),linear-gradient(180deg,#141a26_0%,#101622_100%)",
-                  }
-                : undefined
-            }
+            className="grid grid-cols-1 gap-8 px-5 py-7 sm:px-7 sm:py-9 lg:grid-cols-2 lg:items-center bg-[radial-gradient(ellipse_at_top_right,rgba(30,35,45,0.95),#0a0a0b_70%),linear-gradient(180deg,#0d0f14_0%,#0A0A0B_100%)]"
           >
             <div className="relative z-10 max-w-xl">
               <div className="inline-flex items-center gap-2 rounded-full border border-[--color-orange-brand]/45 bg-[--color-orange-brand]/15 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.15em] text-orange-500">
@@ -542,19 +531,6 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
                 </button>
               </div>
             </div>
-
-            {getHeroImage(page) ? (
-              <div className="relative hidden w-full max-h-48 overflow-hidden rounded-xl border border-white/10 shadow-inner lg:flex lg:items-center lg:justify-center lg:bg-black/20">
-                <Image
-                  src={getHeroImage(page)!}
-                  alt={page.altText}
-                  width={800}
-                  height={450}
-                  priority
-                  className="h-full max-h-48 w-full object-contain"
-                />
-              </div>
-            ) : null}
           </div>
 
           <div className="space-y-4 bg-[--color-nav-bg] p-5 sm:p-7">
@@ -611,6 +587,23 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
               </aside>
 
               <section className="rounded-2xl border border-slate-800 bg-slate-900/50 p-5 transition-colors">
+                <div className="flex justify-center">
+                  <div
+                    className={`rounded-full bg-orange-500/10 p-4 mb-4 ${iconPulse ? "animate-pulse" : ""}`}
+                  >
+                    {(() => {
+                      const IconComponent = getCategoryIcon(page);
+                      return (
+                        <IconComponent
+                          size={48}
+                          strokeWidth={1.5}
+                          className="text-orange-500"
+                          aria-hidden
+                        />
+                      );
+                    })()}
+                  </div>
+                </div>
                 <h2 className="text-sm font-black uppercase tracking-[0.12em] text-white">
                   Inputs
                 </h2>

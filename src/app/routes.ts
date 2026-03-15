@@ -19,6 +19,7 @@ export const routes = {
   auth: {
     error: "/auth/error" as Route,
     signIn: "/auth/signin" as Route,
+    forgotPassword: "/forgot-password" as Route,
   },
   api: {
     aiOptimize: "/api/ai/optimize" as Route,

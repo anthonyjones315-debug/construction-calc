@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { HardHat } from "lucide-react";
 import { routes } from "@routes";
 
 type AuthErrorContentModel = {
@@ -94,22 +95,23 @@ function AuthErrorContent() {
   return (
     <main
       id="main-content"
-      className="flex min-h-screen items-center justify-center bg-[#0A0A0B] px-4 font-sans"
+      className="flex min-h-screen items-center justify-center bg-slate-950 px-4 font-sans"
     >
       <div className="w-full max-w-sm text-center">
-        {/* Logo — high-vis P brand */}
+        {/* Logo — Orange Hard Hat (matches sign-in and header) */}
         <div className="inline-flex items-center gap-2 mb-8">
-          <div className="w-10 h-10 rounded-lg bg-[#FF8C00] flex items-center justify-center shadow-[0_4px_20px_rgba(255,140,0,0.4)]">
-            <span className="text-black font-display font-black text-lg">P</span>
-          </div>
-          <span className="text-white font-display font-black text-xl tracking-wide uppercase">
+          <HardHat
+            className="h-10 w-10 text-orange-600 shrink-0"
+            aria-hidden
+          />
+          <span className="text-white font-display font-bold text-xl tracking-tight uppercase">
             Pro Construction Calc
           </span>
         </div>
 
         {/* Error card */}
         <section
-          className="rounded-2xl border border-red-500/25 bg-[#111318] p-6 shadow-[0_24px_50px_rgba(0,0,0,0.6)]"
+          className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6 shadow-[0_24px_50px_rgba(0,0,0,0.6)]"
           aria-labelledby="auth-error-heading"
           aria-live="polite"
         >
@@ -137,10 +139,10 @@ function AuthErrorContent() {
           </h1>
           <p className="mb-6 text-sm text-white/80">{description}</p>
           {recoverySteps && recoverySteps.length > 0 && (
-            <ul className="mb-6 space-y-2 rounded-lg border border-white/10 bg-[#0A0A0B]/80 p-3 text-left text-xs text-white/80">
+            <ul className="mb-6 space-y-2 rounded-lg border border-slate-800 bg-slate-950/80 p-3 text-left text-xs text-white/80">
               {recoverySteps.map((step) => (
                 <li key={step} className="flex gap-2">
-                  <span className="text-[#FF8C00]">•</span>
+                  <span className="text-orange-600">•</span>
                   <span>{step}</span>
                 </li>
               ))}
@@ -149,13 +151,13 @@ function AuthErrorContent() {
           <div className="space-y-3">
             <Link
               href={routes.auth.signIn}
-              className="block w-full rounded-xl bg-[#FF8C00] px-4 py-2.5 text-sm font-bold text-black uppercase tracking-wide transition hover:bg-[#e67e00] focus:outline-none focus:ring-2 focus:ring-[#FF8C00]/50 focus:ring-offset-2 focus:ring-offset-[#0A0A0B]"
+              className="block w-full rounded-lg bg-orange-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-slate-950"
             >
               {primaryActionLabel}
             </Link>
             <Link
               href="/command-center"
-              className="block w-full rounded-xl border border-white/15 bg-[#0A0A0B] px-4 py-2.5 text-sm font-medium text-white/90 transition hover:bg-white/5 hover:border-[#FF8C00] hover:text-[#FF8C00] focus:outline-none focus:ring-2 focus:ring-[#FF8C00]/50 focus:ring-offset-2 focus:ring-offset-[#0A0A0B]"
+              className="block w-full rounded-lg border border-slate-800 bg-transparent px-4 py-2.5 text-sm font-medium text-slate-400 transition hover:bg-slate-800/50 hover:text-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2 focus:ring-offset-slate-950"
             >
               Back to Command Center
             </Link>
@@ -178,7 +180,7 @@ export default function AuthErrorPage() {
       fallback={
         <main
           id="main-content"
-          className="flex min-h-screen items-center justify-center bg-[#0A0A0B]"
+          className="flex min-h-screen items-center justify-center bg-slate-950"
         >
           <div
             className="flex items-center gap-3 text-white/80"
@@ -186,7 +188,7 @@ export default function AuthErrorPage() {
             aria-live="polite"
           >
             <div
-              className="w-8 h-8 border-2 border-[#FF8C00] border-t-transparent rounded-full animate-spin"
+              className="w-8 h-8 border-2 border-orange-600 border-t-transparent rounded-full animate-spin"
               aria-hidden="true"
             />
             <span>Loading sign-in error…</span>

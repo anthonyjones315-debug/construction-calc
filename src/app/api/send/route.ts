@@ -48,7 +48,7 @@ const sendSchema = z.object({
   message: "Provide either html or estimate.",
 });
 
-// Verified sender: must use @proconstructioncalc.com for deliverability. Optional override via env.
+// Verified sender: must use @proconstructioncalc.com (or your Resend verified domain) or Resend returns 502/504.
 const FROM_EMAIL =
   process.env.RESEND_FROM_EMAIL ?? "Pro Construction Calc <estimates@proconstructioncalc.com>";
 const LEAD_BCC = process.env.RESEND_LEAD_BCC ?? undefined;
@@ -105,33 +105,33 @@ function escapeHtml(s: string): string {
 }
 
 export async function POST(req: NextRequest) {
-  const resend = getResend();
-  if (!resend) {
-    return NextResponse.json(
-      { error: "Email service not configured." },
-      { status: 503 }
-    );
-  }
-
-  let body: unknown;
   try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
-  }
+    const resend = getResend();
+    if (!resend) {
+      return NextResponse.json(
+        { error: "Email service not configured." },
+        { status: 503 }
+      );
+    }
 
-  const parsed = sendSchema.safeParse(body);
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: parsed.error.issues[0]?.message ?? "Invalid payload." },
-      { status: 400 }
-    );
-  }
+    let body: unknown;
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
+    }
 
-  const { to, subject, html: rawHtml, estimate, replyTo } = parsed.data;
-  const html = rawHtml ?? (estimate ? buildEstimateEmailHtml(estimate) : "");
+    const parsed = sendSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.issues[0]?.message ?? "Invalid payload." },
+        { status: 400 }
+      );
+    }
 
-  try {
+    const { to, subject, html: rawHtml, estimate, replyTo } = parsed.data;
+    const html = rawHtml ?? (estimate ? buildEstimateEmailHtml(estimate) : "");
+
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
       to: [to],
@@ -142,8 +142,9 @@ export async function POST(req: NextRequest) {
     });
 
     if (error) {
+      Sentry.captureMessage(`Resend API error: ${error.message}`, "warning");
       return NextResponse.json(
-        { error: error.message ?? "Failed to send email." },
+        { error: error.message ?? "Failed to send email. Ensure the 'from' address uses your Resend verified domain (e.g. @proconstructioncalc.com)." },
         { status: 502 }
       );
     }
@@ -151,6 +152,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, id: data?.id });
   } catch (err) {
     Sentry.captureException(err);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }

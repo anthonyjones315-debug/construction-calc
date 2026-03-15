@@ -135,6 +135,159 @@ Fiber is usually **lower cost per square foot** at high R-values in open attics.
 Use our **R-Value Tracker** to target assembly R-values and the **drywall/insulation** calculators to size materials so your bids reflect real thickness and coverage.
     `,
   },
+  {
+    slug: "all-electric-2026",
+    title: "All-Electric 2026: What Mohawk Valley Contractors Need to Know",
+    description:
+      "New York's push toward all-electric buildings affects Rome, Utica, and Oneida County. Heat pumps, panel sizing, and what to spec in the Mohawk Valley in 2026.",
+    category: "Energy",
+    date: "March 2026",
+    relatedToolLinks: [
+      { href: "/calculators/mechanical/btu-estimator", label: "BTU Estimator" },
+      { href: "/calculators/mechanical", label: "Mechanical Calculators" },
+    ],
+    content: `
+## Why All-Electric Matters in Oneida County
+
+New York State's climate and energy goals are pushing new construction and major renovations toward **all-electric** or electric-ready design. For contractors and builders in **Rome, NY**, **Utica, NY**, and **Oneida County**, that means more heat-pump specs, larger electrical panels, and different sizing rules than the gas-fired norm.
+
+Staying ahead of code and client expectations in the **Mohawk Valley** means understanding what "all-electric 2026" actually requires and how to estimate and bid it.
+
+## Heat Pumps and Load in the Mohawk Valley
+
+Cold-climate heat pumps are the default for new all-electric homes. In **Oneida County** and the broader **Mohawk Valley**, heating loads drive the equipment size more than cooling. Proper sizing avoids overspend and undersized equipment that struggles in deep winter.
+
+- **Manual J (or equivalent)** remains the right way to size. Don't rely on rule-of-thumb "per square foot" for heat pumps.
+- **Design temperature** for the region is typically in the single digits (e.g., 5°F to 10°F). Equipment must be rated for that.
+- **Electrical service:** All-electric homes often need **200 A** panels; larger homes or all-electric with EV charging may need more. Plan for panel and service upgrades in bids.
+
+## What to Spec for 2026
+
+- **Ducted or ductless heat pumps** sized to a proper load calc.
+- **Electric resistance backup** or dual-fuel only where explicitly allowed or grandfathered.
+- **Water heating:** Heat-pump water heaters are the preferred all-electric option; size for occupancy and recovery.
+- **Cooking and drying:** Electric ranges and heat-pump dryers are standard in all-electric specs.
+
+For **Rome** and **Utica** permits, confirm with the local building department whether all-electric or electric-ready is required for your project type and whether any exemptions apply.
+
+## Use the Calculators
+
+Size heating loads and equipment with our **BTU Estimator** so your bids reflect realistic capacities for **Mohawk Valley** winters. Run the numbers before you spec — stay on-site, no external links.
+
+**[Use the BTU Estimator](/calculators/mechanical/btu-estimator)** — Free, instant heating-load guidance for Oneida County and the Mohawk Valley.
+    `,
+  },
+  {
+    slug: "frost-heave",
+    title: "Frost Heave in Oneida County: How Deep to Dig in Rome and Utica",
+    description:
+      "Why frost heave happens, how Oneida County and Mohawk Valley soils react, and footing depth best practices for Rome, NY and Utica, NY.",
+    category: "Concrete & Foundations",
+    date: "March 2026",
+    relatedToolLinks: [
+      { href: "/calculators/concrete/footing", label: "Footing Volume Calculator" },
+      { href: "/calculators/concrete/slab", label: "Slab-on-Grade Calculator" },
+      { href: "/calculators/concrete", label: "Concrete Calculators" },
+    ],
+    content: `
+## What Is Frost Heave?
+
+**Frost heave** occurs when water in the soil freezes and expands, lifting footings, slabs, and pavements. In **Oneida County** and the **Mohawk Valley**, winter freeze-thaw cycles make it a real risk for shallow foundations. The fix is to place footings **below the frost line** so they sit in soil that doesn't freeze in a typical winter.
+
+## Rome, Utica, and Oneida County Depths
+
+Design frost depth in our region is typically **42" to 48"** below grade. Some **Rome** and **Utica** projects specify **48"** minimum; outlying towns and higher elevations in **Oneida County** can push that to **48"–52"**. Never assume a single number — confirm with the local building department or a site-specific soils report.
+
+| Area | Typical design frost depth | Notes |
+|------|----------------------------|--------|
+| Rome, NY | 42"–48" | Often 48" for new construction; confirm with Rome Building Department. |
+| Utica, NY | 42"–48" | Similar; some zones allow 42" with insulation or soils report. |
+| Mohawk Valley towns | 42"–52" | Elevation and open ground can require deeper footings. |
+
+## Soils and Drainage
+
+Silty and clay soils in the **Mohawk Valley** hold water and are more prone to frost heave than well-drained gravel. Good drainage and subgrade prep reduce water under footings; they don't replace the need for adequate depth. For slabs-on-grade, perimeter insulation and a solid base are part of the system.
+
+## Use the Calculators
+
+Set your **footing depth** to your design frost depth (e.g., 48") and use our **Footing Volume Calculator** so your ready-mix order matches the trench. No guesswork — stay on-site.
+
+**[Footing Volume Calculator](/calculators/concrete/footing)** — Size footings for Oneida County frost depth. Rome, Utica, and the Mohawk Valley.
+    `,
+  },
+  {
+    slug: "snow-loads",
+    title: "Snow Loads in the Mohawk Valley: Roof Design for Rome and Utica",
+    description:
+      "Ground and roof snow loads for Oneida County, Rome, NY, and Utica, NY. How to check design loads and size framing in the Mohawk Valley.",
+    category: "Roofing",
+    date: "March 2026",
+    relatedToolLinks: [
+      { href: "/calculators/roofing/shingles", label: "Shingles Calculator" },
+      { href: "/calculators/roofing/pitch-slope", label: "Pitch & Slope Calculator" },
+      { href: "/calculators/roofing", label: "Roofing Calculators" },
+    ],
+    content: `
+## Why Snow Loads Matter in Oneida County
+
+Heavy lake-effect and nor'easter snow is normal in the **Mohawk Valley**. **Rome, NY** and **Utica, NY** see significant accumulation most winters. Roof and rafter design must account for **ground snow load** and **roof snow load** so structures don't fail under weight or drift. Building departments in **Oneida County** will expect design values from ASCE 7 or the current New York State code.
+
+## Typical Design Values (Check Your Jurisdiction)
+
+- **Ground snow load** in the **Mohawk Valley** is often in the **40–50 psf** range; some elevated or exposed sites are higher. Always confirm with the authority having jurisdiction (Rome, Utica, or county).
+- **Roof snow load** depends on pitch, exposure, and whether the roof is warm or cold. Lower slopes and sheltered sites can retain more snow; steeper slopes shed it. Engineers use these to set rafter and truss specs.
+
+Don't guess — get the number from your local building department or a stamped design.
+
+## Rafters, Trusses, and Shingles
+
+Once you have the design load, size rafters and trusses accordingly. Shingle quantity is driven by **area and pitch**, not snow load; use our roofing calculators for squares and bundles. For pitch and slope conversions, the **Pitch & Slope** tool keeps you on the same page as your supplier and crew.
+
+## Use the Calculators
+
+Run **roof area**, **pitch**, and **shingle squares** with our tools so estimates match the job. Stay on-site — no external links.
+
+**[Shingles Calculator](/calculators/roofing/shingles)** — Squares and bundles for Mohawk Valley roofs. Oneida County, Rome, and Utica.
+    `,
+  },
+  {
+    slug: "permit-timelines",
+    title: "Permit Timelines in Oneida County: Rome, Utica, and the Mohawk Valley",
+    description:
+      "How long permits take in Rome, NY, Utica, NY, and Oneida County. What to submit and how to plan your schedule in the Mohawk Valley.",
+    category: "Business & Legal",
+    date: "March 2026",
+    relatedToolLinks: [
+      { href: "/calculators/business/lead-estimator", label: "Lead Estimator" },
+      { href: "/calculators/business/labor-rate", label: "Labor Rate Calculator" },
+      { href: "/calculators/business", label: "Business Calculators" },
+    ],
+    content: `
+## Why Permit Timing Matters in the Mohawk Valley
+
+Delays at the building department can push start dates, tie up labor, and blow project timelines. In **Oneida County**, **Rome**, and **Utica**, permit turnaround varies by project type, season, and workload. Building in buffer time and knowing what each jurisdiction expects keeps bids realistic and clients informed.
+
+## Rome, Utica, and Oneida County: What to Expect
+
+- **City of Rome Building Department** — Residential and small commercial permits often process in **2–6 weeks**; plan for longer for larger or more complex jobs. Incomplete applications add time.
+- **City of Utica** — Similar windows; **2–6 weeks** for straightforward residential work. Commercial and multi-family can take longer.
+- **Oneida County / towns** — Unincorporated areas and towns may use county or town reviewers. Turnaround can range from **2 weeks** to **8+ weeks** depending on scope and staffing.
+
+These are typical ranges, not guarantees. Always confirm current timelines with the office when you bid.
+
+## How to Keep Things Moving
+
+- **Complete applications** — Missing site plans, specs, or fees cause back-and-forth and delay.
+- **Pre-submit questions** — A quick call or email to Rome, Utica, or the county can clarify requirements before you submit.
+- **Schedule around permits** — Don't promise a start date before you have permit in hand. Use your **Labor Rate** and **Lead Estimator** tools to model timelines and crew cost so you're not paying for idle time.
+
+## Use the Calculators
+
+Model job duration and labor cost with our **Lead Estimator** and **Labor Rate Calculator**. Plan for permit lead time so your Mohawk Valley schedules stay realistic.
+
+**[Lead Estimator](/calculators/business/lead-estimator)** — Plan timelines and pipeline for Oneida County, Rome, and Utica jobs.
+    `,
+  },
 ];
 
 export function getFieldNoteBySlug(slug: string): FieldNote | undefined {

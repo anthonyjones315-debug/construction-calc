@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import {
   HardHat,
@@ -7,6 +8,7 @@ import {
   LogOut,
   ChevronDown,
   Bookmark,
+  LayoutDashboard,
   Menu,
   X,
 } from "lucide-react";
@@ -15,11 +17,15 @@ import { primaryNavigation, routes } from "@routes";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 export function Header() {
+  const pathname = usePathname();
   const { data: session, status } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [businessName, setBusinessName] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const isCommandCenterActive =
+    pathname === "/command-center" || pathname === "/dashboard";
 
   const online = useOnlineStatus();
   const displayName = session?.user?.name ?? "User";
@@ -171,9 +177,27 @@ export function Header() {
                     </p>
                   </div>
                   <Link
+                    href={routes.commandCenter}
+                    role="menuitem"
+                    className={`flex items-center gap-2 px-4 py-2 text-sm transition-colors hover:bg-slate-800 hover:text-orange-500 ${
+                      isCommandCenterActive
+                        ? "text-orange-600 font-bold"
+                        : "text-slate-200"
+                    }`}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    <LayoutDashboard
+                      className={`h-4 w-4 shrink-0 ${
+                        isCommandCenterActive ? "text-orange-600" : "text-slate-300"
+                      }`}
+                      aria-hidden
+                    />
+                    Command Center
+                  </Link>
+                  <Link
                     href={routes.saved}
                     role="menuitem"
-                    className="flex items-center gap-2 px-4 py-2 text-sm text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-slate-200 transition-colors hover:bg-slate-800 hover:text-orange-500"
                     onClick={() => setMenuOpen(false)}
                   >
                     <Bookmark className="w-4 h-4 text-slate-300" aria-hidden />
@@ -182,7 +206,7 @@ export function Header() {
                   <Link
                     href={routes.pricebook}
                     role="menuitem"
-                    className="flex items-center gap-2 px-4 py-2 text-sm text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-slate-200 transition-colors hover:bg-slate-800 hover:text-orange-500"
                     onClick={() => setMenuOpen(false)}
                   >
                     <span className="w-4 h-4 text-center text-slate-300" aria-hidden>
@@ -193,7 +217,7 @@ export function Header() {
                   <Link
                     href={routes.settings}
                     role="menuitem"
-                    className="flex items-center gap-2 px-4 py-2 text-sm text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-slate-200 transition-colors hover:bg-slate-800 hover:text-orange-500"
                     onClick={() => setMenuOpen(false)}
                   >
                     <span className="w-4 h-4 text-center text-slate-300" aria-hidden>
@@ -246,15 +270,34 @@ export function Header() {
       {mobileNavOpen && (
         <nav
           id="mobile-navigation"
-          className="flex flex-col gap-1 border-t border-slate-800 bg-slate-950 px-4 py-3 md:hidden"
+          className="flex flex-col gap-1 border-t border-slate-800 bg-slate-900 px-4 py-3 md:hidden"
           aria-label="Mobile navigation"
         >
+          {session && (
+            <Link
+              href={routes.commandCenter}
+              onClick={() => setMobileNavOpen(false)}
+              className={`flex min-h-11 items-center gap-2 rounded-lg px-4 py-2 text-sm transition-colors hover:bg-slate-800 hover:text-orange-500 ${
+                isCommandCenterActive
+                  ? "text-orange-600 font-bold"
+                  : "text-slate-200"
+              }`}
+            >
+              <LayoutDashboard
+                className={`h-4 w-4 shrink-0 ${
+                  isCommandCenterActive ? "text-orange-600" : "text-slate-300"
+                }`}
+                aria-hidden
+              />
+              Command Center
+            </Link>
+          )}
           {primaryNavigation.map(({ href, label }) => (
             <Link
               key={href}
               href={href}
               onClick={() => setMobileNavOpen(false)}
-              className="flex min-h-11 items-center rounded-lg px-4 py-2 text-sm text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+              className="flex min-h-11 items-center rounded-lg px-4 py-2 text-sm text-slate-200 transition-colors hover:bg-slate-800 hover:text-orange-500"
             >
               {label}
             </Link>

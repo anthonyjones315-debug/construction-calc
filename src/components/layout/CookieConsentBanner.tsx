@@ -99,8 +99,8 @@ export function CookieConsentBanner() {
   if (!isHydrated || !isOpen) return null;
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-[70] px-4 pb-4">
-      <div className="pointer-events-auto mx-auto max-w-4xl rounded-2xl border border-slate-800 bg-slate-900/50 p-5 text-white shadow-[0_24px_50px_rgba(0,0,0,0.45)] transition-colors">
+    <div className="pointer-events-none fixed bottom-4 right-4 z-[100] left-auto max-w-md">
+      <div className="pointer-events-auto rounded-2xl border border-slate-800 bg-slate-900/50 p-5 text-white shadow-[0_24px_50px_rgba(0,0,0,0.45)] transition-colors">
         <div className="mb-3 flex justify-end">
           <button
             type="button"

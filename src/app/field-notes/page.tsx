@@ -16,8 +16,6 @@ export const metadata: Metadata = {
 };
 
 export default function FieldNotesHubPage() {
-  const [featured, ...rest] = FIELD_NOTES;
-
   return (
     <div className="page-shell flex min-h-screen flex-col bg-[var(--color-bg)]">
       <Header />
@@ -40,55 +38,22 @@ export default function FieldNotesHubPage() {
             </div>
           </div>
 
-          {/* Editorial grid: featured + 2-col */}
-          <div className="grid gap-8 lg:grid-cols-2">
-            {featured && (
-              <article
-                className="rounded-2xl border border-white/10 bg-[var(--color-surface)] p-6 shadow-[0_10px_30px_rgba(0,0,0,0.12)] transition-shadow hover:shadow-[0_18px_38px_rgba(15,18,27,0.15)] lg:col-span-2"
-                aria-label={`Featured: ${featured.title}`}
-              >
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                  <div className="min-w-0 flex-1">
-                    <div className="mb-3 flex flex-wrap items-center gap-2">
-                      <span className="rounded-full bg-[--color-orange-soft] px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-[--color-orange-brand]">
-                        {featured.category}
-                      </span>
-                      <span className="text-xs text-[--color-ink-dim]">
-                        {featured.date}
-                      </span>
-                    </div>
-                    <h2 className="font-display text-xl font-bold text-[--color-ink] sm:text-2xl">
-                      <Link
-                        href={getFieldNotesRoute(featured.slug)}
-                        className="transition-colors hover:text-[--color-orange-brand]"
-                      >
-                        {featured.title}
-                      </Link>
-                    </h2>
-                    <p className="mt-2 text-sm leading-relaxed text-[--color-ink-dim]">
-                      {featured.description}
-                    </p>
-                    <Link
-                      href={getFieldNotesRoute(featured.slug)}
-                      className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-[--color-orange-brand] transition-colors hover:text-[--color-orange-dark]"
-                    >
-                      <FileText className="h-4 w-4" aria-hidden />
-                      Read article →
-                    </Link>
-                  </div>
-                </div>
-              </article>
-            )}
-
-            {rest.map((note) => (
+          {/* Card grid: all notes in a uniform grid */}
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {FIELD_NOTES.map((note) => (
               <article
                 key={note.slug}
-                className="rounded-2xl border border-white/10 bg-[var(--color-surface)] p-6 transition-shadow hover:shadow-[0_18px_38px_rgba(15,18,27,0.12)]"
+                className="flex flex-col rounded-2xl border border-white/10 bg-[var(--color-surface)] p-6 shadow-[0_10px_30px_rgba(0,0,0,0.12)] transition-shadow hover:shadow-[0_18px_38px_rgba(15,18,27,0.15)]"
               >
                 <div className="mb-3 flex flex-wrap items-center gap-2">
                   <span className="rounded-full bg-[--color-orange-soft] px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-[--color-orange-brand]">
                     {note.category}
                   </span>
+                  {note.category === "Energy" && (
+                    <span className="rounded-full bg-orange-500/20 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-orange-500">
+                      2026 Update
+                    </span>
+                  )}
                   <span className="text-xs text-[--color-ink-dim]">
                     {note.date}
                   </span>
@@ -101,14 +66,14 @@ export default function FieldNotesHubPage() {
                     {note.title}
                   </Link>
                 </h2>
-                <p className="mt-2 text-sm leading-relaxed text-[--color-ink-dim]">
+                <p className="mt-2 flex-1 text-sm leading-relaxed text-[--color-ink-dim]">
                   {note.description}
                 </p>
                 <Link
                   href={getFieldNotesRoute(note.slug)}
                   className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-[--color-orange-brand] transition-colors hover:text-[--color-orange-dark]"
                 >
-                  <FileText className="h-4 w-4" aria-hidden />
+                  <FileText className="h-4 w-4 shrink-0" aria-hidden />
                   Read article →
                 </Link>
               </article>
