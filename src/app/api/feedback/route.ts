@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
     const { data, error } = await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL ?? FROM_EMAIL,
       to: [SITE_ALERT_TO],
-      reply_to: email,
+      replyTo: email,
       subject,
       html,
     });

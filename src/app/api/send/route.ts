@@ -137,7 +137,7 @@ export async function POST(req: NextRequest) {
       to: [to],
       subject,
       html,
-      ...(replyTo && { reply_to: replyTo }),
+      ...(replyTo && { replyTo }),
       ...(LEAD_BCC && { bcc: [LEAD_BCC] }),
     });
 
