@@ -47,6 +47,7 @@ const sendSchema = z.object({
   message: "Provide either html or estimate.",
 });
 
+// Verified sender: must use @proconstructioncalc.com for deliverability. Optional override via env.
 const FROM_EMAIL =
   process.env.RESEND_FROM_EMAIL ?? "Pro Construction Calc <estimates@proconstructioncalc.com>";
 const LEAD_BCC = process.env.RESEND_LEAD_BCC ?? undefined;

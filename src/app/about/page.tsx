@@ -37,13 +37,13 @@ export default function AboutPage() {
             </div>
           </div>
 
-          <div className="content-card mb-8 overflow-hidden">
+          <div className="content-card mb-8 overflow-hidden w-full max-h-48 flex items-center justify-center bg-black/20">
             <Image
               src="/images/wall-framing.svg"
               alt="Framing crew layout used to plan stud counts and materials"
               width={1200}
               height={700}
-              className="w-full h-52 object-cover"
+              className="w-full max-h-48 object-contain overflow-hidden"
             />
           </div>
 

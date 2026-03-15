@@ -41,7 +41,7 @@ import {
   Wrench,
   X,
 } from "lucide-react";
-import { ComingSoonModal } from "@/components/ui/ComingSoonModal";
+import { EmailEstimateModal, type EstimatePayload } from "@/components/ui/EmailEstimateModal";
 import { JsonLD } from "@/seo";
 import { getTradePageSchema, type TradePageDefinition } from "../_lib/trade-pages";
 import { routes } from "@routes";
@@ -294,6 +294,20 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
 
   const auditRef = getCalculatorAuditRef();
 
+  const emailEstimatePayload: EstimatePayload = useMemo(
+    () => ({
+      title: page.title,
+      calculatorLabel: page.heroKicker,
+      results: [
+        { label: "Volume", value: volumeCubicFeet.toFixed(2), unit: "cu ft", description: "" },
+        { label: "Adjusted Volume", value: adjustedVolume.toFixed(2), unit: "cu ft", description: "" },
+        { label: "Material Qty", value: materialQty, unit: "units", description: "" },
+      ],
+      generatedAt: new Date().toISOString().slice(0, 10),
+    }),
+    [page.title, page.heroKicker, volumeCubicFeet, adjustedVolume, materialQty],
+  );
+
   return (
     <Sentry.ErrorBoundary
       fallback={({ error, resetError }) => {
@@ -483,14 +497,14 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
             </div>
 
             {getHeroImage(page) ? (
-              <div className="relative hidden w-full aspect-video overflow-hidden rounded-xl border border-white/10 shadow-inner lg:block">
+              <div className="relative hidden w-full max-h-48 overflow-hidden rounded-xl border border-white/10 shadow-inner lg:flex lg:items-center lg:justify-center lg:bg-black/20">
                 <Image
                   src={getHeroImage(page)!}
                   alt={page.altText}
                   width={800}
                   height={450}
                   priority
-                  className="absolute inset-0 h-full w-full object-cover"
+                  className="h-full max-h-48 w-full object-contain"
                 />
               </div>
             ) : null}
@@ -764,10 +778,10 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
         </nav>
       </section>
 
-      <ComingSoonModal
+      <EmailEstimateModal
         open={crmModalOpen}
         onClose={() => setCrmModalOpen(false)}
-        title="CRM Email Engine"
+        estimate={emailEstimatePayload}
       />
     </main>
     </Sentry.ErrorBoundary>

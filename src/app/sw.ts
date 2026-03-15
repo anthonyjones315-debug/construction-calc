@@ -12,12 +12,17 @@ declare const self: ServiceWorkerGlobalScope;
 
 const serwist = new Serwist({
   // INLINE FILTER: The bundler replaces self.__SW_MANIFEST right here,
-  // and the filter immediately scrubs the bad fonts at runtime.
+  // and the filter immediately scrubs bad assets at runtime.
   precacheEntries: (self.__SW_MANIFEST || []).filter((entry) => {
     const url = typeof entry === "string" ? entry : entry.url;
-    return !url.includes("_next/static/media") && !url.match(/\.(woff2?|eot|ttf|otf)$/i);
+    const isBadAsset =
+      url.includes("_next/static/") ||
+      url.endsWith(".map") ||
+      url.match(/\.(woff2?|eot|ttf|otf)$/i);
+
+    return !isBadAsset;
   }),
-  cacheId: "precache-v4",
+  cacheId: "precache-v5",
   skipWaiting: true,
   clientsClaim: true,
   navigationPreload: true,

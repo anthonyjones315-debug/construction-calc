@@ -263,22 +263,20 @@ export default function CommandCenterClient({
   return (
     <div className="command-theme overflow-hidden rounded-[30px] border border-white/10 bg-[#1A1A1C] shadow-[0_20px_48px_rgba(0,0,0,0.45)]">
       <div className="grid min-h-[740px] lg:grid-cols-[240px,1fr]">
-        <aside className="hidden border-r border-[--color-border]/70 bg-[--color-nav-bg] px-4 py-5 text-[--color-nav-text] lg:flex lg:flex-col">
-          <div className="flex items-center gap-2 rounded-2xl px-2 py-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-[--color-orange-brand] text-sm font-bold text-black">
+        <aside className="hidden border-r border-[--color-border]/70 bg-[--color-nav-bg] px-2 py-2 text-[--color-nav-text] lg:flex lg:flex-col">
+          <div className="flex items-center gap-1.5 rounded-xl px-1.5 py-1">
+            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[--color-orange-brand] text-xs font-bold text-black">
               P
             </div>
-            <div>
-              <p className="text-sm font-semibold text-white">
-                Pro Construction Calc
-              </p>
-            </div>
+            <p className="truncate text-xs font-semibold text-white">
+              Pro Construction Calc
+            </p>
           </div>
 
-          <nav className="mt-6 flex flex-col gap-2">
+          <nav className="mt-2 flex flex-col gap-0.5">
             {primaryNavItems.map((item) => {
               const sharedClasses =
-                "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors";
+                "flex items-center gap-2 rounded-lg px-2 py-1 text-sm transition-colors";
               const stateClasses = item.active
                 ? "bg-white/10 text-[--color-orange-brand]"
                 : "text-white/80 hover:bg-white/8 hover:text-white";
@@ -286,8 +284,8 @@ export default function CommandCenterClient({
 
               const navContent = (
                 <>
-                  <item.icon className="h-4 w-4" aria-hidden />
-                  {item.label}
+                  <item.icon className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                  <span className="truncate">{item.label}</span>
                 </>
               );
 
@@ -302,19 +300,19 @@ export default function CommandCenterClient({
               );
             })}
 
-            <div className="mt-4 px-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/60">
+            <div className="mt-2 px-2 text-[9px] font-semibold uppercase tracking-[0.18em] text-white/60">
               Tools
             </div>
 
             {toolNavItems.map((item) => {
               const sharedClasses =
-                "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors";
+                "flex items-center gap-2 rounded-lg px-2 py-1 text-sm transition-colors";
               const className = `${sharedClasses} text-white/80 hover:bg-white/8 hover:text-white`;
 
               const navContent = (
                 <>
-                  <item.icon className="h-4 w-4" aria-hidden />
-                  {item.label}
+                  <item.icon className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                  <span className="truncate">{item.label}</span>
                 </>
               );
 
@@ -330,8 +328,8 @@ export default function CommandCenterClient({
             })}
           </nav>
 
-          <div className="mt-auto border-t border-white/10 pt-4">
-            <p className="px-3 text-xs text-white/65">
+          <div className="mt-auto border-t border-white/10 pt-2">
+            <p className="px-2 text-[10px] text-white/65">
               Team access and permissions managed in Command Center.
             </p>
           </div>
