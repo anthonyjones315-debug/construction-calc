@@ -4,6 +4,8 @@
 **Role:** Lead PWA Architect  
 **Scope:** Manifest, Service Worker, assets, offline strategy — audit only (no new packages installed).
 
+> **Update:** The app now uses **@serwist/next** (no next-pwa or standalone Workbox). Precache excludes static fonts and images; offline fallback is `/offline` with revision v2.
+
 ---
 
 ## Current PWA Compliance Score: **2.5 / 5**
