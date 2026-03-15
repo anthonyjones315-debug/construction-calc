@@ -13,6 +13,12 @@ function isIOSDevice(): boolean {
   return /iphone|ipad|ipod/i.test(navigator.userAgent);
 }
 
+function isMobile(): boolean {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobi/i.test(
+    navigator.userAgent,
+  );
+}
+
 function isStandaloneMode(): boolean {
   // Covers Chrome/Android standalone and iOS "Add to Home Screen"
   return (
@@ -34,6 +40,8 @@ export function PWAInstallBanner() {
     // Never show if user already dismissed or is already running as a PWA
     if (localStorage.getItem(DISMISSED_KEY)) return;
     if (isStandaloneMode()) return;
+    // Hide on desktop; only show install UI on mobile/tablet
+    if (!isMobile()) return;
 
     const ios = isIOSDevice();
     setIsIOS(ios);
@@ -44,7 +52,8 @@ export function PWAInstallBanner() {
       return;
     }
 
-    // Chrome/Edge/Android: wait for the browser's deferred install prompt
+    // Chrome/Edge/Android: wait for the browser's deferred install prompt.
+    // preventDefault only when we will show our custom INSTALL button (not on desktop).
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);

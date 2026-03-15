@@ -71,8 +71,8 @@ const nextConfig: NextConfig = {
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' data: https://fonts.gstatic.com",
       "img-src 'self' data: blob: https://images.unsplash.com https://www.googletagmanager.com https://*.google-analytics.com https://*.googlesyndication.com https://*.doubleclick.net https://*.supabase.co",
-      // Sentry + Vercel + Google Analytics + ads
-      "connect-src 'self' https://*.sentry.io https://o*.ingest.sentry.io https://vitals.vercel-insights.com https://va.vercel-scripts.com https://*.google-analytics.com https://*.analytics.google.com https://*.g.doubleclick.net",
+      // Sentry ingest (DSN host from env/fallback in sentry.client.config) + Vercel + Google Analytics + ads
+      "connect-src 'self' https://*.sentry.io https://o4511044273766400.ingest.us.sentry.io https://vitals.vercel-insights.com https://va.vercel-scripts.com https://*.google-analytics.com https://*.analytics.google.com https://*.g.doubleclick.net",
       "media-src 'none'",
       "object-src 'none'",
       "frame-src 'self' https://googleads.g.doubleclick.net https://*.googlesyndication.com",
