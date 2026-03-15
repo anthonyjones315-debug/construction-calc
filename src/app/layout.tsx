@@ -37,23 +37,41 @@ export const metadata: Metadata = {
     template: "%s | Pro Construction Calc",
   },
   description:
-    "Professional construction estimating calculators for contractors, including trade-specific quantity math, cost planning, and client-ready estimate exports.",
+    "Professional construction estimating calculators for contractors, including trade-specific quantity math, cost planning, and client-ready estimate exports. Built for Rome, NY and Central New York.",
   keywords: [
     "construction calculator",
     "concrete calculator",
     "framing calculator",
     "roofing calculator",
     "insulation calculator",
+    "Rome NY",
+    "Central New York",
+    "contractor estimating",
   ],
-  authors: [{ name: "Pro Construction Calc" }],
+  authors: [{ name: "Pro Construction Calc", url: "https://proconstructioncalc.com" }],
   openGraph: {
     type: "website",
     locale: "en_US",
     url: "https://proconstructioncalc.com",
     siteName: "Pro Construction Calc",
-    images: [{ url: "/og-image.png", width: 1200, height: 630 }],
+    title: "Pro Construction Calc — Construction Estimating & Cost Calculators",
+    description:
+      "Professional construction estimating calculators for contractors. Trade-specific math, cost planning, and client-ready exports for Central NY.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Pro Construction Calc — Construction Estimating Calculators",
+      },
+    ],
   },
-  twitter: { card: "summary_large_image" },
+  twitter: {
+    card: "summary_large_image",
+    title: "Pro Construction Calc — Construction Estimating & Cost Calculators",
+    description:
+      "Professional construction estimating calculators for contractors. Built for Central New York.",
+  },
   robots: { index: true, follow: true },
   verification: {
     google: "nAsuG6MnX4DrPVKMH2QOZZ9xaMxD6cah0oGH9duNjdU",

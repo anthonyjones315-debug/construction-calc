@@ -246,24 +246,20 @@
   }
 
   .command-theme {
-    --color-orange-brand: #ff8c00;
-    --color-orange-dark: #cc7000;
-    --color-orange-muted: #ffb861;
-    --color-ink: #f5f7fa;
-    --color-ink-mid: #c7ced9;
-    --color-ink-dim: #95a0b1;
-    --color-surface: #121212;
-    --color-surface-alt: #1a1d20;
-    --color-bg: #121212;
-    --color-border: #4f5f78;
-    --color-nav-bg: #0f0f0f;
-    --color-nav-text: #d8dee7;
-    --command-card-border: color-mix(
-      in srgb,
-      var(--color-border) 80%,
-      transparent
-    );
-    --command-card-shadow: 0 10px 24px rgba(5, 8, 14, 0.35);
+    --color-orange-brand: #ea580c;
+    --color-orange-dark: #c2410c;
+    --color-orange-muted: #fb923c;
+    --color-ink: #f1f5f9;
+    --color-ink-mid: #cbd5e1;
+    --color-ink-dim: #94a3b8;
+    --color-surface: #0f172a;
+    --color-surface-alt: #1e293b;
+    --color-bg: #020617;
+    --color-border: #334155;
+    --color-nav-bg: #020617;
+    --color-nav-text: #e2e8f0;
+    --command-card-border: #334155;
+    --command-card-shadow: 0 10px 24px rgba(2, 6, 23, 0.4);
   }
 
   .command-card {

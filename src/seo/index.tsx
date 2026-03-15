@@ -132,6 +132,14 @@ export function getWebSiteSchema() {
     url: "https://proconstructioncalc.com",
     description:
       "The Industrial-Grade Bidding Engine for NY Contractors. Trade-specific math, NYS tax compliance, and instant client dispatch.",
+    audience: {
+      "@type": "Audience",
+      audienceType: "Contractors",
+    },
+    areaServed: [
+      { "@type": "City", name: "Rome, NY" },
+      { "@type": "AdministrativeArea", name: "Central New York" },
+    ],
     potentialAction: {
       "@type": "SearchAction",
       target:
@@ -144,14 +152,22 @@ export function getWebSiteSchema() {
 export function getWebAppSchema() {
   return {
     "@context": "https://schema.org",
-    "@type": "WebApplication",
+    "@type": "SoftwareApplication",
     name: "Pro Construction Calc",
     url: "https://proconstructioncalc.com",
     description:
       "The Industrial-Grade Bidding Engine for NY Contractors. Trade-specific math, NYS tax compliance, and instant client dispatch.",
-    applicationCategory: "UtilitiesApplication",
-    operatingSystem: "Web",
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Web App, PWA",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+    audience: {
+      "@type": "Audience",
+      audienceType: "Contractors",
+    },
+    areaServed: [
+      { "@type": "City", name: "Rome, NY" },
+      { "@type": "AdministrativeArea", name: "Central New York" },
+    ],
     aggregateRating: {
       "@type": "AggregateRating",
       ratingValue: "4.9",
