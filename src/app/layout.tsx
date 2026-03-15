@@ -142,7 +142,7 @@ export default function RootLayout({
         <OptionalTracking />
         <PWAInstallBanner />
         <a
-          href="mailto:support@proconstructioncalc.com?subject=Feedback%20-%20Pro%20Construction%20Calc"
+          href="/contact"
           className="fixed bottom-4 right-4 z-30 flex items-center gap-2 rounded-full border border-orange-500 bg-orange-600 px-5 py-2.5 text-sm font-bold text-white shadow-xl transition-all hover:bg-orange-700"
           aria-label="Send feedback"
         >

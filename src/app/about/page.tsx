@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { HardHat, Calculator, Sparkles, FileDown } from "lucide-react";
+import { AboutContactSection } from "@/components/contact/AboutContactSection";
 
 export const metadata: Metadata = {
   title: "About Pro Construction Calc",
@@ -110,21 +111,7 @@ export default function AboutPage() {
           </div>
 
           {/* Contact */}
-          <div className="rounded-2xl border border-white/10 bg-[#1A1A1C] p-8 text-center text-white">
-            <h2 className="mb-2 text-xl font-black uppercase text-white">
-              Got feedback?
-            </h2>
-            <p className="mb-4 text-sm text-white/60">
-              We actively improve based on what contractors and builders tell us
-              they need.
-            </p>
-            <a
-              href="mailto:amj111394@gmail.com"
-              className="inline-flex items-center gap-2 rounded-xl bg-[#FF8C00] px-5 py-2.5 text-sm font-black uppercase text-black transition-all hover:brightness-95"
-            >
-              Send Feedback
-            </a>
-          </div>
+          <AboutContactSection />
         </div>
       </main>
       <Footer />

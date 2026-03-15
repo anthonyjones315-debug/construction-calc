@@ -50,7 +50,7 @@ const sendSchema = z.object({
 
 // Verified sender: must use @proconstructioncalc.com (or your Resend verified domain) or Resend returns 502/504.
 const FROM_EMAIL =
-  process.env.RESEND_FROM_EMAIL ?? "Pro Construction Calc <estimates@proconstructioncalc.com>";
+  process.env.RESEND_FROM_EMAIL ?? "Pro Construction Calc <system@proconstructioncalc.com>";
 const LEAD_BCC = process.env.RESEND_LEAD_BCC ?? undefined;
 
 function buildEstimateEmailHtml(estimate: z.infer<typeof estimatePayloadSchema>): string {

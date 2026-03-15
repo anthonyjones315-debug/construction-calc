@@ -18,6 +18,7 @@ export default function ForgotPasswordPage() {
     setIsLoading(true);
 
     try {
+      // Client uses NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY from env
       const supabase = createClient();
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(
         email.trim(),
@@ -25,13 +26,15 @@ export default function ForgotPasswordPage() {
       );
 
       if (resetError) {
+        console.error("Auth Error Detail:", resetError);
         setError(resetError.message ?? "Could not send reset email. Please try again.");
         setIsLoading(false);
         return;
       }
 
       setSuccess(true);
-    } catch {
+    } catch (err) {
+      console.error("Auth Error Detail:", err);
       setError("Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);

@@ -110,7 +110,7 @@ export function EmailEstimateModal({
             Email Estimate
           </h2>
           <p className="mt-1 text-sm text-slate-400">
-            Send this estimate to a client. Emails are sent from estimates@proconstructioncalc.com.
+            Send this estimate to a client. Emails are sent from system@proconstructioncalc.com.
           </p>
 
           {status === "sent" ? (

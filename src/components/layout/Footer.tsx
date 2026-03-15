@@ -145,12 +145,12 @@ export function Footer() {
             >
               Terms
             </Link>
-            <a
-              href="mailto:amj111394@gmail.com"
+            <Link
+              href={routes.contact}
               className="hover:text-white transition-colors"
             >
               Contact Us
-            </a>
+            </Link>
             <CookiePreferencesButton />
           </div>
         </div>

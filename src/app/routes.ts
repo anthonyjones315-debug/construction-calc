@@ -5,6 +5,7 @@ export const routes = {
   register: "/register" as Route,
   about: "/about" as Route,
   blog: "/blog" as Route,
+  contact: "/contact" as Route,
   fieldNotes: "/field-notes" as Route,
   calculators: "/calculators" as Route,
   commandCenter: "/command-center" as Route,
