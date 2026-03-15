@@ -5,15 +5,19 @@ import { withSentryConfig } from "@sentry/nextjs";
 const withSerwist = withSerwistInit({
   swSrc: "src/app/sw.ts",
   swDest: "public/sw.js",
-  // 1. Force a "v2" revision to invalidate the old broken cache
-  additionalPrecacheEntries: [{ url: "/offline", revision: "offline-v2" }],
-  // Exclude all static fonts and images from precache — SW focuses on app shell only (avoids bad-precaching-response).
+  additionalPrecacheEntries: [{ url: "/offline", revision: "offline-v3" }], // Bump to v3
+  // AGGRESSIVE OVERHAUL:
+  // We use a function for 'exclude' to force-kill any font path
   exclude: [
-    /\.map$/,
-    /^manifest.*\.js$/,
-    /\.woff2?$/i,
-    /\.(?:eot|ttf|otf)$/i,
-    /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/i,
+    ({ asset }: { asset: any }) => {
+      if (
+        asset.name.match(/\.(woff2?|eot|ttf|otf)$/) ||
+        asset.name.includes("static/media/")
+      ) {
+        return true; // true means EXCLUDE it
+      }
+      return false;
+    },
   ],
 });
 
