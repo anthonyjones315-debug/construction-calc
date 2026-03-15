@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import { JsonLD, getWebAppSchema } from '@/seo'
+import { Header } from '@/components/layout/Header'
+import { Footer } from '@/components/layout/Footer'
 
 export const metadata: Metadata = {
   title: 'Free Construction Calculators — Concrete, Framing, Roofing & More | Pro Construction Calc',
@@ -14,9 +16,11 @@ export const metadata: Metadata = {
 
 export default function CalculatorsLayout({ children }: { children: React.ReactNode }) {
   return (
-    <>
+    <div className="command-theme flex min-h-screen flex-col bg-slate-950">
       <JsonLD schema={getWebAppSchema()} />
-      {children}
-    </>
+      <Header />
+      <div className="min-w-0 flex-1">{children}</div>
+      <Footer />
+    </div>
   )
 }

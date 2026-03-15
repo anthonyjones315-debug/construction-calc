@@ -17,12 +17,14 @@ import {
   ChevronDown,
   CircleDollarSign,
   ClipboardList,
+  DraftingCompass,
   Gauge,
   FileDown,
   FileSpreadsheet,
   FolderKanban,
   HardHat,
   Hammer,
+  Layers,
   Layers3,
   Layout,
   Mail,
@@ -39,6 +41,7 @@ import {
   Timer,
   Tractor,
   Triangle,
+  Wind,
   Wrench,
   X,
 } from "lucide-react";
@@ -168,12 +171,12 @@ function clampValue(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
 }
 
-/** Category icon for the input card — consistent visual language across all calculators. */
+/** Category icon — trade-specific Lucide icons, centered large on every card. */
 const CATEGORY_ICON_MAP: Record<TradePageDefinition["category"], LucideIcon> = {
-  concrete: BrickWall,
-  framing: Hammer,
+  concrete: Layers,
+  framing: DraftingCompass,
   roofing: Triangle,
-  mechanical: Thermometer,
+  mechanical: Wind,
   insulation: Layers3,
   finish: Layout,
   interior: Layout,
@@ -193,6 +196,36 @@ function displayTitle(fullTitle: string): string {
   return fullTitle;
 }
 
+/** Trade-specific input labels using professional field terminology. */
+function getInputLabels(path: string): { first: string; second: string; third: string } {
+  const p = path.toLowerCase();
+  if (p.includes("wall-studs") || p.includes("framing/wall")) return { first: "OC Spacing (On-Center, in)", second: "Span Width (ft)", third: "Plate Count Height (ft)" };
+  if (p.includes("rafter-length") || p.includes("rafters")) return { first: "Common Rafter Length (ft)", second: "OC Spacing (On-Center, in)", third: "Span Width (ft)" };
+  if (p.includes("header")) return { first: "Span Width (ft)", second: "Plate Count", third: "Header Depth (in)" };
+  if (p.includes("deck-joists")) return { first: "Span Width (ft)", second: "OC Spacing (On-Center, in)", third: "Joist Depth (in)" };
+  if (p.includes("slab")) return { first: "Running Lineal Feet", second: "Slab Width (ft)", third: "Slab Thickness (Inches)" };
+  if (p.includes("footing")) return { first: "Running Lineal Feet", second: "Footing Width (ft)", third: "Sub-base Depth (in)" };
+  if (p.includes("block") || p.includes("concrete")) return { first: "Running Lineal Feet", second: "Width (ft)", third: "Bag Yield Depth (in)" };
+  if (p.includes("shingle")) return { first: "Squares (Roof Area)", second: "Bundle Overlap Factor", third: "Pitch Ratio" };
+  if (p.includes("pitch")) return { first: "Roof Run (ft)", second: "Roof Rise (ft)", third: "Pitch Ratio" };
+  if (p.includes("siding")) return { first: "Squares (Wall Area)", second: "Drip Edge Lineal Feet", third: "Waste %" };
+  if (p.includes("roofing")) return { first: "Squares (Roof Area)", second: "Bundle Overlap Factor", third: "Pitch Ratio" };
+  if (p.includes("trim") || p.includes("baseboard")) return { first: "Running Lineal Feet", second: "Stock Length (ft)", third: "Waste %" };
+  if (p.includes("flooring")) return { first: "Total Square Footage", second: "Plank Width (in)", third: "Waste %" };
+  if (p.includes("drywall")) return { first: "Total Square Footage", second: "Sheet Size (4×8 / 4×12)", third: "Waste %" };
+  if (p.includes("r-value") || p.includes("insulation")) return { first: "Total Square Footage", second: "Cavity Depth (in)", third: "R-Value Target" };
+  if (p.includes("btu")) return { first: "BTU Load (sq ft)", second: "Ceiling Height (ft)", third: "Climate Zone Factor" };
+  if (p.includes("ventilation")) return { first: "Ventilation CFM Area (sq ft)", second: "Ceiling Height (ft)", third: "Duct Static Pressure" };
+  if (p.includes("duct")) return { first: "Duct Static Pressure (in w.c.)", second: "Ventilation CFM", third: "Duct Run (ft)" };
+  if (p.includes("mechanical")) return { first: "BTU Load (sq ft)", second: "Ventilation CFM", third: "Duct Static Pressure" };
+  if (p.includes("profit") || p.includes("margin")) return { first: "Job Cost ($)", second: "Markup Rate (%)", third: "Overhead (%)" };
+  if (p.includes("labor")) return { first: "Hourly Rate ($)", second: "Burden Rate (%)", third: "Crew Size" };
+  if (p.includes("lead")) return { first: "Cost Per Lead ($)", second: "Close Rate (%)", third: "Monthly Leads" };
+  if (p.includes("tax")) return { first: "Gross Revenue ($)", second: "Tax Rate (%)", third: "Deductions ($)" };
+  if (p.includes("business")) return { first: "Base Amount ($)", second: "Rate / Factor (%)", third: "Quantity / Units" };
+  return { first: "Primary Measurement", second: "Secondary Measurement", third: "Tertiary Measurement" };
+}
+
 function buildBreadcrumbs(pathname: string) {
   const segments = pathname.split("/").filter(Boolean);
   const crumbs: Array<{ label: string; href: Route }> = [{ label: "Home", href: "/" as Route }];
@@ -210,7 +243,12 @@ function buildBreadcrumbs(pathname: string) {
   return crumbs;
 }
 
-export function CalculatorPage({ page }: { page: TradePageDefinition }) {
+type CalculatorPageProps = {
+  page: TradePageDefinition;
+  closeModal?: () => void;
+};
+
+export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   const [search, setSearch] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [crmModalOpen, setCrmModalOpen] = useState(false);
@@ -323,9 +361,34 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
     setter(clampValue(parsed, min, max));
   }
 
-  function handleExportPdf() {
-    if (typeof window !== "undefined") {
-      window.print();
+  async function handleExportPdf() {
+    if (typeof window === "undefined") return;
+    try {
+      const [{ pdf }, { createCalculatorExportPDF }] = await Promise.all([
+        import("@react-pdf/renderer"),
+        import("@/components/pdf/CalculatorExportPDF"),
+      ]);
+      const payload = {
+        title: page.title,
+        calculatorLabel: page.heroKicker,
+        results: [
+          { label: "Volume", value: volumeCubicFeet.toFixed(2), unit: "cu ft" },
+          { label: "Adjusted Volume", value: adjustedVolume.toFixed(2), unit: "cu ft" },
+          { label: "Material Qty", value: materialQty, unit: "units" },
+        ],
+        generatedAt: new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }),
+      };
+      const blob = await pdf(createCalculatorExportPDF(payload)).toBlob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${page.heroKicker.replace(/\s*\/\s*/g, "-")}-export.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      Sentry.captureException(err);
     }
   }
 
@@ -384,8 +447,23 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
     >
     <main
       id="main-content"
-      className="command-theme bg-[--color-bg] text-white"
+      className="command-theme bg-[--color-bg] text-white flex-1"
     >
+      {closeModal && (
+        <div className="sticky top-0 z-40 flex h-12 items-center justify-between border-b border-slate-800 bg-slate-900/95 px-4 backdrop-blur-sm">
+          <span className="text-sm font-bold uppercase tracking-wide text-white">
+            {page.heroKicker}
+          </span>
+          <button
+            type="button"
+            onClick={closeModal}
+            className="flex h-10 w-10 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
+            aria-label="Close calculator"
+          >
+            <X className="h-5 w-5" aria-hidden />
+          </button>
+        </div>
+      )}
       <section className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
         <JsonLD schema={getTradePageSchema(page)} />
 
@@ -589,15 +667,15 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
               <section className="rounded-2xl border border-slate-800 bg-slate-900/50 p-5 transition-colors">
                 <div className="flex justify-center">
                   <div
-                    className={`rounded-full bg-orange-500/10 p-4 mb-4 ${iconPulse ? "animate-pulse" : ""}`}
+                    className={`rounded-full bg-orange-600/15 p-5 mb-4 flex items-center justify-center ${iconPulse ? "animate-pulse" : ""}`}
                   >
                     {(() => {
                       const IconComponent = getCategoryIcon(page);
                       return (
                         <IconComponent
-                          size={48}
+                          size={64}
                           strokeWidth={1.5}
-                          className="text-orange-500"
+                          className="text-orange-600"
                           aria-hidden
                         />
                       );
@@ -608,9 +686,12 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
                   Inputs
                 </h2>
 
+                {(() => {
+                  const labels = getInputLabels(page.canonicalPath);
+                  return (
                 <div className="mt-4 space-y-4">
                   <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-[--color-nav-text]/80">
-                    Base Measurement
+                    {labels.first}
                     <input
                       type="number"
                       min={1}
@@ -622,7 +703,7 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
                   </label>
 
                   <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-[--color-nav-text]/80">
-                    Width / Span
+                    {labels.second}
                     <input
                       type="number"
                       min={1}
@@ -634,7 +715,7 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
                   </label>
 
                   <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-[--color-nav-text]/80">
-                    Depth / Thickness
+                    {labels.third}
                     <input
                       type="number"
                       min={1}
@@ -662,6 +743,8 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
                     />
                   </div>
                 </div>
+                  );
+                })()}
               </section>
 
               <aside ref={resultsCardRef} className="space-y-3">

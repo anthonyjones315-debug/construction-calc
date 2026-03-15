@@ -8,7 +8,6 @@ import {
 } from "@react-pdf/renderer";
 import type { DocumentProps } from "@react-pdf/renderer";
 import type { ReactElement } from "react";
-import { designTokens } from "@/lib/design-tokens";
 
 let fontsRegistered = false;
 
@@ -44,17 +43,22 @@ function ensurePdfFonts() {
   fontsRegistered = true;
 }
 
+// Slate-950 / Orange-600 theme for branded PDFs
+const SLATE_950 = "#020617";
+const SLATE_800 = "#1e293b";
+const SLATE_200 = "#e2e8f0";
+const SLATE_400 = "#94a3b8";
+const ORANGE_600 = "#ea580c";
+
+const WHITE = "#ffffff";
+
 const colors = {
-  midnight: designTokens.ui.midnight,
-  dusk: designTokens.ui.dusk,
-  accent: designTokens.brand.orange,
-  accentDark: designTokens.brand.orangeDark,
-  border: designTokens.ui.border,
-  headerGray: designTokens.ui.surfaceAlt,
-  text: designTokens.ui.text,
-  muted: designTokens.ui.textMuted,
-  surface: designTokens.ui.surface,
-  page: designTokens.ui.page,
+  page: WHITE,
+  text: SLATE_950,
+  muted: SLATE_400,
+  border: SLATE_200,
+  accent: ORANGE_600,
+  surface: "#f8fafc",
 };
 
 const styles = StyleSheet.create({
@@ -74,14 +78,26 @@ const styles = StyleSheet.create({
   heading: {
     fontFamily: "Oswald",
     fontSize: 30,
-    color: colors.midnight,
+    color: SLATE_950,
     textTransform: "uppercase",
+  },
+  brandName: {
+    fontFamily: "Oswald",
+    fontSize: 12,
+    color: ORANGE_600,
+    textTransform: "uppercase",
+  },
+  brandRegion: {
+    fontFamily: "Inter",
+    fontSize: 8,
+    color: SLATE_400,
+    marginTop: 1,
   },
   sectionTitle: {
     fontFamily: "Oswald",
     fontSize: 10,
     textTransform: "uppercase",
-    color: colors.midnight,
+    color: colors.muted,
     marginBottom: 4,
   },
   box: {
@@ -108,15 +124,16 @@ const styles = StyleSheet.create({
   },
   tableHeader: {
     marginTop: 12,
-    backgroundColor: colors.dusk,
+    backgroundColor: ORANGE_600,
     paddingVertical: 6,
     paddingHorizontal: 8,
   },
   tableHeaderText: {
-    color: colors.surface,
+    color: WHITE,
     fontFamily: "Oswald",
     fontSize: 10,
     textTransform: "uppercase",
+    letterSpacing: 1,
   },
   table: {
     borderWidth: 1,
@@ -124,7 +141,7 @@ const styles = StyleSheet.create({
   },
   trHead: {
     flexDirection: "row",
-    backgroundColor: colors.headerGray,
+    backgroundColor: SLATE_950,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
     paddingHorizontal: 8,
@@ -144,7 +161,7 @@ const styles = StyleSheet.create({
   c2: { width: "16%", fontSize: 9, textAlign: "right" },
   c3: { width: "17%", fontSize: 9, textAlign: "right" },
   c4: { width: "17%", fontSize: 9, textAlign: "right" },
-  th: { fontFamily: "Oswald", color: colors.midnight },
+  th: { fontFamily: "Oswald", color: colors.muted },
   td: { fontFamily: "Inter", color: colors.text },
   summary: {
     marginTop: 10,
@@ -168,6 +185,7 @@ const styles = StyleSheet.create({
     fontFamily: "Oswald",
     fontSize: 10,
     textTransform: "uppercase",
+    color: colors.muted,
   },
   totalValue: {
     fontFamily: "Oswald",
@@ -252,9 +270,8 @@ export function createInvoicePDF(
         <View style={styles.top}>
           <View style={{ width: "55%" }}>
             <Text style={styles.heading}>Invoice</Text>
-            <Text style={[styles.line, styles.muted]}>
-              Pro Construction Calc
-            </Text>
+            <Text style={styles.brandName}>Pro Construction Calc</Text>
+            <Text style={styles.brandRegion}>Mohawk Valley / Rome, NY</Text>
           </View>
 
           <View style={[styles.box, { width: "45%" }]}>

@@ -10,7 +10,12 @@ import {
 import type { DocumentProps } from "@react-pdf/renderer";
 import type { ReactElement } from "react";
 import type { BudgetItem, PDFEstimateData } from "@/types";
-import { designTokens } from "@/lib/design-tokens";
+
+const SLATE_950 = "#020617";
+const SLATE_800 = "#1e293b";
+const SLATE_200 = "#e2e8f0";
+const SLATE_400 = "#94a3b8";
+const ORANGE_600 = "#ea580c";
 
 let fontsRegistered = false;
 
@@ -46,17 +51,18 @@ function ensurePdfFonts() {
   fontsRegistered = true;
 }
 
+const WHITE = "#ffffff";
+
 const colors = {
-  midnight: designTokens.ui.midnight,
-  dusk: designTokens.ui.dusk,
-  accent: designTokens.brand.orange,
-  accentDark: designTokens.brand.orangeDark,
-  border: designTokens.ui.border,
-  headerGray: designTokens.ui.surfaceAlt,
-  text: designTokens.ui.text,
-  muted: designTokens.ui.textMuted,
-  surface: designTokens.ui.surface,
-  page: designTokens.ui.page,
+  midnight: SLATE_950,
+  dusk: SLATE_800,
+  accent: ORANGE_600,
+  border: SLATE_200,
+  headerGray: SLATE_950,
+  text: SLATE_950,
+  muted: SLATE_400,
+  surface: "#f8fafc",
+  page: WHITE,
 };
 
 const styles = StyleSheet.create({
@@ -85,10 +91,15 @@ const styles = StyleSheet.create({
   fallbackLogo: {
     fontSize: 18,
     fontFamily: "Oswald",
-    color: colors.midnight,
+    color: ORANGE_600,
+  },
+  brandRegion: {
+    marginTop: 2,
+    fontSize: 8,
+    color: SLATE_400,
   },
   brandSite: {
-    marginTop: 4,
+    marginTop: 2,
     fontSize: 9,
     color: colors.muted,
   },
@@ -99,7 +110,7 @@ const styles = StyleSheet.create({
   estimateTitle: {
     fontFamily: "Oswald",
     fontSize: 30,
-    color: colors.midnight,
+    color: SLATE_950,
     textTransform: "uppercase",
     letterSpacing: 0.8,
   },
@@ -113,7 +124,7 @@ const styles = StyleSheet.create({
   blockHeading: {
     fontFamily: "Oswald",
     fontSize: 10,
-    color: colors.midnight,
+    color: SLATE_950,
     textTransform: "uppercase",
     marginBottom: 4,
     letterSpacing: 0.6,
@@ -163,12 +174,12 @@ const styles = StyleSheet.create({
   },
   sectionBar: {
     marginTop: 12,
-    backgroundColor: colors.dusk,
+    backgroundColor: colors.accent,
     paddingVertical: 6,
     paddingHorizontal: 8,
   },
   sectionBarText: {
-    color: colors.surface,
+    color: WHITE,
     fontFamily: "Oswald",
     fontSize: 10,
     textTransform: "uppercase",
@@ -207,7 +218,7 @@ const styles = StyleSheet.create({
     fontFamily: "Oswald",
     fontSize: 9,
     textTransform: "uppercase",
-    color: colors.midnight,
+    color: SLATE_400,
     letterSpacing: 0.5,
   },
   td: {
@@ -225,7 +236,7 @@ const styles = StyleSheet.create({
   totalLabel: {
     fontFamily: "Oswald",
     fontSize: 10,
-    color: colors.midnight,
+    color: SLATE_950,
     textTransform: "uppercase",
     letterSpacing: 0.6,
   },
@@ -391,6 +402,7 @@ export function createEstimatePDF(
             ) : (
               <Text style={styles.fallbackLogo}>Pro Construction Calc</Text>
             )}
+            <Text style={styles.brandRegion}>Mohawk Valley / Rome, NY</Text>
             <Text style={styles.brandSite}>proconstructioncalc.com</Text>
           </View>
 

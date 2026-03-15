@@ -33,6 +33,7 @@ type EstimateRow = {
   client_name: string | null;
   job_site_address: string | null;
   status: EstimateStatus | null;
+  share_code?: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -63,6 +64,7 @@ export type SafeEstimateDTO = {
   clientName: string | null;
   jobSiteAddress: string | null;
   status: EstimateStatus;
+  shareCode: string | null;
   createdAt: string;
   updatedAt: string;
   viewerRole: MembershipRole;
@@ -118,6 +120,7 @@ function toSafeEstimate(
     clientName: row.client_name,
     jobSiteAddress: row.job_site_address,
     status: row.status ?? "Draft",
+    shareCode: row.share_code ?? null,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     viewerRole: role,
@@ -236,7 +239,7 @@ async function getSafeEstimateCached(
       ? db
           .from("saved_estimates")
           .select(
-            "id, user_id, business_id, name, calculator_id, inputs, results, budget_items, total_cost, client_name, job_site_address, status, created_at, updated_at",
+            "id, user_id, business_id, name, calculator_id, inputs, results, budget_items, total_cost, client_name, job_site_address, status, share_code, created_at, updated_at",
           )
           .eq("id", estimateId)
           .eq("business_id", businessId)
@@ -244,7 +247,7 @@ async function getSafeEstimateCached(
       : db
           .from("saved_estimates")
           .select(
-            "id, user_id, name, calculator_id, inputs, results, budget_items, total_cost, client_name, job_site_address, status, created_at, updated_at",
+            "id, user_id, name, calculator_id, inputs, results, budget_items, total_cost, client_name, job_site_address, status, share_code, created_at, updated_at",
           )
           .eq("id", estimateId)
           .eq("user_id", businessId)

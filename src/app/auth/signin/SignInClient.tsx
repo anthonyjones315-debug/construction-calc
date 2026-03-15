@@ -4,7 +4,7 @@ import Link from "next/link";
 import { getSession, signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { HardHat } from "lucide-react";
+import { HardHat, Loader2 } from "lucide-react";
 import { routes } from "@routes";
 
 const callbackHandlerErrorCodes = new Set([
@@ -103,6 +103,21 @@ export default function SignInClient({
       id="main-content"
       className="min-h-screen bg-slate-950 flex items-center justify-center px-4 py-10 font-sans"
     >
+      {(isSigningIn || isCredentialsSigningIn) && (
+        <div
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-slate-950/95 backdrop-blur-sm"
+          aria-live="polite"
+          aria-busy="true"
+        >
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl border-2 border-orange-600/50 bg-orange-600/10">
+            <Loader2 className="h-7 w-7 animate-spin text-orange-600" aria-hidden />
+          </div>
+          <p className="text-sm font-semibold uppercase tracking-wide text-slate-200">
+            {isSigningIn ? "Redirecting to Google…" : "Signing in…"}
+          </p>
+          <p className="text-xs text-slate-400">Pro Construction Calc</p>
+        </div>
+      )}
       <div className="w-full max-w-sm">
         {/* Brand header — Orange Hard Hat logo (matches main header) */}
         <div className="text-center mb-8">

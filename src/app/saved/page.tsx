@@ -23,14 +23,16 @@ export default async function SavedPage() {
       ];
 
   return (
-    <div className="flex flex-col min-h-screen bg-[--color-bg]">
+    <div className="min-h-screen grid grid-rows-[auto_1fr_auto] bg-slate-950 text-slate-100">
       <Header />
-      <main id="main-content" className="flex-1">
-        <SavedContent
-          serverFinancialData={serverFinancialData}
-          initialEstimates={initialEstimates}
-          isAuthenticated={isAuthenticated}
-        />
+      <main className="row-start-2 overflow-hidden">
+        <div className="h-full overflow-y-auto px-4 py-6 sm:px-6">
+          <SavedContent
+            serverFinancialData={serverFinancialData}
+            initialEstimates={initialEstimates}
+            isAuthenticated={isAuthenticated}
+          />
+        </div>
       </main>
       <Footer />
     </div>

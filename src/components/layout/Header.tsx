@@ -20,6 +20,7 @@ export function Header() {
   const pathname = usePathname();
   const { data: session, status } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [businessName, setBusinessName] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -75,6 +76,11 @@ export function Header() {
   }, [session?.user?.id]);
 
   useEffect(() => {
+    const frame = requestAnimationFrame(() => setIsMounted(true));
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
+  useEffect(() => {
     if (!menuOpen) return;
     const handleMouseDown = (e: MouseEvent) => {
       if (menuRef.current?.contains(e.target as Node)) return;
@@ -128,7 +134,9 @@ export function Header() {
             </span>
           )}
           {/* Auth area */}
-          {status === "loading" ? (
+          {!isMounted ? (
+            <div className="h-8 w-8 rounded-full bg-slate-800 animate-pulse" />
+          ) : status === "loading" ? (
             <div className="w-8 h-8 rounded-full bg-slate-700 animate-pulse" />
           ) : session ? (
             <div className="relative" ref={menuRef}>

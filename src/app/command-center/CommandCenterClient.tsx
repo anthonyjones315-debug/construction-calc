@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { Route } from "next";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   BarChart3,
@@ -21,7 +21,9 @@ import {
   Thermometer,
   Triangle,
   Users,
+  X,
 } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { routes } from "@routes";
 
 type TeamMember = {
@@ -37,6 +39,8 @@ type CommandCenterClientProps = {
   businessName: string;
   joinCode: string;
   initialMembers: TeamMember[];
+  draftMode?: boolean;
+  initialToolSlug?: string;
 };
 
 type NavItem = {
@@ -44,48 +48,120 @@ type NavItem = {
   href?: Route;
   icon: LucideIcon;
   active?: boolean;
+  slug: string;
+  description?: string;
 };
 
 const primaryNavItems: NavItem[] = [
-  { label: "Home", href: routes.commandCenter, icon: HardHat, active: true },
-  { label: "Clients", icon: Users },
-  { label: "Settings", href: routes.settings, icon: Settings },
+  {
+    label: "Home",
+    slug: "dashboard",
+    href: routes.commandCenter,
+    icon: HardHat,
+    active: true,
+    description: "Dashboard overview",
+  },
+  {
+    label: "Clients",
+    slug: "clients",
+    href: routes.saved,
+    icon: Users,
+    description: "Saved clients and contacts",
+  },
+  {
+    label: "Settings",
+    slug: "settings",
+    href: routes.settings,
+    icon: Settings,
+    description: "Business profile & permissions",
+  },
 ];
 
 const toolNavItems: NavItem[] = [
-  { label: "Estimates", href: routes.saved, icon: FileText },
-  { label: "Trade Modules", href: routes.calculators, icon: HardHat },
+  {
+    label: "Slab Thickness (Inches)",
+    slug: "slab-thickness",
+    href: "/calculators/concrete/slab" as Route,
+    icon: BrickWall,
+    description: "Compute slab thickness in inches and convert to volume.",
+  },
+  {
+    label: "Running Lineal Feet",
+    slug: "running-lineal-feet",
+    href: "/calculators/concrete/block" as Route,
+    icon: BrickWall,
+    description: "Quick lineal foot math for footings and block walls.",
+  },
+  {
+    label: "Cubic Yards",
+    slug: "cubic-yards",
+    href: "/calculators/concrete/slab" as Route,
+    icon: BarChart3,
+    description: "Translate area and thickness into cubic yard totals.",
+  },
+  {
+    label: "Estimates",
+    slug: "estimates",
+    href: routes.saved,
+    icon: FileText,
+    description: "Saved proposals and contracts",
+  },
+  {
+    label: "Trade Modules",
+    slug: "trade-modules",
+    href: routes.calculators,
+    icon: HardHat,
+    description: "Modular trade calculator hub",
+  },
   {
     label: "Concrete & Masonry",
+    slug: "masonry",
     href: "/calculators/concrete" as Route,
     icon: BrickWall,
+    description: "Concrete pours, slabs, and masonry packs",
   },
   {
     label: "Framing & Lumber",
+    slug: "framing",
     href: "/calculators/framing" as Route,
     icon: Hammer,
+    description: "Dimension lumber, rafters, and studs",
   },
   {
     label: "Roofing & Siding",
+    slug: "roofing",
     href: "/calculators/roofing" as Route,
     icon: Triangle,
+    description: "Roofing pitches, coverage & siding",
   },
   {
     label: "Mechanical & Site",
+    slug: "mechanical",
     href: "/calculators/mechanical" as Route,
     icon: Thermometer,
+    description: "HVAC, ductwork, and equipment math",
   },
   {
     label: "Interior",
+    slug: "interior",
     href: "/calculators/interior" as Route,
     icon: Layout,
+    description: "Finish, trim, and interior trades",
   },
   {
     label: "Business",
+    slug: "business",
     href: "/calculators/business" as Route,
     icon: BarChart3,
+    description: "Profit, leads, workforce controls",
   },
-  { label: "Calculators", href: routes.calculators, icon: Calculator },
+  {
+    label: "Calculator Library",
+    slug: "calculator-library",
+    href: routes.calculators,
+    icon: Calculator,
+    description: "Browse every field calculator",
+  },
 ];
 
 function formatRole(role: string): string {
@@ -115,6 +191,8 @@ export default function CommandCenterClient({
   businessName,
   joinCode,
   initialMembers,
+  draftMode = false,
+  initialToolSlug,
 }: CommandCenterClientProps) {
   const [members, setMembers] = useState<TeamMember[]>(initialMembers);
   const [busyMemberId, setBusyMemberId] = useState<string | null>(null);
@@ -123,6 +201,11 @@ export default function CommandCenterClient({
   const [manageTargetId, setManageTargetId] = useState<string | null>(null);
   const [activeJoinCode, setActiveJoinCode] = useState(joinCode);
   const [isRefreshingInvite, setIsRefreshingInvite] = useState(false);
+  const [activeTool, setActiveTool] = useState<NavItem | null>(null);
+  const [toolFilter, setToolFilter] = useState("");
+  const [handledDeepLink, setHandledDeepLink] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const toolFromQuery = searchParams.get("tool") ?? initialToolSlug;
 
   const manageTarget = useMemo(
     () =>
@@ -134,6 +217,30 @@ export default function CommandCenterClient({
   const seatLimit = 10;
   const seatsUsed = members.length;
   const seatsAvailable = Math.max(seatLimit - seatsUsed, 0);
+  const normalizedFilter = toolFilter.trim().toLowerCase();
+  const filteredToolItems = normalizedFilter
+    ? toolNavItems.filter((item) => {
+        const haystack = [
+          item.label,
+          item.slug,
+          item.description ?? "",
+        ]
+          .join(" ")
+          .toLowerCase();
+        return haystack.includes(normalizedFilter);
+      })
+    : toolNavItems;
+  const toolFromQuerySlug = toolFromQuery?.toLowerCase() ?? "";
+
+  useEffect(() => {
+    if (!toolFromQuerySlug) return;
+    if (handledDeepLink === toolFromQuerySlug) return;
+    const match = toolNavItems.find((entry) => entry.slug === toolFromQuerySlug);
+    if (match) {
+      setActiveTool(match);
+      setHandledDeepLink(toolFromQuerySlug);
+    }
+  }, [toolFromQuerySlug, handledDeepLink]);
 
   async function refreshInviteCode() {
     if (isRefreshingInvite) return;
@@ -276,7 +383,7 @@ export default function CommandCenterClient({
           <nav className="mt-2 flex flex-col gap-0.5">
             {primaryNavItems.map((item) => {
               const sharedClasses =
-                "flex items-center gap-2 rounded-lg border border-transparent px-3 py-1.5 text-sm font-semibold tracking-tight transition-colors";
+                "flex w-full items-center gap-2 rounded-lg border border-transparent px-3 py-1.5 text-left text-sm font-semibold tracking-tight transition-colors";
               const stateClasses = item.active
                 ? "bg-slate-900 border-slate-800 text-orange-600"
                 : "text-slate-300 hover:bg-slate-900 hover:border-slate-800 hover:text-white";
@@ -289,25 +396,44 @@ export default function CommandCenterClient({
                 </>
               );
 
-              return item.href ? (
-                <Link key={item.label} href={item.href} className={className}>
+              return (
+                <Link key={item.label} href={item.href ?? routes.commandCenter} className={className}>
                   {navContent}
                 </Link>
-              ) : (
-                <div key={item.label} className={className}>
-                  {navContent}
-                </div>
               );
             })}
 
           <div className="mt-2 px-2 text-[9px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-              Tools
-            </div>
+            Tools
+          </div>
+          <div className="px-2 pt-2">
+            <label
+              htmlFor="command-center-tool-search"
+              className="sr-only"
+            >
+              Search tools
+            </label>
+            <input
+              id="command-center-tool-search"
+              type="text"
+              value={toolFilter}
+              onChange={(event) => setToolFilter(event.target.value)}
+              placeholder="Search tools"
+              className="w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-slate-300 placeholder:text-slate-500 focus:border-orange-600 focus:ring-2 focus:ring-orange-600/30"
+            />
+          </div>
 
-            {toolNavItems.map((item) => {
+          {filteredToolItems.length === 0 ? (
+            <div className="px-4 py-3 text-xs text-slate-500">
+              No tools match that term.
+            </div>
+          ) : (
+            filteredToolItems.map((item) => {
               const sharedClasses =
-                "flex items-center gap-2 rounded-lg border border-transparent px-3 py-1.5 text-sm font-medium transition-colors";
+                "flex w-full items-center gap-2 rounded-lg border border-transparent px-3 py-1.5 text-left text-sm font-medium transition-colors";
               const className = `${sharedClasses} text-slate-300 hover:bg-slate-900 hover:border-slate-800 hover:text-white`;
+              const href = item.href ?? routes.commandCenter;
+              const isCalculator = typeof href === "string" && href.startsWith("/calculators");
 
               const navContent = (
                 <>
@@ -316,17 +442,27 @@ export default function CommandCenterClient({
                 </>
               );
 
-              return item.href ? (
-                <Link key={item.label} href={item.href} className={className}>
-                  {navContent}
-                </Link>
-              ) : (
-                <div key={item.label} className={className}>
-                  {navContent}
-                </div>
-              );
-            })}
-          </nav>
+              if (isCalculator && typeof href === "string") {
+                return (
+                  <button
+                    key={item.slug}
+                    type="button"
+                    onClick={() => setActiveTool(item)}
+                    className={className}
+                  >
+                    {navContent}
+                  </button>
+                );
+              }
+
+            return (
+              <Link key={item.label} href={href} className={className}>
+                {navContent}
+              </Link>
+            );
+            })
+          )}
+        </nav>
 
           <div className="mt-auto border-t border-slate-800 pt-2">
             <p className="px-2 text-[10px] text-white/65">
@@ -370,7 +506,32 @@ export default function CommandCenterClient({
               Owner&apos;s Command Center
             </h1>
 
-            <div className="grid gap-4 lg:grid-cols-[1fr,300px]">
+            {draftMode && (
+              <div className="rounded-2xl border border-orange-600/50 bg-orange-600/10 px-5 py-4">
+                <p className="text-xs font-bold uppercase tracking-[0.15em] text-orange-600">
+                  Drafting mode
+                </p>
+                <p className="mt-1 text-sm text-slate-200">
+                  Start a new estimate: open a trade calculator below or go to Saved Estimates to continue an existing draft.
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <Link
+                    href={routes.calculators}
+                    className="inline-flex min-h-10 items-center justify-center rounded-xl bg-orange-600 px-4 text-sm font-bold text-white transition hover:bg-orange-700"
+                  >
+                    Open Calculators
+                  </Link>
+                  <Link
+                    href={routes.saved}
+                    className="inline-flex min-h-10 items-center justify-center rounded-xl border border-slate-600 px-4 text-sm font-semibold text-slate-200 transition hover:border-slate-500 hover:text-white"
+                  >
+                    Saved Estimates
+                  </Link>
+                </div>
+              </div>
+            )}
+
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             <div className="max-w-full overflow-hidden rounded-2xl border border-slate-700 bg-slate-900 px-5 py-4 text-slate-100">
                 <h2 className="font-sans text-2xl font-black uppercase leading-none tracking-tight text-white sm:text-4xl">
                   Your Business Team
@@ -432,7 +593,7 @@ export default function CommandCenterClient({
               </div>
             )}
 
-            <div className="command-card space-y-4 p-0">
+            <div className="command-card space-y-4 p-0 xl:col-span-3">
               <div className="border-b border-[--color-border] px-5 py-4 text-xl font-sans font-black uppercase tracking-tight text-white">
                 Current Team Members
               </div>
@@ -511,9 +672,60 @@ export default function CommandCenterClient({
                 </table>
               </div>
             </div>
-          </div>
-        </section>
       </div>
+      </section>
+      </div>
+
+      {activeTool && (
+        <div className="fixed inset-0 z-50 flex">
+          <button
+            type="button"
+            onClick={() => setActiveTool(null)}
+            className="absolute inset-0 bg-black/60"
+          />
+          <div className="relative ml-auto flex h-full w-full max-w-md flex-col overflow-hidden rounded-tl-3xl rounded-bl-3xl border border-slate-800 bg-slate-900 shadow-[0_24px_50px_rgba(0,0,0,0.6)]">
+            <div className="flex items-center justify-between border-b border-slate-800 px-4 py-3">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-slate-400">
+                  Tool Details
+                </p>
+                <p className="text-lg font-black uppercase tracking-tight text-white">
+                  {activeTool.label}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveTool(null)}
+                className="rounded-full border border-slate-800 p-1 text-slate-300 transition hover:border-orange-600 hover:text-white"
+                aria-label="Close tool detail pane"
+              >
+                <X className="h-4 w-4" aria-hidden />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto px-4 py-4 text-sm text-slate-300">
+              <p className="text-slate-400">
+                {activeTool.description ??
+                  "Field-ready figures, templates, and workflow context for this tool."}
+              </p>
+              <div className="mt-4 flex flex-col gap-3">
+                <Link
+                  href={activeTool.href ?? routes.commandCenter}
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-orange-600 bg-orange-600 px-4 py-2 text-sm font-black uppercase text-white transition hover:bg-orange-700"
+                >
+                  Open {activeTool.label}
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setActiveTool(null)}
+                  className="inline-flex items-center justify-center rounded-2xl border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-orange-600 hover:text-white"
+                >
+                  Close panel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {manageTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">

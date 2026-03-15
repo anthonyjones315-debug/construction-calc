@@ -37,31 +37,38 @@ export function PWAInstallBanner() {
   const [isIOS, setIsIOS] = useState(false);
 
   useEffect(() => {
-    // Never show if user already dismissed or is already running as a PWA
-    if (localStorage.getItem(DISMISSED_KEY)) return;
-    if (isStandaloneMode()) return;
-    // Hide on desktop; only show install UI on mobile/tablet
-    if (!isMobile()) return;
+    let handler: ((e: Event) => void) | null = null;
+    let frame: number | null = null;
 
-    const ios = isIOSDevice();
-    setIsIOS(ios);
+    const run = () => {
+      if (localStorage.getItem(DISMISSED_KEY)) return;
+      if (isStandaloneMode()) return;
+      if (!isMobile()) return;
 
-    if (ios) {
-      // iOS Safari doesn't fire beforeinstallprompt — show manual instructions
-      setVisible(true);
-      return;
-    }
+      const ios = isIOSDevice();
+      frame = requestAnimationFrame(() => {
+        setIsIOS(ios);
+        if (ios) {
+          setVisible(true);
+          return;
+        }
 
-    // Chrome/Edge/Android: wait for the browser's deferred install prompt.
-    // preventDefault only when we will show our custom INSTALL button (not on desktop).
-    const handler = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
-      setVisible(true);
+        handler = (e: Event) => {
+          e.preventDefault();
+          setDeferredPrompt(e as BeforeInstallPromptEvent);
+          setVisible(true);
+        };
+
+        window.addEventListener("beforeinstallprompt", handler);
+      });
     };
 
-    window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
+    run();
+
+    return () => {
+      if (typeof frame === "number") cancelAnimationFrame(frame);
+      if (handler) window.removeEventListener("beforeinstallprompt", handler);
+    };
   }, []);
 
   function dismiss() {

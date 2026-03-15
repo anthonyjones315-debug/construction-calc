@@ -8,6 +8,7 @@ import {
   Share2,
   Trash2,
   Plus,
+  RefreshCw,
 } from "lucide-react";
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
@@ -265,6 +266,10 @@ export function EstimateDetail({ estimate }: Props) {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [shareCode, setShareCode] = useState<string | null>(
+    estimate.shareCode ?? null,
+  );
+  const [regenShareBusy, setRegenShareBusy] = useState(false);
 
   const haptic = useHaptic();
   const saveLockStart = useRef<number>(0);
@@ -552,6 +557,29 @@ export function EstimateDetail({ estimate }: Props) {
       );
     } finally {
       setBusy(null);
+    }
+  }
+
+  async function regenShareCode() {
+    setRegenShareBusy(true);
+    setSaveError(null);
+    setSaveSuccess(null);
+    try {
+      const res = await fetch(`/api/estimates/${estimate.id}/regen-share`, {
+        method: "POST",
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data?.error ?? "Failed to regenerate share code.");
+      const newCode = data.share_code as string | undefined;
+      if (typeof newCode === "string" && newCode.trim()) {
+        setShareCode(newCode.trim());
+        setSaveSuccess("Share code updated.");
+        haptic(10);
+      }
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : "Failed to regenerate share code.");
+    } finally {
+      setRegenShareBusy(false);
     }
   }
 
@@ -1028,6 +1056,30 @@ export function EstimateDetail({ estimate }: Props) {
             No invoices yet. Add one to start progress billing for this project.
           </p>
         )}
+      </section>
+
+      {/* ── Share code ── */}
+      <section className="mb-6 rounded-2xl border border-[--color-border] bg-[--color-surface-alt] p-4">
+        <h3 className="text-sm font-bold uppercase tracking-wide text-[--color-ink-mid]">
+          Share code
+        </h3>
+        <p className="mt-1 text-xs text-[--color-ink-dim]">
+          Client-facing code for share links. Regenerate to invalidate the previous code.
+        </p>
+        <div className="mt-3 flex flex-wrap items-center gap-3">
+          <code className="rounded-lg border border-[--color-border] bg-[--color-surface] px-3 py-2 text-sm font-mono font-semibold text-[--color-ink]">
+            {shareCode || "—"}
+          </code>
+          <button
+            type="button"
+            onClick={regenShareCode}
+            disabled={regenShareBusy}
+            className="inline-flex items-center gap-2 rounded-xl border border-[--color-orange-brand]/40 px-4 py-2 text-sm font-medium text-[--color-orange-brand] hover:border-[--color-orange-brand] disabled:opacity-50 transition-colors"
+          >
+            <RefreshCw className={`w-4 h-4 ${regenShareBusy ? "animate-spin" : ""}`} aria-hidden />
+            {regenShareBusy ? "Regenerating…" : "Regenerate code"}
+          </button>
+        </div>
       </section>
 
       {/* ── Action bar ── */}

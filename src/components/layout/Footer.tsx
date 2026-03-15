@@ -1,14 +1,36 @@
 import Link from "next/link";
 import { HardHat } from "lucide-react";
 import { CookiePreferencesButton } from "@/components/layout/CookiePreferencesButton";
-import {
-  accountNavigation,
-  getCalculatorCategoryHref,
-  legalNavigation,
-  routes,
-} from "@routes";
+import { routes } from "@routes";
 
 const COPYRIGHT_YEAR = 2026;
+const footerCalculatorLinks = [
+  { label: "Slab Thickness (Inches)", slug: "slab-thickness" },
+  { label: "Running Lineal Feet", slug: "running-lineal-feet" },
+  { label: "Cubic Yards", slug: "cubic-yards" },
+];
+const footerAccountLinks = [
+  { label: "Sign In", slug: "sign-in" },
+  { label: "Saved Estimates", slug: "estimates" },
+  { label: "Price Book", slug: "business" },
+  { label: "Business Profile", slug: "settings" },
+  { label: "Command Center", slug: "dashboard" },
+];
+const footerLegalLinks = [
+  { label: "Field Notes", slug: "interior" },
+  { label: "FAQ", slug: "trade-modules" },
+  { label: "About", slug: "trade-modules" },
+  { label: "Privacy Policy", slug: "privacy" },
+  { label: "Terms of Service", slug: "terms" },
+];
+
+const buildCommandCenterLink = (slug?: string) =>
+  slug
+    ? {
+        pathname: routes.commandCenter,
+        query: { tool: slug },
+      }
+    : routes.commandCenter;
 
 export function Footer() {
   return (
@@ -44,31 +66,10 @@ export function Footer() {
               Calculators
             </p>
             <div className="space-y-2">
-              {[
-                {
-                  href: getCalculatorCategoryHref("concrete"),
-                  label: "Concrete",
-                },
-                {
-                  href: getCalculatorCategoryHref("framing"),
-                  label: "Framing",
-                },
-                {
-                  href: getCalculatorCategoryHref("roofing"),
-                  label: "Roofing",
-                },
-                {
-                  href: getCalculatorCategoryHref("insulation"),
-                  label: "Insulation",
-                },
-                {
-                  href: getCalculatorCategoryHref("flooring"),
-                  label: "Flooring",
-                },
-              ].map(({ href, label }) => (
+              {footerCalculatorLinks.map(({ label, slug }) => (
                 <Link
-                  key={label}
-                  href={href}
+                  key={slug}
+                  href={buildCommandCenterLink(slug)}
                   className="block hover:text-white transition-colors text-slate-300"
                 >
                   {label}
@@ -83,10 +84,10 @@ export function Footer() {
               Account
             </p>
             <div className="space-y-2">
-              {accountNavigation.map(({ href, label }) => (
+              {footerAccountLinks.map(({ label, slug }) => (
                 <Link
-                  key={href}
-                  href={href}
+                  key={slug}
+                  href={buildCommandCenterLink(slug)}
                   className="block hover:text-white transition-colors text-slate-300"
                 >
                   {label}
@@ -109,10 +110,10 @@ export function Footer() {
               </span>
             </div>
             <div className="space-y-2">
-              {legalNavigation.map(({ href, label }) => (
+              {footerLegalLinks.map(({ label, slug }) => (
                 <Link
-                  key={href}
-                  href={href}
+                  key={slug}
+                  href={buildCommandCenterLink(slug)}
                   className="block hover:text-orange-500 transition-colors text-slate-300"
                 >
                   {label}
@@ -134,23 +135,23 @@ export function Footer() {
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4 text-xs lg:justify-end">
             <Link
-              href={routes.privacy}
+              href={buildCommandCenterLink("privacy")}
               className="hover:text-white transition-colors"
             >
               Privacy
             </Link>
             <Link
-              href={routes.terms}
+              href={buildCommandCenterLink("terms")}
               className="hover:text-white transition-colors"
             >
               Terms
             </Link>
-            <Link
-              href={routes.contact}
+            <a
+              href="mailto:amj111394@gmail.com"
               className="hover:text-white transition-colors"
             >
               Contact Us
-            </Link>
+            </a>
             <CookiePreferencesButton />
           </div>
         </div>

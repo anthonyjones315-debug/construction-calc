@@ -1,4 +1,5 @@
 import type { Route } from "next";
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth/config";
@@ -346,6 +347,8 @@ export default async function CommandCenterPage({
   searchParams: Promise<{
     setupError?: string | string[];
     setupErrorDetails?: string | string[];
+    mode?: string | string[];
+    tool?: string | string[];
   }>;
 }) {
   const { session, userId } = await resolveUserId();
@@ -363,57 +366,37 @@ export default async function CommandCenterPage({
     ? params.setupErrorDetails[0]
     : params.setupErrorDetails;
   const setupError = getSetupErrorMessage(setupErrorCode, setupErrorDetails);
+  const draftMode = Array.isArray(params.mode) ? params.mode[0] === "draft" : params.mode === "draft";
+  const toolParam = Array.isArray(params.tool) ? params.tool[0] : params.tool;
 
-  if (!userId) {
-    return (
-      <div className="flex min-h-screen flex-col bg-[#0F0F10]">
-        <Header />
-        <main id="main-content" className="flex-1">
-          <CommandCenterOnboarding setupError={setupError} />
-        </main>
-        <Footer />
-      </div>
-    );
-  }
+  const commandCenterData =
+    userId === null ? null : await loadCommandCenterData(userId);
 
-  const commandCenterData = await loadCommandCenterData(userId);
+  let mainContent: ReactNode;
 
-  if (!commandCenterData.hasBusiness) {
-    return (
-      <div className="flex min-h-screen flex-col bg-[#0F0F10]">
-        <Header />
-        <main id="main-content" className="flex-1">
-          <CommandCenterOnboarding setupError={setupError} />
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
-  if (!commandCenterData.isOwner) {
-    return (
-      <div className="flex min-h-screen flex-col bg-[#0F0F10]">
-        <Header />
-        <main id="main-content" className="flex-1">
-          <NotOwnerState />
-        </main>
-        <Footer />
-      </div>
+  if (!userId || !commandCenterData || !commandCenterData.hasBusiness) {
+    mainContent = <CommandCenterOnboarding setupError={setupError} />;
+  } else if (!commandCenterData.isOwner) {
+    mainContent = <NotOwnerState />;
+  } else {
+    mainContent = (
+      <CommandCenterClient
+        businessName={commandCenterData.businessName}
+        joinCode={commandCenterData.joinCode}
+        initialMembers={commandCenterData.members}
+        draftMode={draftMode}
+        initialToolSlug={toolParam ?? undefined}
+      />
     );
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#0F0F10]">
+    <div className="min-h-screen grid grid-rows-[auto_1fr_auto] bg-slate-950 text-slate-100">
       <Header />
-      <main
-        id="main-content"
-        className="mx-auto w-full max-w-screen-xl flex-1 bg-[#0F0F10] px-4 py-6"
-      >
-        <CommandCenterClient
-          businessName={commandCenterData.businessName}
-          joinCode={commandCenterData.joinCode}
-          initialMembers={commandCenterData.members}
-        />
+      <main className="row-start-2 overflow-hidden">
+        <div className="h-full overflow-y-auto px-4 py-6 sm:px-6">
+          {mainContent}
+        </div>
       </main>
       <Footer />
     </div>

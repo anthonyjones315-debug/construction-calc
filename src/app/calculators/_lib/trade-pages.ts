@@ -1012,6 +1012,10 @@ export function getTradePage(key: TradePageKey): TradePageDefinition {
   return tradePages[key];
 }
 
+export function getTradePageByPath(path: string): TradePageDefinition | undefined {
+  return Object.values(tradePages).find((p) => p.canonicalPath === path);
+}
+
 export function getTradePageMetadata(page: TradePageDefinition): Metadata {
   const canonicalUrl = `${SITE_URL}${page.canonicalPath}`;
   const localDescription = `${page.description} Serving Oneida County, NY and the Mohawk Valley contractor market.`;

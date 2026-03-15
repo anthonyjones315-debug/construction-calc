@@ -52,6 +52,8 @@ export function EmailEstimateModal({
     setErrorMessage(null);
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
       const res = await fetch("/api/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -64,7 +66,9 @@ export function EmailEstimateModal({
               estimate.generatedAt ?? new Date().toISOString().slice(0, 10),
           },
         }),
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {

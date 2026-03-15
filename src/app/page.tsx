@@ -47,11 +47,17 @@ export default function HomePage() {
               </p>
               <div className="mt-6 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap">
                 <Link
-                  href={routes.calculators}
+                  href={`${routes.commandCenter}?mode=draft`}
                   className="btn-tactile inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-orange-600 px-4 py-3 text-sm font-bold text-white transition-all duration-200 hover:bg-orange-700 active:scale-[0.98] sm:w-auto"
                 >
-                  Open Calculators{" "}
+                  Begin Estimate{" "}
                   <ArrowRight className="h-4 w-4" aria-hidden />
+                </Link>
+                <Link
+                  href={routes.calculators}
+                  className="btn-tactile inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-slate-600 px-4 py-3 text-sm font-semibold text-slate-200 transition-all duration-200 hover:border-slate-500 hover:text-white active:scale-[0.98] sm:w-auto"
+                >
+                  Open Calculators
                 </Link>
                 <Link
                   href={routes.saved}

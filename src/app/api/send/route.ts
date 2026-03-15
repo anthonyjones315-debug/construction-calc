@@ -48,7 +48,8 @@ const sendSchema = z.object({
   message: "Provide either html or estimate.",
 });
 
-// Verified sender: must use @proconstructioncalc.com (or your Resend verified domain) or Resend returns 502/504.
+// Verified sender: use a From address on your Resend Verified Domain (e.g. @proconstructioncalc.com).
+// Resend requires a Verified Domain Identity; otherwise sends return 502/504 or timeout.
 const FROM_EMAIL =
   process.env.RESEND_FROM_EMAIL ?? "Pro Construction Calc <system@proconstructioncalc.com>";
 const LEAD_BCC = process.env.RESEND_LEAD_BCC ?? undefined;

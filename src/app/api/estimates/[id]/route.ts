@@ -122,6 +122,7 @@ export async function PATCH(
       status?: "Draft" | "Sent" | "Approved" | "Lost";
       budget_items?: unknown[] | null;
       inputs?: Record<string, unknown> | null;
+      share_code?: string | null;
     };
 
     try {
@@ -141,6 +142,7 @@ export async function PATCH(
     status?: "Draft" | "Sent" | "Approved" | "Lost";
     budget_items?: unknown[] | null;
     inputs?: Record<string, unknown> | null;
+    share_code?: string | null;
     } = {};
 
     if (body.name !== undefined)
@@ -185,6 +187,13 @@ export async function PATCH(
     if (body.inputs !== undefined) {
       updates.inputs =
         body.inputs && typeof body.inputs === "object" ? body.inputs : null;
+    }
+
+    if (body.share_code !== undefined) {
+      updates.share_code =
+        typeof body.share_code === "string" && body.share_code.trim()
+          ? body.share_code.trim().slice(0, 32)
+          : null;
     }
 
     if (!Object.keys(updates).length) {
