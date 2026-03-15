@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidateTag } from "next/cache";
+import * as Sentry from "@sentry/nextjs";
 import { auth } from "@/lib/auth/config";
 import { createServerClient } from "@/lib/supabase/server";
 import {
@@ -119,7 +120,7 @@ export async function updateBidStatusAction(
     .eq(tenantColumn, tenantId);
 
   if (error) {
-    console.error("updateBidStatusAction error:", error.message);
+    Sentry.captureException(error);
     return { ok: false, error: "Failed to update bid status." };
   }
 
@@ -201,7 +202,7 @@ export async function updateBidDetailsAction(
     .eq(tenantColumn, tenantId);
 
   if (error) {
-    console.error("updateBidDetailsAction error:", error.message);
+    Sentry.captureException(error);
     return { ok: false, error: "Failed to update bid." };
   }
 

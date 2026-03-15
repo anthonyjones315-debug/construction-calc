@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
+import * as Sentry from "@sentry/nextjs";
 import { auth } from "@/lib/auth/config";
 import { createServerClient } from "@/lib/supabase/server";
 import {
@@ -12,6 +13,7 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  try {
   const session = await auth();
   if (!session?.user?.id)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -33,16 +35,23 @@ export async function PUT(
     .eq("id", id)
     .eq(tenantColumn, tenantId);
 
-  if (error)
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    Sentry.captureException(error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
   revalidateTag("products", "max");
   return NextResponse.json({ ok: true });
+  } catch (error) {
+    Sentry.captureException(error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
 }
 
 export async function DELETE(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  try {
   const session = await auth();
   if (!session?.user?.id)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -64,8 +73,14 @@ export async function DELETE(
     .eq("id", id)
     .eq(tenantColumn, tenantId);
 
-  if (error)
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    Sentry.captureException(error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
   revalidateTag("products", "max");
   return NextResponse.json({ ok: true });
+  } catch (error) {
+    Sentry.captureException(error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
 }

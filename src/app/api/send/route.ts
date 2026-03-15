@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
 import { Resend } from "resend";
 import { z } from "zod";
 
@@ -149,7 +150,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ ok: true, id: data?.id });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Send failed.";
-    return NextResponse.json({ error: message }, { status: 500 });
+    Sentry.captureException(err);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

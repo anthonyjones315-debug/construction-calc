@@ -82,7 +82,7 @@ export function CalculatorsDirectoryClient() {
               return (
                 <div
                   key={key}
-                  className="group flex flex-col rounded-2xl border border-white/10 bg-[#1A1A1C] p-5 shadow-[0_12px_28px_rgba(0,0,0,0.25)] transition-all duration-300 ease-in-out hover:border-[--color-orange-brand]/50 hover:shadow-[0_14px_32px_rgba(247,148,29,0.12)]"
+                  className="group flex flex-col rounded-2xl border border-slate-800 bg-slate-900/50 p-5 shadow-[0_12px_28px_rgba(0,0,0,0.25)] transition-all duration-200 hover:border-orange-500/50 hover:shadow-[0_14px_32px_rgba(247,148,29,0.12)]"
                 >
                   <Link
                     href={href as Route}

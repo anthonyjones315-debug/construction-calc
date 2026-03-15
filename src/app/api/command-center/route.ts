@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
 import { auth } from "@/lib/auth/config";
 import { createServerClient } from "@/lib/supabase/server";
 import { getBusinessContextForSession } from "@/lib/supabase/business";
@@ -18,12 +19,13 @@ function makeJoinCode(seed: string): string {
 }
 
 export async function GET() {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-  const db = createServerClient();
+    const db = createServerClient();
   const businessContext = await getBusinessContextForSession(db, session);
 
   if (!businessContext.isOwner) {
@@ -40,8 +42,9 @@ export async function GET() {
     .single();
 
   if (businessError || !businessRow) {
+    if (businessError) Sentry.captureException(businessError);
     return NextResponse.json(
-      { error: businessError?.message ?? "Business not found." },
+      { error: "Internal Server Error" },
       { status: 500 },
     );
   }
@@ -53,8 +56,9 @@ export async function GET() {
     .order("created_at", { ascending: true });
 
   if (membershipsError) {
+    Sentry.captureException(membershipsError);
     return NextResponse.json(
-      { error: membershipsError.message },
+      { error: "Internal Server Error" },
       { status: 500 },
     );
   }
@@ -68,7 +72,8 @@ export async function GET() {
       .in("id", userIds);
 
     if (usersError) {
-      return NextResponse.json({ error: usersError.message }, { status: 500 });
+      Sentry.captureException(usersError);
+      return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 
     users = (userRows ?? []) as UserRow[];
@@ -94,4 +99,8 @@ export async function GET() {
       };
     }),
   });
+  } catch (error) {
+    Sentry.captureException(error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
 }

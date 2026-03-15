@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
 import { z } from "zod";
+import * as Sentry from "@sentry/nextjs";
 import { auth } from "@/lib/auth/config";
 import { createServerClient } from "@/lib/supabase/server";
 import {
@@ -33,10 +34,6 @@ const saveEstimateSchema = z
 
 function newErrorId() {
   return crypto.randomUUID();
-}
-
-function errorMessage(error: unknown) {
-  return error instanceof Error ? error.message : String(error);
 }
 
 function getSchemaMismatchHint(message: string): string | null {
@@ -181,13 +178,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 403 });
     }
 
-    console.error("[save-estimate] route exception", {
-      requestId,
-      userId: session.user.id,
-      message: errorMessage(error),
-    });
+    Sentry.captureException(error);
     return NextResponse.json(
-      { error: `Save failed: ${errorMessage(error)} (ref: ${requestId})` },
+      { error: "Internal Server Error" },
       { status: 500 },
     );
   }

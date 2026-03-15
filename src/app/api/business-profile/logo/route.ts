@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
+import * as Sentry from "@sentry/nextjs";
 import { auth } from "@/lib/auth/config";
 import { createServerClient } from "@/lib/supabase/server";
 import { getBusinessContextForSession } from "@/lib/supabase/business";
@@ -157,14 +158,9 @@ export async function POST(req: NextRequest) {
     revalidateTag("user", "max");
     return NextResponse.json({ ok: true, url: publicUrl });
   } catch (error) {
-    console.error("[logo-upload] route exception", {
-      requestId,
-      message: errorMessage(error),
-    });
-    const message =
-      error instanceof Error ? error.message : "Unexpected upload error";
+    Sentry.captureException(error);
     return NextResponse.json(
-      { error: `Upload failed: ${message} (ref: ${requestId})` },
+      { error: "Internal Server Error" },
       { status: 500 },
     );
   }

@@ -381,7 +381,7 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
           <button
             type="button"
             onClick={() => setMobileMenuOpen((current) => !current)}
-            className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-black/25 px-3 py-2 text-xs font-bold uppercase tracking-[0.1em] text-[--color-nav-text] lg:hidden"
+            className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/20 bg-black/25 px-4 py-2 text-xs font-bold uppercase tracking-[0.1em] text-[--color-nav-text] transition-all duration-200 hover:border-[--color-orange-brand]/45 active:scale-[0.98] lg:hidden"
           >
             {mobileMenuOpen ? (
               <X className="h-4 w-4" aria-hidden />
@@ -393,7 +393,7 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
         </div>
 
         {mobileMenuOpen ? (
-          <section className="mb-4 rounded-2xl border border-white/10 bg-[--color-nav-bg] p-4 lg:hidden">
+          <section className="mb-4 rounded-2xl border border-slate-800 bg-slate-900/50 p-4 transition-colors lg:hidden">
             <div className="relative">
               <Search
                 className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[--color-nav-text]/60"
@@ -412,7 +412,7 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
                   key={group.label}
                   className="rounded-xl border border-white/10 bg-black/25 p-3"
                 >
-                  <p className="mb-2 text-xs font-black uppercase tracking-[0.12em] text-[--color-orange-brand]">
+                  <p className="mb-2 text-xs font-bold uppercase tracking-[0.15em] text-orange-500">
                     {group.label}
                   </p>
                   <ul className="space-y-1.5">
@@ -452,7 +452,7 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
             }
           >
             <div className="relative z-10 max-w-xl">
-              <div className="inline-flex items-center gap-2 rounded-full border border-[--color-orange-brand]/45 bg-[--color-orange-brand]/15 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-[--color-orange-brand]">
+              <div className="inline-flex items-center gap-2 rounded-full border border-[--color-orange-brand]/45 bg-[--color-orange-brand]/15 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.15em] text-orange-500">
                 <HardHat className="h-3.5 w-3.5" aria-hidden />
                 {page.heroKicker}
               </div>
@@ -473,7 +473,7 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
                 <button
                   type="button"
                   onClick={handleExportPdf}
-                  className="inline-flex h-10 items-center gap-2 rounded-xl border border-white/20 bg-transparent px-4 text-xs font-bold uppercase tracking-[0.12em] text-[--color-nav-text] transition-all duration-300 ease-in-out hover:border-[--color-orange-brand]/45 hover:text-white"
+                  className="inline-flex h-11 min-h-11 items-center gap-2 rounded-xl border border-white/20 bg-transparent px-4 text-xs font-bold uppercase tracking-[0.12em] text-[--color-nav-text] transition-all duration-200 hover:border-[--color-orange-brand]/45 hover:text-white active:scale-[0.98]"
                 >
                   <FileDown className="h-3.5 w-3.5" aria-hidden />
                   Export PDF
@@ -481,14 +481,14 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
                 <button
                   type="button"
                   onClick={() => setCrmModalOpen(true)}
-                  className="inline-flex h-10 items-center gap-2 rounded-xl border border-white/20 bg-transparent px-4 text-xs font-bold uppercase tracking-[0.12em] text-[--color-nav-text] transition-all duration-300 ease-in-out hover:border-[--color-orange-brand]/45 hover:text-white"
+                  className="inline-flex h-11 min-h-11 items-center gap-2 rounded-xl border border-white/20 bg-transparent px-4 text-xs font-bold uppercase tracking-[0.12em] text-[--color-nav-text] transition-all duration-200 hover:border-[--color-orange-brand]/45 hover:text-white active:scale-[0.98]"
                 >
                   <Mail className="h-3.5 w-3.5" aria-hidden />
                   Email Estimate
                 </button>
                 <button
                   type="button"
-                  className="inline-flex h-10 items-center gap-2 rounded-xl border border-white/20 bg-transparent px-4 text-xs font-bold uppercase tracking-[0.12em] text-[--color-nav-text] transition-all duration-300 ease-in-out hover:border-[--color-orange-brand]/45 hover:text-white"
+                  className="inline-flex h-11 min-h-11 items-center gap-2 rounded-xl border border-white/20 bg-transparent px-4 text-xs font-bold uppercase tracking-[0.12em] text-[--color-nav-text] transition-all duration-200 hover:border-[--color-orange-brand]/45 hover:text-white active:scale-[0.98]"
                 >
                   <Save className="h-3.5 w-3.5" aria-hidden />
                   Save Estimate
@@ -513,7 +513,7 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
           <div className="space-y-4 bg-[--color-nav-bg] p-5 sm:p-7">
 
             <div className="grid gap-4 lg:grid-cols-[0.9fr,1.1fr,1fr]">
-              <aside className="hidden rounded-2xl border border-white/10 bg-black/25 p-4 lg:block">
+              <aside className="hidden rounded-2xl border border-slate-800 bg-slate-900/50 p-4 transition-colors lg:block">
                 <h2 className="text-sm font-black uppercase tracking-[0.12em] text-white">
                   Tool Navigator
                 </h2>
@@ -535,7 +535,7 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
                     <div key={group.label} className="group relative">
                       <button
                         type="button"
-                        className="flex w-full flex-col items-center gap-1 rounded-xl border border-white/15 bg-black/25 px-2 py-2 text-[10px] font-bold uppercase tracking-[0.09em] text-[--color-nav-text] transition-all duration-300 ease-in-out hover:border-[--color-orange-brand]/50 hover:text-white"
+                        className="flex min-h-11 w-full flex-col items-center justify-center gap-1 rounded-xl border border-white/15 bg-black/25 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.09em] text-[--color-nav-text] transition-all duration-200 ease-in-out hover:border-[--color-orange-brand]/50 hover:text-white active:scale-[0.98]"
                       >
                         <group.icon className="h-4 w-4 text-[--color-orange-brand]" aria-hidden />
                         {group.label}
@@ -563,7 +563,7 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
                 </div>
               </aside>
 
-              <section className="rounded-2xl border border-white/10 bg-black/25 p-5">
+              <section className="rounded-2xl border border-slate-800 bg-slate-900/50 p-5 transition-colors">
                 <h2 className="text-sm font-black uppercase tracking-[0.12em] text-white">
                   Inputs
                 </h2>
@@ -625,7 +625,7 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
               </section>
 
               <aside className="space-y-3">
-                <section className="rounded-2xl border border-white/10 bg-black/25 p-5">
+                <section className="rounded-2xl border border-slate-800 bg-slate-900/50 p-5 transition-colors">
                   <h2 className="text-sm font-black uppercase tracking-[0.12em] text-white">
                     Results
                   </h2>
@@ -658,7 +658,7 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
                     </div>
 
                     <div className="rounded-xl border border-[--color-orange-brand]/35 bg-[--color-orange-brand]/10 p-3">
-                      <h3 className="text-xs font-black uppercase tracking-[0.12em] text-[--color-orange-brand]">
+                      <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-orange-500">
                         Pro Tip
                       </h3>
                       <p className="mt-1 text-sm text-[--color-nav-text]/92">
@@ -668,7 +668,7 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
                   </div>
                 </section>
 
-                <section className="rounded-xl border border-white/15 bg-black/25 p-4">
+                <section className="rounded-xl border border-slate-800 bg-slate-900/50 p-4 transition-colors">
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
                       <div className="rounded-md bg-[--color-orange-brand] p-1.5 text-black">
@@ -685,7 +685,7 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
                     </div>
                     <button
                       type="button"
-                      className="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.12em] text-[--color-nav-text] transition-all duration-300 ease-in-out hover:border-[--color-orange-brand]/45 hover:text-white"
+                      className="min-h-11 rounded-lg border border-white/20 px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-[--color-nav-text] transition-all duration-200 hover:border-[--color-orange-brand]/45 hover:text-white active:scale-[0.98]"
                     >
                       Optimize
                     </button>
@@ -694,7 +694,7 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
               </aside>
             </div>
 
-            <section className="rounded-2xl border border-white/10 bg-black/25 p-5">
+            <section className="rounded-2xl border border-slate-800 bg-slate-900/50 p-5 transition-colors">
               <h3 className="text-xs font-bold uppercase tracking-[0.14em] text-white/70">
                 Trade Module Paths
               </h3>
@@ -703,9 +703,9 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="group flex items-center gap-2 rounded-xl border border-white/15 bg-black/25 px-3 py-2 text-xs font-bold uppercase tracking-[0.08em] text-[--color-nav-text] transition-all duration-300 ease-in-out hover:border-[--color-orange-brand] hover:text-[--color-orange-brand]"
+                    className="group flex min-h-11 items-center gap-2 rounded-xl border border-slate-800 bg-slate-900/50 px-4 py-2 text-xs font-bold uppercase tracking-[0.08em] text-[--color-nav-text] transition-all duration-200 hover:border-orange-500/50 hover:text-[--color-orange-brand] active:scale-[0.98]"
                   >
-                    <item.icon className="h-3.5 w-3.5 transition-all duration-300 ease-in-out group-hover:text-[--color-orange-brand]" aria-hidden />
+                    <item.icon className="h-3.5 w-3.5 transition-all duration-200 group-hover:text-[--color-orange-brand]" aria-hidden />
                     <span className="truncate">{item.label}</span>
                   </Link>
                 ))}
@@ -729,7 +729,7 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
               </ul>
 
               <div className="mt-5 rounded-xl border border-[--color-orange-brand]/35 bg-[--color-orange-brand]/10 p-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[--color-orange-brand]">
+                <p className="text-xs font-bold uppercase tracking-[0.15em] text-orange-500">
                   Field Notes
                 </p>
                 <p className="mt-2 text-sm text-[--color-nav-text]/90">
@@ -738,7 +738,7 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
                 </p>
                 <Link
                   href={routes.fieldNotes}
-                  className="mt-3 inline-flex items-center gap-2 rounded-lg bg-[--color-orange-brand] px-3 py-2 text-xs font-black uppercase tracking-[0.1em] text-black transition-all duration-300 ease-in-out hover:brightness-95"
+                  className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-lg bg-[--color-orange-brand] px-4 py-2 text-xs font-black uppercase tracking-[0.1em] text-black transition-all duration-200 hover:brightness-95 active:scale-[0.98]"
                 >
                   Open Field Notes
                   <ArrowRight className="h-3.5 w-3.5" aria-hidden />
@@ -749,12 +749,12 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
         </div>
 
         <nav
-          className="fixed bottom-0 left-0 right-0 z-40 flex items-center justify-between border-t trim-nav-border bg-[--color-nav-bg]/95 px-4 py-2 backdrop-blur-xl lg:hidden"
+          className="fixed bottom-0 left-0 right-0 z-40 flex min-h-12 items-center justify-between border-t trim-nav-border bg-[--color-nav-bg]/95 px-4 py-2 backdrop-blur-xl lg:hidden"
           aria-label="Mobile tool actions"
         >
           <Link
             href={routes.commandCenter}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.1em] text-[--color-nav-text]"
+            className="inline-flex min-h-11 items-center gap-1.5 px-4 text-xs font-semibold uppercase tracking-[0.1em] text-[--color-nav-text] transition-all duration-200 active:scale-[0.98]"
           >
             <HardHat className="h-3.5 w-3.5" aria-hidden />
             Dashboard
@@ -762,7 +762,7 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
           <button
             type="button"
             onClick={() => setMobileMenuOpen((current) => !current)}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-white/20 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.1em] text-[--color-orange-brand]"
+            className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-white/20 px-4 py-2 text-xs font-bold uppercase tracking-[0.1em] text-[--color-orange-brand] transition-all duration-200 active:scale-[0.98]"
           >
             <Menu className="h-3.5 w-3.5" aria-hidden />
             Modules
@@ -770,7 +770,7 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
           <button
             type="button"
             onClick={handleExportPdf}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.1em] text-[--color-nav-text]"
+            className="inline-flex min-h-11 items-center gap-1.5 px-4 text-xs font-semibold uppercase tracking-[0.1em] text-[--color-nav-text] transition-all duration-200 active:scale-[0.98]"
           >
             <FileDown className="h-3.5 w-3.5" aria-hidden />
             Export

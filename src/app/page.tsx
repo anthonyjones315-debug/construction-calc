@@ -25,7 +25,7 @@ export default function HomePage() {
       >
         <section className="mx-auto h-full w-full max-w-6xl">
           <div className="grid h-full gap-4 xl:grid-cols-[1.4fr_0.95fr]">
-            <div className="rounded-2xl border border-slate-800 bg-slate-900 overflow-hidden px-6 py-6 text-white sm:px-8 sm:py-7 lg:px-8 lg:py-7">
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/50 overflow-hidden px-6 py-6 text-white transition-colors sm:px-8 sm:py-7 lg:px-8 lg:py-7">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="section-kicker">
                   Industrial-grade estimating
@@ -48,20 +48,20 @@ export default function HomePage() {
               <div className="mt-6 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap">
                 <Link
                   href={routes.calculators}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-orange-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-orange-700 sm:w-auto"
+                  className="btn-tactile inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-orange-600 px-4 py-3 text-sm font-bold text-white transition-all duration-200 hover:bg-orange-700 active:scale-[0.98] sm:w-auto"
                 >
                   Open Calculators{" "}
                   <ArrowRight className="h-4 w-4" aria-hidden />
                 </Link>
                 <Link
                   href={routes.saved}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-600 px-5 py-3 text-sm font-semibold text-slate-200 transition hover:border-slate-500 hover:text-white sm:w-auto"
+                  className="btn-tactile inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-slate-600 px-4 py-3 text-sm font-semibold text-slate-200 transition-all duration-200 hover:border-slate-500 hover:text-white active:scale-[0.98] sm:w-auto"
                 >
                   Saved Estimates
                 </Link>
                 <Link
                   href={routes.pricebook}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-600 px-5 py-3 text-sm font-semibold text-slate-200 transition hover:border-slate-500 hover:text-white sm:w-auto"
+                  className="btn-tactile inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-slate-600 px-4 py-3 text-sm font-semibold text-slate-200 transition-all duration-200 hover:border-slate-500 hover:text-white active:scale-[0.98] sm:w-auto"
                 >
                   Price Book
                 </Link>
@@ -91,7 +91,7 @@ export default function HomePage() {
                   >
                     <div className="flex items-center gap-2 text-orange-500">
                       <Icon className="h-4 w-4" aria-hidden />
-                      <p className="text-xs font-bold uppercase tracking-[0.16em]">
+                      <p className="text-xs font-bold uppercase tracking-[0.15em] text-orange-500">
                         {label}
                       </p>
                     </div>
@@ -104,7 +104,7 @@ export default function HomePage() {
             </div>
 
             <div className="flex flex-col gap-4 xl:pt-1">
-              <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 text-white">
+              <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-5 text-white transition-colors">
                 <p className="section-kicker">Explore next</p>
                 <div className="mt-4 space-y-3">
                   {[
@@ -127,7 +127,7 @@ export default function HomePage() {
                     <Link
                       key={item.title}
                       href={item.href}
-                      className="block rounded-2xl border border-slate-800 bg-slate-800/80 px-4 py-3 transition hover:border-orange-600/40 hover:bg-slate-800"
+                      className="block min-h-11 rounded-2xl border border-slate-800 bg-slate-800/80 px-4 py-3 transition-all duration-200 hover:border-orange-500/50 hover:bg-slate-800"
                     >
                       <p className="font-display text-base font-semibold uppercase tracking-wide text-white">
                         {item.title}
@@ -140,7 +140,7 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 lg:p-4">
+              <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-5 transition-colors lg:p-4">
                 <p className="section-kicker">Why it lands</p>
                 <div className="mt-4 grid gap-3 md:grid-cols-3">
                   {[

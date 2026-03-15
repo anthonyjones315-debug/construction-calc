@@ -100,7 +100,7 @@ export function CookieConsentBanner() {
 
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-0 z-[70] px-4 pb-4">
-      <div className="pointer-events-auto mx-auto max-w-4xl rounded-2xl border border-slate-800 bg-slate-900 p-5 text-white shadow-[0_24px_50px_rgba(0,0,0,0.45)]">
+      <div className="pointer-events-auto mx-auto max-w-4xl rounded-2xl border border-slate-800 bg-slate-900/50 p-5 text-white shadow-[0_24px_50px_rgba(0,0,0,0.45)] transition-colors">
         <div className="mb-3 flex justify-end">
           <button
             type="button"
@@ -112,7 +112,7 @@ export function CookieConsentBanner() {
         </div>
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div className="max-w-2xl">
-            <p className="text-xs font-bold uppercase tracking-widest text-[--color-orange-brand]">
+            <p className="text-xs font-bold uppercase tracking-[0.15em] text-orange-500">
               Cookie Preferences
             </p>
             <p className="mt-2 text-sm font-semibold text-white">
@@ -152,14 +152,14 @@ export function CookieConsentBanner() {
             <button
               type="button"
               onClick={() => handleChoice("rejected")}
-              className="min-h-[44px] cursor-pointer rounded-xl border border-slate-700 px-4 py-2.5 text-sm font-semibold text-slate-200 transition-colors hover:bg-slate-800"
+              className="btn-tactile min-h-11 cursor-pointer rounded-xl border border-slate-700 px-4 py-2.5 text-sm font-semibold text-slate-200 transition-all duration-200 hover:bg-slate-800 active:scale-[0.98]"
             >
               Reject Optional Cookies
             </button>
             <button
               type="button"
               onClick={() => handleChoice("accepted")}
-              className="min-h-[44px] cursor-pointer rounded-xl bg-[--color-orange-brand] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[--color-orange-dark]"
+              className="btn-tactile min-h-11 cursor-pointer rounded-xl bg-[--color-orange-brand] px-4 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-[--color-orange-dark] active:scale-[0.98]"
             >
               Accept All Cookies
             </button>

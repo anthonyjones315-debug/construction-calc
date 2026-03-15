@@ -102,7 +102,7 @@ export function Header() {
             <Link
               key={href}
               href={href}
-              className="transition-colors hover:text-white"
+              className="flex min-h-11 items-center px-4 transition-colors hover:text-white"
             >
               {label}
             </Link>
@@ -148,7 +148,7 @@ export function Header() {
               {menuOpen && (
                 <div
                   id="account-menu"
-                  className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 shadow-[0_18px_40px_rgba(0,0,0,0.42)]"
+                  className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/50 shadow-[0_18px_40px_rgba(0,0,0,0.42)]"
                     role="menu"
                     aria-label="Account menu"
                   >
@@ -208,7 +208,7 @@ export function Header() {
           ) : (
             <Link
               href={routes.auth.signIn}
-              className="rounded-lg bg-orange-600 px-4 py-1.5 text-sm font-black uppercase text-white transition-colors hover:bg-orange-700"
+              className="btn-tactile flex min-h-11 items-center rounded-lg bg-orange-600 px-4 text-sm font-black uppercase text-white transition-all duration-200 hover:bg-orange-700 active:scale-[0.98]"
               aria-label="Sign in to your Estimating Cockpit"
             >
               Sign In
@@ -217,7 +217,7 @@ export function Header() {
 
           {/* Mobile hamburger */}
           <button
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-300 transition-colors hover:bg-slate-800 hover:text-white md:hidden"
+            className="btn-tactile flex h-11 min-h-11 w-11 items-center justify-center rounded-lg text-slate-300 transition-all duration-200 hover:bg-slate-800 hover:text-white active:scale-[0.98] md:hidden"
             onClick={() => setMobileNavOpen((o) => !o)}
             aria-expanded={mobileNavOpen}
             aria-controls="mobile-navigation"
@@ -244,7 +244,7 @@ export function Header() {
               key={href}
               href={href}
               onClick={() => setMobileNavOpen(false)}
-              className="rounded-lg px-3 py-2 text-sm text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+              className="flex min-h-11 items-center rounded-lg px-4 py-2 text-sm text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
             >
               {label}
             </Link>

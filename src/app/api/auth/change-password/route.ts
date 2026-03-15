@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import * as Sentry from "@sentry/nextjs";
 import { createClient } from "@supabase/supabase-js";
 import { auth } from "@/lib/auth/config";
 import { createServerClient } from "@/lib/supabase/server";
@@ -36,6 +37,7 @@ function createSupabaseAuthClient() {
 }
 
 export async function POST(req: NextRequest) {
+  try {
   const session = await auth();
   if (!session?.user?.id || !session.user.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -49,12 +51,9 @@ export async function POST(req: NextRequest) {
     .eq("userId", session.user.id);
 
   if (providerError) {
-    console.error(
-      "change-password provider lookup error:",
-      providerError.message,
-    );
+    Sentry.captureException(providerError);
     return NextResponse.json(
-      { error: "Unable to verify sign-in method. Please try again." },
+      { error: "Internal Server Error" },
       { status: 500 },
     );
   }
@@ -112,12 +111,16 @@ export async function POST(req: NextRequest) {
   );
 
   if (updateError) {
-    console.error("change-password error:", updateError.message);
+    Sentry.captureException(updateError);
     return NextResponse.json(
-      { error: "Password update failed. Please try again." },
+      { error: "Internal Server Error" },
       { status: 500 },
     );
   }
 
   return NextResponse.json({ ok: true });
+  } catch (error) {
+    Sentry.captureException(error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
 }

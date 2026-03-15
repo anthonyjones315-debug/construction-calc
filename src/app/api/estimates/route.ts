@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { unstable_noStore as noStore } from "next/cache";
 import type { Session } from "next-auth";
+import * as Sentry from "@sentry/nextjs";
 import { auth } from "@/lib/auth/config";
 import { createServerClient } from "@/lib/supabase/server";
 import {
@@ -37,9 +38,9 @@ export async function GET() {
     if (isPrerenderHeadersAccessError(error)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    console.error("GET /api/estimates auth error:", error);
+    Sentry.captureException(error);
     return NextResponse.json(
-      { error: "Failed to load estimates." },
+      { error: "Internal Server Error" },
       { status: 500 },
     );
   }
@@ -67,18 +68,18 @@ export async function GET() {
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.error("GET /api/estimates DB error:", error.message);
+      Sentry.captureException(error);
       return NextResponse.json(
-        { error: "Failed to load estimates." },
+        { error: "Internal Server Error" },
         { status: 500 },
       );
     }
 
     return NextResponse.json({ estimates: data ?? [] });
   } catch (error) {
-    console.error("GET /api/estimates error:", error);
+    Sentry.captureException(error);
     return NextResponse.json(
-      { error: "Failed to load estimates." },
+      { error: "Internal Server Error" },
       { status: 500 },
     );
   }

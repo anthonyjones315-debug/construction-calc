@@ -37,7 +37,7 @@ export default function BlogPage() {
       <Header />
       <main id="main-content" className="flex-1">
         <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
-          <div className="dark-feature-panel mb-8 p-6 text-white">
+          <div className="dark-feature-panel mb-8 p-6 text-white relative">
             <p className="section-kicker">Methods and guidance</p>
             <h1 className="mt-2 text-3xl font-display font-bold">
               Construction Tips & Guides
@@ -45,6 +45,7 @@ export default function BlogPage() {
             <p className="mt-2 text-[--color-nav-text]/70">
               How-to articles and material guides for builders and DIYers.
             </p>
+
             <div className="trim-nav-border mt-4 inline-flex rounded-full border bg-white/6 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[--color-nav-text]">
               Field notes, not filler
             </div>
@@ -54,7 +55,7 @@ export default function BlogPage() {
             {BLOG_POSTS.map((post) => (
               <article
                 key={post.slug}
-                className="content-card p-6 transition-shadow hover:shadow-[0_18px_38px_rgba(15,18,27,0.12)]"
+                className="content-card content-card-interactive p-6 transition-all duration-200 hover:border-orange-500/50 hover:shadow-[0_18px_38px_rgba(15,18,27,0.12)]"
               >
                 <JsonLD schema={getBlogPostSchema(post)} />
                 <div className="trim-border-strong mb-4 overflow-hidden rounded-xl border">
@@ -85,12 +86,12 @@ export default function BlogPage() {
                   </span>
                 </div>
                 <h2 className="text-xl font-display font-bold text-[--color-ink] mb-2">
-                <Link
-                  href={`/field-notes/${post.slug}`}
-                  className="hover:text-[--color-orange-brand] transition-colors"
-                >
-                  {post.title}
-                </Link>
+                  <Link
+                    href={`/field-notes/${post.slug}`}
+                    className="hover:text-[--color-orange-brand] transition-colors"
+                  >
+                    {post.title}
+                  </Link>
                 </h2>
                 <p className="text-sm text-[--color-ink-dim] leading-relaxed mb-4">
                   {post.description}

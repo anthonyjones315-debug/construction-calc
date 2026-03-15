@@ -25,7 +25,7 @@ export default function FieldNotesHubPage() {
         <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
           {/* Hero */}
           <div className="mb-12 rounded-2xl border border-white/10 bg-[var(--color-surface)] p-8 shadow-[0_10px_30px_rgba(0,0,0,0.15)] sm:p-10">
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[--color-orange-brand]">
+            <p className="text-xs font-bold uppercase tracking-[0.15em] text-orange-500">
               Methods and guidance
             </p>
             <h1 className="mt-2 font-display text-3xl font-bold text-[--color-ink] sm:text-4xl">

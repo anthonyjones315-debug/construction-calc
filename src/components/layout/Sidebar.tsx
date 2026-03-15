@@ -164,7 +164,7 @@ export function Sidebar() {
 
       {/* Free PDF promo */}
       <div className="mx-3 mb-3 mt-auto pt-2">
-        <div className="rounded-xl border border-[--color-orange-brand]/45 bg-gradient-to-br from-[--color-orange-brand]/28 to-[--color-orange-dark]/24 p-3 shadow-[0_14px_26px_rgba(247,148,29,0.2)] transition-all duration-300 ease-in-out hover:border-[--color-orange-brand]/55">
+        <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-3 shadow-[0_14px_26px_rgba(247,148,29,0.2)] transition-all duration-200 hover:border-orange-500/50">
           <p className="mb-1 text-xs font-bold text-white">📄 Free PDF Export</p>
           <p className="text-xs leading-relaxed text-[--color-nav-text]/92">
             Export any estimate as PDF instantly — no sign-in needed.

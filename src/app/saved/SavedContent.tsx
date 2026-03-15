@@ -1270,7 +1270,7 @@ export function SavedContent({
         </p>
         <Link
           href="/auth/signin"
-          className="inline-flex items-center gap-2 bg-[--color-orange-brand] hover:bg-[--color-orange-dark] text-white font-bold px-6 py-3 rounded-xl transition-all"
+          className="btn-tactile inline-flex min-h-11 items-center gap-2 rounded-xl bg-[--color-orange-brand] px-4 py-3 font-bold text-white transition-all duration-200 hover:bg-[--color-orange-dark] active:scale-[0.98]"
         >
           Sign In Free
         </Link>
@@ -1293,14 +1293,14 @@ export function SavedContent({
           <button
             type="button"
             onClick={() => setShowBuilder((current) => !current)}
-            className="flex items-center gap-2 text-sm font-medium border border-[--color-border] bg-[--color-surface] hover:border-[--color-orange-brand] text-[--color-ink] px-4 py-2 rounded-lg transition-all"
+            className="btn-tactile flex min-h-11 items-center gap-2 rounded-lg border border-[--color-border] bg-[--color-surface] px-4 py-2 text-sm font-medium text-[--color-ink] transition-all duration-200 hover:border-[--color-orange-brand] active:scale-[0.98]"
           >
             <PackagePlus className="w-4 h-4" aria-hidden />
             {showBuilder ? "Close Builder" : "Build from Price Book"}
           </button>
           <Link
             href="/calculators"
-            className="flex items-center gap-2 text-sm font-medium bg-[--color-orange-brand] hover:bg-[--color-orange-dark] text-white px-4 py-2 rounded-lg transition-all"
+            className="btn-tactile flex min-h-11 items-center gap-2 rounded-lg bg-[--color-orange-brand] px-4 py-2 text-sm font-medium text-white transition-all duration-200 hover:bg-[--color-orange-dark] active:scale-[0.98]"
           >
             <Calculator className="w-4 h-4" aria-hidden />
             New from Calculator
@@ -1468,7 +1468,7 @@ export function SavedContent({
               type="button"
               onClick={createEstimateFromBuilder}
               disabled={creatingEstimate}
-              className="rounded-lg bg-[--color-orange-brand] px-4 py-2 text-sm font-semibold text-white hover:bg-[--color-orange-dark] disabled:opacity-60"
+              className="btn-tactile min-h-11 rounded-lg bg-[--color-orange-brand] px-4 py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-[--color-orange-dark] active:scale-[0.98] disabled:opacity-60 disabled:active:scale-100"
             >
               {creatingEstimate ? "Saving…" : "Save Price Book Estimate"}
             </button>
@@ -1509,7 +1509,7 @@ export function SavedContent({
             onClick={() => (deleting ? undefined : setDeleteTarget(null))}
           />
           <div className="relative w-full max-w-lg rounded-2xl border border-[--color-border] bg-[--color-surface] p-5 shadow-2xl">
-            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[--color-orange-brand]">
+            <p className="text-xs font-bold uppercase tracking-[0.15em] text-orange-500">
               Confirm Delete
             </p>
             <h2 className="mt-1 text-xl font-display font-bold text-[--color-ink]">

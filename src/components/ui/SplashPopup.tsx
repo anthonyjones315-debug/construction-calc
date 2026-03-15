@@ -130,7 +130,7 @@ export function SplashPopup() {
               />
             </div>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-[--color-orange-brand]">
+              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-orange-500">
                 Now in Beta
               </p>
               <h2

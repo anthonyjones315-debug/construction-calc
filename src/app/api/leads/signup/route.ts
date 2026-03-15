@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import * as Sentry from '@sentry/nextjs'
 import { createServerClient } from '@/lib/supabase/server'
 
 const EMAIL_RE = /^[^\s@]{1,64}@[^\s@]{1,253}\.[^\s@]{2,}$/
@@ -21,6 +22,7 @@ function checkRateLimit(ip: string): boolean {
 }
 
 export async function POST(req: NextRequest) {
+  try {
   const ip = req.headers.get('x-forwarded-for') ?? req.headers.get('x-real-ip') ?? 'unknown'
 
   if (!checkRateLimit(ip)) {
@@ -70,8 +72,8 @@ export async function POST(req: NextRequest) {
 
   if (dbError && dbError.code !== '23505') {
     // 23505 = unique violation (already signed up) — not a real error
-    console.error('Lead signup DB error:', dbError.message)
-    return NextResponse.json({ error: 'Signup failed. Please try again.' }, { status: 500 })
+    Sentry.captureException(dbError)
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
   }
 
   // ── Step 2: Best-effort email notification (never blocks success response) ───
@@ -84,4 +86,8 @@ export async function POST(req: NextRequest) {
   })
 
   return NextResponse.json({ ok: true })
+  } catch (error) {
+    Sentry.captureException(error)
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+  }
 }

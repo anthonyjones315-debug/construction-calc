@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cacheTag, revalidateTag } from "next/cache";
+import * as Sentry from "@sentry/nextjs";
 import { auth } from "@/lib/auth/config";
 import { createServerClient } from "@/lib/supabase/server";
 import {
@@ -38,24 +39,25 @@ async function getBusinessProfile(
 }
 
 export async function GET() {
-  const session = await auth();
-  if (!session?.user?.id)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  try {
+    const session = await auth();
+    if (!session?.user?.id)
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const accountEmail = session.user.email ?? null;
-  const db = createServerClient();
-  const businessContext = await getBusinessContextForSession(db, session);
-  const tenantColumn = getTenantScopeColumn(businessContext);
-  const tenantId = getTenantScopeId(businessContext);
+    const accountEmail = session.user.email ?? null;
+    const db = createServerClient();
+    const businessContext = await getBusinessContextForSession(db, session);
+    const tenantColumn = getTenantScopeColumn(businessContext);
+    const tenantId = getTenantScopeId(businessContext);
 
-  const { data, error } = await getBusinessProfile(tenantColumn, tenantId);
+    const { data, error } = await getBusinessProfile(tenantColumn, tenantId);
 
-  if (error && error.code !== "PGRST116") {
-    // PGRST116 = no rows found — that's fine (new user)
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
+    if (error && error.code !== "PGRST116") {
+      Sentry.captureException(error);
+      return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    }
 
-  return NextResponse.json({
+    return NextResponse.json({
     role: businessContext.role,
     isOwner: businessContext.isOwner,
     profile: data
@@ -67,63 +69,72 @@ export async function GET() {
           business_email: accountEmail,
         },
   });
+  } catch (error) {
+    Sentry.captureException(error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
 }
 
 export async function PUT(req: NextRequest) {
-  const session = await auth();
-  if (!session?.user?.id)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  const accountEmail = session.user.email ?? null;
-
-  const body = await req.json();
-
-  const db = createServerClient();
-  const businessContext = await getBusinessContextForSession(db, session);
-  if (!businessContext.isOwner) {
-    return NextResponse.json(
-      {
-        error: "Only business owners can update business-wide settings.",
-      },
-      { status: 403 },
-    );
-  }
   try {
-    assertNoBusinessIdOverride(
-      body && typeof body === "object"
-        ? (body as Record<string, unknown>).business_id
-        : undefined,
-      businessContext,
-    );
+    const session = await auth();
+    if (!session?.user?.id)
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    const accountEmail = session.user.email ?? null;
+
+    const body = await req.json();
+
+    const db = createServerClient();
+    const businessContext = await getBusinessContextForSession(db, session);
+    if (!businessContext.isOwner) {
+      return NextResponse.json(
+        {
+          error: "Only business owners can update business-wide settings.",
+        },
+        { status: 403 },
+      );
+    }
+    try {
+      assertNoBusinessIdOverride(
+        body && typeof body === "object"
+          ? (body as Record<string, unknown>).business_id
+          : undefined,
+        businessContext,
+      );
+    } catch (error) {
+      return NextResponse.json(
+        { error: error instanceof Error ? error.message : "Forbidden" },
+        { status: 403 },
+      );
+    }
+    const upsertPayload: Record<string, unknown> = {
+      user_id: session.user.id,
+      business_name: String(body.business_name ?? "").slice(0, 200) || null,
+      business_tax_id: String(body.business_tax_id ?? "").slice(0, 100) || null,
+      business_phone: String(body.business_phone ?? "").slice(0, 50) || null,
+      business_email: accountEmail,
+      business_address: String(body.business_address ?? "").slice(0, 500) || null,
+      business_website: String(body.business_website ?? "").slice(0, 200) || null,
+      logo_url: body.logo_url ? String(body.logo_url).slice(0, 500) : null,
+    };
+    if (!businessContext.usesLegacyUserScope) {
+      upsertPayload.business_id = businessContext.businessId;
+    }
+
+    const { error } = await db.from("business_profiles").upsert(upsertPayload, {
+      onConflict: businessContext.usesLegacyUserScope ? "user_id" : "business_id",
+    });
+
+    if (error) {
+      Sentry.captureException(error);
+      return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    }
+
+    revalidateTag("user", "max");
+    return NextResponse.json({ ok: true });
   } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Forbidden" },
-      { status: 403 },
-    );
+    Sentry.captureException(error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
-  const upsertPayload: Record<string, unknown> = {
-    user_id: session.user.id,
-    business_name: String(body.business_name ?? "").slice(0, 200) || null,
-    business_tax_id: String(body.business_tax_id ?? "").slice(0, 100) || null,
-    business_phone: String(body.business_phone ?? "").slice(0, 50) || null,
-    business_email: accountEmail,
-    business_address: String(body.business_address ?? "").slice(0, 500) || null,
-    business_website: String(body.business_website ?? "").slice(0, 200) || null,
-    logo_url: body.logo_url ? String(body.logo_url).slice(0, 500) : null,
-  };
-  if (!businessContext.usesLegacyUserScope) {
-    upsertPayload.business_id = businessContext.businessId;
-  }
-
-  const { error } = await db.from("business_profiles").upsert(upsertPayload, {
-    onConflict: businessContext.usesLegacyUserScope ? "user_id" : "business_id",
-  });
-
-  if (error) {
-    console.error("business-profile PUT error:", error.message);
-    return NextResponse.json({ error: "Save failed." }, { status: 500 });
-  }
-
-  revalidateTag("user", "max");
-  return NextResponse.json({ ok: true });
 }

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import * as Sentry from '@sentry/nextjs'
 
 // Simple in-memory rate limiter: 5 requests per IP per minute
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
@@ -104,7 +105,7 @@ Provide tips on: material optimization, waste reduction, cost savings, and commo
 
     return NextResponse.json({ content })
   } catch (err) {
-    console.error('AI optimize error:', err)
-    return NextResponse.json({ error: 'AI service error.' }, { status: 500 })
+    Sentry.captureException(err)
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
   }
 }

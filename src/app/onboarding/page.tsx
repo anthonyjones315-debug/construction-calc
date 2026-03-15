@@ -4,8 +4,6 @@ import { auth } from "@/lib/auth/config";
 import { createServerClient } from "@/lib/supabase/server";
 import { routes } from "@routes";
 
-const FORCED_ONBOARDING_USER_ID = "4db07839-3524-4df7-ad82-184c5230bd01";
-
 function getFirstValue(
   value: string | string[] | undefined,
 ): string | undefined {
@@ -151,12 +149,22 @@ export default async function OnboardingPage({
   async function createBusinessProfileAction(formData: FormData) {
     "use server";
 
+    const session = await auth();
+    const userId = session?.user?.id;
+    if (!userId) {
+      redirect(
+        buildOnboardingErrorRedirectUrl({
+          targetPath: routes.commandCenter,
+          code: "create_business_failed",
+          details: "Unauthorized",
+        }),
+      );
+    }
+
     const nextCandidate = formData.get("next");
     const targetPath = getSafeNextPath(
       typeof nextCandidate === "string" ? nextCandidate : undefined,
     );
-
-    const forcedUserId = FORCED_ONBOARDING_USER_ID;
 
     const businessNameRaw = formData.get("businessName");
     const businessName =
@@ -178,7 +186,7 @@ export default async function OnboardingPage({
       await publicDb
         .from("memberships")
         .select("business_id")
-        .eq("user_id", forcedUserId)
+        .eq("user_id", userId)
         .maybeSingle();
 
     if (currentMembershipError) {
@@ -202,7 +210,7 @@ export default async function OnboardingPage({
       const { data: business, error: businessError } = await publicDb
         .from("businesses")
         .insert({
-          owner_id: forcedUserId,
+          owner_id: userId,
           name: businessName.slice(0, 200),
         })
         .select("id")
@@ -218,7 +226,7 @@ export default async function OnboardingPage({
         .from("memberships")
         .insert({
           business_id: business.id,
-          user_id: forcedUserId,
+          user_id: userId,
           role: "owner",
         });
 
@@ -230,7 +238,7 @@ export default async function OnboardingPage({
         .from("business_profiles")
         .upsert(
           {
-            user_id: forcedUserId,
+            user_id: userId,
             business_id: business.id,
             business_email: null,
           },
@@ -249,7 +257,7 @@ export default async function OnboardingPage({
 
         if (rollbackResult.error) {
           console.error("[onboarding] Rollback failed", {
-            userId: forcedUserId,
+            userId,
             businessId: createdBusinessId,
             rollbackError: rollbackResult.error,
           });
@@ -259,7 +267,7 @@ export default async function OnboardingPage({
       const details = getExactSupabaseErrorString(error);
 
       console.error("[onboarding] Failed to create business profile", {
-        userId: forcedUserId,
+        userId,
         details,
         error,
       });

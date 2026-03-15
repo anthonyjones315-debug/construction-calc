@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
 import { auth } from "@/lib/auth/config";
 import { createServerClient } from "@/lib/supabase/server";
 
@@ -51,31 +52,36 @@ async function checkTable(
 }
 
 export async function GET() {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const projectUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? null;
+    const serviceRoleConfigured = Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY);
+    const requiredTables = [
+      "users",
+      "saved_estimates",
+      "business_profiles",
+      "user_materials",
+    ];
+
+    const tables = await Promise.all(
+      requiredTables.flatMap((table) => [
+        checkTable(table, "default"),
+        checkTable(table, "public"),
+      ]),
+    );
+
+    return NextResponse.json({
+      ok: tables.every((table) => table.ok),
+      projectUrl,
+      serviceRoleConfigured,
+      tables,
+    });
+  } catch (error) {
+    Sentry.captureException(error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
-
-  const projectUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? null;
-  const serviceRoleConfigured = Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY);
-  const requiredTables = [
-    "users",
-    "saved_estimates",
-    "business_profiles",
-    "user_materials",
-  ];
-
-  const tables = await Promise.all(
-    requiredTables.flatMap((table) => [
-      checkTable(table, "default"),
-      checkTable(table, "public"),
-    ]),
-  );
-
-  return NextResponse.json({
-    ok: tables.every((table) => table.ok),
-    projectUrl,
-    serviceRoleConfigured,
-    tables,
-  });
 }

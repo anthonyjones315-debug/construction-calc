@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
 import { auth } from "@/lib/auth/config";
 import { createServerClient } from "@/lib/supabase/server";
 import {
@@ -50,9 +51,9 @@ export async function POST() {
     const prices = await getPricesForCurrentUser();
     return NextResponse.json({ prices });
   } catch (err) {
-    console.error("Prices update error:", err);
+    Sentry.captureException(err);
     return NextResponse.json(
-      { error: "Failed to fetch prices." },
+      { error: "Internal Server Error" },
       { status: 500 },
     );
   }

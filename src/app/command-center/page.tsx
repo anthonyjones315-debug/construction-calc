@@ -8,8 +8,6 @@ import { createServerClient } from "@/lib/supabase/server";
 import { routes } from "@routes";
 import CommandCenterClient from "./CommandCenterClient";
 
-const EMERGENCY_USER_ID = "4db07839-3524-4df7-ad82-184c5230bd01";
-
 type TeamMember = {
   membershipId: string;
   userId: string;
@@ -94,6 +92,14 @@ async function resolveUserId() {
 async function createBusinessFromCommandCenterAction(formData: FormData) {
   "use server";
 
+  const session = await auth();
+  const userId = session?.user?.id;
+  if (!userId) {
+    redirect(
+      buildCommandCenterErrorRedirect({ code: "create_business_failed", details: "Unauthorized" }),
+    );
+  }
+
   const businessNameRaw = formData.get("businessName");
   const businessName =
     typeof businessNameRaw === "string" ? businessNameRaw.trim() : "";
@@ -111,7 +117,7 @@ async function createBusinessFromCommandCenterAction(formData: FormData) {
     await publicDb
       .from("memberships")
       .select("business_id")
-      .eq("user_id", EMERGENCY_USER_ID)
+      .eq("user_id", userId)
       .maybeSingle();
 
   if (existingMembershipError) {
@@ -133,7 +139,7 @@ async function createBusinessFromCommandCenterAction(formData: FormData) {
     const { data: business, error: businessError } = await publicDb
       .from("businesses")
       .insert({
-        owner_id: EMERGENCY_USER_ID,
+        owner_id: userId,
         name: businessName.slice(0, 200),
       })
       .select("id")
@@ -149,7 +155,7 @@ async function createBusinessFromCommandCenterAction(formData: FormData) {
       .from("memberships")
       .insert({
         business_id: business.id,
-        user_id: EMERGENCY_USER_ID,
+        user_id: userId,
         role: "owner",
       });
 
