@@ -226,6 +226,7 @@ function PriceBookContent() {
           alt="Price book illustration showing material rows and unit costs"
           width={1200}
           height={700}
+          priority
           className="w-full h-40 object-cover"
         />
       </div>

@@ -156,6 +156,10 @@ export async function POST(req: NextRequest) {
         userId: session.user.id,
         message: error.message,
       });
+      Sentry.captureException(error, {
+        tags: { route: "save-estimate" },
+        extra: { requestId, userId: session.user.id, schemaHint },
+      });
       return NextResponse.json(
         {
           error: schemaHint

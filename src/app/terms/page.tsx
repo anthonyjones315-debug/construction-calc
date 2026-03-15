@@ -33,6 +33,7 @@ export default function TermsPage() {
               alt="Construction checklist visual reinforcing estimate verification"
               width={1200}
               height={700}
+              priority
               className="w-full h-44 object-cover"
             />
           </div>

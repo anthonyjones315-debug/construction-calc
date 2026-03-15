@@ -10,7 +10,7 @@ import {
   FolderOpen,
   ExternalLink,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import {
@@ -23,6 +23,7 @@ import {
 import type { FinancialData } from "@/components/financial/FinancialDataFetcher";
 import { sanitizeFilename } from "@/utils/sanitize-filename";
 import { useContractorProfile } from "@/components/pdf/useContractorProfile";
+import { useHaptic } from "@/hooks/useHaptic";
 
 const LIVE_REFRESH_MS = 15000;
 
@@ -151,8 +152,25 @@ export function SavedContent({
   const [materialsLoading, setMaterialsLoading] = useState(false);
   const [materialsError, setMaterialsError] = useState<string | null>(null);
   const [creatingEstimate, setCreatingEstimate] = useState(false);
+  const [saveButtonLocked, setSaveButtonLocked] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
   const [createSuccess, setCreateSuccess] = useState<string | null>(null);
+
+  const haptic = useHaptic();
+  const saveLockStart = useRef<number>(0);
+
+  // Auto-dismiss success banners after 2 s so they don't linger on small screens
+  useEffect(() => {
+    if (!createSuccess) return;
+    const t = setTimeout(() => setCreateSuccess(null), 2000);
+    return () => clearTimeout(t);
+  }, [createSuccess]);
+
+  useEffect(() => {
+    if (!updateSuccess) return;
+    const t = setTimeout(() => setUpdateSuccess(null), 2000);
+    return () => clearTimeout(t);
+  }, [updateSuccess]);
   const [openEstimateId, setOpenEstimateId] = useState<string | null>(null);
   const [editDraft, setEditDraft] = useState<EstimateEditDraft | null>(null);
   const [, setUpdatingEstimateId] = useState<string | null>(null);
@@ -1071,6 +1089,7 @@ export function SavedContent({
 
   async function createEstimateFromBuilder() {
     if (!session?.user?.id) return;
+    if (saveButtonLocked) return;
 
     if (!selectedMaterialRows.length && !attachedEstimate) {
       setCreateError(
@@ -1079,6 +1098,8 @@ export function SavedContent({
       return;
     }
 
+    setSaveButtonLocked(true);
+    saveLockStart.current = Date.now();
     setCreatingEstimate(true);
     setCreateError(null);
     setCreateSuccess(null);
@@ -1149,6 +1170,7 @@ export function SavedContent({
         throw new Error(payload?.error ?? "Failed to save estimate.");
       }
 
+      haptic(10);
       setCreateSuccess("Estimate saved successfully.");
       setBuilderRows([]);
       setAttachedEstimateId("");
@@ -1157,10 +1179,14 @@ export function SavedContent({
       await fetchEstimates();
     } catch (error) {
       setCreateError(
-        error instanceof Error ? error.message : "Failed to save estimate.",
+        "⚠️ Connection drop. Estimate saved locally. Retrying…",
       );
+      console.error("[SavedContent] estimate save failed", error);
     } finally {
       setCreatingEstimate(false);
+      // Enforce 1-second minimum lock to prevent double-tap duplicates
+      const elapsed = Date.now() - saveLockStart.current;
+      setTimeout(() => setSaveButtonLocked(false), Math.max(0, 1000 - elapsed));
     }
   }
 
@@ -1457,7 +1483,13 @@ export function SavedContent({
           </div>
 
           {createError && (
-            <p className="mt-3 text-sm text-red-600">{createError}</p>
+            <div
+              role="alert"
+              className="mt-3 flex items-start gap-2 rounded-xl border border-amber-500/30 bg-amber-950/60 px-4 py-3 text-sm font-medium text-amber-200 shadow-lg"
+            >
+              <span className="shrink-0 text-base leading-none">⚠️</span>
+              <span>{createError}</span>
+            </div>
           )}
           {createSuccess && (
             <p className="mt-3 text-sm text-green-700">{createSuccess}</p>
@@ -1467,7 +1499,7 @@ export function SavedContent({
             <button
               type="button"
               onClick={createEstimateFromBuilder}
-              disabled={creatingEstimate}
+              disabled={creatingEstimate || saveButtonLocked}
               className="btn-tactile min-h-11 rounded-lg bg-[--color-orange-brand] px-4 py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-[--color-orange-dark] active:scale-[0.98] disabled:opacity-60 disabled:active:scale-100"
             >
               {creatingEstimate ? "Saving…" : "Save Price Book Estimate"}

@@ -43,6 +43,7 @@ export default function AboutPage() {
               alt="Framing crew layout used to plan stud counts and materials"
               width={1200}
               height={700}
+              priority
               className="w-full max-h-48 object-contain overflow-hidden"
             />
           </div>

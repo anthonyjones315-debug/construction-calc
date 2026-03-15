@@ -3,16 +3,18 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { Route } from "next";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import * as Sentry from "@sentry/nextjs";
 import { getCalculatorAuditRef, setCalculatorAuditSnapshot } from "../_lib/calculator-audit-ref";
+import { useHaptic } from "@/hooks/useHaptic";
 import {
   ArrowRight,
   BarChart3,
   BrickWall,
   Building2,
   Calculator,
+  Check,
   ChevronDown,
   CircleDollarSign,
   ClipboardList,
@@ -220,6 +222,12 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
   const [widthSpan, setWidthSpan] = useState(10);
   const [depthThickness, setDepthThickness] = useState(4);
   const [wasteFactor, setWasteFactor] = useState(10);
+  const [saveLocked, setSaveLocked] = useState(false);
+
+  const haptic = useHaptic();
+  const hapticTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isFirstCalcRender = useRef(true);
+  const resultsCardRef = useRef<HTMLElement | null>(null);
 
   const breadcrumbs = useMemo(
     () => buildBreadcrumbs(page.canonicalPath),
@@ -241,6 +249,42 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
     });
   }, [baseMeasurement, widthSpan, depthThickness, wasteFactor, page.category, page.canonicalPath]);
 
+  const volumeCubicFeet =
+    clampValue(baseMeasurement, 1, 10000) *
+    clampValue(widthSpan, 1, 10000) *
+    (clampValue(depthThickness, 1, 96) / 12);
+  const adjustedVolume =
+    volumeCubicFeet * (1 + clampValue(wasteFactor, 0, 25) / 100);
+  const materialQty = Math.ceil(adjustedVolume * 1.7);
+
+  // Debounced haptic — fires 300 ms after inputs settle so the user feels a
+  // physical "click" when the live calculation stabilises on a new result.
+  // Skipped on the very first render to avoid a buzz on page load.
+  // When haptic fires, scroll the results card into view if it's not fully visible.
+  useEffect(() => {
+    if (isFirstCalcRender.current) {
+      isFirstCalcRender.current = false;
+      return;
+    }
+    if (hapticTimerRef.current) clearTimeout(hapticTimerRef.current);
+    hapticTimerRef.current = setTimeout(() => {
+      haptic(10);
+      resultsCardRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }, 300);
+    return () => {
+      if (hapticTimerRef.current) clearTimeout(hapticTimerRef.current);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [volumeCubicFeet, adjustedVolume, materialQty]);
+
+  function handleSaveEstimate() {
+    if (saveLocked) return;
+    setSaveLocked(true);
+    haptic(10);
+    // 1-second button lock prevents double-tap duplicates
+    setTimeout(() => setSaveLocked(false), 1000);
+  }
+
   const normalizedSearch = search.trim().toLowerCase();
   const filteredGroups = useMemo(
     () =>
@@ -256,14 +300,6 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
         .filter((group) => group.modules.length > 0),
     [normalizedSearch],
   );
-
-  const volumeCubicFeet =
-    clampValue(baseMeasurement, 1, 10000) *
-    clampValue(widthSpan, 1, 10000) *
-    (clampValue(depthThickness, 1, 96) / 12);
-  const adjustedVolume =
-    volumeCubicFeet * (1 + clampValue(wasteFactor, 0, 25) / 100);
-  const materialQty = Math.ceil(adjustedVolume * 1.7);
 
   const localTip =
     page.category === "concrete" &&
@@ -488,10 +524,21 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
                 </button>
                 <button
                   type="button"
-                  className="inline-flex h-11 min-h-11 items-center gap-2 rounded-xl border border-white/20 bg-transparent px-4 text-xs font-bold uppercase tracking-[0.12em] text-[--color-nav-text] transition-all duration-200 hover:border-[--color-orange-brand]/45 hover:text-white active:scale-[0.98]"
+                  onClick={handleSaveEstimate}
+                  disabled={saveLocked}
+                  className={`inline-flex h-11 min-h-11 items-center gap-2 rounded-xl border border-white/20 bg-transparent px-4 text-xs font-bold uppercase tracking-[0.12em] text-[--color-nav-text] transition-all duration-200 hover:border-[--color-orange-brand]/45 hover:text-white active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 ${saveLocked ? "scale-95" : ""}`}
                 >
-                  <Save className="h-3.5 w-3.5" aria-hidden />
-                  Save Estimate
+                  {saveLocked ? (
+                    <>
+                      <Check className="h-3.5 w-3.5 text-emerald-400" aria-hidden />
+                      Synced
+                    </>
+                  ) : (
+                    <>
+                      <Save className="h-3.5 w-3.5" aria-hidden />
+                      Save Estimate
+                    </>
+                  )}
                 </button>
               </div>
             </div>
@@ -624,7 +671,7 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
                 </div>
               </section>
 
-              <aside className="space-y-3">
+              <aside ref={resultsCardRef} className="space-y-3">
                 <section className="rounded-2xl border border-slate-800 bg-slate-900/50 p-5 transition-colors">
                   <h2 className="text-sm font-black uppercase tracking-[0.12em] text-white">
                     Results

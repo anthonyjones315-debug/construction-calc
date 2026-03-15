@@ -79,6 +79,7 @@ export default function FAQPage() {
               alt="Hard hat and checklist representing practical estimating guidance"
               width={1200}
               height={700}
+              priority
               className="w-full h-44 object-cover"
             />
           </div>

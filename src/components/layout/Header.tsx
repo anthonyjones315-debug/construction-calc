@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { primaryNavigation, routes } from "@routes";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 export function Header() {
   const { data: session, status } = useSession();
@@ -20,6 +21,7 @@ export function Header() {
   const [businessName, setBusinessName] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  const online = useOnlineStatus();
   const displayName = session?.user?.name ?? "User";
   const businessLabel =
     session?.user && businessName !== undefined
@@ -109,8 +111,16 @@ export function Header() {
           ))}
         </nav>
 
-        {/* Right side: auth + mobile hamburger */}
+        {/* Right side: offline badge + auth + mobile hamburger */}
         <div className="flex items-center gap-2 sm:gap-3">
+          {!online && (
+            <span
+              className="rounded-full border border-slate-600 bg-slate-800/80 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400"
+              aria-live="polite"
+            >
+              Offline
+            </span>
+          )}
           {/* Auth area */}
           {status === "loading" ? (
             <div className="w-8 h-8 rounded-full bg-slate-700 animate-pulse" />

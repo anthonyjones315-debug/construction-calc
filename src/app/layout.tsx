@@ -98,6 +98,30 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="manifest" href="/site.webmanifest" />
+        {/*
+          Critical CSS vars injected inline so Slate & Orange theme colors
+          are available before the external stylesheet or any font loads.
+          This prevents a flash of white/unstyled background on first paint.
+        */}
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+              :root {
+                --color-bg: #020617;
+                --color-surface: #1e293b;
+                --color-surface-alt: #111827;
+                --color-ink: #f8fafc;
+                --color-ink-mid: #cbd5f5;
+                --color-ink-dim: #94a3b8;
+                --color-border: #1f2937;
+                --color-orange-brand: #f7941d;
+                --color-orange-dark: #d06a18;
+                --color-nav-bg: #0a0f1a;
+              }
+              html { background: #020617; color: #f8fafc; }
+            `,
+          }}
+        />
       </head>
       <body
         className={`command-theme ${inter.variable} ${oswald.variable} ${jetBrainsMono.variable}`}

@@ -52,7 +52,7 @@ export default function BlogPage() {
           </div>
 
           <div className="space-y-6">
-            {BLOG_POSTS.map((post) => (
+            {BLOG_POSTS.map((post, index) => (
               <article
                 key={post.slug}
                 className="content-card content-card-interactive p-6 transition-all duration-200 hover:border-orange-500/50 hover:shadow-[0_18px_38px_rgba(15,18,27,0.12)]"
@@ -74,6 +74,7 @@ export default function BlogPage() {
                     }
                     width={1200}
                     height={700}
+                    priority={index === 0}
                     className="w-full h-40 object-cover"
                   />
                 </div>

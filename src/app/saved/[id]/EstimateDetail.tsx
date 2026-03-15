@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Check,
   ChevronLeft,
   FileDown,
   Mail,
@@ -8,13 +9,14 @@ import {
   Trash2,
   Plus,
 } from "lucide-react";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import type { SafeEstimateDTO } from "@/lib/dal/estimates";
 import { sanitizeFilename } from "@/utils/sanitize-filename";
 import { useContractorProfile } from "@/components/pdf/useContractorProfile";
+import { useHaptic } from "@/hooks/useHaptic";
 
 // ─── Local types ────────────────────────────────────────────────────────────
 
@@ -259,9 +261,20 @@ export function EstimateDetail({ estimate }: Props) {
   }));
 
   const [saving, setSaving] = useState(false);
+  const [saveButtonLocked, setSaveButtonLocked] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+
+  const haptic = useHaptic();
+  const saveLockStart = useRef<number>(0);
+
+  // Auto-dismiss "Saved successfully." banner after 2 s
+  useEffect(() => {
+    if (!saveSuccess) return;
+    const t = setTimeout(() => setSaveSuccess(null), 2000);
+    return () => clearTimeout(t);
+  }, [saveSuccess]);
   const [busy, setBusy] = useState<string | null>(null); // invoice id being generated
 
   function patchDraft(partial: Partial<EditDraft>) {
@@ -299,6 +312,9 @@ export function EstimateDetail({ estimate }: Props) {
   // ── Save ──────────────────────────────────────────────────────────────────
 
   async function handleSave() {
+    if (saveButtonLocked) return;
+    setSaveButtonLocked(true);
+    saveLockStart.current = Date.now();
     setSaving(true);
     setSaveError(null);
     setSaveSuccess(null);
@@ -371,11 +387,15 @@ export function EstimateDetail({ estimate }: Props) {
       const payload = await res.json();
       if (!res.ok) throw new Error(payload?.error ?? "Failed to save.");
 
+      haptic(10);
       setSaveSuccess("Saved successfully.");
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : "Save failed.");
     } finally {
       setSaving(false);
+      // Enforce 1-second minimum lock to prevent double-tap duplicates
+      const elapsed = Date.now() - saveLockStart.current;
+      setTimeout(() => setSaveButtonLocked(false), Math.max(0, 1000 - elapsed));
     }
   }
 
@@ -1015,10 +1035,19 @@ export function EstimateDetail({ estimate }: Props) {
         <button
           type="button"
           onClick={handleSave}
-          disabled={saving}
-          className="rounded-xl bg-[--color-orange-brand] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[--color-orange-dark] disabled:opacity-60 transition-colors"
+          disabled={saving || saveButtonLocked}
+          className={`inline-flex items-center justify-center gap-1.5 rounded-xl bg-[--color-orange-brand] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[--color-orange-dark] transition-all duration-200 disabled:opacity-60 ${saveButtonLocked ? "scale-95" : ""}`}
         >
-          {saving ? "Saving…" : "Save Changes"}
+          {saving ? (
+            "Saving…"
+          ) : saveButtonLocked ? (
+            <>
+              <Check className="h-4 w-4 text-white" aria-hidden />
+              Synced
+            </>
+          ) : (
+            "Save Changes"
+          )}
         </button>
 
         <button

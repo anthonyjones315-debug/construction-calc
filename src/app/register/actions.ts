@@ -1,5 +1,6 @@
 "use server";
 import { z } from "zod";
+import * as Sentry from "@sentry/nextjs";
 import { createServerClient } from "@/lib/supabase/server";
 
 export type RegisterActionState = {
@@ -109,6 +110,10 @@ export async function registerUserAction(
         email,
         message: publicUserError.message,
       });
+      Sentry.captureException(publicUserError, {
+        tags: { step: "upsert-public-user" },
+        extra: { userId: data.user.id },
+      });
     }
 
     const { data: seededBusiness, error: businessCreateError } = await db
@@ -125,6 +130,10 @@ export async function registerUserAction(
         userId: data.user.id,
         email,
         message: businessCreateError.message,
+      });
+      Sentry.captureException(businessCreateError, {
+        tags: { step: "create-business" },
+        extra: { userId: data.user.id },
       });
     }
 
@@ -144,6 +153,10 @@ export async function registerUserAction(
           businessId: seededBusiness.id,
           email,
           message: membershipError.message,
+        });
+        Sentry.captureException(membershipError, {
+          tags: { step: "create-membership" },
+          extra: { userId: data.user.id, businessId: seededBusiness.id },
         });
       }
     }
@@ -169,6 +182,10 @@ export async function registerUserAction(
             message: businessProfileError.message,
           },
         );
+        Sentry.captureException(businessProfileError, {
+          tags: { step: "seed-business-profile" },
+          extra: { userId: data.user.id, businessId: seededBusiness.id },
+        });
       }
     }
   }
