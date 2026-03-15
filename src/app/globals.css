@@ -15,46 +15,33 @@
   --color-orange-soft: rgba(247, 148, 29, 0.12);
   --color-orange-muted: #f9a15a;
 
-  /* Light mode tokens */
-  --color-ink: #11151d;
-  --color-ink-mid: #4f5666;
-  --color-ink-dim: #7b8292;
-  --color-surface: #ffffff;
-  --color-surface-alt: #fdfbf7;
-  --color-bg: #f6f4ef;
-  --color-border: #dcd8d1;
-  --color-nav-bg: #0b101c;
-  --color-nav-text: #dce3ea;
-  --color-nav-active: #f7941d;
-  --color-panel-dark: #1f2533;
-  --color-panel-deep: #111726;
-
-  /* Dark mode tokens — same names, overridden below */
-  --color-ink-dark: #f4f5f7;
-  --color-ink-mid-dark: #c5cad2;
-  --color-ink-dim-dark: #9aa4b1;
-  --color-surface-dark: #101315;
-  --color-surface-alt-dark: #151821;
-  --color-bg-dark: #05070a;
-  --color-border-dark: #1e242f;
-  --color-nav-bg-dark: #05070a;
-  --color-nav-text-dark: #aeb6c3;
+  /* Industrial dark tokens */
+  --color-ink: #f8fafc;
+  --color-ink-mid: #cbd5f5;
+  --color-ink-dim: #94a3b8;
+  --color-surface: #1e293b;
+  --color-surface-alt: #111827;
+  --color-bg: #020617;
+  --color-border: #1f2937;
+  --color-nav-bg: #0a0f1a;
+  --color-nav-text: #cbd5f5;
+  --color-nav-active: #ea580c;
+  --color-panel-dark: #111827;
+  --color-panel-deep: #0b1120;
 }
 
 /* ── Dark mode: respect OS preference ──────────────────────────── */
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-ink: var(--color-ink-dark);
-    --color-ink-mid: var(--color-ink-mid-dark);
-    --color-ink-dim: var(--color-ink-dim-dark);
-    --color-surface: var(--color-surface-dark);
-    --color-surface-alt: var(--color-surface-alt-dark);
-    --color-bg: var(--color-bg-dark);
-    --color-border: var(--color-border-dark);
-    --color-nav-bg: var(--color-nav-bg-dark);
-    --color-nav-text: var(--color-nav-text-dark);
-    /* Orange stays same on dark background */
-    --color-orange-soft: rgba(247, 148, 29, 0.18);
+    --color-ink: #f8fafc;
+    --color-ink-mid: #cbd5f5;
+    --color-ink-dim: #94a3b8;
+    --color-surface: #1e293b;
+    --color-surface-alt: #111827;
+    --color-bg: #020617;
+    --color-border: #1f2937;
+    --color-nav-bg: #0a0f1a;
+    --color-nav-text: #cbd5f5;
   }
 }
 
@@ -77,6 +64,13 @@
     box-sizing: border-box;
   }
 
+  img,
+  picture,
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+
   button,
   a,
   [role="button"],
@@ -92,13 +86,10 @@
 
   body {
     @apply antialiased bg-[--color-bg] text-[--color-ink] font-sans;
-    background-image:
-      radial-gradient(circle at top, rgba(247, 148, 29, 0.08), transparent 34%),
-      linear-gradient(180deg, rgba(11, 16, 28, 0.03), transparent 22%);
-    background-attachment: fixed;
     transition:
       background-color 0.2s,
       color 0.2s;
+    overflow-x: hidden;
   }
 
   /* Dark mode: invert white cards to surface color */
@@ -330,6 +321,19 @@
   .text-ada-dim {
     color: var(--color-ink-dim);
     /* 4.6:1 on light, 4.8:1 on dark — both pass AA */
+  }
+}
+
+/* ─── Mobile input font-size floor ────────────────────────────── */
+/* iOS Safari zooms the viewport when a focused input has font-size < 16px.
+   max(16px, 1em) means: use 16px unless the inherited size is larger.
+   Scoped to (hover: none) so desktop inputs keep their designed sizes. */
+@media (hover: none) {
+  input,
+  input[type],
+  select,
+  textarea {
+    font-size: max(16px, 1em);
   }
 }
 

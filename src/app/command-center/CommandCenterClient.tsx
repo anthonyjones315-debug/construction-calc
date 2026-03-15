@@ -261,9 +261,9 @@ export default function CommandCenterClient({
   }
 
   return (
-    <div className="command-theme overflow-hidden rounded-[30px] border border-white/10 bg-[#1A1A1C] shadow-[0_20px_48px_rgba(0,0,0,0.45)]">
-      <div className="grid min-h-[740px] lg:grid-cols-[240px,1fr]">
-        <aside className="hidden border-r border-[--color-border]/70 bg-[--color-nav-bg] px-2 py-2 text-[--color-nav-text] lg:flex lg:flex-col">
+    <div className="command-theme w-full overflow-hidden rounded-none border border-slate-800 bg-slate-950 shadow-[0_20px_48px_rgba(0,0,0,0.45)] sm:rounded-[30px]">
+      <div className="grid min-h-[720px] lg:grid-cols-[240px,1fr]">
+        <aside className="hidden border-r border-slate-800 bg-slate-950 px-2 py-2 text-slate-300 lg:flex lg:flex-col">
           <div className="flex items-center gap-1.5 rounded-xl px-1.5 py-1">
             <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[--color-orange-brand] text-xs font-bold text-black">
               P
@@ -276,10 +276,10 @@ export default function CommandCenterClient({
           <nav className="mt-2 flex flex-col gap-0.5">
             {primaryNavItems.map((item) => {
               const sharedClasses =
-                "flex items-center gap-2 rounded-lg px-2 py-1 text-sm transition-colors";
+                "flex items-center gap-2 rounded-lg border border-transparent px-3 py-1.5 text-sm font-semibold tracking-tight transition-colors";
               const stateClasses = item.active
-                ? "bg-white/10 text-[--color-orange-brand]"
-                : "text-white/80 hover:bg-white/8 hover:text-white";
+                ? "bg-slate-900 border-slate-800 text-orange-600"
+                : "text-slate-300 hover:bg-slate-900 hover:border-slate-800 hover:text-white";
               const className = `${sharedClasses} ${stateClasses}`;
 
               const navContent = (
@@ -300,14 +300,14 @@ export default function CommandCenterClient({
               );
             })}
 
-            <div className="mt-2 px-2 text-[9px] font-semibold uppercase tracking-[0.18em] text-white/60">
+          <div className="mt-2 px-2 text-[9px] font-semibold uppercase tracking-[0.18em] text-slate-400">
               Tools
             </div>
 
             {toolNavItems.map((item) => {
               const sharedClasses =
-                "flex items-center gap-2 rounded-lg px-2 py-1 text-sm transition-colors";
-              const className = `${sharedClasses} text-white/80 hover:bg-white/8 hover:text-white`;
+                "flex items-center gap-2 rounded-lg border border-transparent px-3 py-1.5 text-sm font-medium transition-colors";
+              const className = `${sharedClasses} text-slate-300 hover:bg-slate-900 hover:border-slate-800 hover:text-white`;
 
               const navContent = (
                 <>
@@ -328,15 +328,15 @@ export default function CommandCenterClient({
             })}
           </nav>
 
-          <div className="mt-auto border-t border-white/10 pt-2">
+          <div className="mt-auto border-t border-slate-800 pt-2">
             <p className="px-2 text-[10px] text-white/65">
               Team access and permissions managed in Command Center.
             </p>
           </div>
         </aside>
 
-        <section className="bg-[#1A1A1C]">
-          <div className="flex items-center justify-between border-b border-[--color-border]/80 px-6 py-4">
+        <section className="bg-slate-950">
+          <div className="flex items-center justify-between border-b border-slate-800 px-4 py-3 sm:px-6">
             <p className="text-base font-black uppercase tracking-[0.12em] text-white">
               Dashboard
             </p>
@@ -355,9 +355,9 @@ export default function CommandCenterClient({
             </div>
           </div>
 
-          <div className="space-y-5 px-6 py-6">
-            <div className="command-card flex items-center justify-between gap-3 px-4 py-2.5">
-              <div className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[--color-orange-brand]">
+          <div className="space-y-5 px-4 py-4 w-full max-w-full sm:px-6 sm:py-6">
+            <div className="flex items-center justify-between gap-3 rounded-2xl border border-slate-700 bg-slate-900 px-4 py-2.5 text-slate-100">
+              <div className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-orange-600">
                 <ShieldCheck className="h-4 w-4" aria-hidden />
                 Owner Controls Enabled
               </div>
@@ -366,13 +366,13 @@ export default function CommandCenterClient({
               </span>
             </div>
 
-            <h1 className="text-[2rem] font-sans font-black uppercase leading-none tracking-tight text-white sm:text-[2.25rem]">
+            <h1 className="text-2xl font-sans font-black uppercase leading-none tracking-tight text-white sm:text-[2rem] lg:text-[2.25rem]">
               Owner&apos;s Command Center
             </h1>
 
             <div className="grid gap-4 lg:grid-cols-[1fr,300px]">
-              <div className="command-card px-5 py-4">
-                <h2 className="font-sans text-4xl font-black uppercase leading-none tracking-tight text-white">
+            <div className="rounded-2xl border border-slate-700 bg-slate-900 px-5 py-4 text-slate-100">
+                <h2 className="font-sans text-2xl font-black uppercase leading-none tracking-tight text-white sm:text-4xl">
                   Your Business Team
                 </h2>
                 <p className="mt-2 text-sm text-white/60">
@@ -381,21 +381,21 @@ export default function CommandCenterClient({
                 </p>
               </div>
 
-              <div className="command-card p-4 text-white">
+            <div className="rounded-2xl border border-slate-700 bg-slate-900 p-4 text-slate-100">
                 <p className="text-sm font-black uppercase text-white">
                   Invite New Members
                 </p>
                 <p className="mt-1 text-center text-xs uppercase tracking-[0.22em] text-white/80">
                   Join Code
                 </p>
-                <div className="mt-2 rounded-xl border border-[--color-border] bg-[--color-surface] px-4 py-2 text-center text-4xl font-sans font-black tracking-[0.14em] text-[--color-orange-brand] md:text-5xl">
+                <div className="mt-2 rounded-xl border border-slate-700 bg-slate-900 px-4 py-2 text-center text-4xl font-sans font-black tracking-[0.14em] text-orange-600 md:text-5xl">
                   {activeJoinCode}
                 </div>
                 <div className="mt-3 grid grid-cols-2 gap-2 text-xs font-semibold">
                   <button
                     type="button"
                     onClick={copyJoinCode}
-                    className="inline-flex items-center justify-center gap-1 rounded-lg border border-[--color-orange-brand] bg-[--color-orange-brand] px-2 py-2 text-black transition hover:bg-[--color-orange-dark]"
+                    className="inline-flex items-center justify-center gap-1 rounded-lg border border-[--color-orange-brand] bg-[--color-orange-brand] px-2 py-2 font-bold text-white shadow-lg transition hover:bg-[--color-orange-dark]"
                   >
                     <Copy className="h-3.5 w-3.5" aria-hidden />
                     Copy Code
@@ -522,7 +522,7 @@ export default function CommandCenterClient({
             onClick={() => (busyMemberId ? undefined : setManageTargetId(null))}
             className="absolute inset-0 bg-black/40"
           />
-          <div className="relative w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900 p-6 text-white shadow-[0_24px_50px_rgba(0,0,0,0.45)]">
+          <div className="relative w-full max-w-md rounded-3xl border border-slate-700 bg-slate-900 p-6 text-white shadow-[0_24px_50px_rgba(0,0,0,0.45)]">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[--color-orange-muted]">
               Account Control
             </p>

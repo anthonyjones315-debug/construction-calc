@@ -185,8 +185,8 @@ function CommandCenterOnboarding({
 }) {
   return (
     <div className="mx-auto flex min-h-[70vh] w-full max-w-xl items-center px-4 py-12 sm:px-6">
-      <section className="w-full rounded-2xl border border-white/10 bg-[#1A1A1C] p-6 text-white shadow-[0_12px_28px_rgba(0,0,0,0.35)]">
-        <p className="text-xs font-black uppercase tracking-[0.15em] text-[#FF8C00]">
+      <section className="w-full rounded-2xl border border-slate-700 bg-slate-900 p-6 text-white shadow-[0_12px_28px_rgba(0,0,0,0.35)]">
+        <p className="text-xs font-black uppercase tracking-[0.15em] text-orange-500">
           Command Center Setup
         </p>
         <h1 className="mt-2 text-2xl font-black uppercase text-white">
@@ -214,13 +214,13 @@ function CommandCenterOnboarding({
               type="text"
               required
               placeholder="Acme Construction"
-              className="h-11 rounded-lg border border-white/10 bg-[#0F0F10] px-3 text-white placeholder:text-white/35 outline-none focus:ring-2 focus:ring-[#FF8C00]"
+              className="h-11 rounded-lg border border-slate-700 bg-slate-950 px-3 text-white placeholder:text-white/35 outline-none transition focus:border-slate-600 focus:ring-2 focus:ring-orange-600/30"
             />
           </label>
 
           <button
             type="submit"
-            className="inline-flex h-11 items-center justify-center rounded-lg bg-[#FF8C00] px-5 text-sm font-black uppercase text-black transition hover:brightness-95"
+            className="inline-flex h-11 items-center justify-center rounded-lg bg-orange-600 px-5 text-sm font-black uppercase text-white shadow-lg transition hover:bg-orange-700"
           >
             Create Your Business
           </button>
@@ -233,7 +233,7 @@ function CommandCenterOnboarding({
 function NotOwnerState() {
   return (
     <div className="mx-auto flex min-h-[60vh] w-full max-w-2xl items-center px-4 py-12 sm:px-6">
-      <section className="w-full rounded-2xl border border-white/10 bg-[#1A1A1C] p-6 text-white shadow-[0_12px_28px_rgba(0,0,0,0.35)]">
+      <section className="w-full rounded-2xl border border-slate-700 bg-slate-900 p-6 text-white shadow-[0_12px_28px_rgba(0,0,0,0.35)]">
         <h1 className="text-2xl font-black uppercase text-white">
           Owner Access Required
         </h1>
@@ -244,7 +244,7 @@ function NotOwnerState() {
         <div className="mt-5">
           <Link
             href={routes.calculators}
-            className="inline-flex h-10 items-center justify-center rounded-lg border border-[#FF8C00]/50 bg-transparent px-4 text-sm font-black uppercase text-[#FF8C00] transition hover:bg-[#FF8C00]/10"
+            className="inline-flex h-10 items-center justify-center rounded-lg border border-orange-600/60 bg-transparent px-4 text-sm font-black uppercase text-orange-500 shadow-lg transition hover:bg-orange-600/10"
           >
             Go to Calculators
           </Link>

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Oswald, Inter, JetBrains_Mono } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
@@ -6,7 +6,17 @@ import { CookieConsentBanner } from "@/components/layout/CookieConsentBanner";
 import { OptionalTracking } from "@/components/layout/OptionalTracking";
 import { ServiceWorker } from "@/components/layout/ServiceWorker";
 import { ScrollToTop } from "@/components/layout/ScrollToTop";
+import { PWAInstallBanner } from "@/components/layout/PWAInstallBanner";
 import { Providers } from "@app/providers";
+
+// Prevents accidental zoom-on-input-focus on iOS and Android.
+// maximum-scale=1 / user-scalable=no keeps the field UI locked at 1×.
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
 
 const inter = Inter({
   subsets: ["latin"],
@@ -84,7 +94,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className="bg-slate-950 text-slate-100">
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="manifest" href="/site.webmanifest" />
@@ -106,6 +116,7 @@ export default function RootLayout({
         <CookieConsentBanner />
         <ServiceWorker />
         <OptionalTracking />
+        <PWAInstallBanner />
         <a
           href="mailto:support@proconstructioncalc.com?subject=Feedback%20-%20Pro%20Construction%20Calc"
           className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full border border-orange-500 bg-orange-600 px-5 py-2.5 text-sm font-bold text-white shadow-xl transition-all hover:bg-orange-700"

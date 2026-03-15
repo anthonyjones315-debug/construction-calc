@@ -25,7 +25,7 @@ export default function HomePage() {
       >
         <section className="mx-auto h-full w-full max-w-6xl">
           <div className="grid h-full gap-4 xl:grid-cols-[1.4fr_0.95fr]">
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/50 overflow-hidden px-6 py-6 text-white transition-colors sm:px-8 sm:py-7 lg:px-8 lg:py-7">
+            <div className="rounded-2xl border border-slate-800 bg-slate-900 overflow-hidden px-6 py-6 text-slate-100 transition-colors sm:px-8 sm:py-7 lg:px-8 lg:py-7">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="section-kicker">
                   Industrial-grade estimating
@@ -36,7 +36,7 @@ export default function HomePage() {
               </div>
               <h1 className="mt-3 max-w-2xl text-4xl font-display font-bold leading-none sm:text-5xl lg:text-4xl xl:text-5xl">
                 Pro Construction Calc
-                <span className="mt-2 block text-orange-500">
+                <span className="mt-2 block text-orange-600">
                   Industrial-grade estimating for NY contractors.
                 </span>
               </h1>
@@ -87,11 +87,11 @@ export default function HomePage() {
                 ].map(({ icon: Icon, label, desc }) => (
                   <div
                     key={label}
-                    className="rounded-2xl border border-slate-800 bg-slate-800/80 px-4 py-3"
+                    className="rounded-2xl border border-slate-800 bg-slate-900 px-4 py-3"
                   >
-                    <div className="flex items-center gap-2 text-orange-500">
+                    <div className="flex items-center gap-2 text-orange-600">
                       <Icon className="h-4 w-4" aria-hidden />
-                      <p className="text-xs font-bold uppercase tracking-[0.15em] text-orange-500">
+                      <p className="text-xs font-bold uppercase tracking-[0.15em] text-orange-600">
                         {label}
                       </p>
                     </div>
@@ -104,7 +104,7 @@ export default function HomePage() {
             </div>
 
             <div className="flex flex-col gap-4 xl:pt-1">
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-5 text-white transition-colors">
+              <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 text-slate-100 transition-colors">
                 <p className="section-kicker">Explore next</p>
                 <div className="mt-4 space-y-3">
                   {[
@@ -140,7 +140,7 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-5 transition-colors lg:p-4">
+              <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 transition-colors lg:p-4">
                 <p className="section-kicker">Why it lands</p>
                 <div className="mt-4 grid gap-3 md:grid-cols-3">
                   {[
@@ -150,7 +150,7 @@ export default function HomePage() {
                   ].map((item) => (
                     <div
                       key={item}
-                      className="rounded-xl border border-slate-800 bg-slate-800/60 px-4 py-3 text-sm font-medium text-slate-400"
+                      className="rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-3 text-sm font-medium text-slate-400"
                     >
                       {item}
                     </div>

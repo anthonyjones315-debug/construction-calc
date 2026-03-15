@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { getSession, signIn } from "next-auth/react";
-import { useState } from "react";
+import { getSession, signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { routes } from "@routes";
 
 const callbackHandlerErrorCodes = new Set([
@@ -38,6 +39,14 @@ export default function SignInClient({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [credentialsError, setCredentialsError] = useState<string | null>(null);
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.replace(routes.commandCenter);
+    }
+  }, [router, status]);
 
   const errorMessages: Record<string, string> = {
     OAUTH_CALLBACK_HANDLER_ERROR:
@@ -126,7 +135,7 @@ export default function SignInClient({
         )}
 
         <section
-          className="rounded-2xl border border-white/10 bg-[#111318] p-6 space-y-4 shadow-[0_24px_50px_rgba(0,0,0,0.6)]"
+          className="rounded-2xl border border-slate-800 bg-[#111318] p-6 space-y-4 shadow-[0_24px_50px_rgba(0,0,0,0.6)]"
           aria-labelledby="oauth-sign-in-heading"
         >
           <h2 id="oauth-sign-in-heading" className="sr-only">
@@ -137,7 +146,7 @@ export default function SignInClient({
             onClick={handleGoogleSignIn}
             disabled={isSigningIn || isCredentialsSigningIn}
             aria-busy={isSigningIn}
-            className="w-full flex items-center justify-center gap-3 rounded-xl border border-white/15 bg-[#0A0A0B] px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/10 hover:border-[#FF8C00]/40 focus:outline-none focus:ring-2 focus:ring-[#FF8C00]/50 disabled:cursor-wait disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-3 rounded-xl border border-slate-700 bg-[#0A0A0B] px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/10 hover:border-[#FF8C00]/40 focus:outline-none focus:ring-2 focus:ring-[#FF8C00]/50 disabled:cursor-wait disabled:opacity-50"
           >
             <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
               <path
@@ -182,7 +191,7 @@ export default function SignInClient({
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 required
-                className="w-full rounded-xl border border-white/15 bg-[#0A0A0B] px-3.5 py-2.5 text-sm text-white placeholder-white/40 outline-none focus:border-[#FF8C00] focus:ring-2 focus:ring-[#FF8C00]/30 transition"
+                className="w-full rounded-xl border border-slate-700 bg-[#0A0A0B] px-3.5 py-2.5 text-sm text-white placeholder-white/40 outline-none focus:border-[#FF8C00] focus:ring-2 focus:ring-[#FF8C00]/30 transition"
               />
             </div>
 
@@ -211,7 +220,7 @@ export default function SignInClient({
                 onChange={(event) => setPassword(event.target.value)}
                 minLength={8}
                 required
-                className="w-full rounded-xl border border-white/15 bg-[#0A0A0B] px-3.5 py-2.5 text-sm text-white placeholder-white/40 outline-none focus:border-[#FF8C00] focus:ring-2 focus:ring-[#FF8C00]/30 transition"
+                className="w-full rounded-xl border border-slate-700 bg-[#0A0A0B] px-3.5 py-2.5 text-sm text-white placeholder-white/40 outline-none focus:border-[#FF8C00] focus:ring-2 focus:ring-[#FF8C00]/30 transition"
               />
             </div>
 
@@ -242,12 +251,15 @@ export default function SignInClient({
         </section>
 
         <div className="mt-6 space-y-2 text-center">
-          <Link
-            href="/command-center"
-            className="inline-block rounded-xl border border-white/15 bg-[#0A0A0B] px-4 py-2.5 text-sm font-medium text-white/90 transition-colors hover:border-[#FF8C00] hover:bg-white/5 hover:text-[#FF8C00] focus:outline-none focus:ring-2 focus:ring-[#FF8C00]/50 focus:ring-offset-2 focus:ring-offset-[#0A0A0B]"
+          <button
+            type="button"
+            onClick={() =>
+              router.push(session?.user?.id ? routes.commandCenter : routes.home)
+            }
+            className="inline-flex w-full items-center justify-center rounded-xl border border-slate-700 bg-[#0A0A0B] px-4 py-2.5 text-sm font-medium text-white/90 transition-colors hover:border-[#FF8C00] hover:bg-white/5 hover:text-[#FF8C00] focus:outline-none focus:ring-2 focus:ring-[#FF8C00]/50 focus:ring-offset-2 focus:ring-offset-[#0A0A0B]"
           >
             Back to Command Center
-          </Link>
+          </button>
           <p className="text-xs text-white/50">
             By signing in you agree to our{" "}
             <Link

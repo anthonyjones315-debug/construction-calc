@@ -41,7 +41,7 @@ function getCategoryPage(key: TradePageKey): TradePageDefinition | undefined {
 
 export function CalculatorsDirectoryClient() {
   return (
-    <div className="command-theme page-shell flex min-h-screen flex-col bg-[--color-bg]">
+    <div className="command-theme page-shell flex min-h-screen flex-col bg-slate-950">
       <Header />
       <main
         id="main-content"
