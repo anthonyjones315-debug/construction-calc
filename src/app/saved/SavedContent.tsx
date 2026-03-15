@@ -155,6 +155,7 @@ export function SavedContent({
   const [saveButtonLocked, setSaveButtonLocked] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
   const [createSuccess, setCreateSuccess] = useState<string | null>(null);
+  const [updateSuccess, setUpdateSuccess] = useState<string | null>(null);
 
   const haptic = useHaptic();
   const saveLockStart = useRef<number>(0);
@@ -175,7 +176,6 @@ export function SavedContent({
   const [editDraft, setEditDraft] = useState<EstimateEditDraft | null>(null);
   const [, setUpdatingEstimateId] = useState<string | null>(null);
   const [updateError, setUpdateError] = useState<string | null>(null);
-  const [updateSuccess, setUpdateSuccess] = useState<string | null>(null);
   const [, setInvoiceBusyId] = useState<string | null>(null);
   const [builderName, setBuilderName] = useState("Price Book Estimate");
   const [builderClientName, setBuilderClientName] = useState("");

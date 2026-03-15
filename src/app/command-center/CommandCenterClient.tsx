@@ -366,16 +366,16 @@ export default function CommandCenterClient({
               </span>
             </div>
 
-            <h1 className="text-2xl font-sans font-black uppercase leading-none tracking-tight text-white sm:text-[2rem] lg:text-[2.25rem]">
+            <h1 className="text-xl font-sans font-black uppercase leading-none tracking-tight text-white sm:text-3xl lg:text-[2.25rem]">
               Owner&apos;s Command Center
             </h1>
 
             <div className="grid gap-4 lg:grid-cols-[1fr,300px]">
-            <div className="rounded-2xl border border-slate-700 bg-slate-900 px-5 py-4 text-slate-100">
+            <div className="max-w-full overflow-hidden rounded-2xl border border-slate-700 bg-slate-900 px-5 py-4 text-slate-100">
                 <h2 className="font-sans text-2xl font-black uppercase leading-none tracking-tight text-white sm:text-4xl">
                   Your Business Team
                 </h2>
-                <p className="mt-2 text-sm text-white/60">
+                <p className="mt-2 break-all text-sm text-white/60">
                   Business Name: {businessName} | Plan: {planName} ({seatsUsed}/
                   {seatLimit} Seats)
                 </p>
