@@ -5,18 +5,30 @@ import { withSentryConfig } from "@sentry/nextjs";
 const withSerwist = withSerwistInit({
   swSrc: "src/app/sw.ts",
   swDest: "public/sw.js",
-  additionalPrecacheEntries: [{ url: "/offline", revision: "offline-v3" }], // Bump to v3
-  // AGGRESSIVE OVERHAUL:
-  // We use a function for 'exclude' to force-kill any font path
+  additionalPrecacheEntries: [{ url: "/offline", revision: "offline-v3" }],
+  // Exclude fonts from precache so they never cause bad-precaching-response 404s.
   exclude: [
-    ({ asset }: { asset: any }) => {
-      if (
-        asset.name.match(/\.(woff2?|eot|ttf|otf)$/) ||
-        asset.name.includes("static/media/")
-      ) {
-        return true; // true means EXCLUDE it
-      }
-      return false;
+    /\.woff2?$/i,
+    /\.(eot|ttf|otf)$/i,
+    /_next\/static\/media\//,
+    ({ asset }: { asset: { name?: string } }) => {
+      const name = asset?.name ?? "";
+      return (
+        /\.(woff2?|eot|ttf|otf)$/i.test(name) || name.includes("static/media/")
+      );
+    },
+  ],
+  // Final safety: strip any font/static-media entries that still made it into the manifest.
+  manifestTransforms: [
+    (manifestEntries) => {
+      const manifest = manifestEntries.filter((entry) => {
+        const url = typeof entry === "string" ? entry : entry.url;
+        const isFontOrMedia =
+          /\.(woff2?|eot|ttf|otf)$/i.test(url) ||
+          /_next\/static\/media\//.test(url);
+        return !isFontOrMedia;
+      });
+      return { manifest, warnings: [] };
     },
   ],
 });
