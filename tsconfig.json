@@ -1,12 +1,9 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "allowJs": true,
+    "lib": ["dom", "dom.iterable", "esnext", "webworker"],
+    "allowJs": false,
+    "noImplicitAny": true,
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
@@ -23,9 +20,15 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@app/*": ["./src/app/*"],
+      "@components/*": ["./src/components/*"],
+      "@data/*": ["./src/data/*"],
+      "@lib/*": ["./src/lib/*"],
+      "@routes": ["./src/app/routes.ts"],
+      "@seo/*": ["./src/seo/*"],
+      "@types/*": ["./src/types/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@/*": ["./src/*"]
     }
   },
   "include": [
@@ -35,7 +38,5 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules", "public/sw.js"]
 }

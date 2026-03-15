@@ -1,5 +1,5 @@
 -- ============================================================
--- Build Calc Pro — NextAuth/Auth.js SAFE schema alignment
+-- Pro Construction Calc — NextAuth/Auth.js SAFE schema alignment
 -- No DROP TABLE, no CASCADE
 -- Re-runnable migration for existing Supabase projects
 -- ============================================================

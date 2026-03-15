@@ -1,52 +1,60 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, "Fira Code", monospace;
-  --font-display: "Barlow Condensed", "Arial Narrow", ui-sans-serif, sans-serif;
+  --font-sans:
+    "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  --font-mono:
+    "JetBrains Mono", ui-monospace, SFMono-Regular, "Fira Code", monospace;
+  --font-display: "Oswald", "Arial Narrow", ui-sans-serif, sans-serif;
 
   /* Brand */
-  --color-orange-brand: #e8820c;
-  --color-orange-dark: #b5620a;
-  --color-orange-deep: #8c4a07;
-  --color-orange-soft: #fef3e2;
+  --color-orange-brand: #f7941d;
+  --color-orange-dark: #d06a18;
+  --color-orange-deep: #c15a2c;
+  --color-orange-soft: rgba(247, 148, 29, 0.12);
+  --color-orange-muted: #f9a15a;
 
   /* Light mode tokens */
-  --color-ink: #1a1a1a;
-  --color-ink-mid: #4a4640;
-  --color-ink-dim: #575250;
+  --color-ink: #11151d;
+  --color-ink-mid: #4f5666;
+  --color-ink-dim: #7b8292;
   --color-surface: #ffffff;
-  --color-surface-alt: #f9f7f3;
-  --color-bg: #f4f1eb;
-  --color-border: #9a9389;
-  --color-nav-bg: #1a1a1a;
-  --color-nav-text: #c4bfb4;
-  --color-nav-active: #e8820c;
+  --color-surface-alt: #fdfbf7;
+  --color-bg: #f6f4ef;
+  --color-border: #dcd8d1;
+  --color-nav-bg: #0b101c;
+  --color-nav-text: #dce3ea;
+  --color-nav-active: #f7941d;
+  --color-panel-dark: #1f2533;
+  --color-panel-deep: #111726;
 
   /* Dark mode tokens — same names, overridden below */
-  --color-ink-dark: #f0ece4;
-  --color-ink-mid-dark: #b0aba3;
-  --color-ink-dim-dark: #8a857d;
-  --color-surface-dark: #1e1e1e;
-  --color-surface-alt-dark: #252525;
-  --color-bg-dark: #121212;
-  --color-border-dark: #3a3730;
+  --color-ink-dark: #f4f5f7;
+  --color-ink-mid-dark: #c5cad2;
+  --color-ink-dim-dark: #9aa4b1;
+  --color-surface-dark: #101315;
+  --color-surface-alt-dark: #151821;
+  --color-bg-dark: #05070a;
+  --color-border-dark: #1e242f;
+  --color-nav-bg-dark: #05070a;
+  --color-nav-text-dark: #aeb6c3;
 }
 
 /* ── Dark mode: respect OS preference ──────────────────────────── */
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-ink: #f0ece4;
-    --color-ink-mid: #b0aba3;
-    --color-ink-dim: #8a857d;
-    --color-surface: #1e1e1e;
-    --color-surface-alt: #252525;
-    --color-bg: #121212;
-    --color-border: #3a3730;
-    --color-nav-bg: #0d0d0d;
-    --color-nav-text: #9a9590;
-    /* Orange stays same — already ADA compliant on dark */
-    --color-orange-soft: rgba(232, 130, 12, 0.12);
+    --color-ink: var(--color-ink-dark);
+    --color-ink-mid: var(--color-ink-mid-dark);
+    --color-ink-dim: var(--color-ink-dim-dark);
+    --color-surface: var(--color-surface-dark);
+    --color-surface-alt: var(--color-surface-alt-dark);
+    --color-bg: var(--color-bg-dark);
+    --color-border: var(--color-border-dark);
+    --color-nav-bg: var(--color-nav-bg-dark);
+    --color-nav-text: var(--color-nav-text-dark);
+    /* Orange stays same on dark background */
+    --color-orange-soft: rgba(247, 148, 29, 0.18);
   }
 }
 
@@ -65,9 +73,17 @@
 }
 
 @layer base {
-  * { box-sizing: border-box; }
+  * {
+    box-sizing: border-box;
+  }
 
-  button, a, [role="button"], label[for], select { cursor: pointer; }
+  button,
+  a,
+  [role="button"],
+  label[for],
+  select {
+    cursor: pointer;
+  }
 
   html {
     color-scheme: light dark;
@@ -76,20 +92,48 @@
 
   body {
     @apply antialiased bg-[--color-bg] text-[--color-ink] font-sans;
-    transition: background-color 0.2s, color 0.2s;
+    background-image:
+      radial-gradient(circle at top, rgba(247, 148, 29, 0.08), transparent 34%),
+      linear-gradient(180deg, rgba(11, 16, 28, 0.03), transparent 22%);
+    background-attachment: fixed;
+    transition:
+      background-color 0.2s,
+      color 0.2s;
   }
 
   /* Dark mode: invert white cards to surface color */
   @media (prefers-color-scheme: dark) {
-    .bg-white { background-color: var(--color-surface) !important; }
-    .border-gray-100 { border-color: var(--color-border) !important; }
-    .border-gray-200 { border-color: var(--color-border) !important; }
-    .border-gray-200\/80 { border-color: color-mix(in srgb, var(--color-border) 80%, transparent) !important; }
-    .text-gray-900 { color: var(--color-ink) !important; }
-    .text-gray-700 { color: var(--color-ink-mid) !important; }
-    .text-gray-500 { color: var(--color-ink-dim) !important; }
-    .hover\:bg-gray-50:hover { background-color: var(--color-surface-alt) !important; }
-    .bg-\[--color-surface\] { background-color: var(--color-surface) !important; }
+    .bg-white {
+      background-color: var(--color-surface) !important;
+    }
+    .border-gray-100 {
+      border-color: var(--color-border) !important;
+    }
+    .border-gray-200 {
+      border-color: var(--color-border) !important;
+    }
+    .border-gray-200\/80 {
+      border-color: color-mix(
+        in srgb,
+        var(--color-border) 80%,
+        transparent
+      ) !important;
+    }
+    .text-gray-900 {
+      color: var(--color-ink) !important;
+    }
+    .text-gray-700 {
+      color: var(--color-ink-mid) !important;
+    }
+    .text-gray-500 {
+      color: var(--color-ink-dim) !important;
+    }
+    .hover\:bg-gray-50:hover {
+      background-color: var(--color-surface-alt) !important;
+    }
+    .bg-\[--color-surface\] {
+      background-color: var(--color-surface) !important;
+    }
   }
 
   /* ADA focus rings */
@@ -98,7 +142,7 @@
   input:focus-visible,
   select:focus-visible,
   textarea:focus-visible {
-    outline: 3px solid var(--color-orange-brand);
+    outline: 3px solid var(--color-ink-mid);
     outline-offset: 2px;
   }
 
@@ -108,14 +152,16 @@
     top: -100%;
     left: 1rem;
     padding: 0.5rem 1rem;
-    background: var(--color-orange-brand);
+    background: var(--color-ink);
     color: white;
     font-weight: 700;
     border-radius: 0 0 6px 6px;
     z-index: 9999;
     transition: top 0.1s;
   }
-  .skip-link:focus { top: 0; }
+  .skip-link:focus {
+    top: 0;
+  }
 
   /* Inputs: dark mode */
   @media (prefers-color-scheme: dark) {
@@ -131,27 +177,138 @@
     input[type="text"]:focus,
     input[type="email"]:focus,
     select:focus {
-      border-color: var(--color-orange-brand);
+      border-color: var(--color-ink-mid);
     }
     /* Range sliders */
     input[type="range"] {
-      accent-color: var(--color-orange-brand);
+      accent-color: var(--color-ink-mid);
     }
   }
 }
 
 @layer utilities {
-  .font-display { font-family: var(--font-display); }
+  .font-display {
+    font-family: var(--font-display);
+  }
+
+  .page-shell {
+    background:
+      radial-gradient(circle at top, rgba(247, 148, 29, 0.07), transparent 32%),
+      var(--color-bg);
+  }
+
+  .page-container {
+    margin-inline: auto;
+    width: 100%;
+    max-width: 72rem;
+    padding-inline: 1rem;
+  }
+
+  .content-card {
+    border: 1px solid color-mix(in srgb, var(--color-border) 88%, transparent);
+    background: var(--color-surface);
+    box-shadow: 0 12px 36px rgba(15, 18, 27, 0.08);
+    border-radius: 1rem;
+  }
+
+  .content-card-muted {
+    border: 1px solid color-mix(in srgb, var(--color-border) 72%, transparent);
+    background: var(--color-surface-alt);
+    box-shadow: 0 8px 24px rgba(15, 18, 27, 0.06);
+    border-radius: 1rem;
+  }
+
+  .dark-feature-panel {
+    border: 1px solid color-mix(in srgb, var(--color-border) 78%, transparent);
+    background: linear-gradient(180deg, #172132 0%, #0f1624 100%);
+    box-shadow: 0 20px 44px rgba(8, 11, 18, 0.35);
+    border-radius: 1rem;
+  }
+
+  .trim-nav-border {
+    border-color: color-mix(in srgb, var(--color-nav-text) 18%, transparent);
+  }
+
+  .trim-border {
+    border-color: color-mix(in srgb, var(--color-border) 55%, transparent);
+  }
+
+  .trim-border-strong {
+    border-color: color-mix(in srgb, var(--color-border) 60%, transparent);
+  }
+
+  .trim-accent-border {
+    border-color: color-mix(
+      in srgb,
+      var(--color-orange-brand) 25%,
+      transparent
+    );
+  }
+
+  .command-theme {
+    --color-orange-brand: #ff8c00;
+    --color-orange-dark: #cc7000;
+    --color-orange-muted: #ffb861;
+    --color-ink: #f5f7fa;
+    --color-ink-mid: #c7ced9;
+    --color-ink-dim: #95a0b1;
+    --color-surface: #121212;
+    --color-surface-alt: #1a1d20;
+    --color-bg: #121212;
+    --color-border: #4f5f78;
+    --color-nav-bg: #0f0f0f;
+    --color-nav-text: #d8dee7;
+    --command-card-border: color-mix(
+      in srgb,
+      var(--color-border) 80%,
+      transparent
+    );
+    --command-card-shadow: 0 10px 24px rgba(5, 8, 14, 0.35);
+  }
+
+  .command-card {
+    border: 1px solid var(--command-card-border);
+    background: var(--color-surface-alt);
+    box-shadow: var(--command-card-shadow);
+    border-radius: 1rem;
+  }
+
+  .section-kicker {
+    color: var(--color-orange-brand);
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .safe-area-pb {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
 
   @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(8px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
-  .animate-fade-up { animation: fadeUp 0.2s ease forwards; }
+  .animate-fade-up {
+    animation: fadeUp 0.2s ease forwards;
+  }
 
   @keyframes splashUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   /* ADA-compliant contrast helpers */
@@ -172,6 +329,7 @@
   outline: none;
 }
 .input-base:focus {
-  ring: 2px solid var(--color-orange-brand);
-  border-color: var(--color-orange-brand);
+  outline: 2px solid var(--color-ink-mid);
+  outline-offset: 2px;
+  border-color: var(--color-ink-mid);
 }

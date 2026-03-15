@@ -1,42 +1,194 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/lib/auth/config'
-import { createServerClient } from '@/lib/supabase/server'
-import { ensurePublicUser } from '@/lib/supabase/ensurePublicUser'
+import { NextRequest, NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
+import { z } from "zod";
+import { auth } from "@/lib/auth/config";
+import { createServerClient } from "@/lib/supabase/server";
+import {
+  assertNoBusinessIdOverride,
+  getBusinessContextForSession,
+  getTenantScopeId,
+} from "@/lib/supabase/business";
+import {
+  FINANCIAL_DASHBOARD_TAG,
+  SAVED_ESTIMATES_TAG,
+  getEstimateTag,
+  getFinancialDashboardTag,
+  getSavedEstimatesTag,
+} from "@/lib/cache-tags";
+import { isUnauthorizedError } from "@/lib/errors/unauthorized";
+
+const saveEstimateSchema = z
+  .object({
+    name: z.string().trim().max(200).optional(),
+    calculator_id: z.string().trim().max(100).optional(),
+    results: z.array(z.unknown()).optional(),
+    inputs: z.record(z.string(), z.unknown()).optional(),
+    budget_items: z.array(z.unknown()).nullable().optional(),
+    client_name: z.string().trim().max(200).nullable().optional(),
+    job_site_address: z.string().trim().max(500).nullable().optional(),
+    total_cost: z.number().finite().nullable().optional(),
+    status: z.enum(["Draft", "Sent", "Approved", "Lost"]).optional(),
+  })
+  .strict();
+
+function newErrorId() {
+  return crypto.randomUUID();
+}
+
+function errorMessage(error: unknown) {
+  return error instanceof Error ? error.message : String(error);
+}
+
+function getSchemaMismatchHint(message: string): string | null {
+  const lower = message.toLowerCase();
+
+  if (
+    lower.includes("public.users") ||
+    lower.includes("saved_estimates") ||
+    lower.includes("foreign key")
+  ) {
+    return "Database schema mismatch detected. Run src/lib/supabase/nextauth-schema-fix.sql, then src/lib/supabase/schema.sql in Supabase SQL Editor.";
+  }
+
+  return null;
+}
+
+function normalizeControlNumber(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const normalized = value
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9-]/g, "");
+  return normalized.length > 0 ? normalized : null;
+}
+
+function generateEstimateControlNumber(): string {
+  const stamp = new Date()
+    .toISOString()
+    .replace(/[-:TZ.]/g, "")
+    .slice(2, 12);
+  const suffix = crypto
+    .randomUUID()
+    .replace(/-/g, "")
+    .slice(0, 6)
+    .toUpperCase();
+  return `PC-${stamp}-${suffix}`;
+}
 
 export async function POST(req: NextRequest) {
-  const session = await auth()
+  const requestId = newErrorId();
+  const session = await auth();
   if (!session?.user?.id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  let body: {
-    name?: string
-    calculator_id?: string
-    results?: unknown[]
-    inputs?: Record<string, unknown>
-    total_cost?: number | null
-  }
+  let rawBody: unknown;
   try {
-    body = await req.json()
+    rawBody = await req.json();
   } catch {
-    return NextResponse.json({ error: 'Invalid request.' }, { status: 400 })
+    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
 
-  const db = createServerClient()
-  await ensurePublicUser(db, session)
-  const { data, error } = await db.from('saved_estimates').insert({
-    user_id: session.user.id,
-    name: (body.name ?? 'Untitled Estimate').slice(0, 200),
-    calculator_id: (body.calculator_id ?? 'unknown').slice(0, 100),
-    inputs: body.inputs ?? {},
-    results: body.results ?? [],
-    total_cost: body.total_cost ?? null,
-  }).select('id').single()
-
-  if (error) {
-    console.error('Save estimate error:', error.message)
-    return NextResponse.json({ error: 'Save failed.' }, { status: 500 })
+  const parsed = saveEstimateSchema.safeParse(rawBody);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: parsed.error.issues[0]?.message ?? "Invalid estimate payload." },
+      { status: 400 },
+    );
   }
 
-  return NextResponse.json({ ok: true, id: data.id })
+  const body = parsed.data;
+  const projectUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "unknown";
+
+  try {
+    const db = createServerClient();
+    const businessContext = await getBusinessContextForSession(db, session);
+    const tenantId = getTenantScopeId(businessContext);
+
+    if (rawBody && typeof rawBody === "object") {
+      assertNoBusinessIdOverride(
+        (rawBody as Record<string, unknown>).business_id,
+        businessContext,
+      );
+    }
+
+    const inputObject = body.inputs ?? {};
+    const existingControlNumber = normalizeControlNumber(
+      inputObject.control_number,
+    );
+    const controlNumber =
+      existingControlNumber ?? generateEstimateControlNumber();
+
+    const ownerMeta = {
+      user_id: session.user.id,
+      user_email: session.user.email ?? null,
+      user_name: session.user.name ?? null,
+    };
+
+    const insertPayload: Record<string, unknown> = {
+      user_id: session.user.id,
+      name: body.name || "Untitled Estimate",
+      calculator_id: body.calculator_id || "unknown",
+      inputs: {
+        ...inputObject,
+        control_number: controlNumber,
+        owner: ownerMeta,
+      },
+      results: body.results ?? [],
+      budget_items: body.budget_items ?? null,
+      client_name: body.client_name ?? null,
+      job_site_address: body.job_site_address ?? null,
+      total_cost: body.total_cost ?? null,
+      status: body.status ?? "Draft",
+    };
+    if (!businessContext.usesLegacyUserScope) {
+      insertPayload.business_id = businessContext.businessId;
+    }
+
+    const { data, error } = await db
+      .schema("public")
+      .from("saved_estimates")
+      .insert(insertPayload)
+      .select("id")
+      .single();
+
+    if (error) {
+      const schemaHint = getSchemaMismatchHint(error.message);
+      console.error("[save-estimate] insert failed", {
+        requestId,
+        userId: session.user.id,
+        message: error.message,
+      });
+      return NextResponse.json(
+        {
+          error: schemaHint
+            ? `${schemaHint} Raw error: ${error.message}. Project: ${projectUrl} (ref: ${requestId})`
+            : `Save failed: ${error.message} (ref: ${requestId})`,
+        },
+        { status: 500 },
+      );
+    }
+
+    revalidateTag(FINANCIAL_DASHBOARD_TAG, "max");
+    revalidateTag(getFinancialDashboardTag(tenantId), "max");
+    revalidateTag(SAVED_ESTIMATES_TAG, "max");
+    revalidateTag(getSavedEstimatesTag(tenantId), "max");
+    revalidateTag(getEstimateTag(data.id), "max");
+
+    return NextResponse.json({ ok: true, id: data.id });
+  } catch (error) {
+    if (isUnauthorizedError(error)) {
+      return NextResponse.json({ error: error.message }, { status: 403 });
+    }
+
+    console.error("[save-estimate] route exception", {
+      requestId,
+      userId: session.user.id,
+      message: errorMessage(error),
+    });
+    return NextResponse.json(
+      { error: `Save failed: ${errorMessage(error)} (ref: ${requestId})` },
+      { status: 500 },
+    );
+  }
 }

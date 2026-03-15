@@ -1,0 +1,6 @@
+{
+  "label": "Legacy Plain JS",
+  "windowDays": 90,
+  "frontendBugCount": 24,
+  "deploymentCount": 12
+}

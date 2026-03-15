@@ -215,16 +215,6 @@ export const CALCULATORS: Calculator[] = [
     seoBlurb:
       "Calculate paint gallons needed for any number of coats and wall area.",
   },
-  // Electrical
-  {
-    id: "wireGauge",
-    label: "Wire Gauge",
-    category: "electrical",
-    emoji: "⚡",
-    blurb: "AWG, voltage drop, NEC",
-    seoBlurb:
-      "Find correct wire gauge by amperage with NEC ampacity tables and voltage drop calculation.",
-  },
   // Labor
   {
     id: "labor",
@@ -280,12 +270,6 @@ export const CATEGORIES: Category[] = [
     label: "Finishes",
     emoji: "🪣",
     calculators: ["flooring", "siding", "paint"],
-  },
-  {
-    id: "electrical",
-    label: "Electrical",
-    emoji: "⚡",
-    calculators: ["wireGauge"],
   },
   {
     id: "labor",

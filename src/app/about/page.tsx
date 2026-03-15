@@ -5,33 +5,39 @@ import { Footer } from "@/components/layout/Footer";
 import { HardHat, Calculator, Sparkles, FileDown } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "About Build Calc Pro",
+  title: "About Pro Construction Calc",
   description:
-    "Build Calc Pro is a free suite of construction calculators built for contractors, builders, and DIYers.",
+    "Pro Construction Calc is a free suite of construction calculators built for contractors, builders, and DIYers.",
 };
 
 export default function AboutPage() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="page-shell flex min-h-screen flex-col bg-[#0F0F10] text-white">
       <Header />
-      <main id="main-content" className="flex-1 bg-[--color-bg]">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
+      <main id="main-content" className="flex-1 bg-[#0F0F10]">
+        <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
           {/* Hero */}
-          <div className="flex items-center gap-4 mb-8">
-            <div className="w-16 h-16 rounded-2xl bg-[--color-nav-bg] flex items-center justify-center shadow-lg shrink-0">
-              <HardHat className="w-8 h-8 text-[--color-orange-brand]" />
+          <div className="mb-8 flex items-center gap-4 rounded-2xl border border-white/10 bg-[#1A1A1C] p-6 text-white">
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/6 shadow-lg">
+              <HardHat className="w-8 h-8 text-[#FF8C00]" />
             </div>
             <div>
-              <h1 className="text-3xl font-display font-bold text-[--color-ink]">
-                About Build Calc Pro
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-[#FF8C00]">
+                Built for the field
+              </p>
+              <h1 className="text-3xl font-black uppercase text-white">
+                About Pro Construction Calc
               </h1>
-              <p className="text-[--color-ink-dim]">
+              <p className="text-white/60">
                 Built for the job site, not the boardroom.
               </p>
+              <div className="mt-3 inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-white/70">
+                Estimating without fluff
+              </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden mb-8">
+          <div className="content-card mb-8 overflow-hidden">
             <Image
               src="/images/wall-framing.svg"
               alt="Framing crew layout used to plan stud counts and materials"
@@ -41,9 +47,9 @@ export default function AboutPage() {
             />
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-8 mb-8 space-y-5 text-[--color-ink-mid] leading-relaxed">
+          <div className="mb-8 space-y-5 rounded-2xl border border-white/10 bg-[#1A1A1C] p-8 leading-relaxed text-white/75">
             <p>
-              Build Calc Pro started with a simple frustration: every
+              Pro Construction Calc started with a simple frustration: every
               construction calculator online was either cluttered, required a
               sign-up, or gave you results without explaining the math.
             </p>
@@ -61,7 +67,7 @@ export default function AboutPage() {
           </div>
 
           {/* Features grid */}
-          <h2 className="text-xl font-display font-bold text-[--color-ink] mb-4">
+          <h2 className="mb-4 text-xl font-black uppercase text-white">
             What's included
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
@@ -69,7 +75,7 @@ export default function AboutPage() {
               {
                 icon: Calculator,
                 title: "13 Calculators",
-                desc: "Concrete, framing, roofing, insulation, flooring, electrical, and more — all free.",
+                desc: "Concrete, framing, roofing, insulation, flooring, and more — all free.",
               },
               {
                 icon: Sparkles,
@@ -89,33 +95,31 @@ export default function AboutPage() {
             ].map(({ icon: Icon, title, desc }) => (
               <div
                 key={title}
-                className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-5"
+                className="rounded-2xl border border-white/10 bg-[#1A1A1C] p-5"
               >
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-8 h-8 rounded-lg bg-[--color-orange-soft] flex items-center justify-center">
-                    <Icon className="w-4 h-4 text-[--color-orange-brand]" />
+                  <div className="w-8 h-8 rounded-lg bg-[#FF8C00]/10 flex items-center justify-center">
+                    <Icon className="w-4 h-4 text-[#FF8C00]" />
                   </div>
-                  <h3 className="font-semibold text-[--color-ink]">{title}</h3>
+                  <h3 className="font-black uppercase text-white">{title}</h3>
                 </div>
-                <p className="text-sm text-[--color-ink-dim] leading-relaxed">
-                  {desc}
-                </p>
+                <p className="text-sm text-white/60 leading-relaxed">{desc}</p>
               </div>
             ))}
           </div>
 
           {/* Contact */}
-          <div className="bg-[--color-nav-bg] rounded-2xl p-8 text-center">
-            <h2 className="text-xl font-display font-bold text-white mb-2">
+          <div className="rounded-2xl border border-white/10 bg-[#1A1A1C] p-8 text-center text-white">
+            <h2 className="mb-2 text-xl font-black uppercase text-white">
               Got feedback?
             </h2>
-            <p className="text-sm text-white/60 mb-4">
+            <p className="mb-4 text-sm text-white/60">
               We actively improve based on what contractors and builders tell us
               they need.
             </p>
             <a
-              href="mailto:feedback@proconstructioncalc.com"
-              className="inline-flex items-center gap-2 bg-[--color-orange-brand] hover:bg-[--color-orange-dark] text-white font-bold text-sm px-5 py-2.5 rounded-xl transition-all"
+              href="mailto:amj111394@gmail.com"
+              className="inline-flex items-center gap-2 rounded-xl bg-[#FF8C00] px-5 py-2.5 text-sm font-black uppercase text-black transition-all hover:brightness-95"
             >
               Send Feedback
             </a>

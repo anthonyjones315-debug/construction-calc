@@ -55,10 +55,6 @@ interface CelluloseState {
 interface SidingState { area: number; waste: number; includeWaste: boolean }
 interface PaintState { area: number; coats: number; waste: number; includeWaste: boolean }
 
-interface WireGaugeState {
-  amps: number; voltage: 120 | 240; distance: number; material: 'copper' | 'aluminum'
-}
-
 interface LaborState { workers: number; hours: number; wage: number }
 
 // ─── App State ────────────────────────────────────────────────────────────────
@@ -89,7 +85,6 @@ interface AppState {
   cellulose: CelluloseState
   siding: SidingState
   paint: PaintState
-  wireGauge: WireGaugeState
   labor: LaborState
 }
 
@@ -121,7 +116,6 @@ interface AppActions {
   updateCellulose: (patch: Partial<CelluloseState>) => void
   updateSiding: (patch: Partial<SidingState>) => void
   updatePaint: (patch: Partial<PaintState>) => void
-  updateWireGauge: (patch: Partial<WireGaugeState>) => void
   updateLabor: (patch: Partial<LaborState>) => void
 }
 
@@ -154,7 +148,6 @@ export const useStore = create<AppState & AppActions>()(
     cellulose: { area: 500, rValue: 38, type: 'attic', waste: 10, includeWaste: true },
     siding: { area: 1000, waste: 10, includeWaste: true },
     paint: { area: 1000, coats: 2, waste: 5, includeWaste: true },
-    wireGauge: { amps: 20, voltage: 120, distance: 50, material: 'copper' },
     labor: { workers: 2, hours: 8, wage: 25 },
 
     // Actions
@@ -188,7 +181,6 @@ export const useStore = create<AppState & AppActions>()(
     updateCellulose: (p) => set((s) => { Object.assign(s.cellulose, p) }),
     updateSiding: (p) => set((s) => { Object.assign(s.siding, p) }),
     updatePaint: (p) => set((s) => { Object.assign(s.paint, p) }),
-    updateWireGauge: (p) => set((s) => { Object.assign(s.wireGauge, p) }),
     updateLabor: (p) => set((s) => { Object.assign(s.labor, p) }),
   })),
   {
@@ -208,7 +200,6 @@ export const useStore = create<AppState & AppActions>()(
       cellulose:        state.cellulose,
       siding:           state.siding,
       paint:            state.paint,
-      wireGauge:        state.wireGauge,
       labor:            state.labor,
       budgetItems:      state.budgetItems,
       taxRate:          state.taxRate,

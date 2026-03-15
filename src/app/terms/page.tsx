@@ -3,27 +3,31 @@ import { Footer } from "@/components/layout/Footer";
 import Image from "next/image";
 import type { Metadata } from "next";
 
-const LAST_UPDATED = "March 13, 2026";
+const EFFECTIVE_DATE = "March 13, 2026";
 
 export const metadata: Metadata = {
-  title: "Terms of Service — Build Calc Pro",
-  description: "Terms of service for Build Calc Pro construction calculators.",
+  title: "Terms of Service — Pro Construction Calc",
+  description:
+    "Terms of service for Pro Construction Calc construction calculators.",
 };
 
 export default function TermsPage() {
   return (
-    <div className="flex flex-col min-h-screen bg-[--color-bg]">
+    <div className="page-shell flex min-h-screen flex-col">
       <Header />
       <main id="main-content" className="flex-1">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
-          <h1 className="text-3xl font-display font-bold text-[--color-ink] mb-2">
-            Terms of Service
-          </h1>
-          <p className="text-sm text-[--color-ink-dim] mb-8">
-            Last updated: {LAST_UPDATED}
-          </p>
+          <div className="dark-feature-panel mb-8 p-6 text-white">
+            <p className="section-kicker">Rules of use</p>
+            <h1 className="mt-2 text-3xl font-display font-bold">
+              Terms of Service
+            </h1>
+            <p className="mt-2 text-sm text-[--color-nav-text]/70">
+              Pro Construction Calc · Effective Date: {EFFECTIVE_DATE}
+            </p>
+          </div>
 
-          <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden mb-8">
+          <div className="content-card mb-8 overflow-hidden">
             <Image
               src="/images/safety-estimate.svg"
               alt="Construction checklist visual reinforcing estimate verification"
@@ -33,13 +37,13 @@ export default function TermsPage() {
             />
           </div>
 
-          <div className="prose prose-sm max-w-none space-y-6 text-[--color-ink-mid]">
+          <div className="content-card prose prose-sm max-w-none space-y-6 p-8 text-[--color-ink-mid]">
             <section>
               <h2 className="text-lg font-bold text-[--color-ink] mb-2">
                 1. Acceptance of Terms
               </h2>
               <p>
-                By accessing or using Build Calc Pro ("the Service") at
+                By accessing or using Pro Construction Calc ("the Service") at
                 proconstructioncalc.com, you agree to be bound by these Terms of
                 Service. If you do not agree, please do not use the Service.
               </p>
@@ -49,19 +53,19 @@ export default function TermsPage() {
               <h2 className="text-lg font-bold text-[--color-ink] mb-2">
                 2. Disclaimer — Estimation Purposes Only
               </h2>
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-amber-900">
+              <div className="trim-accent-border rounded-xl border bg-[--color-orange-soft] p-4 text-[--color-ink]">
                 <p className="font-bold mb-1">
                   ⚠️ Important Limitation of Liability
                 </p>
                 <p>
-                  All calculations provided by Build Calc Pro are{" "}
+                  All calculations provided by Pro Construction Calc are{" "}
                   <strong>estimates only</strong> and are intended for general
                   planning purposes. These calculators do not account for every
                   site-specific variable, local building code requirement,
                   material waste, or unique project condition.
                 </p>
                 <p className="mt-2">
-                  Build Calc Pro, its owners, and affiliates are{" "}
+                  Pro Construction Calc, its owners, and affiliates are{" "}
                   <strong>not liable</strong> for:
                 </p>
                 <ul className="list-disc ml-4 mt-1 space-y-1">
@@ -92,7 +96,7 @@ export default function TermsPage() {
                 3. Use of the Service
               </h2>
               <p>
-                You may use Build Calc Pro for personal and commercial
+                You may use Pro Construction Calc for personal and commercial
                 construction planning. You agree not to:
               </p>
               <ul className="list-disc ml-4 space-y-1">
@@ -112,9 +116,9 @@ export default function TermsPage() {
               <p>
                 When you create an account, you are responsible for maintaining
                 the security of your account credentials. You are responsible
-                for all activities that occur under your account. Build Calc Pro
-                reserves the right to terminate accounts that violate these
-                terms.
+                for all activities that occur under your account. Pro
+                Construction Calc reserves the right to terminate accounts that
+                violate these terms.
               </p>
             </section>
 
@@ -136,10 +140,10 @@ export default function TermsPage() {
                 6. Intellectual Property
               </h2>
               <p>
-                All content, design, code, and calculator logic on Build Calc
-                Pro is the property of Build Calc Pro and protected by
-                applicable intellectual property laws. You retain ownership of
-                any estimates or project data you create.
+                All content, design, code, and calculator logic on Pro
+                Construction Calc is the property of Pro Construction Calc and
+                protected by applicable intellectual property laws. You retain
+                ownership of any estimates or project data you create.
               </p>
             </section>
 
@@ -148,12 +152,12 @@ export default function TermsPage() {
                 7. Third-Party Services
               </h2>
               <p>
-                Build Calc Pro uses third-party services including Auth.js and
-                Google OAuth (for authentication), Google Analytics (for usage
-                analytics), Google AdSense (for advertising), Amazon Associates
-                (for affiliate product links), and Supabase (for data storage).
-                Your use of these features is subject to their respective terms
-                and privacy policies.
+                Pro Construction Calc uses third-party services including
+                Auth.js and Google OAuth (for authentication), Google Analytics
+                (for usage analytics), Google AdSense (for advertising), Amazon
+                Associates (for affiliate product links), and Supabase (for data
+                storage). Your use of these features is subject to their
+                respective terms and privacy policies.
               </p>
             </section>
 
@@ -162,11 +166,11 @@ export default function TermsPage() {
                 8. Advertising
               </h2>
               <p>
-                Build Calc Pro displays advertisements through Google AdSense
-                and contains affiliate links through Amazon Associates. We
-                receive compensation from these programs. Optional advertising
-                cookies load only after you accept them through our cookie
-                controls.
+                Pro Construction Calc displays advertisements through Google
+                AdSense and contains affiliate links through Amazon Associates.
+                We receive compensation from these programs. Optional
+                advertising cookies load only after you accept them through our
+                cookie controls.
               </p>
             </section>
 
@@ -198,8 +202,14 @@ export default function TermsPage() {
                 11. Contact
               </h2>
               <p>
-                For questions about these Terms, contact us through the contact
-                form on our website at proconstructioncalc.com.
+                For questions about these Terms, contact us at{" "}
+                <a
+                  href="mailto:amj111394@gmail.com"
+                  className="text-[--color-orange-brand] hover:underline"
+                >
+                  amj111394@gmail.com
+                </a>
+                .
               </p>
             </section>
           </div>

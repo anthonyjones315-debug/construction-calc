@@ -1,15 +1,1 @@
-<svg width="1200" height="700" viewBox="0 0 1200 700" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cellulose insulation bags and attic fill">
-  <rect width="1200" height="700" fill="#ECFEFF"/>
-  <rect x="120" y="420" width="960" height="150" rx="16" fill="#A7F3D0"/>
-  <rect x="120" y="400" width="960" height="30" rx="12" fill="#6EE7B7"/>
-  <rect x="180" y="270" width="180" height="180" rx="18" fill="#FDE68A"/>
-  <rect x="390" y="260" width="180" height="190" rx="18" fill="#FCD34D"/>
-  <rect x="600" y="250" width="180" height="200" rx="18" fill="#FDE68A"/>
-  <rect x="810" y="265" width="180" height="185" rx="18" fill="#FCD34D"/>
-  <path d="M255 345L285 380L325 300" stroke="#065F46" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M465 340L495 375L535 295" stroke="#065F46" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M675 335L705 370L745 290" stroke="#065F46" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M885 340L915 375L955 295" stroke="#065F46" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
-  <text x="120" y="120" fill="#111827" font-family="Arial, sans-serif" font-size="52" font-weight="700">Cellulose Insulation</text>
-  <text x="120" y="170" fill="#4B5563" font-family="Arial, sans-serif" font-size="28">Blown-in and dense-pack bag estimates by area and R-value.</text>
-</svg>
+<svg width="1200" height="700" viewBox="0 0 1200 700" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cellulose insulation bags and attic fill"><rect width="1200" height="700" fill="#0F1624"/><rect x="80" y="80" width="1040" height="540" rx="32" fill="#141E2E" stroke="#2B384F" stroke-width="4"/><rect x="120" y="428" width="960" height="132" rx="16" fill="#334155"/><rect x="120" y="406" width="960" height="24" rx="12" fill="#475569"/><rect x="190" y="270" width="160" height="180" rx="18" fill="#D06A18"/><rect x="390" y="260" width="160" height="190" rx="18" fill="#F7941D"/><rect x="590" y="250" width="160" height="200" rx="18" fill="#D06A18"/><rect x="790" y="265" width="160" height="185" rx="18" fill="#F7941D"/><path d="M250 344L280 378L320 300" stroke="#F5EBDD" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/><path d="M450 340L480 374L520 296" stroke="#F5EBDD" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/><path d="M650 334L680 368L720 290" stroke="#F5EBDD" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/><path d="M850 340L880 374L920 296" stroke="#F5EBDD" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/><text x="140" y="150" fill="#F5EBDD" font-family="Arial, sans-serif" font-size="52" font-weight="700">Cellulose Insulation</text><text x="140" y="200" fill="#9AA4B1" font-family="Arial, sans-serif" font-size="28">Blown-in and dense-pack bag estimates by area and R-value.</text></svg>

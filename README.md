@@ -1,72 +1,65 @@
-# Build Calc Pro — Launch Operations Guide
+# Pro Construction Calc — The Estimating Cockpit for Oneida County
 
-Production Next.js app for construction estimating, lead capture, auth, and pricing workflows.
+Professional construction estimating for contractors in the Mohawk Valley. Trade calculators, regional Field Notes, and offline-ready PWA built for jobsites in Rome, Utica, Marcy, and Floyd.
 
-## Stack
+---
 
-- Framework: Next.js (App Router)
-- Runtime: Node.js
-- Hosting: Vercel
-- Auth: Auth.js + Google OAuth
-- Data: Supabase
+## Tech Stack
 
-## Local validation
+- **Framework:** Next.js (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS
+- **Monitoring:** Sentry (error boundaries + release tracking)
+- **Email / CRM:** Resend
+- **PWA:** Serwist (offline support)
+
+---
+
+## Key Features
+
+### 48+ Trade Calculators
+
+Professional-grade estimation for **Concrete**, **Framing**, **Roofing**, and more. Slab and footing volume, wall studs, rafter length, shingle bundles, pitch & slope, insulation R-value, trim, flooring, and business/margin tools — all tuned for field use.
+
+### Field Notes
+
+Native regional expertise hub. Oneida County Freeze-Lines (Rome vs. Utica), NYS Retainage Laws, and insulation R-value guides. No external click-aways; content lives on-site.
+
+### Offline Mode
+
+PWA verified for jobsites in Rome/Utica dead zones. `/offline` is precached; core flows remain usable when connectivity drops.
+
+### Sentry Audit
+
+Full-context error reporting for field failures. Calculator inputs and trade context are attached to errors so issues can be reproduced and fixed quickly.
+
+### Local Authority
+
+Built for **Marcy**, **Floyd**, **Utica**, and the wider Oneida County area. Frost depth, retainage, and material assumptions are aligned with local practice and code.
+
+---
+
+## Quick Start
 
 ```bash
 npm install
-npm run lint
-npx tsc --noEmit
-npm run build
-```
-
-Run locally:
-
-```bash
 npm run dev
 # http://localhost:3000
 ```
 
-## Required environment variables
+**Validate before deploy:**
 
-Copy `.env.local.example` to `.env.local` and set values.
+```bash
+npm run lint
+npm run typecheck
+npm run build
+npm run check-calcs
+```
 
-Critical:
+Copy `.env.local.example` to `.env.local` and set required variables (see repo docs or `.env.local.example` for the full list).
 
-- `AUTH_SECRET`
-- `AUTH_URL` (production: `https://proconstructioncalc.com`)
-- `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` (or `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET`)
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY`
+---
 
-Optional by feature:
+## Versioning
 
-- `ANTHROPIC_API_KEY` (AI optimizer endpoint)
-- `NEXT_PUBLIC_GA_MEASUREMENT_ID`
-- `NEXT_PUBLIC_ADSENSE_ID`
-- `NEXT_PUBLIC_AMAZON_TAG`
-
-## Vercel deploy checklist
-
-1. Import repo into Vercel (framework auto-detects Next.js).
-2. Add all required environment variables for Production.
-3. Set project domain to `proconstructioncalc.com`.
-4. Ensure DNS for apex domain is configured.
-5. Confirm redirect behavior from `www.proconstructioncalc.com` to apex.
-6. Deploy and verify build logs are clean of errors.
-
-## Launch-day smoke tests
-
-After deploy, verify:
-
-- Home page and calculators load.
-- Google sign-in works end-to-end.
-- Protected routes redirect to sign-in when logged out.
-- `/api/prices/update` returns `200`.
-- `/api/leads/signup` accepts valid consented signup.
-- `/api/ai/optimize` returns `503` when `ANTHROPIC_API_KEY` is missing (expected) or valid response when set.
-
-## Notes
-
-- `npm run lint` uses `next lint` (deprecated warning in Next.js 15, still functional).
-- Runtime telemetry TODOs exist in error boundaries for future Sentry wiring.
+Releases follow [Keep a Changelog](https://keepachangelog.com/). See [CHANGELOG.md](./CHANGELOG.md) for version history.

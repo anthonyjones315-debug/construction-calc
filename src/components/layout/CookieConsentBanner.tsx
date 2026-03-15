@@ -3,73 +3,143 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
+  COOKIE_CONSENT_CHANGED_EVENT,
   COOKIE_PREFERENCES_OPEN_EVENT,
   type CookieConsentChoice,
   readCookieConsent,
   writeCookieConsent,
 } from "@/lib/privacy/consent";
+import { routes } from "@routes";
 
 export function CookieConsentBanner() {
+  const [isHydrated, setIsHydrated] = useState(false);
   const [choice, setChoice] = useState<CookieConsentChoice | null>(() =>
     readCookieConsent(),
   );
-  const [visible, setVisible] = useState(() => readCookieConsent() === null);
+  const [isOpen, setIsOpen] = useState(() => readCookieConsent() === null);
+
+  function hasGlobalPrivacyControlEnabled(): boolean {
+    if (typeof navigator === "undefined") return false;
+    const gpcWindow =
+      typeof window !== "undefined"
+        ? (window as Window & { doNotTrack?: string | null })
+        : null;
+
+    const gpcNavigator = navigator as Navigator & {
+      globalPrivacyControl?: boolean;
+      msDoNotTrack?: string | null;
+    };
+
+    const doNotTrackSignals = [
+      navigator.doNotTrack,
+      gpcNavigator.msDoNotTrack,
+      gpcWindow?.doNotTrack ?? null,
+    ];
+
+    return (
+      gpcNavigator.globalPrivacyControl === true ||
+      doNotTrackSignals.some((signal) => signal === "1" || signal === "yes")
+    );
+  }
 
   useEffect(() => {
+    const nextChoice = readCookieConsent();
+    const shouldAutoRejectForGpc =
+      nextChoice === null && hasGlobalPrivacyControlEnabled();
+    const effectiveChoice: CookieConsentChoice | null = shouldAutoRejectForGpc
+      ? "rejected"
+      : nextChoice;
+
+    if (shouldAutoRejectForGpc) {
+      writeCookieConsent("rejected");
+    }
+
+    const hydrateId = window.requestAnimationFrame(() => {
+      setChoice(effectiveChoice);
+      setIsOpen(effectiveChoice === null);
+      setIsHydrated(true);
+    });
+
     function openPreferences() {
-      setVisible(true);
+      setIsOpen(true);
+    }
+
+    function handleConsentChange() {
+      const nextChoice = readCookieConsent();
+      setChoice(nextChoice);
+      setIsOpen(nextChoice === null);
     }
 
     window.addEventListener(COOKIE_PREFERENCES_OPEN_EVENT, openPreferences);
+    window.addEventListener(COOKIE_CONSENT_CHANGED_EVENT, handleConsentChange);
+
     return () => {
+      window.cancelAnimationFrame(hydrateId);
       window.removeEventListener(
         COOKIE_PREFERENCES_OPEN_EVENT,
         openPreferences,
+      );
+      window.removeEventListener(
+        COOKIE_CONSENT_CHANGED_EVENT,
+        handleConsentChange,
       );
     };
   }, []);
 
   function handleChoice(nextChoice: CookieConsentChoice) {
-    writeCookieConsent(nextChoice);
     setChoice(nextChoice);
-    setVisible(false);
+    setIsOpen(false);
+    writeCookieConsent(nextChoice);
   }
 
-  if (!visible) return null;
+  function handleClose() {
+    handleChoice("rejected");
+  }
+
+  if (!isHydrated || !isOpen) return null;
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-[70] px-4 pb-4">
-      <div className="mx-auto max-w-4xl rounded-2xl border border-gray-200 bg-[--color-surface] p-5 shadow-2xl">
+    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-[70] px-4 pb-4">
+      <div className="pointer-events-auto mx-auto max-w-4xl rounded-2xl border border-slate-800 bg-slate-900 p-5 text-white shadow-[0_24px_50px_rgba(0,0,0,0.45)]">
+        <div className="mb-3 flex justify-end">
+          <button
+            type="button"
+            onClick={handleClose}
+            className="min-h-[44px] cursor-pointer rounded-lg px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-slate-400 transition-colors hover:bg-white/6 hover:text-white"
+          >
+            Close
+          </button>
+        </div>
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div className="max-w-2xl">
             <p className="text-xs font-bold uppercase tracking-widest text-[--color-orange-brand]">
               Cookie Preferences
             </p>
-            <p className="mt-2 text-sm font-semibold text-[--color-ink]">
+            <p className="mt-2 text-sm font-semibold text-white">
               Necessary cookies stay on so sign-in and security keep working.
             </p>
-            <p className="mt-1 text-sm leading-relaxed text-[--color-ink-dim]">
+            <p className="mt-1 text-sm leading-relaxed text-slate-400">
               Optional analytics, ad measurement, AdSense, and affiliate
               tracking cookies load only if you accept them. You can reject
               optional cookies and still use the calculators.
             </p>
             {choice && (
-              <p className="mt-2 text-xs text-[--color-ink-dim]">
+              <p className="mt-2 text-xs text-slate-500">
                 Current setting: optional cookies are{" "}
                 {choice === "accepted" ? "enabled" : "disabled"}.
               </p>
             )}
-            <p className="mt-2 text-xs text-[--color-ink-dim]">
+            <p className="mt-2 text-xs text-slate-500">
               See our{" "}
               <Link
-                href="/privacy"
+                href={routes.privacy}
                 className="font-medium text-[--color-orange-brand] hover:underline"
               >
                 Privacy Policy
               </Link>{" "}
               and{" "}
               <Link
-                href="/terms"
+                href={routes.terms}
                 className="font-medium text-[--color-orange-brand] hover:underline"
               >
                 Terms of Service
@@ -82,14 +152,14 @@ export function CookieConsentBanner() {
             <button
               type="button"
               onClick={() => handleChoice("rejected")}
-              className="min-h-[44px] rounded-xl border border-gray-300 px-4 py-2.5 text-sm font-semibold text-[--color-ink] transition-colors hover:bg-[--color-surface-alt]"
+              className="min-h-[44px] cursor-pointer rounded-xl border border-slate-700 px-4 py-2.5 text-sm font-semibold text-slate-200 transition-colors hover:bg-slate-800"
             >
               Reject Optional Cookies
             </button>
             <button
               type="button"
               onClick={() => handleChoice("accepted")}
-              className="min-h-[44px] rounded-xl bg-[--color-orange-brand] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[--color-orange-dark]"
+              className="min-h-[44px] cursor-pointer rounded-xl bg-[--color-orange-brand] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[--color-orange-dark]"
             >
               Accept All Cookies
             </button>

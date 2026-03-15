@@ -26,32 +26,38 @@ const BLOG_CATEGORY_IMAGES: Record<string, { src: string; alt: string }> = {
 };
 
 export const metadata: Metadata = {
-  title: "Construction Tips & Guides | Build Calc Pro",
+  title: "Construction Tips & Guides | Pro Construction Calc",
   description:
     "Construction guides, material tips, and how-to articles for contractors and DIYers.",
 };
 
 export default function BlogPage() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="command-theme page-shell flex min-h-screen flex-col">
       <Header />
-      <main id="main-content" className="flex-1 bg-[--color-bg]">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
-          <h1 className="text-3xl font-display font-bold text-[--color-ink] mb-2">
-            Construction Tips & Guides
-          </h1>
-          <p className="text-[--color-ink-dim] mb-10">
-            How-to articles and material guides for builders and DIYers.
-          </p>
+      <main id="main-content" className="flex-1">
+        <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+          <div className="dark-feature-panel mb-8 p-6 text-white">
+            <p className="section-kicker">Methods and guidance</p>
+            <h1 className="mt-2 text-3xl font-display font-bold">
+              Construction Tips & Guides
+            </h1>
+            <p className="mt-2 text-[--color-nav-text]/70">
+              How-to articles and material guides for builders and DIYers.
+            </p>
+            <div className="trim-nav-border mt-4 inline-flex rounded-full border bg-white/6 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[--color-nav-text]">
+              Field notes, not filler
+            </div>
+          </div>
 
           <div className="space-y-6">
             {BLOG_POSTS.map((post) => (
               <article
                 key={post.slug}
-                className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-6 hover:shadow-md transition-shadow"
+                className="content-card p-6 transition-shadow hover:shadow-[0_18px_38px_rgba(15,18,27,0.12)]"
               >
                 <JsonLD schema={getBlogPostSchema(post)} />
-                <div className="rounded-xl overflow-hidden border border-gray-100 mb-4">
+                <div className="trim-border-strong mb-4 overflow-hidden rounded-xl border">
                   <Image
                     src={
                       (
@@ -79,18 +85,18 @@ export default function BlogPage() {
                   </span>
                 </div>
                 <h2 className="text-xl font-display font-bold text-[--color-ink] mb-2">
-                  <Link
-                    href={`/blog/${post.slug}`}
-                    className="hover:text-[--color-orange-brand] transition-colors"
-                  >
-                    {post.title}
-                  </Link>
+                <Link
+                  href={`/field-notes/${post.slug}`}
+                  className="hover:text-[--color-orange-brand] transition-colors"
+                >
+                  {post.title}
+                </Link>
                 </h2>
                 <p className="text-sm text-[--color-ink-dim] leading-relaxed mb-4">
                   {post.description}
                 </p>
                 <Link
-                  href={`/blog/${post.slug}`}
+                  href={`/field-notes/${post.slug}`}
                   className="text-sm font-semibold text-[--color-orange-brand] hover:text-[--color-orange-dark] transition-colors"
                 >
                   Read more →

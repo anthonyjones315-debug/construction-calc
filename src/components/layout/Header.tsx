@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import {
   HardHat,
@@ -12,57 +11,46 @@ import {
   X,
 } from "lucide-react";
 import { useState } from "react";
+import { primaryNavigation, routes } from "@routes";
 
 export function Header() {
   const { data: session, status } = useSession();
-  const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const callbackUrl = pathname || "/";
+  const displayName = session?.user?.name ?? "Anthony Jones";
+  const businessStatus = session?.user ? "Business Active" : "Business Guest";
 
   return (
-    <header className="sticky top-0 z-50 bg-[--color-nav-bg] border-b border-white/10 shadow-lg">
-      <div className="max-w-screen-xl mx-auto px-4 h-14 flex items-center justify-between gap-4">
-        {/* Logo */}
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-[#0F0F10]/95 shadow-[0_10px_30px_rgba(0,0,0,0.22)] backdrop-blur-xl">
+      <div className="mx-auto flex h-14 max-w-screen-xl items-center justify-between gap-4 px-4">
+        {/* Logo — P brand: always to Command Center dashboard */}
         <Link
-          href="/"
-          className="flex items-center gap-2 text-white font-display font-bold text-xl tracking-wide hover:text-[--color-nav-active] transition-colors shrink-0"
-          aria-label="Build Calc Pro — Home"
+          href={routes.commandCenter}
+          className="flex shrink-0 items-center gap-2 text-xl font-display font-black tracking-wide text-white transition-colors hover:text-[#FF8C00]"
+          aria-label="Pro Construction Calc - Command Center"
         >
-          <HardHat
-            className="w-6 h-6 text-[--color-orange-brand]"
-            aria-hidden
-          />
-          <span className="hidden sm:block">BUILD CALC PRO</span>
-          <span className="sm:hidden">BCP</span>
-          <span className="text-[10px] font-sans font-bold bg-[--color-orange-brand] text-white px-1.5 py-0.5 rounded uppercase tracking-wider ml-1">
+          <HardHat className="w-6 h-6 text-[#FF8C00]" aria-hidden />
+          <span className="hidden sm:block">Pro Construction Calc</span>
+          <span className="sm:hidden">PC</span>
+          <span className="ml-1 rounded bg-[#FF8C00] px-1.5 py-0.5 text-[10px] font-sans font-black uppercase tracking-wider text-black">
             Beta
           </span>
         </Link>
 
         {/* Desktop nav */}
         <nav
-          className="hidden md:flex items-center gap-6 text-sm text-[--color-nav-text]"
+          className="hidden items-center gap-6 text-sm text-white/70 md:flex"
           aria-label="Main navigation"
         >
-          <Link
-            href="/calculators"
-            className="hover:text-[#f9fafb] transition-colors"
-          >
-            Calculators
-          </Link>
-          <Link href="/blog" className="hover:text-[#f9fafb] transition-colors">
-            Blog
-          </Link>
-          <Link href="/faq" className="hover:text-[#f9fafb] transition-colors">
-            FAQ
-          </Link>
-          <Link
-            href="/about"
-            className="hover:text-[#f9fafb] transition-colors"
-          >
-            About
-          </Link>
+          {primaryNavigation.map(({ href, label }) => (
+            <Link
+              key={href}
+              href={href}
+              className="transition-colors hover:text-white"
+            >
+              {label}
+            </Link>
+          ))}
         </nav>
 
         {/* Right side: auth + mobile hamburger */}
@@ -74,7 +62,7 @@ export function Header() {
             <div className="relative">
               <button
                 onClick={() => setMenuOpen((o) => !o)}
-                className="flex items-center gap-2 text-sm text-[--color-nav-text] hover:text-[#f9fafb] transition-colors"
+                className="flex items-center gap-2 text-sm text-[--color-nav-text] transition-colors hover:text-white"
                 aria-expanded={menuOpen}
                 aria-haspopup="true"
                 aria-controls="account-menu"
@@ -89,11 +77,14 @@ export function Header() {
                   />
                 ) : (
                   <div className="w-7 h-7 rounded-full bg-[--color-orange-brand] flex items-center justify-center">
-                    <User className="w-4 h-4 text-white" aria-hidden />
+                    <User className="w-4 h-4 text-black" aria-hidden />
                   </div>
                 )}
-                <span className="hidden sm:block">
-                  {session.user?.name?.split(" ")[0]}
+                <span className="hidden sm:flex sm:flex-col sm:items-start sm:leading-tight">
+                  <span className="text-xs font-semibold text-white">{displayName}</span>
+                  <span className="text-[10px] uppercase tracking-[0.1em] text-[--color-orange-brand]">
+                    {businessStatus}
+                  </span>
                 </span>
                 <ChevronDown className="w-3 h-3" aria-hidden />
               </button>
@@ -108,29 +99,31 @@ export function Header() {
                   />
                   <div
                     id="account-menu"
-                    className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50"
+                    className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-2xl border trim-nav-border bg-[#111826] shadow-[0_18px_40px_rgba(0,0,0,0.42)]"
                     role="menu"
                     aria-label="Account menu"
                   >
-                    <div className="px-4 py-3 border-b border-gray-100">
-                      <p className="text-xs text-gray-500">Signed in as</p>
-                      <p className="text-sm font-medium text-gray-900 truncate">
+                    <div className="border-b trim-nav-border px-4 py-3">
+                      <p className="text-xs uppercase tracking-[0.12em] text-[--color-nav-text]/55">
+                        Signed in as
+                      </p>
+                      <p className="truncate text-sm font-medium text-white">
                         {session.user?.email}
                       </p>
                     </div>
                     <Link
-                      href="/saved"
+                      href={routes.saved}
                       role="menuitem"
-                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-[--color-nav-text] transition-colors hover:bg-white/6 hover:text-white"
                       onClick={() => setMenuOpen(false)}
                     >
                       <Bookmark className="w-4 h-4" aria-hidden />
                       Saved Estimates
                     </Link>
                     <Link
-                      href="/pricebook"
+                      href={routes.pricebook}
                       role="menuitem"
-                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-[--color-nav-text] transition-colors hover:bg-white/6 hover:text-white"
                       onClick={() => setMenuOpen(false)}
                     >
                       <span className="w-4 h-4 text-center" aria-hidden>
@@ -139,9 +132,9 @@ export function Header() {
                       Price Book
                     </Link>
                     <Link
-                      href="/settings"
+                      href={routes.settings}
                       role="menuitem"
-                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-[--color-nav-text] transition-colors hover:bg-white/6 hover:text-white"
                       onClick={() => setMenuOpen(false)}
                     >
                       <span className="w-4 h-4 text-center" aria-hidden>
@@ -154,7 +147,7 @@ export function Header() {
                         signOut();
                         setMenuOpen(false);
                       }}
-                      className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-red-300 transition-colors hover:bg-red-500/10 hover:text-red-200"
                       role="menuitem"
                     >
                       <LogOut className="w-4 h-4" aria-hidden />
@@ -166,9 +159,9 @@ export function Header() {
             </div>
           ) : (
             <Link
-              href={{ pathname: "/auth/signin", query: { callbackUrl } }}
-              className="text-sm font-medium bg-[--color-orange-brand] hover:bg-[--color-orange-dark] text-white px-4 py-1.5 rounded-lg transition-colors"
-              aria-label="Sign in to your account"
+              href={routes.auth.signIn}
+              className="rounded-lg bg-[#FF8C00] px-4 py-1.5 text-sm font-black uppercase text-black transition-colors hover:brightness-95"
+              aria-label="Sign in to your Estimating Cockpit"
             >
               Sign In
             </Link>
@@ -176,7 +169,7 @@ export function Header() {
 
           {/* Mobile hamburger */}
           <button
-            className="md:hidden flex items-center justify-center w-9 h-9 rounded-lg text-[--color-nav-text] hover:text-white hover:bg-white/10 transition-colors"
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-white/70 transition-colors hover:bg-white/10 hover:text-white md:hidden"
             onClick={() => setMobileNavOpen((o) => !o)}
             aria-expanded={mobileNavOpen}
             aria-controls="mobile-navigation"
@@ -195,20 +188,15 @@ export function Header() {
       {mobileNavOpen && (
         <nav
           id="mobile-navigation"
-          className="md:hidden border-t border-white/10 bg-[--color-nav-bg] px-4 py-3 flex flex-col gap-1"
+          className="flex flex-col gap-1 border-t border-white/10 bg-[#0F0F10] px-4 py-3 md:hidden"
           aria-label="Mobile navigation"
         >
-          {[
-            { href: "/calculators", label: "Calculators" },
-            { href: "/blog", label: "Blog" },
-            { href: "/faq", label: "FAQ" },
-            { href: "/about", label: "About" },
-          ].map(({ href, label }) => (
+          {primaryNavigation.map(({ href, label }) => (
             <Link
               key={href}
               href={href}
               onClick={() => setMobileNavOpen(false)}
-              className="text-sm text-[--color-nav-text] hover:text-white py-2 px-3 rounded-lg hover:bg-white/10 transition-colors"
+              className="rounded-lg px-3 py-2 text-sm text-white/70 transition-colors hover:bg-white/10 hover:text-white"
             >
               {label}
             </Link>

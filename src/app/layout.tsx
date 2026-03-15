@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Barlow_Condensed, Inter, JetBrains_Mono } from "next/font/google";
+import { Oswald, Inter, JetBrains_Mono } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
 import { CookieConsentBanner } from "@/components/layout/CookieConsentBanner";
 import { OptionalTracking } from "@/components/layout/OptionalTracking";
 import { ServiceWorker } from "@/components/layout/ServiceWorker";
 import { ScrollToTop } from "@/components/layout/ScrollToTop";
-import { Providers } from "./providers";
+import { Providers } from "@app/providers";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -14,9 +15,9 @@ const inter = Inter({
   variable: "--font-sans",
 });
 
-const barlowCondensed = Barlow_Condensed({
+const oswald = Oswald({
   subsets: ["latin"],
-  weight: ["600", "700", "800"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
   variable: "--font-display",
 });
@@ -31,11 +32,12 @@ const jetBrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://proconstructioncalc.com"),
   title: {
-    default: "Build Calc Pro — Free Construction Calculators",
-    template: "%s | Build Calc Pro",
+    default:
+      "Pro Construction Calc — Construction Estimating & Cost Calculators",
+    template: "%s | Pro Construction Calc",
   },
   description:
-    "Free construction calculators for concrete, framing, roofing, insulation, flooring, electrical and more. Built for contractors and DIYers.",
+    "Professional construction estimating calculators for contractors, including trade-specific quantity math, cost planning, and client-ready estimate exports.",
   keywords: [
     "construction calculator",
     "concrete calculator",
@@ -43,12 +45,12 @@ export const metadata: Metadata = {
     "roofing calculator",
     "insulation calculator",
   ],
-  authors: [{ name: "Build Calc Pro" }],
+  authors: [{ name: "Pro Construction Calc" }],
   openGraph: {
     type: "website",
     locale: "en_US",
     url: "https://proconstructioncalc.com",
-    siteName: "Build Calc Pro",
+    siteName: "Pro Construction Calc",
     images: [{ url: "/og-image.png", width: 1200, height: 630 }],
   },
   twitter: { card: "summary_large_image" },
@@ -70,15 +72,19 @@ export default function RootLayout({
         <link rel="manifest" href="/site.webmanifest" />
       </head>
       <body
-        className={`${inter.variable} ${barlowCondensed.variable} ${jetBrainsMono.variable}`}
+        className={`command-theme ${inter.variable} ${oswald.variable} ${jetBrainsMono.variable}`}
       >
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
-        <Providers>
-          <ScrollToTop />
-          {children}
-        </Providers>
+        <Suspense fallback={null}>
+          <Providers>
+            <Suspense fallback={null}>
+              <ScrollToTop />
+            </Suspense>
+            {children}
+          </Providers>
+        </Suspense>
         <CookieConsentBanner />
         <ServiceWorker />
         <OptionalTracking />

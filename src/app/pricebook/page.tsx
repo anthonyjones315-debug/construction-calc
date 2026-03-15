@@ -1,5 +1,4 @@
 "use client";
-export const dynamic = "force-dynamic";
 
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -27,7 +26,6 @@ const CATEGORIES = [
   "Flooring",
   "Siding",
   "Paint",
-  "Electrical",
   "Other",
 ];
 const UNIT_TYPES = [
@@ -59,6 +57,7 @@ function PriceBookContent() {
   const [newRow, setNewRow] = useState({ ...emptyRow });
   const [adding, setAdding] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [savingMessage, setSavingMessage] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -79,19 +78,57 @@ function PriceBookContent() {
 
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
-    if (!newRow.material_name.trim()) return;
+    if (!newRow.material_name.trim() || saving) return;
+    setError("");
+    setSavingMessage("");
+
+    const optimisticId = `pending-${crypto.randomUUID()}`;
+    const optimisticMaterial: UserMaterial = {
+      id: optimisticId,
+      user_id: session?.user?.id ?? "",
+      business_id: "pending-business",
+      material_name: newRow.material_name.trim(),
+      category: newRow.category,
+      unit_type: newRow.unit_type,
+      unit_cost: Number(newRow.unit_cost) || 0,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
+    setMaterials((current) => [optimisticMaterial, ...(current ?? [])]);
+    setNewRow({ ...emptyRow });
+    setAdding(false);
+    setSavingMessage("Saving material…");
     setSaving(true);
+
     const res = await fetch("/api/materials", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...newRow, unit_cost: Number(newRow.unit_cost) }),
+      body: JSON.stringify({
+        ...newRow,
+        material_name: newRow.material_name.trim(),
+        unit_cost: Number(newRow.unit_cost),
+      }),
     });
     const { data, error: err } = await res.json();
+
     if (res.ok && data) {
-      setMaterials((m) => [...(m ?? []), data as UserMaterial]);
-      setNewRow({ ...emptyRow });
-      setAdding(false);
-    } else setError(err ?? "Add failed");
+      setMaterials((current) =>
+        (current ?? []).map((row) =>
+          row.id === optimisticId ? (data as UserMaterial) : row,
+        ),
+      );
+      setSavingMessage("Saved to price book.");
+      setTimeout(() => setSavingMessage(""), 2200);
+    } else {
+      setMaterials((current) =>
+        (current ?? []).filter((row) => row.id !== optimisticId),
+      );
+      setError(err ?? "Add failed");
+      setAdding(true);
+      setSavingMessage("");
+    }
+
     setSaving(false);
   }
 
@@ -100,7 +137,10 @@ function PriceBookContent() {
     const res = await fetch(`/api/materials/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...editRow, unit_cost: Number(editRow.unit_cost) }),
+      body: JSON.stringify({
+        ...editRow,
+        unit_cost: Number(editRow.unit_cost),
+      }),
     });
     const { error: err } = await res.json();
     if (res.ok) {
@@ -134,7 +174,7 @@ function PriceBookContent() {
 
   if (!session) {
     return (
-      <div className="max-w-md mx-auto px-4 py-16 text-center">
+      <div className="mx-auto max-w-md px-4 py-16 text-center">
         <LogIn className="w-10 h-10 text-[--color-orange-brand] mx-auto mb-4" />
         <h1 className="text-xl font-bold text-[--color-ink] mb-2">
           Sign in to manage your Price Book
@@ -180,7 +220,7 @@ function PriceBookContent() {
         </button>
       </div>
 
-      <div className="bg-[--color-surface] rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden mb-6">
+      <div className="content-card mb-6 overflow-hidden">
         <Image
           src="/images/pricebook-materials.svg"
           alt="Price book illustration showing material rows and unit costs"
@@ -191,8 +231,13 @@ function PriceBookContent() {
       </div>
 
       {error && (
-        <p className="text-sm text-red-500 bg-red-50 px-4 py-2 rounded-lg mb-4">
+        <p className="mb-4 rounded-lg border border-red-500/25 bg-red-500/8 px-4 py-2 text-sm text-red-600">
           {error}
+        </p>
+      )}
+      {savingMessage && (
+        <p className="mb-4 rounded-lg border border-emerald-500/25 bg-emerald-500/8 px-4 py-2 text-sm text-emerald-700">
+          {savingMessage}
         </p>
       )}
 
@@ -200,7 +245,7 @@ function PriceBookContent() {
       {adding && (
         <form
           onSubmit={handleAdd}
-          className="bg-[--color-surface] border border-[--color-orange-brand]/30 rounded-2xl p-4 mb-6 grid grid-cols-2 sm:grid-cols-4 gap-3"
+          className="content-card mb-6 grid grid-cols-2 gap-3 border-[--color-orange-brand]/30 p-4 sm:grid-cols-4"
         >
           <input
             autoFocus
@@ -256,7 +301,7 @@ function PriceBookContent() {
             <button
               type="button"
               onClick={() => setAdding(false)}
-              className="px-3 py-1.5 text-sm text-[--color-ink-dim] hover:text-[--color-ink] border border-gray-200 rounded-lg"
+              className="rounded-lg border border-[--color-border] px-3 py-1.5 text-sm text-[--color-ink-dim] transition-colors hover:border-[--color-orange-brand]/35 hover:text-[--color-ink]"
             >
               Cancel
             </button>
@@ -277,7 +322,7 @@ function PriceBookContent() {
       )}
 
       {materialRows.length === 0 && !adding ? (
-        <div className="text-center py-16 bg-[--color-surface] rounded-2xl border border-gray-200/80">
+        <div className="content-card py-16 text-center">
           <BookOpen className="w-12 h-12 text-[--color-ink-dim] mx-auto mb-3 opacity-30" />
           <p className="text-[--color-ink-dim] mb-4">
             No materials yet. Add your local pricing to auto-fill calculators.
@@ -297,10 +342,10 @@ function PriceBookContent() {
                 <h2 className="text-xs font-bold uppercase tracking-widest text-[--color-ink-dim] mb-2">
                   {cat}
                 </h2>
-                <div className="bg-[--color-surface] rounded-2xl border border-gray-200/80 overflow-hidden">
+                <div className="content-card overflow-hidden">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-gray-100">
+                      <tr className="trim-border-strong border-b">
                         <th className="text-left px-4 py-2.5 font-semibold text-[--color-ink-dim] text-xs uppercase tracking-wide">
                           Material
                         </th>
@@ -317,7 +362,7 @@ function PriceBookContent() {
                       {rows.map((mat) => (
                         <tr
                           key={mat.id}
-                          className="border-b border-gray-50 last:border-0"
+                          className="border-b border-[--color-border]/45 last:border-0"
                         >
                           {editId === mat.id ? (
                             <>
@@ -370,13 +415,13 @@ function PriceBookContent() {
                                 <div className="flex gap-1">
                                   <button
                                     onClick={() => handleUpdate(mat.id)}
-                                    className="p-1.5 text-green-600 hover:bg-green-50 rounded"
+                                    className="rounded p-1.5 text-emerald-600 transition-colors hover:bg-emerald-500/10"
                                   >
                                     <Check className="w-3.5 h-3.5" />
                                   </button>
                                   <button
                                     onClick={() => setEditId(null)}
-                                    className="p-1.5 text-gray-400 hover:bg-gray-50 rounded"
+                                    className="rounded p-1.5 text-[--color-ink-dim] transition-colors hover:bg-[--color-surface-alt]"
                                   >
                                     <X className="w-3.5 h-3.5" />
                                   </button>
@@ -398,6 +443,8 @@ function PriceBookContent() {
                                 <div className="flex gap-1">
                                   <button
                                     onClick={() => {
+                                      if (String(mat.id).startsWith("pending-"))
+                                        return;
                                       setEditId(mat.id);
                                       setEditRow({
                                         material_name: mat.material_name,
@@ -406,13 +453,17 @@ function PriceBookContent() {
                                         unit_cost: mat.unit_cost,
                                       });
                                     }}
-                                    className="p-1.5 text-gray-400 hover:text-[--color-orange-brand] hover:bg-[--color-orange-soft] rounded transition-all"
+                                    className="rounded p-1.5 text-[--color-ink-dim] transition-all hover:bg-[--color-orange-soft] hover:text-[--color-orange-brand]"
                                   >
                                     <Pencil className="w-3.5 h-3.5" />
                                   </button>
                                   <button
-                                    onClick={() => handleDelete(mat.id)}
-                                    className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-all"
+                                    onClick={() => {
+                                      if (String(mat.id).startsWith("pending-"))
+                                        return;
+                                      handleDelete(mat.id);
+                                    }}
+                                    className="rounded p-1.5 text-[--color-ink-dim] transition-all hover:bg-red-500/10 hover:text-red-500"
                                   >
                                     <Trash2 className="w-3.5 h-3.5" />
                                   </button>
@@ -436,7 +487,7 @@ function PriceBookContent() {
 
 export default function PriceBookPage() {
   return (
-    <div className="flex flex-col min-h-screen bg-[--color-bg]">
+    <div className="page-shell flex min-h-screen flex-col bg-[--color-bg]">
       <Header />
       <main id="main-content" className="flex-1">
         <PriceBookContent />

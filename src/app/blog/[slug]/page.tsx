@@ -7,6 +7,7 @@ import { Footer } from "@/components/layout/Footer";
 import { JsonLD, getBlogPostSchema } from "@/seo";
 import { BLOG_POSTS } from "@/data/blog";
 import { ArrowLeft } from "lucide-react";
+import { getBlogPostRoute, routes } from "@routes";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -56,9 +57,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = BLOG_POSTS.find((p) => p.slug === slug);
   if (!post) return {};
   return {
-    title: `${post.title} | Build Calc Pro`,
+    title: `${post.title} | Pro Construction Calc`,
     description: post.description,
-    alternates: { canonical: `https://proconstructioncalc.com/blog/${slug}` },
+    alternates: {
+      canonical: `https://proconstructioncalc.com${getBlogPostRoute(slug)}`,
+    },
   };
 }
 
@@ -71,21 +74,21 @@ export default async function BlogPost({ params }: Props) {
   const sections = post.content.trim().split(/\n\n+/);
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="page-shell flex min-h-screen flex-col">
       <Header />
       <JsonLD schema={getBlogPostSchema(post)} />
-      <main id="main-content" className="flex-1 bg-[--color-bg]">
+      <main id="main-content" className="flex-1">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
           <Link
-            href="/blog"
+            href={routes.fieldNotes}
             scroll={true}
             className="inline-flex items-center gap-1.5 text-sm text-[--color-ink-dim] hover:text-[--color-ink] mb-8 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to Blog
+            Back to Field Notes
           </Link>
 
-          <div className="flex items-center gap-2 mb-4">
+          <div className="mb-4 flex items-center gap-2">
             <span className="text-xs font-bold uppercase tracking-wider text-[--color-orange-brand] bg-[--color-orange-soft] px-2.5 py-1 rounded-full">
               {post.category}
             </span>
@@ -100,7 +103,7 @@ export default async function BlogPost({ params }: Props) {
           </p>
 
           <article
-            className="prose prose-slate max-w-none
+            className="content-card p-8 prose prose-slate max-w-none
               prose-headings:font-display prose-headings:font-bold prose-headings:text-[--color-ink]
               prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-3
               prose-h3:text-lg prose-h3:mt-6 prose-h3:mb-2
@@ -109,7 +112,7 @@ export default async function BlogPost({ params }: Props) {
               prose-strong:text-[--color-ink] prose-strong:font-semibold
               prose-a:text-[--color-orange-brand] prose-a:no-underline hover:prose-a:underline
               prose-table:text-sm prose-th:bg-[--color-surface-alt] prose-th:font-semibold
-              prose-hr:border-gray-200"
+              prose-hr:border-[--color-border]"
           >
             {sections.map((section, i) => {
               if (section.startsWith("## ")) {
@@ -135,7 +138,7 @@ export default async function BlogPost({ params }: Props) {
                 const rows = section.split("\n").filter((r) => r.includes("|"));
                 return (
                   <div key={i} className="overflow-x-auto my-4">
-                    <table className="w-full text-sm border border-gray-200 rounded-xl overflow-hidden">
+                    <table className="w-full overflow-hidden rounded-xl border border-[--color-border] text-sm">
                       <tbody>
                         {rows
                           .filter((r) => !r.match(/^\|[-\s|]+\|$/))
@@ -149,7 +152,7 @@ export default async function BlogPost({ params }: Props) {
                                 className={
                                   j === 0
                                     ? "bg-[--color-surface-alt] font-semibold"
-                                    : "border-t border-gray-100"
+                                    : "trim-border border-t"
                                 }
                               >
                                 {cells.map((cell, k) => (
@@ -169,7 +172,7 @@ export default async function BlogPost({ params }: Props) {
             })}
           </article>
 
-          <div className="mt-12 p-6 bg-[--color-orange-soft] rounded-2xl border border-[--color-orange-brand]/20">
+          <div className="mt-12 rounded-2xl border border-[--color-orange-brand]/20 bg-[--color-orange-soft] p-6">
             <p className="text-sm font-semibold text-[--color-orange-brand] mb-1">
               Try the calculator
             </p>
@@ -178,7 +181,7 @@ export default async function BlogPost({ params }: Props) {
               accurate estimates.
             </p>
             <Link
-              href="/"
+              href={routes.home}
               scroll={true}
               className="inline-flex items-center gap-1.5 bg-[--color-orange-brand] hover:bg-[--color-orange-dark] text-white text-sm font-bold px-4 py-2 rounded-xl transition-all"
             >

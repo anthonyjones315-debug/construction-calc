@@ -1,0 +1,49 @@
+# Production pipeline: validate build on push to main and notify Sentry of new release.
+# Prevents breaking changes from reaching Rome/Utica users; keeps error tracking organized by version.
+
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Set Sentry release version
+        id: sentry-release
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          echo "release=${VERSION}+${SHORT_SHA}" >> $GITHUB_OUTPUT
+          echo "Sentry release: ${VERSION}+${SHORT_SHA}"
+
+      - name: Build (Sentry release + source maps when token set)
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+          SENTRY_RELEASE: ${{ steps.sentry-release.outputs.release }}
+        run: npm run build
+
+      - name: Sentry release summary
+        if: success()
+        run: |
+          echo "Sentry release ${{ steps.sentry-release.outputs.release }} created during build (when SENTRY_AUTH_TOKEN is set)."
+          echo "Errors will be attributed to this release in Sentry."

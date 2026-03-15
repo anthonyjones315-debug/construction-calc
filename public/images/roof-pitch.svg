@@ -1,12 +1,1 @@
-<svg width="1200" height="700" viewBox="0 0 1200 700" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Roof pitch triangle and roofing layout">
-  <rect width="1200" height="700" fill="#EFF6FF"/>
-  <rect x="120" y="500" width="960" height="40" rx="10" fill="#9CA3AF"/>
-  <path d="M220 500L600 250L980 500" fill="#BFDBFE" stroke="#1E3A8A" stroke-width="16" stroke-linejoin="round"/>
-  <path d="M600 500V250" stroke="#1E40AF" stroke-width="8" stroke-dasharray="12 12"/>
-  <path d="M220 500H600" stroke="#1E40AF" stroke-width="8" stroke-dasharray="12 12"/>
-  <circle cx="600" cy="500" r="10" fill="#1E40AF"/>
-  <text x="630" y="380" fill="#1E3A8A" font-family="Arial, sans-serif" font-size="32" font-weight="700">Rise</text>
-  <text x="380" y="545" fill="#1E3A8A" font-family="Arial, sans-serif" font-size="32" font-weight="700">Run</text>
-  <text x="120" y="120" fill="#111827" font-family="Arial, sans-serif" font-size="52" font-weight="700">Roof Pitch &amp; Material Takeoff</text>
-  <text x="120" y="170" fill="#4B5563" font-family="Arial, sans-serif" font-size="28">Convert slope to real roof area before ordering shingles.</text>
-</svg>
+<svg width="1200" height="700" viewBox="0 0 1200 700" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Roof pitch triangle and roofing layout"><rect width="1200" height="700" fill="#0F1624"/><rect x="80" y="80" width="1040" height="540" rx="32" fill="#141E2E" stroke="#2B384F" stroke-width="4"/><rect x="140" y="500" width="920" height="36" rx="10" fill="#475569"/><path d="M240 500L600 250L960 500" fill="#2A3446" stroke="#F7941D" stroke-width="16" stroke-linejoin="round"/><path d="M600 500V250" stroke="#F9A15A" stroke-width="8" stroke-dasharray="12 12"/><path d="M240 500H600" stroke="#F9A15A" stroke-width="8" stroke-dasharray="12 12"/><circle cx="600" cy="500" r="10" fill="#F7941D"/><text x="628" y="382" fill="#F5EBDD" font-family="Arial, sans-serif" font-size="32" font-weight="700">Rise</text><text x="386" y="545" fill="#F5EBDD" font-family="Arial, sans-serif" font-size="32" font-weight="700">Run</text><text x="140" y="150" fill="#F5EBDD" font-family="Arial, sans-serif" font-size="52" font-weight="700">Roof Pitch &amp; Material Takeoff</text><text x="140" y="200" fill="#9AA4B1" font-family="Arial, sans-serif" font-size="28">Convert slope to real roof area before ordering shingles.</text></svg>

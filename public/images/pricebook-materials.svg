@@ -1,15 +1,1 @@
-<svg width="1200" height="700" viewBox="0 0 1200 700" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Construction material price book and calculator">
-  <rect width="1200" height="700" fill="#F8FAFC"/>
-  <rect x="120" y="120" width="520" height="460" rx="24" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="4"/>
-  <rect x="170" y="200" width="420" height="28" rx="8" fill="#E5E7EB"/>
-  <rect x="170" y="250" width="300" height="22" rx="8" fill="#D1D5DB"/>
-  <rect x="170" y="295" width="360" height="22" rx="8" fill="#D1D5DB"/>
-  <rect x="170" y="340" width="280" height="22" rx="8" fill="#D1D5DB"/>
-  <rect x="170" y="385" width="330" height="22" rx="8" fill="#D1D5DB"/>
-  <rect x="170" y="455" width="160" height="50" rx="12" fill="#F97316"/>
-  <rect x="700" y="180" width="360" height="110" rx="16" fill="#FFEDD5"/>
-  <rect x="700" y="320" width="360" height="110" rx="16" fill="#E0F2FE"/>
-  <rect x="700" y="460" width="360" height="110" rx="16" fill="#ECFCCB"/>
-  <text x="120" y="80" fill="#111827" font-family="Arial, sans-serif" font-size="52" font-weight="700">Price Book Management</text>
-  <text x="120" y="620" fill="#4B5563" font-family="Arial, sans-serif" font-size="28">Track local material costs and keep estimates accurate.</text>
-</svg>
+<svg width="1200" height="700" viewBox="0 0 1200 700" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Construction material price book and calculator"><rect width="1200" height="700" fill="#0F1624"/><rect x="80" y="80" width="1040" height="540" rx="32" fill="#141E2E" stroke="#2B384F" stroke-width="4"/><rect x="140" y="150" width="470" height="400" rx="24" fill="#0F1726" stroke="#31405A" stroke-width="4"/><rect x="190" y="220" width="370" height="24" rx="8" fill="#334155"/><rect x="190" y="266" width="280" height="18" rx="8" fill="#475569"/><rect x="190" y="306" width="330" height="18" rx="8" fill="#475569"/><rect x="190" y="346" width="260" height="18" rx="8" fill="#475569"/><rect x="190" y="386" width="310" height="18" rx="8" fill="#475569"/><rect x="190" y="454" width="160" height="48" rx="12" fill="#F7941D"/><rect x="700" y="182" width="330" height="96" rx="18" fill="#1D2637" stroke="#3A4A63" stroke-width="3"/><rect x="700" y="312" width="330" height="96" rx="18" fill="#1D2637" stroke="#3A4A63" stroke-width="3"/><rect x="700" y="442" width="330" height="96" rx="18" fill="#1D2637" stroke="#3A4A63" stroke-width="3"/><rect x="730" y="214" width="120" height="14" rx="7" fill="#F9A15A"/><rect x="730" y="238" width="220" height="12" rx="6" fill="#8893A3"/><rect x="730" y="344" width="120" height="14" rx="7" fill="#F9A15A"/><rect x="730" y="368" width="200" height="12" rx="6" fill="#8893A3"/><rect x="730" y="474" width="120" height="14" rx="7" fill="#F9A15A"/><rect x="730" y="498" width="240" height="12" rx="6" fill="#8893A3"/><text x="140" y="150" fill="#F5EBDD" font-family="Arial, sans-serif" font-size="52" font-weight="700">Price Book Management</text><text x="140" y="594" fill="#9AA4B1" font-family="Arial, sans-serif" font-size="28">Track local material costs and keep estimates accurate.</text></svg>

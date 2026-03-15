@@ -1,11 +1,12 @@
 {
   // VS Code will prompt "Install recommended extensions?" when you open this folder
   "recommendations": [
-    "esbenp.prettier-vscode",       // Code formatter
-    "dbaeumer.vscode-eslint",       // Linting — catches bugs before runtime
+    "esbenp.prettier-vscode", // Code formatter
+    "dbaeumer.vscode-eslint", // Linting — catches bugs before runtime
     "msjsdiag.debugger-for-chrome", // Chrome debugger (built-in on newer VS Code)
-    "antfu.vite",                   // Vite integration — run dev server from sidebar
+    "antfu.vite", // Vite integration — run dev server from sidebar
     "burkeholland.simple-react-snippets", // Shortcuts: rfc → full component boilerplate
-    "formulahendry.auto-rename-tag" // Auto-renames closing JSX tag when you edit opening
+    "formulahendry.auto-rename-tag", // Auto-renames closing JSX tag when you edit opening
+    "blazejkustra.react-compiler-marker" // Visual markers for React Compiler memoization
   ]
 }

@@ -1,106 +1,529 @@
-import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer'
-import type { PDFEstimateData } from '@/types'
+import {
+  Document,
+  Font,
+  Image as PdfImage,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+} from "@react-pdf/renderer";
+import type { DocumentProps } from "@react-pdf/renderer";
+import type { ReactElement } from "react";
+import type { BudgetItem, PDFEstimateData } from "@/types";
+import { designTokens } from "@/lib/design-tokens";
+
+let fontsRegistered = false;
+
+function ensurePdfFonts() {
+  if (fontsRegistered) return;
+
+  Font.register({
+    family: "Oswald",
+    fonts: [
+      {
+        src: "https://cdn.jsdelivr.net/npm/@fontsource/oswald@5/files/oswald-latin-400-normal.woff2",
+      },
+      {
+        src: "https://cdn.jsdelivr.net/npm/@fontsource/oswald@5/files/oswald-latin-700-normal.woff2",
+        fontWeight: 700,
+      },
+    ],
+  });
+
+  Font.register({
+    family: "Inter",
+    fonts: [
+      {
+        src: "https://cdn.jsdelivr.net/npm/@fontsource/inter@5/files/inter-latin-400-normal.woff2",
+      },
+      {
+        src: "https://cdn.jsdelivr.net/npm/@fontsource/inter@5/files/inter-latin-700-normal.woff2",
+        fontWeight: 700,
+      },
+    ],
+  });
+
+  fontsRegistered = true;
+}
+
+const colors = {
+  midnight: designTokens.ui.midnight,
+  dusk: designTokens.ui.dusk,
+  accent: designTokens.brand.orange,
+  accentDark: designTokens.brand.orangeDark,
+  border: designTokens.ui.border,
+  headerGray: designTokens.ui.surfaceAlt,
+  text: designTokens.ui.text,
+  muted: designTokens.ui.textMuted,
+  surface: designTokens.ui.surface,
+  page: designTokens.ui.page,
+};
 
 const styles = StyleSheet.create({
-  page: { padding: 40, fontFamily: 'Helvetica', backgroundColor: '#ffffff' },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28, paddingBottom: 16, borderBottomWidth: 2, borderBottomColor: '#e8820c' },
-  logo: { fontSize: 20, fontFamily: 'Helvetica-Bold', color: '#1a1a1a' },
-  logoSub: { fontSize: 10, color: '#e8820c', fontFamily: 'Helvetica-Bold', marginTop: 2 },
-  meta: { textAlign: 'right' },
-  metaText: { fontSize: 9, color: '#6b6560' },
-  title: { fontSize: 18, fontFamily: 'Helvetica-Bold', color: '#1a1a1a', marginBottom: 4 },
-  subtitle: { fontSize: 10, color: '#6b6560', marginBottom: 20 },
-  sectionLabel: { fontSize: 8, fontFamily: 'Helvetica-Bold', color: '#9a9389', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 8 },
-  resultsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 20 },
-  heroCard: { backgroundColor: '#e8820c', borderRadius: 8, padding: 12, minWidth: 140, flex: 1 },
-  heroLabel: { fontSize: 8, color: 'rgba(255,255,255,0.8)', fontFamily: 'Helvetica-Bold', textTransform: 'uppercase', letterSpacing: 1 },
-  heroValue: { fontSize: 24, fontFamily: 'Helvetica-Bold', color: '#ffffff', marginTop: 2 },
-  heroUnit: { fontSize: 10, color: 'rgba(255,255,255,0.7)', marginTop: 1 },
-  heroDesc: { fontSize: 8, color: 'rgba(255,255,255,0.6)', marginTop: 2 },
-  card: { backgroundColor: '#f9f7f3', borderRadius: 8, padding: 10, minWidth: 120, flex: 1 },
-  cardLabel: { fontSize: 8, color: '#9a9389', fontFamily: 'Helvetica-Bold', textTransform: 'uppercase', letterSpacing: 0.5 },
-  cardValue: { fontSize: 16, fontFamily: 'Helvetica-Bold', color: '#1a1a1a', marginTop: 2 },
-  cardUnit: { fontSize: 9, color: '#6b6560' },
-  cardDesc: { fontSize: 8, color: '#9a9389', marginTop: 1 },
-  disclaimer: { marginTop: 24, paddingTop: 12, borderTopWidth: 1, borderTopColor: '#f0ede7' },
-  disclaimerText: { fontSize: 8, color: '#9a9389', lineHeight: 1.5 },
-  footer: { position: 'absolute', bottom: 28, left: 40, right: 40, flexDirection: 'row', justifyContent: 'space-between' },
-  footerText: { fontSize: 8, color: '#c4bfb4' },
-})
+  page: {
+    paddingTop: 32,
+    paddingBottom: 42,
+    paddingHorizontal: 34,
+    fontFamily: "Inter",
+    backgroundColor: colors.page,
+    color: colors.text,
+    fontSize: 10,
+  },
+  topRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
+  logoWrap: {
+    maxWidth: 210,
+  },
+  logoImage: {
+    width: 140,
+    height: 56,
+    objectFit: "contain",
+  },
+  fallbackLogo: {
+    fontSize: 18,
+    fontFamily: "Oswald",
+    color: colors.midnight,
+  },
+  brandSite: {
+    marginTop: 4,
+    fontSize: 9,
+    color: colors.muted,
+  },
+  estimateStack: {
+    alignItems: "flex-end",
+    maxWidth: 240,
+  },
+  estimateTitle: {
+    fontFamily: "Oswald",
+    fontSize: 30,
+    color: colors.midnight,
+    textTransform: "uppercase",
+    letterSpacing: 0.8,
+  },
+  contractorCard: {
+    marginTop: 6,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: 8,
+    width: 220,
+  },
+  blockHeading: {
+    fontFamily: "Oswald",
+    fontSize: 10,
+    color: colors.midnight,
+    textTransform: "uppercase",
+    marginBottom: 4,
+    letterSpacing: 0.6,
+  },
+  cardLine: {
+    fontSize: 9,
+    lineHeight: 1.35,
+    color: colors.text,
+  },
+  metadataRow: {
+    marginTop: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 16,
+  },
+  clientCard: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: 9,
+    width: "58%",
+  },
+  estimateMetaCard: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: 9,
+    width: "42%",
+  },
+  metaLabel: {
+    fontFamily: "Oswald",
+    fontSize: 9,
+    color: colors.muted,
+    textTransform: "uppercase",
+    letterSpacing: 0.4,
+    marginTop: 4,
+  },
+  metaValue: {
+    fontFamily: "Inter",
+    fontSize: 10,
+    color: colors.text,
+  },
+  descWrap: {
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: 9,
+    minHeight: 44,
+  },
+  sectionBar: {
+    marginTop: 12,
+    backgroundColor: colors.dusk,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+  },
+  sectionBarText: {
+    color: colors.surface,
+    fontFamily: "Oswald",
+    fontSize: 10,
+    textTransform: "uppercase",
+    letterSpacing: 0.6,
+  },
+  table: {
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: colors.border,
+  },
+  tableHeader: {
+    flexDirection: "row",
+    backgroundColor: colors.headerGray,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+    paddingVertical: 6,
+    paddingHorizontal: 6,
+  },
+  tableRow: {
+    flexDirection: "row",
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+    paddingVertical: 5,
+    paddingHorizontal: 6,
+  },
+  tableRowLast: {
+    borderBottomWidth: 0,
+  },
+  colService: { width: "24%", fontSize: 9 },
+  colDesc: { width: "40%", fontSize: 9 },
+  colQty: { width: "12%", fontSize: 9, textAlign: "right" },
+  colUnit: { width: "12%", fontSize: 9, textAlign: "right" },
+  colTotal: { width: "12%", fontSize: 9, textAlign: "right" },
+  th: {
+    fontFamily: "Oswald",
+    fontSize: 9,
+    textTransform: "uppercase",
+    color: colors.midnight,
+    letterSpacing: 0.5,
+  },
+  td: {
+    fontFamily: "Inter",
+    fontSize: 9,
+    color: colors.text,
+  },
+  totalBox: {
+    marginTop: 10,
+    marginLeft: "54%",
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: 8,
+  },
+  totalLabel: {
+    fontFamily: "Oswald",
+    fontSize: 10,
+    color: colors.midnight,
+    textTransform: "uppercase",
+    letterSpacing: 0.6,
+  },
+  totalValue: {
+    marginTop: 2,
+    fontFamily: "Oswald",
+    fontSize: 20,
+    color: colors.accent,
+    textAlign: "right",
+  },
+  footer: {
+    position: "absolute",
+    left: 34,
+    right: 34,
+    bottom: 22,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    paddingTop: 6,
+  },
+  holdHarmless: {
+    fontFamily: "Inter",
+    fontSize: 8,
+    lineHeight: 1.35,
+    color: colors.muted,
+  },
+  footerMeta: {
+    marginTop: 4,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  footerMetaText: {
+    fontSize: 8,
+    color: colors.muted,
+    fontFamily: "Inter",
+  },
+});
 
-interface Props { data: PDFEstimateData }
+type LineItem = {
+  serviceItem: string;
+  description: string;
+  quantity: number;
+  unitCost: number;
+  total: number;
+};
 
-export function EstimatePDF({ data }: Props) {
-  const highlighted = data.results.filter(r => r.highlight)
-  const rest = data.results.filter(r => !r.highlight)
+function asFiniteNumber(value: unknown): number | null {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function formatCurrency(value: number): string {
+  return `$${value.toFixed(2)}`;
+}
+
+function formatQuantity(value: number): string {
+  if (!Number.isFinite(value)) return "0";
+  return Number.isInteger(value) ? String(value) : value.toFixed(2);
+}
+
+function toLineItems(data: PDFEstimateData): LineItem[] {
+  const budgetItems = Array.isArray(data.budgetItems) ? data.budgetItems : [];
+
+  if (budgetItems.length > 0) {
+    return budgetItems
+      .map<LineItem | null>((item: BudgetItem) => {
+        const serviceItem = String(item.name ?? "Service Item").trim();
+        const quantity = asFiniteNumber(item.quantity) ?? 0;
+        const unitCost = asFiniteNumber(item.pricePerUnit) ?? 0;
+        const total = quantity * unitCost;
+        if (quantity <= 0 || unitCost <= 0 || total <= 0) return null;
+
+        const descriptionBits = [
+          typeof item.unit === "string" && item.unit.trim()
+            ? `${item.unit} basis`
+            : null,
+        ].filter(Boolean);
+
+        return {
+          serviceItem: serviceItem || "Service Item",
+          description:
+            descriptionBits.length > 0
+              ? descriptionBits.join(" · ")
+              : "Professional service line item",
+          quantity,
+          unitCost,
+          total,
+        };
+      })
+      .filter((row): row is LineItem => Boolean(row));
+  }
+
+  return data.results
+    .map<LineItem | null>((result) => {
+      const numericValue = asFiniteNumber(result.value);
+      const isCurrencyUnit =
+        result.unit === "$" || result.unit.toLowerCase().includes("usd");
+      if (numericValue === null || numericValue <= 0 || !isCurrencyUnit) {
+        return null;
+      }
+
+      return {
+        serviceItem: result.label,
+        description: result.description ?? "Calculated line item",
+        quantity: 1,
+        unitCost: numericValue,
+        total: numericValue,
+      };
+    })
+    .filter((row): row is LineItem => Boolean(row));
+}
+
+function estimateNumber(data: PDFEstimateData): string {
+  const stamp = data.generatedAt.replace(/[^0-9]/g, "").slice(-8);
+  return stamp ? `EST-${stamp}` : `EST-${Date.now().toString().slice(-6)}`;
+}
+
+function resolveControlNumber(data: PDFEstimateData): string {
+  if (typeof data.controlNumber === "string") {
+    const normalized = data.controlNumber
+      .trim()
+      .toUpperCase()
+      .replace(/[^A-Z0-9-]/g, "");
+    if (normalized) {
+      return normalized;
+    }
+  }
+
+  return estimateNumber(data);
+}
+
+interface Props {
+  data: PDFEstimateData;
+}
+
+export function createEstimatePDF(
+  data: PDFEstimateData,
+): ReactElement<DocumentProps> {
+  ensurePdfFonts();
+
+  const contractorName = data.contractorProfile?.businessName?.trim();
+  const contractorLogoUrl = data.contractorProfile?.logoUrl?.trim();
+  const contractorAddress = data.contractorProfile?.businessAddress?.trim();
+  const contractorPhone = data.contractorProfile?.businessPhone?.trim();
+  const contractorEmail = data.contractorProfile?.businessEmail?.trim();
+
+  const clientName = data.clientName?.trim();
+  const clientAddress = data.jobSiteAddress?.trim();
+  const lineItems = toLineItems(data);
+
+  const computedSubtotal = lineItems.reduce((sum, item) => sum + item.total, 0);
+  const combinedEstimateTotal =
+    typeof data.totalCost === "number" && Number.isFinite(data.totalCost)
+      ? data.totalCost
+      : computedSubtotal;
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* Header */}
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.logo}>BUILD CALC PRO</Text>
-            <Text style={styles.logoSub}>proconstructioncalc.com</Text>
+        <View style={styles.topRow}>
+          <View style={styles.logoWrap}>
+            {contractorLogoUrl ? (
+              <PdfImage src={contractorLogoUrl} style={styles.logoImage} />
+            ) : (
+              <Text style={styles.fallbackLogo}>Pro Construction Calc</Text>
+            )}
+            <Text style={styles.brandSite}>proconstructioncalc.com</Text>
           </View>
-          <View style={styles.meta}>
-            <Text style={styles.metaText}>Generated: {data.generatedAt}</Text>
-            <Text style={styles.metaText}>Planning Estimate</Text>
+
+          <View style={styles.estimateStack}>
+            <Text style={styles.estimateTitle}>Estimate</Text>
+            <View style={styles.contractorCard}>
+              <Text style={styles.blockHeading}>Contractor Profile</Text>
+              <Text style={styles.cardLine}>
+                {contractorName || "Pro Construction Calc"}
+              </Text>
+              {contractorAddress && (
+                <Text style={styles.cardLine}>{contractorAddress}</Text>
+              )}
+              {contractorPhone && (
+                <Text style={styles.cardLine}>{contractorPhone}</Text>
+              )}
+              {contractorEmail && (
+                <Text style={styles.cardLine}>{contractorEmail}</Text>
+              )}
+            </View>
           </View>
         </View>
 
-        {/* Title */}
-        <Text style={styles.title}>{data.title}</Text>
-        <Text style={styles.subtitle}>{data.calculatorLabel} Calculator</Text>
+        <View style={styles.metadataRow}>
+          <View style={styles.clientCard}>
+            <Text style={styles.blockHeading}>Client</Text>
+            <Text style={styles.cardLine}>
+              {clientName || "Client not specified"}
+            </Text>
+            {clientAddress && (
+              <Text style={styles.cardLine}>{clientAddress}</Text>
+            )}
+          </View>
 
-        {/* Hero results */}
-        {highlighted.length > 0 && (
-          <>
-            <Text style={styles.sectionLabel}>Key Results</Text>
-            <View style={styles.resultsGrid}>
-              {highlighted.map((r, i) => (
-                <View key={i} style={styles.heroCard}>
-                  <Text style={styles.heroLabel}>{r.label}</Text>
-                  <Text style={styles.heroValue}>{r.value}</Text>
-                  <Text style={styles.heroUnit}>{r.unit}</Text>
-                  {r.description && <Text style={styles.heroDesc}>{r.description}</Text>}
-                </View>
-              ))}
+          <View style={styles.estimateMetaCard}>
+            <Text style={styles.metaLabel}>Control Number</Text>
+            <Text style={styles.metaValue}>{resolveControlNumber(data)}</Text>
+            <Text style={styles.metaLabel}>Estimate Sent</Text>
+            <Text style={styles.metaValue}>{data.generatedAt}</Text>
+          </View>
+        </View>
+
+        <View style={styles.descWrap}>
+          <Text style={styles.blockHeading}>Description of Work</Text>
+          <Text style={styles.cardLine}>{data.title}</Text>
+        </View>
+
+        <View style={styles.sectionBar}>
+          <Text style={styles.sectionBarText}>Service Line Items</Text>
+        </View>
+
+        <View style={styles.table}>
+          <View style={styles.tableHeader}>
+            <Text style={[styles.colService, styles.th]}>Service / Item</Text>
+            <Text style={[styles.colDesc, styles.th]}>Description</Text>
+            <Text style={[styles.colQty, styles.th]}>Quantity / Hours</Text>
+            <Text style={[styles.colUnit, styles.th]}>Unit Cost</Text>
+            <Text style={[styles.colTotal, styles.th]}>Total</Text>
+          </View>
+
+          {lineItems.length > 0 ? (
+            lineItems.map((item, index) => (
+              <View
+                key={`${item.serviceItem}-${index}`}
+                style={
+                  index === lineItems.length - 1
+                    ? [styles.tableRow, styles.tableRowLast]
+                    : styles.tableRow
+                }
+              >
+                <Text style={[styles.colService, styles.td]}>
+                  {item.serviceItem}
+                </Text>
+                <Text style={[styles.colDesc, styles.td]}>
+                  {item.description}
+                </Text>
+                <Text style={[styles.colQty, styles.td]}>
+                  {formatQuantity(item.quantity)}
+                </Text>
+                <Text style={[styles.colUnit, styles.td]}>
+                  {formatCurrency(item.unitCost)}
+                </Text>
+                <Text style={[styles.colTotal, styles.td]}>
+                  {formatCurrency(item.total)}
+                </Text>
+              </View>
+            ))
+          ) : (
+            <View style={[styles.tableRow, styles.tableRowLast]}>
+              <Text style={[styles.colService, styles.td]}>Service item</Text>
+              <Text style={[styles.colDesc, styles.td]}>
+                Add budget lines to populate a structured estimate table.
+              </Text>
+              <Text style={[styles.colQty, styles.td]}>0</Text>
+              <Text style={[styles.colUnit, styles.td]}>
+                {formatCurrency(0)}
+              </Text>
+              <Text style={[styles.colTotal, styles.td]}>
+                {formatCurrency(0)}
+              </Text>
             </View>
-          </>
-        )}
+          )}
+        </View>
 
-        {/* Secondary results */}
-        {rest.length > 0 && (
-          <>
-            <Text style={styles.sectionLabel}>All Results</Text>
-            <View style={styles.resultsGrid}>
-              {rest.map((r, i) => (
-                <View key={i} style={styles.card}>
-                  <Text style={styles.cardLabel}>{r.label}</Text>
-                  <Text style={styles.cardValue}>{r.value} <Text style={styles.cardUnit}>{r.unit}</Text></Text>
-                  {r.description && <Text style={styles.cardDesc}>{r.description}</Text>}
-                </View>
-              ))}
-            </View>
-          </>
-        )}
-
-        {/* Disclaimer */}
-        <View style={styles.disclaimer}>
-          <Text style={styles.disclaimerText}>
-            These estimates are for planning purposes only. Material quantities may vary based on site conditions,
-            local codes, and contractor specifications. Always verify with a licensed contractor before purchasing materials.
-            Material prices reflect regional averages and are subject to market fluctuation.
+        <View style={styles.totalBox}>
+          <Text style={styles.totalLabel}>Combined Estimate Total</Text>
+          <Text style={styles.totalValue}>
+            {formatCurrency(combinedEstimateTotal)}
           </Text>
         </View>
 
-        {/* Footer */}
         <View style={styles.footer} fixed>
-          <Text style={styles.footerText}>Build Calc Pro — proconstructioncalc.com</Text>
-          <Text style={styles.footerText} render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`} />
+          <Text style={styles.holdHarmless}>
+            Hold Harmless: Client acknowledges all estimate values are planning
+            projections and agrees to hold Contractor harmless for site-specific
+            variances, market price changes, permitting delays, and scope
+            adjustments discovered before or during execution.
+          </Text>
+          <View style={styles.footerMeta}>
+            <Text style={styles.footerMetaText}>Pro Construction Calc</Text>
+            <Text
+              style={styles.footerMetaText}
+              render={({ pageNumber, totalPages }) =>
+                `Page ${pageNumber} of ${totalPages}`
+              }
+            />
+          </View>
         </View>
       </Page>
     </Document>
-  )
+  );
+}
+
+export function EstimatePDF({ data }: Props) {
+  return createEstimatePDF(data);
 }

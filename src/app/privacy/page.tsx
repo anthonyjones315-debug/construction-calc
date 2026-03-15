@@ -3,27 +3,31 @@ import { Footer } from "@/components/layout/Footer";
 import Image from "next/image";
 import type { Metadata } from "next";
 
-const LAST_UPDATED = "March 13, 2026";
+const EFFECTIVE_DATE = "March 13, 2026";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Build Calc Pro",
-  description: "Privacy policy for Build Calc Pro construction calculators.",
+  title: "Privacy Policy — Pro Construction Calc",
+  description:
+    "Privacy policy for Pro Construction Calc construction calculators.",
 };
 
 export default function PrivacyPage() {
   return (
-    <div className="flex flex-col min-h-screen bg-[--color-bg]">
+    <div className="page-shell flex min-h-screen flex-col">
       <Header />
       <main id="main-content" className="flex-1">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
-          <h1 className="text-3xl font-display font-bold text-[--color-ink] mb-2">
-            Privacy Policy
-          </h1>
-          <p className="text-sm text-[--color-ink-dim] mb-8">
-            Last updated: {LAST_UPDATED}
-          </p>
+          <div className="dark-feature-panel mb-8 p-6 text-white">
+            <p className="section-kicker">Privacy and data</p>
+            <h1 className="mt-2 text-3xl font-display font-bold">
+              Privacy Policy
+            </h1>
+            <p className="mt-2 text-sm text-[--color-nav-text]/70">
+              Pro Construction Calc · Effective Date: {EFFECTIVE_DATE}
+            </p>
+          </div>
 
-          <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden mb-8">
+          <div className="content-card mb-8 overflow-hidden">
             <Image
               src="/images/data-privacy.svg"
               alt="Privacy shield and lock representing secure handling of account data"
@@ -33,13 +37,13 @@ export default function PrivacyPage() {
             />
           </div>
 
-          <div className="space-y-6 text-[--color-ink-mid] text-sm leading-relaxed">
+          <div className="content-card space-y-6 p-8 text-sm leading-relaxed text-[--color-ink-mid]">
             <section>
               <h2 className="text-lg font-bold text-[--color-ink] mb-2">
                 1. Overview
               </h2>
               <p>
-                Build Calc Pro ("we," "us," or "our") operates
+                Pro Construction Calc ("we," "us," or "our") operates
                 proconstructioncalc.com. This Privacy Policy explains how we
                 collect, use, and protect your information when you use our
                 Service.
@@ -92,7 +96,7 @@ export default function PrivacyPage() {
               <h2 className="text-lg font-bold text-[--color-ink] mb-2">
                 3. Cookies and Advertising
               </h2>
-              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-blue-900 mb-3">
+              <div className="content-card-muted mb-3 p-4 text-[--color-ink]">
                 <p className="font-bold mb-1">Cookie banner controls</p>
                 <p className="mb-3">
                   Necessary cookies stay enabled because sign-in and site
@@ -117,12 +121,12 @@ export default function PrivacyPage() {
                   .
                 </p>
               </div>
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-amber-900">
+              <div className="trim-accent-border rounded-xl border bg-[--color-orange-soft] p-4 text-[--color-ink]">
                 <p className="font-bold mb-1">Amazon Associates</p>
                 <p>
-                  Build Calc Pro is a participant in the Amazon Services LLC
-                  Associates Program, an affiliate advertising program designed
-                  to provide a means for us to earn fees by linking to
+                  Pro Construction Calc is a participant in the Amazon Services
+                  LLC Associates Program, an affiliate advertising program
+                  designed to provide a means for us to earn fees by linking to
                   Amazon.com. When you click Amazon links on our site, Amazon
                   may set cookies to track referrals. See{" "}
                   <a
@@ -213,8 +217,9 @@ export default function PrivacyPage() {
                 8. Children's Privacy
               </h2>
               <p>
-                Build Calc Pro is not directed at children under 13. We do not
-                knowingly collect personal information from children under 13.
+                Pro Construction Calc is not directed at children under 13. We
+                do not knowingly collect personal information from children
+                under 13.
               </p>
             </section>
 
@@ -234,8 +239,14 @@ export default function PrivacyPage() {
                 10. Contact Us
               </h2>
               <p>
-                For privacy-related questions, contact us at
-                proconstructioncalc.com.
+                For privacy-related questions, contact us at{" "}
+                <a
+                  href="mailto:amj111394@gmail.com"
+                  className="text-[--color-orange-brand] hover:underline"
+                >
+                  amj111394@gmail.com
+                </a>
+                .
               </p>
             </section>
           </div>

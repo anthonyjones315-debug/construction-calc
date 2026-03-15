@@ -1,341 +1,170 @@
 import Link from "next/link";
-import Image from "next/image";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import {
-  ArrowRight,
-  Check,
-  Calculator,
-  Sparkles,
-  FileDown,
-  HardHat,
-} from "lucide-react";
-import { CATEGORIES, CALCULATORS } from "@/data";
+import { ArrowRight, HardHat, ShieldCheck, FileText } from "lucide-react";
 import { JsonLD, getWebAppSchema, getWebSiteSchema } from "@/seo";
 import type { Metadata } from "next";
+import { routes } from "@routes";
 
 export const metadata: Metadata = {
   title:
-    "Build Calc Pro — Free Construction Calculators for Contractors & DIYers",
+    "Pro Construction Calc — Free Construction Calculators for Contractors & DIYers",
   description:
-    "Free professional construction calculators for concrete, framing, roofing, insulation, electrical and more. Built for contractors and serious DIYers.",
+    "The Industrial-Grade Bidding Engine for NY Contractors. Trade-specific math, NYS tax compliance, and instant client dispatch.",
   alternates: { canonical: "https://proconstructioncalc.com" },
 };
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col min-h-screen bg-[--color-bg]">
+    <div className="page-shell flex min-h-screen flex-col bg-[--color-bg] lg:h-dvh lg:overflow-hidden">
       <JsonLD schema={getWebSiteSchema()} />
       <JsonLD schema={getWebAppSchema()} />
       <Header />
-      <main id="main-content">
-        {/* Hero */}
-        <section className="bg-[--color-nav-bg] text-white py-16 sm:py-20 px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 bg-[--color-orange-brand]/20 border border-[--color-orange-brand]/30 text-[--color-orange-brand] text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full mb-6">
-              <span
-                className="w-1.5 h-1.5 rounded-full bg-[--color-orange-brand] animate-pulse"
-                aria-hidden
-              />
-              Now in Beta — Free
-            </div>
-            <h1 className="text-4xl sm:text-5xl font-display font-bold leading-tight mb-4">
-              Construction Calculators
-              <br />
-              <span className="text-[--color-orange-brand]">
-                Built for the Field
-              </span>
-            </h1>
-            <p className="text-lg text-white/70 max-w-2xl mx-auto mb-8 leading-relaxed">
-              Free planning calculators for concrete, framing, roofing,
-              insulation, electrical and more. No sign-up required.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Link
-                href="/calculators"
-                className="flex items-center gap-2 bg-[--color-orange-brand] hover:bg-[--color-orange-dark] text-white font-bold text-base px-6 py-3 rounded-xl transition-all shadow-lg"
-              >
-                Open Calculators <ArrowRight className="w-4 h-4" aria-hidden />
-              </Link>
-              <Link
-                href="/blog"
-                className="flex items-center gap-2 border border-white/20 hover:border-white/40 text-white/80 hover:text-white font-medium text-base px-6 py-3 rounded-xl transition-all"
-              >
-                Read the Guides
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* Stats bar */}
-        <section
-          className="bg-[--color-orange-brand] py-4 px-4"
-          aria-label="Key features"
-        >
-          <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-center gap-6 sm:gap-12 text-white">
-            {[
-              { n: "14", label: "Free Calculators" },
-              { n: "100%", label: "Free to Use" },
-              { n: "AI", label: "Material Optimizer" },
-              { n: "PDF", label: "No Account Needed" },
-            ].map(({ n, label }) => (
-              <div key={label} className="text-center">
-                <div className="text-2xl font-display font-bold">{n}</div>
-                <div className="text-xs font-medium text-white/80 uppercase tracking-wide">
-                  {label}
-                </div>
+      <main
+        id="main-content"
+        className="flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6 lg:overflow-hidden lg:py-5"
+      >
+        <section className="mx-auto h-full w-full max-w-6xl">
+          <div className="grid h-full gap-4 xl:grid-cols-[1.4fr_0.95fr]">
+            <div className="dark-feature-panel overflow-hidden px-6 py-6 text-white sm:px-8 sm:py-7 lg:px-8 lg:py-7">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="section-kicker">
+                  Industrial-grade estimating
+                </span>
+                <span className="trim-nav-border rounded-full border bg-white/6 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-[--color-nav-text]">
+                  Built for contractors
+                </span>
               </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Field visuals */}
-        <section className="py-10 px-4 bg-[--color-surface-alt] border-b border-gray-200/70">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-xl font-display font-bold text-[--color-ink] text-center mb-2">
-              Built around real jobsite work
-            </h2>
-            <p className="text-sm text-[--color-ink-dim] text-center mb-6">
-              Concrete, framing, and insulation visuals that match the
-              calculators you use daily.
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {[
-                {
-                  src: "/images/concrete-slab.svg",
-                  alt: "Concrete slab form and finishing tools",
-                  label: "Concrete",
-                },
-                {
-                  src: "/images/wall-framing.svg",
-                  alt: "Wall framing studs and spacing layout",
-                  label: "Framing",
-                },
-                {
-                  src: "/images/cellulose-insulation.svg",
-                  alt: "Cellulose insulation bags for attic and wall fill",
-                  label: "Insulation",
-                },
-              ].map((item) => (
-                <div
-                  key={item.label}
-                  className="bg-[--color-surface] border border-gray-200/80 rounded-xl overflow-hidden shadow-sm"
+              <h1 className="mt-3 max-w-2xl text-4xl font-display font-bold leading-none sm:text-5xl lg:text-4xl xl:text-5xl">
+                Fast jobsite math.
+                <span className="mt-2 block text-[--color-orange-brand]">
+                  Client-ready numbers.
+                </span>
+              </h1>
+              <p className="mt-4 max-w-xl text-sm leading-relaxed text-[--color-nav-text]/76 sm:text-base">
+                Trade calculators, saved estimates, price book control, and PDF
+                workflows shaped for field use instead of generic SaaS
+                dashboards.
+              </p>
+              <div className="mt-6 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap">
+                <Link
+                  href={routes.calculators}
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[--color-orange-brand] px-5 py-3 text-sm font-bold text-white transition hover:bg-[--color-orange-dark] sm:w-auto"
                 >
-                  <Image
-                    src={item.src}
-                    alt={item.alt}
-                    width={1200}
-                    height={700}
-                    className="w-full h-36 object-cover"
-                  />
-                  <div className="px-3 py-2">
-                    <p className="text-xs font-bold uppercase tracking-widest text-[--color-ink-dim]">
-                      {item.label}
+                  Open Calculators{" "}
+                  <ArrowRight className="h-4 w-4" aria-hidden />
+                </Link>
+                <Link
+                  href={routes.saved}
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 px-5 py-3 text-sm font-semibold text-white/90 transition hover:border-white/35 hover:text-white sm:w-auto"
+                >
+                  Saved Estimates
+                </Link>
+                <Link
+                  href={routes.pricebook}
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 px-5 py-3 text-sm font-semibold text-white/90 transition hover:border-white/35 hover:text-white sm:w-auto"
+                >
+                  Price Book
+                </Link>
+              </div>
+
+              <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                {[
+                  {
+                    icon: HardHat,
+                    label: "Trade-Specific",
+                    desc: "Concrete, framing, roofing, insulation, flooring.",
+                  },
+                  {
+                    icon: FileText,
+                    label: "Client-Ready PDFs",
+                    desc: "From quick math to documents you can actually send.",
+                  },
+                  {
+                    icon: ShieldCheck,
+                    label: "Owner Controls",
+                    desc: "Price book, team access, and saved project workflows.",
+                  },
+                ].map(({ icon: Icon, label, desc }) => (
+                  <div
+                    key={label}
+                    className="trim-nav-border rounded-2xl border bg-white/6 px-4 py-3"
+                  >
+                    <div className="flex items-center gap-2 text-[--color-orange-brand]">
+                      <Icon className="h-4 w-4" aria-hidden />
+                      <p className="text-xs font-bold uppercase tracking-[0.16em]">
+                        {label}
+                      </p>
+                    </div>
+                    <p className="mt-2 text-xs leading-relaxed text-[--color-nav-text]/72">
+                      {desc}
                     </p>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
 
-        {/* Amazon Associate Ads — 2 units, home page only */}
-        <section className="py-6 px-4 bg-[--color-surface-alt] border-b border-gray-200/60">
-          <div className="max-w-4xl mx-auto">
-            <p className="text-[10px] uppercase tracking-widest text-[--color-ink-dim] text-center mb-3">
-              Sponsored
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Ad slot 1 — Concrete tools */}
-              <a
-                href="https://www.amazon.com/s?k=concrete+mixing+tools&tag=buildcalcpro-20"
-                target="_blank"
-                rel="noopener noreferrer sponsored"
-                className="flex items-center gap-3 bg-[--color-surface] border border-gray-200/80 rounded-xl p-4 hover:shadow-md hover:border-[--color-orange-brand]/30 transition-all group"
-                aria-label="Shop concrete mixing tools on Amazon (affiliate link)"
-              >
-                <div
-                  className="w-12 h-12 rounded-lg bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center text-2xl shrink-0"
-                  aria-hidden
-                >
-                  🧱
+            <div className="flex flex-col gap-4 xl:pt-1">
+              <div className="dark-feature-panel p-5 text-white">
+                <p className="section-kicker">Explore next</p>
+                <div className="mt-4 space-y-3">
+                  {[
+                    {
+                      href: routes.blog,
+                      title: "Guides & Recommendations",
+                      desc: "Long-form methods, planning notes, and material guidance.",
+                    },
+                    {
+                      href: routes.faq,
+                      title: "FAQ",
+                      desc: "Field questions, quick answers, and estimating context.",
+                    },
+                    {
+                      href: routes.about,
+                      title: "About",
+                      desc: "Platform scope, roadmap, and product philosophy.",
+                    },
+                  ].map((item) => (
+                    <Link
+                      key={item.title}
+                      href={item.href}
+                      className="trim-nav-border block rounded-2xl border bg-white/6 px-4 py-3 transition hover:border-[--color-orange-brand]/35 hover:bg-white/8"
+                    >
+                      <p className="font-display text-base font-semibold uppercase tracking-wide text-white">
+                        {item.title}
+                      </p>
+                      <p className="mt-1 text-xs leading-relaxed text-[--color-nav-text]/72">
+                        {item.desc}
+                      </p>
+                    </Link>
+                  ))}
                 </div>
-                <div>
-                  <p className="text-sm font-bold text-[--color-ink] group-hover:text-[--color-orange-brand] transition-colors">
-                    Concrete Mixing Tools
-                  </p>
-                  <p className="text-xs text-[--color-ink-dim]">
-                    Paddles, mixers & accessories → Amazon
-                  </p>
-                </div>
-                <ArrowRight
-                  className="w-4 h-4 text-[--color-ink-dim] ml-auto shrink-0"
-                  aria-hidden
-                />
-              </a>
+              </div>
 
-              {/* Ad slot 2 — Framing tools */}
-              <a
-                href="https://www.amazon.com/s?k=framing+nailer+tools&tag=buildcalcpro-20"
-                target="_blank"
-                rel="noopener noreferrer sponsored"
-                className="flex items-center gap-3 bg-[--color-surface] border border-gray-200/80 rounded-xl p-4 hover:shadow-md hover:border-[--color-orange-brand]/30 transition-all group"
-                aria-label="Shop framing nailers on Amazon (affiliate link)"
-              >
-                <div
-                  className="w-12 h-12 rounded-lg bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center text-2xl shrink-0"
-                  aria-hidden
-                >
-                  🔩
+              <div className="content-card p-5 lg:p-4">
+                <p className="section-kicker">Why it lands</p>
+                <div className="mt-4 grid gap-3 md:grid-cols-3">
+                  {[
+                    "Fast field-first workflows",
+                    "Orange actions with clear contrast",
+                    "Consistent panels across public and signed-in views",
+                  ].map((item) => (
+                    <div
+                      key={item}
+                      className="trim-border rounded-xl border bg-[--color-surface-alt] px-4 py-3 text-sm font-medium text-[--color-ink-mid]"
+                    >
+                      {item}
+                    </div>
+                  ))}
                 </div>
-                <div>
-                  <p className="text-sm font-bold text-[--color-ink] group-hover:text-[--color-orange-brand] transition-colors">
-                    Framing Nailers & Guns
-                  </p>
-                  <p className="text-xs text-[--color-ink-dim]">
-                    Top-rated framing tools → Amazon
-                  </p>
-                </div>
-                <ArrowRight
-                  className="w-4 h-4 text-[--color-ink-dim] ml-auto shrink-0"
-                  aria-hidden
-                />
-              </a>
+              </div>
             </div>
-          </div>
-        </section>
-
-        {/* Calculator grid */}
-        <section className="py-14 px-4">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl font-display font-bold text-[--color-ink] text-center mb-2">
-              All Calculators
-            </h2>
-            <p className="text-[--color-ink-dim] text-center mb-10 text-sm">
-              Click any to get started — no account needed.
-            </p>
-
-            <div className="space-y-8">
-              {CATEGORIES.map((cat) => (
-                <div key={cat.id}>
-                  <h3 className="text-xs font-bold uppercase tracking-widest text-[--color-ink-dim] mb-3 flex items-center gap-2">
-                    <span aria-hidden>{cat.emoji}</span> {cat.label}
-                  </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {cat.calculators.map((calcId) => {
-                      const calc = CALCULATORS.find((c) => c.id === calcId);
-                      if (!calc) return null;
-                      return (
-                        <Link
-                          key={calcId}
-                          href={`/calculators?c=${calcId}`}
-                          className="group bg-[--color-surface] rounded-xl border border-gray-200/80 shadow-sm p-4 hover:shadow-md hover:border-[--color-orange-brand]/40 transition-all"
-                        >
-                          <div className="flex items-start gap-3">
-                            <span className="text-2xl" aria-hidden>
-                              {calc.emoji}
-                            </span>
-                            <div>
-                              <p className="font-semibold text-[--color-ink] group-hover:text-[--color-orange-brand] transition-colors text-sm">
-                                {calc.label}
-                              </p>
-                              <p className="text-xs text-[--color-ink-dim] mt-0.5">
-                                {calc.blurb}
-                              </p>
-                            </div>
-                          </div>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Features */}
-        <section className="bg-[--color-surface] border-t border-gray-100 py-14 px-4">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl font-display font-bold text-[--color-ink] text-center mb-10">
-              Why Build Calc Pro?
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[
-                {
-                  icon: Calculator,
-                  title: "Real Formulas",
-                  desc: "NEC tables, standard yields, proper waste factors — not rough guesses.",
-                },
-                {
-                  icon: Sparkles,
-                  title: "AI Optimizer",
-                  desc: "Claude AI suggests cost savings and material tiers for every estimate.",
-                },
-                {
-                  icon: FileDown,
-                  title: "Free PDF",
-                  desc: "Export professional estimate PDFs instantly — no sign-in required.",
-                },
-                {
-                  icon: HardHat,
-                  title: "Field Ready",
-                  desc: "Mobile-friendly, fast, works on your phone mid-job.",
-                },
-              ].map(({ icon: Icon, title, desc }) => (
-                <div key={title} className="text-center">
-                  <div className="w-12 h-12 rounded-2xl bg-[--color-orange-soft] flex items-center justify-center mx-auto mb-3">
-                    <Icon
-                      className="w-5 h-5 text-[--color-orange-brand]"
-                      aria-hidden
-                    />
-                  </div>
-                  <h3 className="font-bold text-[--color-ink] mb-1">{title}</h3>
-                  <p className="text-sm text-[--color-ink-dim] leading-relaxed">
-                    {desc}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* CTA */}
-        <section className="bg-[--color-nav-bg] py-14 px-4 text-center">
-          <div className="max-w-xl mx-auto">
-            <h2 className="text-2xl font-display font-bold text-white mb-3">
-              Ready to build smarter?
-            </h2>
-            <p className="text-white/60 mb-6 text-sm">
-              Free to use. Sign in only to save estimates.
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
-              {["No credit card", "Cookie controls", "Free PDF export"].map(
-                (f) => (
-                  <span
-                    key={f}
-                    className="flex items-center gap-1.5 text-xs text-white/70 bg-white/10 px-3 py-1.5 rounded-full"
-                  >
-                    <Check
-                      className="w-3 h-3 text-[--color-orange-brand]"
-                      aria-hidden
-                    />
-                    {f}
-                  </span>
-                ),
-              )}
-            </div>
-            <Link
-              href="/calculators"
-              className="inline-flex items-center gap-2 bg-[--color-orange-brand] hover:bg-[--color-orange-dark] text-white font-bold px-8 py-3 rounded-xl transition-all text-base"
-            >
-              Start Calculating Free{" "}
-              <ArrowRight className="w-4 h-4" aria-hidden />
-            </Link>
           </div>
         </section>
       </main>
-      <Footer />
+      <div className="hidden lg:block">
+        <Footer />
+      </div>
     </div>
   );
 }

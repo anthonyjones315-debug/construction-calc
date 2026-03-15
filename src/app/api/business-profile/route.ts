@@ -1,55 +1,129 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/lib/auth/config'
-import { createServerClient } from '@/lib/supabase/server'
-import { ensurePublicUser } from '@/lib/supabase/ensurePublicUser'
+import { NextRequest, NextResponse } from "next/server";
+import { cacheTag, revalidateTag } from "next/cache";
+import { auth } from "@/lib/auth/config";
+import { createServerClient } from "@/lib/supabase/server";
+import {
+  assertNoBusinessIdOverride,
+  getBusinessContextForSession,
+  getTenantScopeColumn,
+  getTenantScopeId,
+} from "@/lib/supabase/business";
+import {
+  throwForStaleCacheOnTimeout,
+  withSupabaseRevalidationTimeout,
+} from "@/lib/supabase/stale-cache";
 
-export async function GET() {
-  const session = await auth()
-  if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+async function getBusinessProfile(
+  tenantColumn: "business_id" | "user_id",
+  tenantId: string,
+) {
+  "use cache";
+  cacheTag("user");
 
-  const db = createServerClient()
-  const { data, error } = await db
-    .from('business_profiles')
-    .select('*')
-    .eq('user_id', session.user.id)
-    .single()
+  const db = createServerClient();
+  const result = await withSupabaseRevalidationTimeout(
+    db
+      .from("business_profiles")
+      .select("*")
+      .eq(tenantColumn, tenantId)
+      .single(),
+    "business profile query",
+  );
 
-  if (error && error.code !== 'PGRST116') {
-    // PGRST116 = no rows found — that's fine (new user)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  if (result.error) {
+    throwForStaleCacheOnTimeout(result.error, "business profile query");
   }
 
-  return NextResponse.json({ profile: data ?? null })
+  return result;
+}
+
+export async function GET() {
+  const session = await auth();
+  if (!session?.user?.id)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const accountEmail = session.user.email ?? null;
+  const db = createServerClient();
+  const businessContext = await getBusinessContextForSession(db, session);
+  const tenantColumn = getTenantScopeColumn(businessContext);
+  const tenantId = getTenantScopeId(businessContext);
+
+  const { data, error } = await getBusinessProfile(tenantColumn, tenantId);
+
+  if (error && error.code !== "PGRST116") {
+    // PGRST116 = no rows found — that's fine (new user)
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({
+    role: businessContext.role,
+    isOwner: businessContext.isOwner,
+    profile: data
+      ? {
+          ...data,
+          business_email: accountEmail,
+        }
+      : {
+          business_email: accountEmail,
+        },
+  });
 }
 
 export async function PUT(req: NextRequest) {
-  const session = await auth()
-  if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const session = await auth();
+  if (!session?.user?.id)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const body = await req.json()
+  const accountEmail = session.user.email ?? null;
 
-  const db = createServerClient()
-  await ensurePublicUser(db, session)
+  const body = await req.json();
 
-  const { error } = await db
-    .from('business_profiles')
-    .upsert(
+  const db = createServerClient();
+  const businessContext = await getBusinessContextForSession(db, session);
+  if (!businessContext.isOwner) {
+    return NextResponse.json(
       {
-        user_id:          session.user.id,
-        business_name:    String(body.business_name    ?? '').slice(0, 200) || null,
-        business_phone:   String(body.business_phone   ?? '').slice(0, 50)  || null,
-        business_email:   String(body.business_email   ?? '').slice(0, 200) || null,
-        business_address: String(body.business_address ?? '').slice(0, 500) || null,
-        business_website: String(body.business_website ?? '').slice(0, 200) || null,
-        logo_url:         body.logo_url ? String(body.logo_url).slice(0, 500) : null,
+        error: "Only business owners can update business-wide settings.",
       },
-      { onConflict: 'user_id' }
-    )
-
-  if (error) {
-    console.error('business-profile PUT error:', error.message)
-    return NextResponse.json({ error: 'Save failed.' }, { status: 500 })
+      { status: 403 },
+    );
+  }
+  try {
+    assertNoBusinessIdOverride(
+      body && typeof body === "object"
+        ? (body as Record<string, unknown>).business_id
+        : undefined,
+      businessContext,
+    );
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Forbidden" },
+      { status: 403 },
+    );
+  }
+  const upsertPayload: Record<string, unknown> = {
+    user_id: session.user.id,
+    business_name: String(body.business_name ?? "").slice(0, 200) || null,
+    business_tax_id: String(body.business_tax_id ?? "").slice(0, 100) || null,
+    business_phone: String(body.business_phone ?? "").slice(0, 50) || null,
+    business_email: accountEmail,
+    business_address: String(body.business_address ?? "").slice(0, 500) || null,
+    business_website: String(body.business_website ?? "").slice(0, 200) || null,
+    logo_url: body.logo_url ? String(body.logo_url).slice(0, 500) : null,
+  };
+  if (!businessContext.usesLegacyUserScope) {
+    upsertPayload.business_id = businessContext.businessId;
   }
 
-  return NextResponse.json({ ok: true })
+  const { error } = await db.from("business_profiles").upsert(upsertPayload, {
+    onConflict: businessContext.usesLegacyUserScope ? "user_id" : "business_id",
+  });
+
+  if (error) {
+    console.error("business-profile PUT error:", error.message);
+    return NextResponse.json({ error: "Save failed." }, { status: 500 });
+  }
+
+  revalidateTag("user", "max");
+  return NextResponse.json({ ok: true });
 }

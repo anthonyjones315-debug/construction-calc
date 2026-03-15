@@ -1,10 +1,1 @@
-<svg width="1200" height="700" viewBox="0 0 1200 700" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Data privacy shield and lock for account security">
-  <rect width="1200" height="700" fill="#EFF6FF"/>
-  <path d="M600 130L870 230V360C870 490 770 585 600 630C430 585 330 490 330 360V230L600 130Z" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="12"/>
-  <rect x="500" y="320" width="200" height="170" rx="24" fill="#1D4ED8"/>
-  <path d="M550 320V280C550 241 581 210 620 210C659 210 690 241 690 280V320" stroke="#1E3A8A" stroke-width="20" stroke-linecap="round"/>
-  <circle cx="600" cy="395" r="22" fill="#BFDBFE"/>
-  <rect x="592" y="410" width="16" height="42" rx="8" fill="#BFDBFE"/>
-  <text x="120" y="95" fill="#111827" font-family="Arial, sans-serif" font-size="52" font-weight="700">Privacy &amp; Security</text>
-  <text x="120" y="145" fill="#4B5563" font-family="Arial, sans-serif" font-size="28">How account, cookie, and estimate data are handled in Build Calc Pro.</text>
-</svg>
+<svg width="1200" height="700" viewBox="0 0 1200 700" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Data privacy shield and lock for account security"><rect width="1200" height="700" fill="#EFF6FF"/><path d="M600 130L870 230V360C870 490 770 585 600 630C430 585 330 490 330 360V230L600 130Z" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="12"/><rect x="500" y="320" width="200" height="170" rx="24" fill="#1D4ED8"/><path d="M550 320V280C550 241 581 210 620 210C659 210 690 241 690 280V320" stroke="#1E3A8A" stroke-width="20" stroke-linecap="round"/><circle cx="600" cy="395" r="22" fill="#BFDBFE"/><rect x="592" y="410" width="16" height="42" rx="8" fill="#BFDBFE"/><text x="120" y="95" fill="#111827" font-family="Arial, sans-serif" font-size="52" font-weight="700">Privacy &amp; Security</text><text x="120" y="145" fill="#4B5563" font-family="Arial, sans-serif" font-size="28">How account, cookie, and estimate data are handled in Pro Construction Calc.</text></svg>

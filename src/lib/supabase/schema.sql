@@ -7,6 +7,10 @@
 -- live in the "next_auth" schema, not public.
 -- That file also installs a trigger that syncs next_auth.users → public.users
 -- so the foreign keys below continue to work.
+--
+-- MULTI-TENANT NOTE:
+-- To migrate from single-user to business-scoped data, also run:
+-- src/lib/supabase/business-multi-tenant-migration.sql
 -- ============================================================
 
 create extension if not exists "uuid-ossp";

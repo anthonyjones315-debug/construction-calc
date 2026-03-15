@@ -5,15 +5,15 @@ import { Footer } from "@/components/layout/Footer";
 import { JsonLD, getFAQSchema } from "@/seo";
 
 export const metadata: Metadata = {
-  title: "FAQ | Build Calc Pro",
+  title: "FAQ | Pro Construction Calc",
   description:
-    "Frequently asked questions about Build Calc Pro construction calculators.",
+    "Frequently asked questions about Pro Construction Calc construction calculators.",
 };
 
 const FAQ_ITEMS = [
   {
     q: "Are these construction calculators free?",
-    a: "Yes. All calculators on Build Calc Pro are completely free to use. No account required for basic use. Create a free account to unlock PDF export and saved estimates.",
+    a: "Yes. All calculators on Pro Construction Calc are completely free to use. No account required for basic use. Create a free account to unlock PDF export and saved estimates.",
   },
   {
     q: "How accurate are the estimates?",
@@ -55,19 +55,25 @@ const FAQ_ITEMS = [
 
 export default function FAQPage() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="command-theme page-shell flex min-h-screen flex-col">
       <Header />
       <JsonLD schema={getFAQSchema(FAQ_ITEMS)} />
-      <main id="main-content" className="flex-1 bg-[--color-bg]">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
-          <h1 className="text-3xl font-display font-bold text-[--color-ink] mb-2">
-            Frequently Asked Questions
-          </h1>
-          <p className="text-[--color-ink-dim] mb-10">
-            Everything you need to know about Build Calc Pro.
-          </p>
+      <main id="main-content" className="flex-1">
+        <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+          <div className="dark-feature-panel mb-8 p-6 text-white">
+            <p className="section-kicker">Field answers</p>
+            <h1 className="mt-2 text-3xl font-display font-bold">
+              Frequently Asked Questions
+            </h1>
+            <p className="mt-2 text-[--color-nav-text]/70">
+              Everything you need to know about Pro Construction Calc.
+            </p>
+            <div className="trim-nav-border mt-4 inline-flex rounded-full border bg-white/6 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[--color-nav-text]">
+              Practical answers for real jobs
+            </div>
+          </div>
 
-          <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden mb-8">
+          <div className="content-card mb-8 overflow-hidden">
             <Image
               src="/images/safety-estimate.svg"
               alt="Hard hat and checklist representing practical estimating guidance"
@@ -81,7 +87,7 @@ export default function FAQPage() {
             {FAQ_ITEMS.map((item) => (
               <details
                 key={item.q}
-                className="group bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden"
+                className="group content-card overflow-hidden"
               >
                 <summary className="flex items-center justify-between px-6 py-4 cursor-pointer list-none font-semibold text-[--color-ink] hover:text-[--color-orange-brand] transition-colors select-none">
                   {item.q}
@@ -89,7 +95,7 @@ export default function FAQPage() {
                     +
                   </span>
                 </summary>
-                <div className="px-6 pb-5 text-sm text-[--color-ink-mid] leading-relaxed border-t border-gray-50 pt-4">
+                <div className="trim-border-strong border-t px-6 pb-5 pt-4 text-sm leading-relaxed text-[--color-ink-mid]">
                   {item.a}
                 </div>
               </details>
