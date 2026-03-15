@@ -7,10 +7,9 @@ import type { Metadata } from "next";
 import { routes } from "@routes";
 
 export const metadata: Metadata = {
-  title:
-    "Pro Construction Calc — Free Construction Calculators for Contractors & DIYers",
+  title: "Pro Construction Calc | Industrial-Grade Estimating for NY Contractors",
   description:
-    "The Industrial-Grade Bidding Engine for NY Contractors. Trade-specific math, NYS tax compliance, and instant client dispatch.",
+    "The professional bidding engine for Mohawk Valley contractors. 48+ trade-specific calculators, NYS tax compliance, and native Oneida County field guides.",
   alternates: { canonical: "https://proconstructioncalc.com" },
 };
 
@@ -36,9 +35,9 @@ export default function HomePage() {
                 </span>
               </div>
               <h1 className="mt-3 max-w-2xl text-4xl font-display font-bold leading-none sm:text-5xl lg:text-4xl xl:text-5xl">
-                Fast jobsite math.
+                Pro Construction Calc
                 <span className="mt-2 block text-[--color-orange-brand]">
-                  Client-ready numbers.
+                  Industrial-grade estimating for NY contractors.
                 </span>
               </h1>
               <p className="mt-4 max-w-xl text-sm leading-relaxed text-[--color-nav-text]/76 sm:text-base">

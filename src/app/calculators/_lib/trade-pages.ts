@@ -29,6 +29,8 @@ export type TradePageDefinition = {
   canonicalPath: string;
   keywords: string[];
   relatedLinks: RelatedLink[];
+  /** Descriptive alt for hero SVG — accessibility and SEO. */
+  altText: string;
 };
 
 const categoryLinks: Record<TradePageDefinition["category"], RelatedLink[]> = {
@@ -150,6 +152,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
       "Rome NY concrete estimate",
     ],
     relatedLinks: categoryLinks.concrete,
+    altText: "Industrial concrete and masonry calculators icon",
   },
   framing: {
     key: "framing",
@@ -166,6 +169,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     canonicalPath: "/calculators/framing",
     keywords: ["framing calculator", "stud calculator", "header estimator"],
     relatedLinks: categoryLinks.framing,
+    altText: "Professional wall stud and framing estimator icon",
   },
   roofing: {
     key: "roofing",
@@ -186,6 +190,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
       "siding estimator",
     ],
     relatedLinks: categoryLinks.roofing,
+    altText: "Industrial roof pitch and siding calculator icon",
   },
   mechanical: {
     key: "mechanical",
@@ -206,6 +211,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
       "Oneida County site ventilation",
     ],
     relatedLinks: categoryLinks.mechanical,
+    altText: "Industrial spray foam and mechanical estimator icon",
   },
   insulation: {
     key: "insulation",
@@ -226,6 +232,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
       "drywall estimator",
     ],
     relatedLinks: categoryLinks.insulation,
+    altText: "Industrial cellulose insulation and HVAC calculator icon",
   },
   finish: {
     key: "finish",
@@ -246,6 +253,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
       "stair stringer calculator",
     ],
     relatedLinks: categoryLinks.finish,
+    altText: "Professional wall framing and finish carpentry icon",
   },
   management: {
     key: "management",
@@ -266,6 +274,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
       "lead cost estimator",
     ],
     relatedLinks: categoryLinks.management,
+    altText: "Industrial pricebook and construction management icon",
   },
   interior: {
     key: "interior",
@@ -286,6 +295,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
       "Utica interior contractor",
     ],
     relatedLinks: categoryLinks.interior,
+    altText: "Professional interior finish and trim estimator icon",
   },
   business: {
     key: "business",
@@ -306,6 +316,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
       "Rome NY estimator",
     ],
     relatedLinks: categoryLinks.business,
+    altText: "Industrial contractor business and estimating icon",
   },
   "concrete-slab": {
     key: "concrete-slab",
@@ -322,6 +333,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     canonicalPath: "/calculators/concrete/slab",
     keywords: ["slab calculator", "3000 psi slab", "concrete slab Rome NY"],
     relatedLinks: categoryLinks.concrete,
+    altText: "Industrial concrete slab volume calculator icon",
   },
   "concrete-footing": {
     key: "concrete-footing",
@@ -342,6 +354,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
       "concrete footing estimator",
     ],
     relatedLinks: categoryLinks.concrete,
+    altText: "Industrial concrete footing volume calculator icon",
   },
   "concrete-block": {
     key: "concrete-block",
@@ -362,6 +375,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
       "masonry estimator",
     ],
     relatedLinks: categoryLinks.concrete,
+    altText: "Industrial block and brick count calculator icon",
   },
   "framing-wall": {
     key: "framing-wall",
@@ -378,6 +392,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     canonicalPath: "/calculators/framing/wall",
     keywords: ["wall framing calculator", "stud count", "lumber takeoff"],
     relatedLinks: categoryLinks.framing,
+    altText: "Professional wall stud and framing estimator icon",
   },
   "framing-rafters": {
     key: "framing-rafters",
@@ -394,6 +409,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     canonicalPath: "/calculators/framing/rafters",
     keywords: ["rafter calculator", "roof framing", "rafter length"],
     relatedLinks: categoryLinks.framing,
+    altText: "Industrial rafter length and roof framing calculator icon",
   },
   "framing-headers": {
     key: "framing-headers",
@@ -414,6 +430,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
       "window door header",
     ],
     relatedLinks: categoryLinks.framing,
+    altText: "Industrial header sizing estimator for openings icon",
   },
   "roofing-shingles": {
     key: "roofing-shingles",
@@ -430,6 +447,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     canonicalPath: "/calculators/roofing/shingles",
     keywords: ["shingle bundle calculator", "roofing squares", "roof estimate"],
     relatedLinks: categoryLinks.roofing,
+    altText: "Industrial shingle bundle and roofing squares calculator icon",
   },
   "roofing-pitch": {
     key: "roofing-pitch",
@@ -446,6 +464,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     canonicalPath: "/calculators/roofing/pitch",
     keywords: ["roof pitch calculator", "slope calculator", "roof rise run"],
     relatedLinks: categoryLinks.roofing,
+    altText: "Industrial roof pitch and slope calculator icon",
   },
   "roofing-siding": {
     key: "roofing-siding",
@@ -466,6 +485,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
       "flashing calculator",
     ],
     relatedLinks: categoryLinks.roofing,
+    altText: "Industrial siding and flashing estimator icon",
   },
   "insulation-r-value": {
     key: "insulation-r-value",
@@ -486,6 +506,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
       "thermal envelope",
     ],
     relatedLinks: categoryLinks.insulation,
+    altText: "Industrial R-value tracking and envelope performance icon",
   },
   "insulation-drywall": {
     key: "insulation-drywall",
@@ -502,6 +523,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     canonicalPath: "/calculators/insulation/drywall",
     keywords: ["drywall calculator", "sheet count", "drywall waste"],
     relatedLinks: categoryLinks.insulation,
+    altText: "Industrial drywall sheet and waste calculator icon",
   },
   "finish-trim": {
     key: "finish-trim",
@@ -518,6 +540,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     canonicalPath: "/calculators/finish/trim",
     keywords: ["trim calculator", "baseboard estimator", "finish carpentry"],
     relatedLinks: categoryLinks.finish,
+    altText: "Industrial trim and baseboard calculator icon",
   },
   "finish-flooring": {
     key: "finish-flooring",
@@ -534,6 +557,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     canonicalPath: "/calculators/finish/flooring",
     keywords: ["flooring calculator", "flooring waste", "material takeoff"],
     relatedLinks: categoryLinks.finish,
+    altText: "Industrial flooring waste calculator icon",
   },
   "finish-stairs": {
     key: "finish-stairs",
@@ -550,6 +574,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     canonicalPath: "/calculators/finish/stairs",
     keywords: ["stair stringer calculator", "rise run", "stair layout"],
     relatedLinks: categoryLinks.finish,
+    altText: "Industrial stair stringer and rise-run calculator icon",
   },
   "management-margin": {
     key: "management-margin",
@@ -566,6 +591,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     canonicalPath: "/calculators/management/margin",
     keywords: ["profit margin calculator", "contractor pricing", "bid margin"],
     relatedLinks: categoryLinks.management,
+    altText: "Industrial contractor profit margin calculator icon",
   },
   "management-labor": {
     key: "management-labor",
@@ -586,6 +612,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
       "burdened labor",
     ],
     relatedLinks: categoryLinks.management,
+    altText: "Industrial labor overhead and crew cost calculator icon",
   },
   "management-leads": {
     key: "management-leads",
@@ -606,6 +633,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
       "marketing roi",
     ],
     relatedLinks: categoryLinks.management,
+    altText: "Industrial tax and lead cost estimator icon",
   },
   "concrete-block-wall": {
     key: "concrete-block-wall",
@@ -622,6 +650,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     canonicalPath: "/calculators/concrete/block-wall",
     keywords: ["block wall calculator", "CMU estimator", "masonry wall count"],
     relatedLinks: categoryLinks.concrete,
+    altText: "Industrial concrete block wall calculator icon",
   },
   "framing-wall-studs": {
     key: "framing-wall-studs",
@@ -638,6 +667,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     canonicalPath: "/calculators/framing/wall-studs",
     keywords: ["wall studs calculator", "stud spacing", "framing takeoff"],
     relatedLinks: categoryLinks.framing,
+    altText: "Professional wall studs calculator icon",
   },
   "framing-rafter-length": {
     key: "framing-rafter-length",
@@ -654,6 +684,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     canonicalPath: "/calculators/framing/rafter-length",
     keywords: ["rafter length calculator", "roof framing math", "cut list"],
     relatedLinks: categoryLinks.framing,
+    altText: "Industrial rafter length calculator icon",
   },
   "framing-deck-joists": {
     key: "framing-deck-joists",
@@ -670,6 +701,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     canonicalPath: "/calculators/framing/deck-joists",
     keywords: ["deck joist calculator", "deck framing", "joist spacing"],
     relatedLinks: categoryLinks.framing,
+    altText: "Industrial deck joists calculator icon",
   },
   "roofing-shingle-bundles": {
     key: "roofing-shingle-bundles",
@@ -686,6 +718,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     canonicalPath: "/calculators/roofing/shingle-bundles",
     keywords: ["shingle bundles calculator", "roof bundles", "asphalt roof estimate"],
     relatedLinks: categoryLinks.roofing,
+    altText: "Industrial shingle bundles calculator icon",
   },
   "roofing-pitch-slope": {
     key: "roofing-pitch-slope",
@@ -702,6 +735,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     canonicalPath: "/calculators/roofing/pitch-slope",
     keywords: ["pitch slope calculator", "roof rise run", "roof slope"],
     relatedLinks: categoryLinks.roofing,
+    altText: "Industrial pitch and slope calculator icon",
   },
   "roofing-siding-squares": {
     key: "roofing-siding-squares",
@@ -718,6 +752,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     canonicalPath: "/calculators/roofing/siding-squares",
     keywords: ["siding squares calculator", "siding estimate", "exterior takeoff"],
     relatedLinks: categoryLinks.roofing,
+    altText: "Industrial siding squares calculator icon",
   },
   "insulation-r-value-tracker": {
     key: "insulation-r-value-tracker",
@@ -734,6 +769,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     canonicalPath: "/calculators/insulation/r-value-tracker",
     keywords: ["r-value tracker", "insulation calculator", "NY frost line insulation"],
     relatedLinks: categoryLinks.insulation,
+    altText: "Industrial R-value tracker calculator icon",
   },
   "insulation-drywall-sheets": {
     key: "insulation-drywall-sheets",
@@ -750,6 +786,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     canonicalPath: "/calculators/insulation/drywall-sheets",
     keywords: ["drywall sheets calculator", "drywall waste", "sheet count"],
     relatedLinks: categoryLinks.insulation,
+    altText: "Industrial drywall sheets calculator icon",
   },
   "insulation-duct-sizing": {
     key: "insulation-duct-sizing",
@@ -766,6 +803,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     canonicalPath: "/calculators/insulation/duct-sizing",
     keywords: ["duct sizing calculator", "hvac airflow", "ductwork estimate"],
     relatedLinks: categoryLinks.insulation,
+    altText: "Industrial duct sizing calculator icon",
   },
   "interior-trim-baseboard": {
     key: "interior-trim-baseboard",
@@ -782,6 +820,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     canonicalPath: "/calculators/interior/trim-baseboard",
     keywords: ["trim baseboard calculator", "interior trim takeoff", "finish carpentry"],
     relatedLinks: categoryLinks.interior,
+    altText: "Industrial trim and baseboard calculator icon",
   },
   "interior-flooring-waste": {
     key: "interior-flooring-waste",
@@ -798,6 +837,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     canonicalPath: "/calculators/interior/flooring-waste",
     keywords: ["flooring waste calculator", "flooring takeoff", "tile waste"],
     relatedLinks: categoryLinks.interior,
+    altText: "Industrial flooring waste calculator icon",
   },
   "interior-stair-stringers": {
     key: "interior-stair-stringers",
@@ -814,6 +854,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     canonicalPath: "/calculators/interior/stair-stringers",
     keywords: ["stair stringers calculator", "rise run stairs", "stair layout"],
     relatedLinks: categoryLinks.interior,
+    altText: "Industrial stair stringers calculator icon",
   },
   "interior-paint-gal": {
     key: "interior-paint-gal",
@@ -830,6 +871,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     canonicalPath: "/calculators/interior/paint-gal",
     keywords: ["paint gallon calculator", "paint estimate", "coats coverage"],
     relatedLinks: categoryLinks.interior,
+    altText: "Industrial paint gallon calculator icon",
   },
   "business-profit-margin": {
     key: "business-profit-margin",
@@ -846,6 +888,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     canonicalPath: "/calculators/business/profit-margin",
     keywords: ["profit margin calculator", "contractor margin", "bid profitability"],
     relatedLinks: categoryLinks.business,
+    altText: "Industrial profit margin calculator icon",
   },
   "business-labor-rate": {
     key: "business-labor-rate",
@@ -862,6 +905,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     canonicalPath: "/calculators/business/labor-rate",
     keywords: ["labor rate calculator", "burdened labor", "crew cost"],
     relatedLinks: categoryLinks.business,
+    altText: "Industrial labor rate calculator icon",
   },
   "business-lead-estimator": {
     key: "business-lead-estimator",
@@ -878,6 +922,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     canonicalPath: "/calculators/business/lead-estimator",
     keywords: ["lead estimator", "contractor lead cost", "marketing roi contractor"],
     relatedLinks: categoryLinks.business,
+    altText: "Industrial lead estimator icon",
   },
   "business-tax-save": {
     key: "business-tax-save",
@@ -894,6 +939,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     canonicalPath: "/calculators/business/tax-save",
     keywords: ["tax save calculator", "contractor tax estimator", "net margin planning"],
     relatedLinks: categoryLinks.business,
+    altText: "Industrial tax save calculator icon",
   },
   "mechanical-btu-estimator": {
     key: "mechanical-btu-estimator",
@@ -914,6 +960,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
       "GC heating check",
     ],
     relatedLinks: categoryLinks.mechanical,
+    altText: "Industrial BTU estimator for temporary site heat icon",
   },
   "mechanical-ventilation-calc": {
     key: "mechanical-ventilation-calc",
@@ -934,6 +981,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
       "construction site ventilation",
     ],
     relatedLinks: categoryLinks.mechanical,
+    altText: "Industrial ventilation calculator icon",
   },
   "mechanical-drywall-sheets": {
     key: "mechanical-drywall-sheets",
@@ -954,6 +1002,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
       "site board count",
     ],
     relatedLinks: categoryLinks.mechanical,
+    altText: "Industrial drywall sheets calculator icon",
   },
 };
 

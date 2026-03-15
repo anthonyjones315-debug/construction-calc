@@ -12,6 +12,7 @@ declare const self: ServiceWorkerGlobalScope;
 
 const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
+  cacheId: "precache-v3",
   skipWaiting: true,
   clientsClaim: true,
   navigationPreload: true,

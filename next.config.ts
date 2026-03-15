@@ -6,6 +6,8 @@ const withSerwist = withSerwistInit({
   swSrc: "src/app/sw.ts",
   swDest: "public/sw.js",
   additionalPrecacheEntries: [{ url: "/offline", revision: "offline-v1" }],
+  // Exclude fonts from precache — cache on-demand via runtime (avoids bad-precaching-response on deploy)
+  exclude: [/\.map$/, /^manifest.*\.js$/, /\.woff2$/i, /\.woff$/i, /\.(?:eot|ttf|otf)$/i],
 });
 
 const nextConfig: NextConfig = {
@@ -24,6 +26,20 @@ const nextConfig: NextConfig = {
     return [
       { source: "/blog", destination: "/field-notes", permanent: true },
       { source: "/blog/:path*", destination: "/field-notes/:path*", permanent: true },
+    ];
+  },
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key: "Access-Control-Allow-Headers",
+            value:
+              "RSC, Next-Router-Prefetch, Next-Router-State-Tree, Content-Type, Authorization",
+          },
+        ],
+      },
     ];
   },
 };

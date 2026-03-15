@@ -486,12 +486,11 @@ export function CalculatorPage({ page }: { page: TradePageDefinition }) {
               <div className="relative hidden w-full aspect-video overflow-hidden rounded-xl border border-white/10 shadow-inner lg:block">
                 <Image
                   src={getHeroImage(page)!}
-                  alt=""
+                  alt={page.altText}
                   width={800}
                   height={450}
                   priority
                   className="absolute inset-0 h-full w-full object-cover"
-                  aria-hidden
                 />
               </div>
             ) : null}

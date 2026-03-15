@@ -13,7 +13,6 @@ import {
   FileText,
   Hammer,
   HardHat,
-  Home,
   Layout,
   MoreHorizontal,
   RefreshCw,
@@ -48,7 +47,7 @@ type NavItem = {
 };
 
 const primaryNavItems: NavItem[] = [
-  { label: "Home", href: routes.commandCenter, icon: Home, active: true },
+  { label: "Home", href: routes.commandCenter, icon: HardHat, active: true },
   { label: "Clients", icon: Users },
   { label: "Settings", href: routes.settings, icon: Settings },
 ];
