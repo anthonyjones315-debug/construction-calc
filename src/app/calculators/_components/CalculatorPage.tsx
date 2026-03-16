@@ -58,6 +58,7 @@ import {
   getFinancialTermDefinition,
   getFinancialTermLabel,
 } from "@/data/financial-terms";
+import { calculateNysSalesTax } from "@/services/taxEngine";
 import { routes } from "@routes";
 import { UnitToggle } from "./UnitToggle";
 import { ProInput } from "@/components/ui/ProInput";
@@ -494,6 +495,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     page.key === "business-tax-save";
   const [taxRegion, setTaxRegion] = useState<"NYS" | "Other">("NYS");
   const [taxCounty, setTaxCounty] = useState<string>("Oneida");
+  const [capitalImprovement, setCapitalImprovement] = useState(false);
 
   const breadcrumbs = useMemo(
     () => buildBreadcrumbs(page.canonicalPath),
@@ -513,6 +515,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     setTrimInputMode("dimensions");
     setOpeningDeductionSqFt(0);
     setFlooringBoxMode("custom");
+    setCapitalImprovement(false);
 
     if (financialCopy) {
       setBaseMeasurement(financialCopy.inputs[0].defaultValue);
@@ -868,10 +871,21 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         const taxRatePct = clampValue(widthSpan, 0, 100);
         const deductionsValue = clampValue(depthThickness, 0, 1_000_000_000);
         const taxableIncome = Math.max(0, grossRevenue - deductionsValue);
-        const taxOwed = taxableIncome * (taxRatePct / 100);
+        const rateSourceCounty = taxRegion === "NYS" ? taxCounty : "Custom / Other";
+        const taxResult = calculateNysSalesTax({
+          county: rateSourceCounty,
+          taxableAmount: taxableIncome,
+          projectType: capitalImprovement ? "capital-improvement" : "repair-maintenance",
+          customCombinedRate: taxRegion === "NYS" ? undefined : taxRatePct,
+        });
+        const rateApplied = taxResult.rateApplied || taxRatePct;
+        const taxOwed = taxResult.taxDue;
         const netIncome = grossRevenue - taxOwed;
         const effectiveTaxRate = grossRevenue === 0 ? 0 : (taxOwed / grossRevenue) * 100;
-        const taxSavings = deductionsValue * (taxRatePct / 100);
+        const taxSavings = capitalImprovement
+          ? 0
+          : round(taxableIncome * (rateApplied / 100), 2) -
+            round((taxableIncome - deductionsValue) * (rateApplied / 100), 2);
 
         return {
           primary: {
@@ -895,6 +909,26 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
               value: effectiveTaxRate.toFixed(2),
               unit: "%",
             },
+            ...(capitalImprovement
+              ? [
+                  {
+                    label: "Capital Improvement",
+                    value: "ST-124 on file",
+                    unit: "",
+                  },
+                ]
+              : [
+                  {
+                    label: "State Portion",
+                    value: currency(taxResult.statePortion),
+                    unit: "$",
+                  },
+                  {
+                    label: "Local Portion",
+                    value: currency(taxResult.localPortion),
+                    unit: "$",
+                  },
+                ]),
             {
               label: "Tax Savings From Deductions",
               value: currency(taxSavings),
@@ -902,8 +936,14 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             },
           ],
           materialList: [
-            `${taxRatePct.toFixed(2)}% blended tax on $${currency(taxableIncome)} taxable income.`,
+            capitalImprovement
+              ? "Capital Improvement: collect NYS Form ST-124; do not charge sales tax on labor."
+              : `${rateApplied.toFixed(2)}% blended tax on $${currency(taxableIncome)} taxable income.`,
+            capitalImprovement
+              ? "Pay sales tax on materials at purchase; retain ST-124 for audit trail."
+              : `State: $${currency(taxResult.statePortion)} · Local: $${currency(taxResult.localPortion)}`,
             `Deductions reduce tax by $${currency(taxSavings)}.`,
+            ...taxResult.notes,
           ],
         };
       }
@@ -1411,6 +1451,9 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     supportsAreaToggle,
     wasteMultiplier,
     widthSpan,
+    capitalImprovement,
+    taxCounty,
+    taxRegion,
   ]);
 
   // Debounced haptic — fires 300 ms after inputs settle so the user feels a
@@ -1984,6 +2027,18 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                     </select>
                     <p className="text-[10px] leading-snug text-slate-400">
                       NYS region uses combined county + state sales tax; otherwise enter your own blended tax rate below.
+                    </p>
+                    <label className="mt-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-white">
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4 rounded border-slate-600 bg-slate-900 text-orange-500"
+                        checked={capitalImprovement}
+                        onChange={(event) => setCapitalImprovement(event.target.checked)}
+                      />
+                      Capital Improvement (ST-124)
+                    </label>
+                    <p className="text-[10px] leading-snug text-slate-400">
+                      Capital improvements require NYS Form ST-124; no sales tax charged to the client when on file.
                     </p>
                   </div>
 

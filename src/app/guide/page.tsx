@@ -165,6 +165,17 @@ export default function GuidePage() {
               </div>
 
               <div className="rounded-2xl border border-white/10 bg-[#16171C] p-4 sm:p-5">
+                <div className="inline-flex items-center gap-2 rounded-full border border-orange-500/40 bg-orange-500/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.14em] text-orange-400">
+                  2026 Compliance
+                </div>
+                <ul className="mt-3 space-y-2 text-sm text-white/75">
+                  <li>All-electric new building mandate starts January 1, 2026 (NYS Climate Act)—plan electric service in bids.</li>
+                  <li>Town of Marcy Unified Development Code applies to local jobs; verify zoning and site plan requirements before permitting.</li>
+                  <li>Use Tax Save calculator with ST-124 toggle for capital improvements to stay sales-tax compliant.</li>
+                </ul>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-[#16171C] p-4 sm:p-5">
                 <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-black uppercase tracking-[0.14em] text-white/80">
                   <Handshake className="h-3.5 w-3.5 text-orange-400" aria-hidden />
                   Share & export

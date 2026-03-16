@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [1.1.1] - 2026-03-16
+
+### Added
+
+- NYS tax engine service with Oneida 8.75% rate, capital improvement (ST-124) handling, and tax breakdown outputs.
+- Capital Improvement toggle and compliant tax breakdown in the Tax Save calculator.
+- Glossary and User Guide pages with schema markup, plus 2026 compliance guidance.
+- Scraping compliance policy document and robots.txt guard helper.
+
+### Changed
+
+- User Guide updated with all-electric 2026 mandate and Marcy UDC reminders for regional bids.
+
+---
+
 ## [1.1.0] - 2026-03-16
 
 ### Added
