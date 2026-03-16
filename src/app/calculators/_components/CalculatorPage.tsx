@@ -2066,16 +2066,6 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
 
   async function handleDownloadPdf() {
     if (typeof window === "undefined") return;
-    if (!session?.user?.id) {
-      setFinalizeError("Sign in to download a branded PDF.");
-      setFinalizeSuccess(null);
-      if (typeof Sentry.showReportDialog === "function") {
-        Sentry.showReportDialog({
-          user: { email: session?.user?.email ?? undefined },
-        });
-      }
-      return;
-    }
     setFinalizeBusy("pdf");
     setFinalizeError(null);
     setFinalizeSuccess(null);
