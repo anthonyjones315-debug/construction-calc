@@ -687,7 +687,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
       "Estimate CMU block-wall unit counts, mortar assumptions, and overage for practical masonry ordering.",
     heroKicker: "Concrete / Block-Wall",
     proTip:
-      "3000 PSI is typically recommended for many exterior slabs and driveways—confirm spec and local code before ordering.",
+      "Confirm block size, bond-beam courses, and vertical rebar layout before ordering CMU and mortar so your field layout matches the engineer’s details.",
     localFocus:
       "Useful for Mohawk Valley wall builds where weather and renovation conditions can increase unit waste.",
     canonicalPath: "/calculators/concrete/block-wall",

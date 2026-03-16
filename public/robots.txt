@@ -2,3 +2,8 @@ User-agent: *
 Allow: /
 
 Sitemap: https://proconstructioncalc.com/sitemap.xml
+
+User-agent: *
+Allow: /
+
+Sitemap: https://proconstructioncalc.com/sitemap.xml

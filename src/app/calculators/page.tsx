@@ -2,14 +2,14 @@ import type { Metadata } from "next";
 import { CalculatorsDirectoryClient } from "./CalculatorsDirectoryClient";
 
 export const metadata: Metadata = {
-  title: "Free Construction Calculators — Concrete, Framing, Roofing & More | Pro Construction Calc",
+  title: "Construction Calculators for Working Contractors | Pro Construction Calc",
   description:
-    "Free online construction calculators for concrete, framing, roofing, insulation, flooring, and more. Instant results for contractors and DIYers.",
+    "Field-tested construction calculators for concrete, framing, roofing, insulation, flooring, and more. Built for working contractors; clear units and results you can use on-site.",
   alternates: { canonical: "https://proconstructioncalc.com/calculators" },
   openGraph: {
-    title: "Free Construction Calculators | Pro Construction Calc",
-    description:
-      "Concrete, framing, roofing, insulation, flooring, and labor calculators — all free.",
+  title: "Construction Calculators for Contractors | Pro Construction Calc",
+  description:
+      "Concrete, framing, roofing, insulation, flooring, and labor calculators tuned for jobsite estimating.",
     images: [{ url: "/og-image.png", width: 1200, height: 630 }],
   },
 };

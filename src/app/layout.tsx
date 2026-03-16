@@ -12,13 +12,12 @@ import { CSPostHogProvider } from "@/components/providers/PostHogProvider";
 import { PostHogPageView } from "@/components/providers/PostHogPageView";
 import { Providers } from "@app/providers";
 
-// Prevents accidental zoom-on-input-focus on iOS and Android.
-// maximum-scale=1 / user-scalable=no keeps the field UI locked at 1×.
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  // Allow users to zoom for accessibility instead of locking scale.
+  maximumScale: 5,
+  userScalable: true,
 };
 
 const inter = Inter({

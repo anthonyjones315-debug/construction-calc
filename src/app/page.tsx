@@ -7,9 +7,9 @@ import type { Metadata } from "next";
 import { routes } from "@routes";
 
 export const metadata: Metadata = {
-  title: "Pro Construction Calc | Industrial-Grade Estimating for NY Contractors",
+  title: "Pro Construction Calc | Contractor-Grade Estimating for the Field",
   description:
-    "The professional bidding engine for Mohawk Valley contractors. 48+ trade-specific calculators, NYS tax compliance, and native Oneida County field guides.",
+    "Contractor-grade estimating for Mohawk Valley builders. Trade-specific calculators, NYS-aware tax math, and tools that match how crews actually work in the field.",
   alternates: { canonical: "https://proconstructioncalc.com" },
 };
 
@@ -37,12 +37,12 @@ export default function HomePage() {
               <h1 className="mt-3 max-w-2xl text-4xl font-display font-bold leading-none sm:text-5xl lg:text-4xl xl:text-5xl">
                 Pro Construction Calc
                 <span className="mt-2 block text-orange-600">
-                  Industrial-grade estimating for NY contractors.
+                  Industrial-grade estimating for New York contractors.
                 </span>
               </h1>
               <p className="mt-4 max-w-xl text-sm leading-relaxed text-slate-400 sm:text-base">
-                Trade calculators, saved estimates, price book control, and PDF
-                workflows shaped for field use instead of generic SaaS
+                Trade calculators, saved estimates, price book control, and
+                PDF workflows shaped for field use instead of generic
                 dashboards.
               </p>
               <div className="mt-6 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap">
@@ -78,17 +78,17 @@ export default function HomePage() {
                   {
                     icon: HardHat,
                     label: "Trade-Specific",
-                    desc: "Concrete, framing, roofing, insulation, flooring.",
+                    desc: "Concrete, framing, roofing, insulation, flooring, and more.",
                   },
                   {
                     icon: FileText,
                     label: "Client-Ready PDFs",
-                    desc: "From quick math to documents you can actually send.",
+                    desc: "From quick checks to client-ready estimate documents you can send.",
                   },
                   {
                     icon: ShieldCheck,
                     label: "Owner Controls",
-                    desc: "Price book, team access, and saved project workflows.",
+                    desc: "Price book, team access, and saved project workflows that keep jobs consistent.",
                   },
                 ].map(({ icon: Icon, label, desc }) => (
                   <div

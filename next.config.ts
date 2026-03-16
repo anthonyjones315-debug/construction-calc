@@ -94,6 +94,10 @@ const nextConfig: NextConfig = {
       "https://adservice.google.com",
       "https://*.adtrafficquality.google",
       "https://*.google-analytics.com",
+      // PostHog loader (served from us-assets.i.posthog.com via rewrites)
+      "https://us-assets.i.posthog.com",
+      // Crisp chat widget script
+      "https://client.crisp.chat",
     ].join(" ");
 
     const connectSrc = [
@@ -112,9 +116,15 @@ const nextConfig: NextConfig = {
       "https://*.google.com",
       "https://*.sentry.io",
       "https://o4511044273766400.ingest.us.sentry.io",
+      // PostHog API + assets (proxied via /ingest*)
+      "https://us.i.posthog.com",
+      "https://us-assets.i.posthog.com",
       "https://vitals.vercel-insights.com",
       "https://va.vercel-scripts.com",
       "https://*.supabase.co",
+      // Crisp chat WebSocket / API
+      "https://client.relay.crisp.chat",
+      "https://client.crisp.chat",
     ].join(" ");
 
     const ContentSecurityPolicy = [
@@ -130,7 +140,7 @@ const nextConfig: NextConfig = {
       "media-src 'none'",
       "object-src 'none'",
       "worker-src 'self' blob:",
-      "frame-src 'self' https://googleads.g.doubleclick.net https://*.googlesyndication.com",
+      "frame-src 'self' https://googleads.g.doubleclick.net https://*.googlesyndication.com https://*.google.com https://*.adtrafficquality.google",
       // frame-ancestors mirrors X-Frame-Options: DENY for CSP-aware browsers
       "frame-ancestors 'none'",
       "base-uri 'self'",
@@ -153,6 +163,11 @@ const nextConfig: NextConfig = {
       {
         key: "Strict-Transport-Security",
         value: "max-age=63072000; includeSubDomains; preload",
+      },
+      // ── Cross-origin isolation / opener policy (improves security & some perf APIs) ─
+      {
+        key: "Cross-Origin-Opener-Policy",
+        value: "same-origin",
       },
       // ── Content Security Policy ─────────────────────────────────
       { key: "Content-Security-Policy", value: ContentSecurityPolicy },

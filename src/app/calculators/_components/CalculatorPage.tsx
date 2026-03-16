@@ -543,7 +543,9 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     (isFlooringRoute ||
       (page.category === "roofing" && !page.canonicalPath.includes("pitch")));
   const supportsConcreteVolumeToggle =
-    page.type === "calculator" && page.category === "concrete";
+    page.type === "calculator" &&
+    page.category === "concrete" &&
+    !page.canonicalPath.includes("block-wall");
   const activeFramingMaterial = lockedFramingMaterial ?? selectedFramingMaterial;
   const supportsWallStudToggle =
     page.type === "calculator" &&
@@ -996,15 +998,17 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       if (page.canonicalPath.includes("block-wall")) {
         const wallAreaSqFt = dimensionsAreaSquareFeet;
         const adjustedArea = wallAreaSqFt * wasteMultiplier;
-        const blockCoverageSqFt = 0.89;
+        const blockFaceHeightInches = clampValue(depthThickness, 4, 16);
+        const blockCoverageSqFt = (blockFaceHeightInches / 12) * (16 / 12);
         const totalBlocks = Math.max(
           1,
           Math.ceil(adjustedArea / blockCoverageSqFt),
         );
         const mortarBags = Math.max(1, Math.ceil(totalBlocks / 35));
+        const blockSizeLabel = `${blockFaceHeightInches.toFixed(0)}" x 16" CMU`;
         return {
           primary: {
-            label: "Total Blocks (8x8x16)",
+            label: "Total Blocks",
             value: totalBlocks.toString(),
             unit: "blocks",
           },
@@ -1021,7 +1025,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             },
           ],
           materialList: [
-            `Order ${totalBlocks} CMU Blocks (8x8x16)`,
+            `Order ${totalBlocks} ${blockSizeLabel}`,
             `Order ${mortarBags} Bags Type S Mortar (70–75 lb)`,
           ],
         };
@@ -1305,6 +1309,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     if (l.includes("total cubic feet")) return "Cubic feet before converting to total yards.";
     if (l.includes("waste factor")) return "Extra material to cover cuts, scraps, and mistakes.";
     if (l.includes("miter waste")) return "Extra trim for corner cuts and angle mistakes.";
+  if (l.includes("block size"))
+    return "Face height of the block in inches (standard CMU is 8\"). Adjust when using non-standard units.";
     return undefined;
   }
 
@@ -2493,7 +2499,11 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                   {finalizeError}{" "}
                   <button
                     type="button"
-                    onClick={() => Sentry.showReportDialog()}
+                    onClick={() => {
+                      if (typeof Sentry.showReportDialog === "function") {
+                        Sentry.showReportDialog();
+                      }
+                    }}
                     className="ml-1 text-xs font-medium underline underline-offset-2 text-red-100 hover:text-red-50"
                   >
                     Report this issue

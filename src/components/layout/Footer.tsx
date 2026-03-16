@@ -44,8 +44,8 @@ export function Footer() {
               Pro Construction Calc
             </div>
             <p className="text-xs leading-relaxed text-slate-400">
-              Free professional construction calculators for contractors and
-              serious DIYers. Based in Central New York.
+              Contractor-grade construction calculators for working crews and estimators.
+              Based in Central New York.
             </p>
             <p className="mt-2 text-xs leading-relaxed text-slate-300">
               Pro Construction Calc · Rome, NY, USA

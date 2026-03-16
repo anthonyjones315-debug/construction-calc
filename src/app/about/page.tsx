@@ -7,7 +7,7 @@ import { AboutContactSection } from "@/components/contact/AboutContactSection";
 export const metadata: Metadata = {
   title: "About Pro Construction Calc",
   description:
-    "Pro Construction Calc is a free suite of construction calculators built for contractors, builders, and DIYers.",
+    "Pro Construction Calc is a contractor-grade suite of construction calculators built for working crews, estimators, and owners.",
 };
 
 export default function AboutPage() {
@@ -29,10 +29,10 @@ export default function AboutPage() {
                 About Pro Construction Calc
               </h1>
               <p className="text-white/60">
-                Built for the job site, not the boardroom.
+                Built for the job site first, not the boardroom.
               </p>
               <div className="mt-3 inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-white/70">
-                Estimating without fluff
+                Estimating without fluff or gimmicks
               </div>
             </div>
           </div>
@@ -47,20 +47,20 @@ export default function AboutPage() {
 
           <div className="mb-8 space-y-5 rounded-2xl border border-white/10 bg-[#1A1A1C] p-8 leading-relaxed text-white/75">
             <p>
-              Pro Construction Calc started with a simple frustration: every
-              construction calculator online was either cluttered, required a
-              sign-up, or gave you results without explaining the math.
+              Pro Construction Calc started with a simple frustration: most construction
+              calculators were cluttered, sales funnels, or black boxes that never showed
+              the math.
             </p>
             <p>
-              We built this for contractors, remodelers, and serious DIYers who
-              need fast planning tools — without the fluff. Every calculator
-              here uses real construction formulas: NEC ampacity tables,
-              standard material yields, proper waste factors.
+              We built this for contractors, remodelers, and crew leaders who need fast,
+              repeatable planning tools they can trust on site. Every calculator uses
+              real construction assumptions: NEC ampacity tables, standard material
+              yields, and practical waste factors.
             </p>
             <p>
-              The app is free. There are no paywalls on the calculators. Sign in
-              only if you want to save estimates or export PDFs — features that
-              require us to store your data.
+              The app is free to use. Calculators stay open; account features like saved
+              estimates and PDF exports are optional and exist to support active projects,
+              not lock you into a subscription.
             </p>
           </div>
 
@@ -72,7 +72,7 @@ export default function AboutPage() {
             {[
               {
                 icon: Calculator,
-                title: "13 Calculators",
+                title: "Trade Calculators",
                 desc: "Concrete, framing, roofing, insulation, flooring, and more — all free.",
               },
               {
