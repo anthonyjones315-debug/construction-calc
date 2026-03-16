@@ -55,8 +55,13 @@ export function calculateNysSalesTax(input: TaxEngineInput): TaxEngineResult {
     if (!countyRate) {
       notes.push("No county rate found; verify blended tax rate before invoicing.");
     }
-    if (input.county.toLowerCase() === "oneida") {
+    const countyLower = input.county.toLowerCase();
+    if (countyLower === "oneida") {
       notes.push("Oneida County combined rate 8.75% applied (state 4.0% + local 4.75%).");
+    } else if (countyLower === "herkimer") {
+      notes.push("Herkimer County combined rate 8.25% applied (state 4.0% + local 4.25%).");
+    } else if (countyLower === "madison") {
+      notes.push("Madison County combined rate 8.00% applied (state 4.0% + local 4.0%).");
     }
   }
 

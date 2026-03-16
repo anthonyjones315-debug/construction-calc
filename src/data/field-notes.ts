@@ -107,6 +107,70 @@ Our concrete calculators assume standard waste and thickness. For freeze-line wo
     `,
   },
   {
+    slug: "herkimer-county-sales-tax-2026",
+    title: "Herkimer County Sales Tax (8.25%) & Capital Improvement Rules",
+    description:
+      "Herkimer County, NY contractors: applying the 8.25% combined sales tax, when to use ST-124, and how to keep bids compliant in 2026.",
+    category: "Business & Legal",
+    date: "May 2026",
+    relatedToolLinks: [
+      { href: "/calculators/business/tax-save", label: "Tax Save Calculator" },
+      { href: "/calculators/business/profit-margin", label: "Profit Margin" },
+      { href: "/calculators/business/labor-rate", label: "Labor Rate" },
+    ],
+    content: `
+## Herkimer County Combined Rate — 8.25%
+- **Rate split:** State 4.0% + Local 4.25% = **8.25%** combined.
+- **Applies to:** Repairs, maintenance, and taxable services. Show the rate on customer-facing estimates.
+- **Materials:** Typically taxable at purchase; factor local portion into your markup.
+
+## Capital Improvements (ST-124)
+- Collect **NYS Form ST-124** from the owner for qualifying capital improvements; do **not** charge sales tax on labor when the form is on file.
+- Keep the signed ST-124 with your estimate and invoice package for audit protection.
+
+## Estimating Workflow
+- Use the **Tax Save** calculator → select **Herkimer County** to auto-fill 8.25%.
+- Toggle **Capital Improvement (ST-124)** when the job scope qualifies; the calculator zeroes out tax on labor and notes ST-124 in the material list/PDF.
+- Keep margins intact by separating materials, labor, overhead, and profit lines.
+
+## Quick Local Notes
+- Town/village permits can add lead times—pad schedules accordingly.
+- For mixed-scope jobs (repair + improvement), split line items and apply tax only where required.
+    `,
+  },
+  {
+    slug: "madison-county-sales-tax-2026",
+    title: "Madison County Sales Tax (8.00%) & Capital Improvement Rules",
+    description:
+      "Madison County, NY contractors: using the 8.00% sales tax rate, handling ST-124 capital improvements, and keeping 2026 bids compliant.",
+    category: "Business & Legal",
+    date: "May 2026",
+    relatedToolLinks: [
+      { href: "/calculators/business/tax-save", label: "Tax Save Calculator" },
+      { href: "/calculators/business/profit-margin", label: "Profit Margin" },
+      { href: "/calculators/business/labor-rate", label: "Labor Rate" },
+    ],
+    content: `
+## Madison County Combined Rate — 8.00%
+- **Rate split:** State 4.0% + Local 4.0% = **8.00%** combined.
+- **Repairs/Maintenance:** Charge the full 8.00% on taxable services; show the rate on your estimate.
+- **Materials:** Generally taxed at purchase—price accordingly.
+
+## Capital Improvements (ST-124)
+- For qualifying capital improvements, collect **Form ST-124**; labor is not taxed when the form is retained.
+- Attach ST-124 note in your estimate/PDF to document the exemption.
+
+## Estimating Workflow
+- In **Tax Save**, pick **Madison County** to auto-fill 8.00%.
+- Use the **Capital Improvement** toggle to zero labor tax and capture the ST-124 reminder in the material list.
+- Protect margin: keep overhead recovery and profit targets separate from tax math.
+
+## Local Considerations
+- Check utility coordination early for all-electric 2026 code shifts.
+- Split bids if combining taxable repair tasks with exempt capital improvements to stay clean on invoicing.
+    `,
+  },
+  {
     slug: "nys-retainage-laws",
     title: "NYS Retainage Laws: Payment Protections for Local GCs",
     description:
