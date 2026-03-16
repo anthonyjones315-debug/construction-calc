@@ -7,10 +7,10 @@ import {
   getTenantScopeId,
 } from "@/lib/supabase/business";
 import { finalizeEstimateSchema } from "@/lib/estimates/finalize";
-import { renderEstimatePdfHtml } from "@/lib/pdf/server-estimate-html";
-import { renderHtmlToPdfBuffer } from "@/lib/pdf/puppeteer";
+import { renderEstimatePdfBuffer } from "@/lib/pdf/server-estimate-pdf";
 import { sanitizeFilename } from "@/utils/sanitize-filename";
 import { getPostHogClient } from "@/lib/posthog-server";
+import * as Sentry from "@sentry/nextjs";
 
 async function resolvePdfBranding(
   payload: ReturnType<typeof finalizeEstimateSchema.parse>,
@@ -83,56 +83,72 @@ export async function POST(request: NextRequest) {
   }
 
   const payload = parsed.data;
-  const session = await auth();
-  const branding = await resolvePdfBranding(payload);
-  const html = await renderEstimatePdfHtml({
-    estimateName: payload.name,
-    jobName: payload.metadata.jobName ?? payload.name,
-    calculatorLabel: payload.metadata.calculatorLabel,
-    generatedAt: payload.metadata.generatedAt,
-    brandName: branding.brandName,
-    contractorEmail: branding.contractorEmail,
-    contractorPhone: branding.contractorPhone,
-    logoUrl: branding.logoUrl,
-    results: payload.results.map((result) => ({
-      label: result.label,
-      value: result.value,
-      unit: result.unit,
-    })),
-    materialList: payload.material_list,
-    signature: payload.signature
-      ? {
-          signerName: payload.signature.signerName ?? null,
-          signerEmail: payload.signature.signerEmail ?? null,
-          signatureDataUrl: payload.signature.signatureDataUrl ?? null,
-          signedAt: payload.signature.signedAt ?? null,
-        }
-      : undefined,
-  });
-  const buffer = await renderHtmlToPdfBuffer(html);
-
-  const ownerUserId =
-    session?.user?.id ??
-    (typeof payload.inputs?.owner === "object" && payload.inputs.owner !== null
-      ? (payload.inputs.owner as Record<string, unknown>).user_id
-      : null);
-
-  if (typeof ownerUserId === "string" && ownerUserId) {
-    const posthog = getPostHogClient();
-    posthog.capture({
-      distinctId: ownerUserId,
-      event: "pdf_generated",
-      properties: { calculator_id: payload.calculator_id },
+  try {
+    const session = await auth();
+    const branding = await resolvePdfBranding(payload);
+    const buffer = await renderEstimatePdfBuffer({
+      estimateName: payload.name,
+      jobName: payload.metadata.jobName ?? payload.name,
+      calculatorLabel: payload.metadata.calculatorLabel,
+      generatedAt: payload.metadata.generatedAt,
+      brandName: branding.brandName,
+      contractorEmail: branding.contractorEmail,
+      contractorPhone: branding.contractorPhone,
+      logoUrl: branding.logoUrl,
+      results: payload.results.map((result) => ({
+        label: result.label,
+        value: result.value,
+        unit: result.unit,
+      })),
+      materialList: payload.material_list,
+      signature: payload.signature
+        ? {
+            signerName: payload.signature.signerName ?? null,
+            signerEmail: payload.signature.signerEmail ?? null,
+            signatureDataUrl: payload.signature.signatureDataUrl ?? null,
+            signedAt: payload.signature.signedAt ?? null,
+          }
+        : undefined,
     });
-    await posthog.shutdown();
-  }
 
-  return new NextResponse(new Uint8Array(buffer), {
-    status: 200,
-    headers: {
-      "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="${sanitizeFilename(payload.name, "estimate")}.pdf"`,
-      "Cache-Control": "no-store",
-    },
-  });
+    const ownerUserId =
+      session?.user?.id ??
+      (typeof payload.inputs?.owner === "object" && payload.inputs.owner !== null
+        ? (payload.inputs.owner as Record<string, unknown>).user_id
+        : null);
+
+    if (typeof ownerUserId === "string" && ownerUserId) {
+      const posthog = getPostHogClient();
+      posthog.capture({
+        distinctId: ownerUserId,
+        event: "pdf_generated",
+        properties: { calculator_id: payload.calculator_id },
+      });
+      await posthog.shutdown();
+    }
+
+    return new NextResponse(new Uint8Array(buffer), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `attachment; filename="${sanitizeFilename(payload.name, "estimate")}.pdf"`,
+        "Cache-Control": "no-store",
+      },
+    });
+  } catch (error) {
+    const selectedCounty =
+      typeof payload.inputs?.selected_county === "string"
+        ? payload.inputs.selected_county
+        : Array.isArray(payload.inputs?.selected_county)
+          ? payload.inputs?.selected_county?.[0]
+          : "unknown";
+    Sentry.captureException(error, {
+      tags: { selected_county: selectedCounty ?? "unknown" },
+      extra: { calculator_id: payload.calculator_id },
+    });
+    return NextResponse.json(
+      { error: "Failed to generate PDF." },
+      { status: 500 },
+    );
+  }
 }
