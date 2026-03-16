@@ -60,7 +60,9 @@ export const metadata: Metadata = {
     "Central New York",
     "contractor estimating",
   ],
-  authors: [{ name: "Pro Construction Calc", url: "https://proconstructioncalc.com" }],
+  authors: [
+    { name: "Pro Construction Calc", url: "https://proconstructioncalc.com" },
+  ],
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -128,7 +130,7 @@ export default function RootLayout({
       <body
         className={`command-theme ${inter.variable} ${oswald.variable} ${jetBrainsMono.variable}`}
       >
-        <a href="#main-content" className="skip-link">
+        <a href="#main-content" className="skip-link" tabIndex={1}>
           Skip to main content
         </a>
         <Suspense fallback={null}>

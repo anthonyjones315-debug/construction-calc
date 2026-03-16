@@ -33,7 +33,6 @@ export default function PrivacyPage() {
               alt="Privacy shield and lock representing secure handling of account data"
               width={1200}
               height={700}
-              priority
               className="w-full h-44 object-cover"
             />
           </div>

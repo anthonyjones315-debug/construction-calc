@@ -2000,12 +2000,45 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       category: page.category,
       trade: page.category,
       primary_value: Number(calculatorResults.primary.value) || 0,
+      input_values: {
+        base_measurement: baseMeasurement,
+        width_span: widthSpan,
+        depth_thickness: depthThickness,
+      },
     });
     setFinalizeError(null);
     setFinalizeSuccess(null);
     setCreatedSignUrl(null);
     setFinalizeOpen(true);
   }
+
+  // Track input changes
+  useEffect(() => {
+    if (!posthog) return;
+    posthog.capture("calculator_input_changed", {
+      calculator_id: page.canonicalPath,
+      input_name: "base_measurement",
+      value: baseMeasurement,
+    });
+  }, [baseMeasurement, page.canonicalPath]);
+
+  useEffect(() => {
+    if (!posthog) return;
+    posthog.capture("calculator_input_changed", {
+      calculator_id: page.canonicalPath,
+      input_name: "width_span",
+      value: widthSpan,
+    });
+  }, [widthSpan, page.canonicalPath]);
+
+  useEffect(() => {
+    if (!posthog) return;
+    posthog.capture("calculator_input_changed", {
+      calculator_id: page.canonicalPath,
+      input_name: "depth_thickness",
+      value: depthThickness,
+    });
+  }, [depthThickness, page.canonicalPath]);
 
   async function handleCopyOrder() {
     const copyText = calculatorResults.materialList.join("\n");
