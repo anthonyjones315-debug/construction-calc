@@ -411,6 +411,16 @@ function getPrimaryDisplayUnit(result: CalculatorResult): string {
   return result.unit;
 }
 
+function isMonetaryResult(result: CalculatorResult): boolean {
+  const label = result.label.toLowerCase();
+  const monetaryLabels = ["cost", "price", "profit", "tax", "revenue", "rate"];
+  return (
+    result.unit.includes("$") ||
+    result.unit.includes("$/") ||
+    monetaryLabels.some((word) => label.includes(word))
+  );
+}
+
 function normalizeDisplayedLabel(label: string, path: string): string {
   if (!path.toLowerCase().includes("/framing/floor")) return label;
   return label.replace(/\bStuds?\b/g, (match) =>
@@ -446,6 +456,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   const { proMode, mounted } = useProMode();
   const effectiveProMode = mounted && proMode;
   const lockedFramingMaterial = getLockedFramingMaterial(page.canonicalPath);
+  const canShowPricing = Boolean(session?.user?.id);
   const financialCopy = useMemo(
     () => getFinancialCalculatorCopy(page.canonicalPath),
     [page.canonicalPath],
@@ -1456,6 +1467,19 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     taxCounty,
     taxRegion,
   ]);
+
+  const displayResults: CalculatorResultsBundle = useMemo(() => {
+    if (canShowPricing) return calculatorResults;
+    const mask = (result: CalculatorResult): CalculatorResult =>
+      isMonetaryResult(result)
+        ? { ...result, value: "Sign in to view", unit: "" }
+        : result;
+    return {
+      primary: mask(calculatorResults.primary),
+      secondary: calculatorResults.secondary.map(mask),
+      materialList: calculatorResults.materialList,
+    };
+  }, [calculatorResults, canShowPricing]);
 
   // Debounced haptic — fires 300 ms after inputs settle so the user feels a
   // physical "click" when the live calculation stabilises on a new result.
@@ -2524,11 +2548,11 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                 className="self-start pb-8 lg:sticky lg:top-24 lg:self-start lg:pb-0"
               >
                 <ProResult
-                  primary={calculatorResults.primary}
-                  secondary={calculatorResults.secondary}
-                  primaryUnitDisplay={getPrimaryDisplayUnit(calculatorResults.primary)}
+                  primary={displayResults.primary}
+                  secondary={displayResults.secondary}
+                  primaryUnitDisplay={getPrimaryDisplayUnit(displayResults.primary)}
                   localTip={effectiveProMode ? null : localTip}
-                  materialList={calculatorResults.materialList}
+                  materialList={displayResults.materialList}
                   onCopyOrder={handleCopyOrder}
                   onFinalize={openFinalizeModal}
                   finalizeLabel="Finalize & Send"
