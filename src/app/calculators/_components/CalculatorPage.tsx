@@ -2146,7 +2146,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             </div>
           </div>
 
-          <div className={`${effectiveProMode ? "space-y-2 p-3 sm:p-4" : "space-y-2 p-3 sm:p-4"} bg-[--color-nav-bg]`}>
+          <div className="space-y-2 p-3 sm:p-4 bg-[--color-nav-bg]">
 
             <aside className="mb-3 hidden rounded-2xl border border-slate-800 bg-slate-900/50 p-3 transition-colors lg:block">
                 <h2 className="text-sm font-black uppercase tracking-[0.12em] text-white">

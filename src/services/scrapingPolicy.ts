@@ -4,6 +4,13 @@
  */
 export const SCRAPING_MIN_DELAY_MS = 1200;
 
+async function fetchRobotsTxt(origin: string): Promise<string> {
+  const robotsUrl = `${origin}/robots.txt`;
+  const res = await fetch(robotsUrl, { method: "GET" });
+  if (!res.ok) return "";
+  return res.text();
+}
+
 function getCrawlDelayMs(robotsText: string): number {
   const delayLine = robotsText
     .split("\n")
@@ -20,10 +27,8 @@ async function sleep(ms: number) {
 export async function isScrapingAllowed(targetUrl: string): Promise<boolean> {
   try {
     const { origin, pathname } = new URL(targetUrl);
-    const robotsUrl = `${origin}/robots.txt`;
-    const res = await fetch(robotsUrl, { method: "GET" });
-    if (!res.ok) return false;
-    const robotsText = await res.text();
+    const robotsText = await fetchRobotsTxt(origin);
+    if (!robotsText) return false;
     return !isDisallowed(pathname, robotsText);
   } catch {
     return false;
@@ -52,26 +57,28 @@ export function isDisallowed(pathname: string, robotsText: string): boolean {
     }
   }
 
-  return disallow.some((rule) => rule !== "/" && pathname.startsWith(rule));
+  return disallow.some((rule) => {
+    if (rule === "") return false;
+    if (rule === "/") return true;
+    return pathname.startsWith(rule);
+  });
 }
 
 export async function assertScrapingPermitted(targetUrl: string) {
-  const allowed = await isScrapingAllowed(targetUrl);
+  const { origin, pathname } = new URL(targetUrl);
+  let robotsText = "";
+  try {
+    robotsText = await fetchRobotsTxt(origin);
+  } catch {
+    robotsText = "";
+  }
+
+  const allowed = robotsText ? !isDisallowed(pathname, robotsText) : false;
   if (!allowed) {
     throw new Error(`Scraping blocked by robots.txt or policy for ${targetUrl}`);
   }
 
   // Respect crawl-delay and basic human-like pacing.
-  const { origin } = new URL(targetUrl);
-  try {
-    const robotsRes = await fetch(`${origin}/robots.txt`, { method: "GET" });
-    const robotsText = robotsRes.ok ? await robotsRes.text() : "";
-    const delay = getCrawlDelayMs(robotsText);
-    if (delay > 0) {
-      await sleep(delay);
-    }
-  } catch {
-    // If robots cannot be read, err on the side of a minimal delay.
-    await sleep(SCRAPING_MIN_DELAY_MS);
-  }
+  const delay = robotsText ? getCrawlDelayMs(robotsText) : SCRAPING_MIN_DELAY_MS;
+  await sleep(delay);
 }

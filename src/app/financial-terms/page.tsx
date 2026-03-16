@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { BookOpenCheck, ShieldCheck, FileText, Receipt, HardHat } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -112,12 +113,12 @@ export default function FinancialTermsPage() {
                   <li>Town of Marcy UDC: check zoning, site plan triggers, lighting, and stormwater before bidding.</li>
                   <li>Tax Save calculator separates capital improvements (ST-124) from repairs with clear PDF language.</li>
                 </ul>
-                <a
+                <Link
                   href={routes.fieldNotes}
                   className="mt-3 inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-white transition hover:border-orange-500/50 hover:text-orange-100"
                 >
                   Read Field Notes
-                </a>
+                </Link>
               </div>
 
               <div className="rounded-2xl border border-white/10 bg-[#16171C] p-4">
@@ -138,18 +139,18 @@ export default function FinancialTermsPage() {
                   <li>Glossary and this page share one dataset—no drift between tools.</li>
                 </ul>
                 <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                  <a
+                  <Link
                     href={routes.guide}
                     className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-white transition hover:border-orange-500/50 hover:text-orange-100"
                   >
                     Open User Guide
-                  </a>
-                  <a
+                  </Link>
+                  <Link
                     href={routes.glossary}
                     className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-white transition hover:border-orange-500/50 hover:text-orange-100"
                   >
                     View Glossary
-                  </a>
+                  </Link>
                 </div>
               </div>
             </aside>
