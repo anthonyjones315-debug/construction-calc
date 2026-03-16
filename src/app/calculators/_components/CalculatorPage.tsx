@@ -60,6 +60,8 @@ import { useProMode } from "@/hooks/useProMode";
 import { triggerHaptic } from "@/hooks/useHaptic";
 import { sanitizeFilename } from "@/utils/sanitize-filename";
 import { useContractorProfile } from "@/components/pdf/useContractorProfile";
+import { getConcreteInputLabelsFromCopy } from "@/data/construction-terms";
+import { useStore } from "@/lib/store";
 
 
 type TradeModule = {
@@ -306,6 +308,10 @@ function getInputLabels(
   selectedFramingMaterial: FramingMaterialKind,
 ): { first: string; second: string; third: string } {
   const p = path.toLowerCase();
+
+  const concreteCopy = getConcreteInputLabelsFromCopy(path);
+  if (concreteCopy) return concreteCopy;
+
   if (p.includes("framing") || p.includes("decking")) {
     return getFramingInputLabels(selectedFramingMaterial);
   }
@@ -1426,6 +1432,22 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     }
   }
 
+  function handleAddToCart() {
+    const id = `${page.canonicalPath}-${Date.now()}`;
+    addCartItem({
+      id,
+      calculatorId: "budget",
+      calculatorLabel: page.heroKicker,
+      estimateName,
+      primaryResult: calculatorResults.primary,
+      materialList: calculatorResults.materialList,
+      quantity: 1,
+      createdAt: new Date().toISOString(),
+    });
+    setFinalizeSuccess("Estimate added to cart.");
+    setFinalizeError(null);
+  }
+
   async function handleSendForSignature() {
     if (!canUseSignAndReturn) {
       setFinalizeError("Sign & Return is available in Pro Mode for signed-in users.");
@@ -1486,6 +1508,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   }
 
   const auditRef = getCalculatorAuditRef();
+  const addCartItem = useStore((s) => s.addCartItem);
 
   const emailEstimatePayload: EstimatePayload = useMemo(
     () => ({
@@ -2358,7 +2381,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       <div className="fixed bottom-0 left-0 w-full z-40 border-t border-slate-800 bg-slate-950 px-4 py-3 pb-safe lg:hidden">
              <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-3">
           <div className="min-w-0">
-            <p className="truncate text-[10px] font-bold uppercase tracking-[0.14em] text-[--color-nav-text]/75">
+                <p className="truncate text-xs font-bold uppercase tracking-[0.14em] text-[--color-nav-text]/80">
               {calculatorResults.primary.label}
             </p>
                 <p className="truncate text-lg font-black tabular-nums tracking-tight text-orange-500">
@@ -2519,7 +2542,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
 
             <div
               className={`mt-5 grid gap-2 ${
-                canUseSignAndReturn ? "sm:grid-cols-2" : ""
+                canUseSignAndReturn ? "sm:grid-cols-3" : "sm:grid-cols-2"
               }`}
             >
               <button
@@ -2530,6 +2553,14 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
               >
                 <FileDown className="h-4 w-4" aria-hidden />
                 {finalizeBusy === "pdf" ? "Generating..." : "Download PDF"}
+              </button>
+              <button
+                type="button"
+                onClick={handleAddToCart}
+                disabled={finalizeBusy !== null}
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-900 px-4 text-sm font-semibold text-white transition hover:border-orange-500 disabled:opacity-60"
+              >
+                Add to Cart
               </button>
               {canUseSignAndReturn ? (
                 <button

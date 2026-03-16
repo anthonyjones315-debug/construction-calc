@@ -47,6 +47,7 @@ export function EmailEstimateModal({
 }: EmailEstimateModalProps) {
   const [to, setTo] = useState("");
   const [subject, setSubject] = useState(DEFAULT_SUBJECT);
+  const [replyToLocal, setReplyToLocal] = useState(replyTo ?? "");
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -66,7 +67,7 @@ export function EmailEstimateModal({
         body: JSON.stringify({
           to: email,
           subject: subject.trim() || DEFAULT_SUBJECT,
-          replyTo: replyTo ?? undefined,
+          replyTo: replyToLocal.trim() || replyTo ?? undefined,
           estimate: {
             ...estimate,
             generatedAt:
@@ -127,8 +128,7 @@ export function EmailEstimateModal({
           </h2>
           <p className="mt-1 text-sm text-slate-400">
             Send this estimate to a client. Emails are sent from{" "}
-            <code>system@proconstructioncalc.com</code>
-            {replyTo ? ` and replies go to ${replyTo}.` : "."}
+            <code>system@proconstructioncalc.com</code>.
           </p>
 
           {status === "sent" ? (
@@ -147,6 +147,19 @@ export function EmailEstimateModal({
                   placeholder="client@example.com"
                   className="h-10 rounded-xl border border-slate-500 bg-slate-900 px-3 text-white placeholder:text-slate-500 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
+              </label>
+              <label className="flex flex-col gap-1 text-sm text-slate-300">
+                Reply-to (your email)
+                <input
+                  type="email"
+                  value={replyToLocal}
+                  onChange={(e) => setReplyToLocal(e.target.value)}
+                  placeholder="you@yourcompany.com"
+                  className="h-10 rounded-xl border border-slate-500 bg-slate-900 px-3 text-white placeholder:text-slate-500 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                />
+                <span className="text-xs text-slate-400">
+                  Replies will go to this address. Leave blank to use your default profile email.
+                </span>
               </label>
               <label className="flex flex-col gap-1 text-sm text-slate-300">
                 Subject

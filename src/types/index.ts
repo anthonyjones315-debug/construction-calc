@@ -66,6 +66,19 @@ export interface MarketPrice {
 
 export type MarketPrices = Record<string, MarketPrice>;
 
+// ─── Estimate Cart Types ──────────────────────────────────────────────────────
+
+export interface EstimateCartItem {
+  id: string;
+  calculatorId: CalculatorId;
+  calculatorLabel: string;
+  estimateName: string;
+  primaryResult: CalculationResult;
+  materialList: string[];
+  quantity: number;
+  createdAt: string;
+}
+
 // ─── Preset Types ─────────────────────────────────────────────────────────────
 
 export interface ProjectPreset {

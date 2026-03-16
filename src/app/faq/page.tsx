@@ -28,6 +28,22 @@ const FAQ_ITEMS = [
     a: "The AI Optimizer analyzes your calculator results and provides specific cost-saving tips, Good/Better/Best material tier recommendations, waste reduction strategies, and buying tips. It uses Claude AI (Anthropic) and is free to use.",
   },
   {
+    q: "How does AI help with real jobs, not just theory?",
+    a: "Our AI tools are tuned for working contractors. After you run a calculator, the AI Optimizer can suggest alternate mixes, spacing, or staging to cut waste, translate quantities into supplier-ready order notes, and highlight regional issues from our Field Notes (frost depth, snow loads, insulation targets) that might affect your scope.",
+  },
+  {
+    q: "Can AI draft a scope of work or proposal language?",
+    a: "Yes. Once you have calculator results, you can ask the AI Optimizer to generate scoped work notes, inclusions/exclusions, and homeowner-friendly explanations based on your inputs. You stay in control: review and edit the text before sending it to a client or dropping it into your estimating software.",
+  },
+  {
+    q: "Does the AI understand Oneida County and Mohawk Valley conditions?",
+    a: "AI answers are grounded in our own regional Field Notes on frost depth, snow loads, insulation targets, all‑electric rules, and permit timelines. It is still guidance, not a stamped engineering design or code ruling, so always confirm critical values with your building department or engineer.",
+  },
+  {
+    q: "Is my project data used to train public AI models?",
+    a: "No. Calculator inputs and AI prompts are used to run your session and improve Pro Construction Calc, but they are not used to train public foundation models. See our Privacy Policy and Terms for full details, including how we handle saved estimates and AI usage logs.",
+  },
+  {
     q: "How do I export a PDF estimate?",
     a: "Use Export PDF for a quick download, or sign in with Google to save estimates to your account before downloading. Every PDF should be treated as a planning estimate and verified before ordering materials or starting work.",
   },
@@ -73,14 +89,14 @@ export default function FAQPage() {
             </div>
           </div>
 
-          <div className="content-card mb-8 overflow-hidden">
+          <div className="content-card mb-8 flex items-center justify-center bg-[--color-surface]">
             <Image
               src="/images/safety-estimate.svg"
               alt="Hard hat and checklist representing practical estimating guidance"
               width={1200}
               height={700}
               priority
-              className="w-full h-44 object-cover"
+              className="w-full max-w-2xl h-48 object-contain"
             />
           </div>
 

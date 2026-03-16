@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
-import type { CalculatorId, BudgetItem, AIAnalysis, MarketPrices } from '@/types'
+import type { CalculatorId, BudgetItem, AIAnalysis, MarketPrices, EstimateCartItem } from '@/types'
 import { MARKET_PRICES_BASE } from '@/data'
 
 // ─── Calculator Input State ───────────────────────────────────────────────────
@@ -63,6 +63,7 @@ interface AppState {
   activeCalculator: CalculatorId
   marketPrices: MarketPrices
   budgetItems: BudgetItem[]
+  estimateCart: EstimateCartItem[]
   selectedMaterial: string
   materialQty: number
   aiAnalyses: Record<string, AIAnalysis>
@@ -102,6 +103,9 @@ interface AppActions {
   removeBudgetItem: (id: string) => void
   updateBudgetItemPrice: (id: string, price: number) => void
   setBudgetItems: (items: BudgetItem[]) => void
+  addCartItem: (item: EstimateCartItem) => void
+  removeCartItem: (id: string) => void
+  clearCart: () => void
   setSelectedMaterial: (m: string) => void
   setMaterialQty: (q: number) => void
   updateConcrete: (patch: Partial<ConcreteState>) => void
@@ -126,6 +130,7 @@ export const useStore = create<AppState & AppActions>()(
     activeCalculator: 'concrete',
     marketPrices: MARKET_PRICES_BASE,
     budgetItems: [],
+    estimateCart: [],
     selectedMaterial: Object.keys(MARKET_PRICES_BASE)[0],
     materialQty: 1,
     aiAnalyses: {},
@@ -167,6 +172,9 @@ export const useStore = create<AppState & AppActions>()(
       if (item) item.pricePerUnit = price
     }),
     setBudgetItems: (items) => set((s) => { s.budgetItems = items }),
+    addCartItem: (item) => set((s) => { s.estimateCart.push(item) }),
+    removeCartItem: (id) => set((s) => { s.estimateCart = s.estimateCart.filter(i => i.id !== id) }),
+    clearCart: () => set((s) => { s.estimateCart = [] }),
     setSelectedMaterial: (m) => set((s) => { s.selectedMaterial = m }),
     setMaterialQty: (q) => set((s) => { s.materialQty = q }),
     updateConcrete: (p) => set((s) => { Object.assign(s.concrete, p) }),
@@ -203,6 +211,7 @@ export const useStore = create<AppState & AppActions>()(
       labor:            state.labor,
       budgetItems:      state.budgetItems,
       taxRate:          state.taxRate,
+      estimateCart:     state.estimateCart,
     }),
   }
   )

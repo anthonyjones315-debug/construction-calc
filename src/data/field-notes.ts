@@ -96,6 +96,86 @@ Before you sign, know: (1) how much is retained, (2) when it’s released, and (
     `,
   },
   {
+    slug: "ai-estimating-playbook",
+    title: "AI Estimating Playbook: Using Pro Calc on Real Jobs",
+    description:
+      "How Mohawk Valley contractors can use Pro Construction Calc plus AI to write scopes, compare options, and tighten bids — without leaving the job trailer.",
+    category: "AI & Workflow",
+    date: "March 2026",
+    relatedToolLinks: [
+      { href: "/calculators", label: "All Calculators" },
+      { href: "/calculators/management", label: "Management Calculators" },
+      { href: "/calculators/business", label: "Business Calculators" },
+    ],
+    content: `
+## Where AI Fits in a Real Estimate
+
+On a live job, you don't have time for toy examples. The workflow for most **Rome, Utica, and Oneida County** contractors looks like this:
+
+1. Run a calculator — concrete, framing, roofing, insulation, or business.
+2. Sanity‑check quantities against your experience.
+3. Ask AI to help with *language, options, and risk*, not to "do the job" for you.
+
+Pro Construction Calc is built for exactly that loop. The calculators handle the math; the **AI Optimizer** helps you explain and refine the plan.
+
+## Concrete Example: Footing and Slab in Oneida County
+
+Say you're pouring a footing and slab in **Rome, NY**:
+
+- Use the **Footing Volume** and **Slab** calculators to size yards and bags.
+- Set depth based on frost‑line guidance from our **Freeze‑Lines** and **Frost Heave** Field Notes (typically 42"–48"+).
+- Then send the results to the AI Optimizer and ask:
+
+> “Write a short scope of work and materials list for a homeowner, based on these calculator outputs. Flag anything I should confirm with the building department.”
+
+The AI response should give you:
+
+- Plain‑English scope and inclusions/exclusions
+- A ready‑to‑paste material list for your supplier
+- A reminder to confirm frost depth and inspection requirements locally
+
+You still control the numbers; AI just speeds up the paperwork.
+
+## Roofing Example: Snow Loads and Shingles
+
+For a **Mohawk Valley** roof:
+
+- Use the **Pitch & Slope** and **Shingles** calculators to convert area, pitch, and waste into squares and bundles.
+- Check the **Snow Loads** Field Note for typical ground and roof values in **Rome** and **Utica**.
+- Then prompt AI:
+
+> “Summarize this roof in one paragraph for a proposal, including snow‑load context for Oneida County, and list Good/Better/Best shingle options.”
+
+AI can:
+
+- Explain why your waste factor is set where it is
+- Suggest three pricing tiers (good/better/best) that match your material choices
+- Help you keep language consistent across bids
+
+## Business Side: Cash Flow and Retainage
+
+AI is just as useful on the **business** side:
+
+- Run **Profit Margin**, **Labor Rate**, and **Lead Estimator** calculators.
+- Use the **Retainage** and **Permit Timelines** Field Notes as context.
+- Ask AI to:
+
+> “Explain this bid's cash flow, including retainage and permit delays, in plain English for a GC or owner.”
+
+You get a narrative you can drop into an email or proposal, while still owning the math and assumptions.
+
+## Guardrails: What AI Should *Not* Replace
+
+Even with strong local content and calculators, AI is not:
+
+- A stamped engineering design
+- A substitute for the Rome/Utica/Oneida County building department
+- A replacement for your own judgment in the field
+
+Treat AI as a fast assistant for **language, comparison, and reminders**, not the final authority. Use it to keep your documentation sharp so the real‑world work stays on schedule and in budget.
+    `,
+  },
+  {
     slug: "insulation-r-values",
     title: "Spray Foam vs. Fiber: Insulation R-Values for Mohawk Valley Winters",
     description:

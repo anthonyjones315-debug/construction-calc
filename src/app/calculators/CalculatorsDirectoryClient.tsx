@@ -2,8 +2,6 @@
 
 import Link from "next/link";
 import type { Route } from "next";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
 import { SplashPopup } from "@/components/ui/SplashPopup";
 import {
   HardHat,
@@ -41,13 +39,8 @@ function getCategoryPage(key: TradePageKey): TradePageDefinition | undefined {
 
 export function CalculatorsDirectoryClient() {
   return (
-    <div className="command-theme page-shell flex min-h-screen flex-col bg-slate-950">
-      <Header />
-      <main
-        id="main-content"
-        className="min-w-0 flex-1 overflow-visible"
-        tabIndex={-1}
-      >
+    <>
+      <main id="main-content" className="min-w-0 flex-1 overflow-visible" tabIndex={-1}>
         {/* Hero: full-width dark industrial gradient, no trade image */}
         <section className="dark-feature-panel overflow-hidden text-white">
           <div className="relative w-full bg-[radial-gradient(ellipse_at_top_right,rgba(30,35,45,0.95),#0a0a0b_70%),linear-gradient(180deg,#0d0f14_0%,#0A0A0B_100%)] px-5 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
@@ -136,8 +129,7 @@ export function CalculatorsDirectoryClient() {
           </div>
         </div>
       </main>
-      <Footer />
       <SplashPopup />
-    </div>
+    </>
   );
 }
