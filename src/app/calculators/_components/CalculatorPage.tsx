@@ -481,9 +481,9 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     setVolumeInputMode("dimensions");
     setWallInputMode("lineal-feet");
     setTrimInputMode("dimensions");
-    setBaseMeasurementUnit("ft");
-    setSpacingUnit("in");
-    setConcreteDepthUnit("in");
+    setBaseMeasurement(10);
+    setWidthSpan(10);
+    setDepthThickness(4);
   }, [page.canonicalPath]);
 
   useEffect(() => {
@@ -1891,8 +1891,6 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                   const labels = getInputLabels(page.canonicalPath, activeFramingMaterial);
                   const thirdInputMax = isTrimRoute ? 20 : isFlooringRoute ? 250 : 96;
                   const thirdInputMin = isTrimRoute ? 4 : 1;
-                  const isFramingCalculator = page.category === "framing";
-                  const isConcreteCalculator = page.category === "concrete";
                   return (
                 <div className="mt-2 space-y-2">
                   {showFramingMaterialSelector && (
