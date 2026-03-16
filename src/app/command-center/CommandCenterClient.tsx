@@ -201,8 +201,8 @@ function initialsForName(name: string): string {
 }
 
 function formatEstimateStatus(status: string | null) {
-  if (status === "SIGNED" || status === "Approved") return "SIGNED";
-  if (status === "PENDING" || status === "Sent") return "PENDING";
+  if (status === "SIGNED" || status === "Approved") return "Signed";
+  if (status === "PENDING" || status === "Sent") return "Sent";
   return "Draft";
 }
 

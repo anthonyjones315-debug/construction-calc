@@ -1360,6 +1360,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       calculator_id: page.canonicalPath,
       calculator_label: page.heroKicker,
       category: page.category,
+      trade: page.category,
+      primary_value: Number(calculatorResults.primary.value) || 0,
     });
     setFinalizeError(null);
     setFinalizeSuccess(null);

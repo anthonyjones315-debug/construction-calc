@@ -170,6 +170,8 @@ export async function POST(request: NextRequest) {
       properties: {
         estimate_id: savedId,
         calculator_id: payload.calculator_id,
+        trade: payload.calculator_id.split("/")[1] ?? "unknown",
+        primary_total: payload.total_cost ?? null,
         has_client: Boolean(payload.client_name),
         client_emailed: Boolean(clientEmail),
       },

@@ -4,7 +4,6 @@ import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import {
   HardHat,
-  User,
   LogOut,
   ChevronDown,
   LayoutDashboard,
@@ -29,6 +28,15 @@ export function Header() {
   const online = useOnlineStatus();
   const isCommandCenterActive =
     pathname === "/command-center" || pathname === "/dashboard";
+
+  const userDisplayName =
+    session?.user?.name?.trim() || session?.user?.email?.trim() || "Pro User";
+  const userInitials = userDisplayName
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join("") || "AJ";
 
   useEffect(() => {
     let cancelled = false;
@@ -162,8 +170,8 @@ export function Header() {
                     referrerPolicy="no-referrer"
                   />
                 ) : (
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[--color-orange-brand]">
-                    <User className="h-4 w-4 text-white" aria-hidden />
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[--color-orange-brand] text-[11px] font-display font-black tracking-wide text-white">
+                    {userInitials}
                   </div>
                 )}
                 <ChevronDown className="h-3 w-3" aria-hidden />
