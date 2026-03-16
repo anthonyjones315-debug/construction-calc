@@ -67,7 +67,7 @@ export function EmailEstimateModal({
         body: JSON.stringify({
           to: email,
           subject: subject.trim() || DEFAULT_SUBJECT,
-          replyTo: replyToLocal.trim() || replyTo ?? undefined,
+          replyTo: replyToLocal.trim() || replyTo || undefined,
           estimate: {
             ...estimate,
             generatedAt:
