@@ -17,7 +17,8 @@
     "check-calculations": "npm run build:calcs && node scripts/rewrite-calcs-paths.mjs && node scripts/check-calculations.mjs",
     "check-colors": "node scripts/check-color-contrast.mjs",
     "check-calcs": "npm run check-calculations && npm run check-colors",
-    "benchmark:frontend": "node scripts/benchmark-frontend-metrics.mjs"
+    "benchmark:frontend": "node scripts/benchmark-frontend-metrics.mjs",
+    "supabase:types": "supabase gen types typescript --project-id $SUPABASE_PROJECT_ID > src/lib/supabase/types.gen.ts"
   },
   "keywords": [],
   "author": "",

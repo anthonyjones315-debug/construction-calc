@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { FIELD_NOTES } from "@/data/field-notes";
+import { BLOG_POSTS } from "@/data/blog";
 
 const BASE = "https://proconstructioncalc.com";
 
@@ -63,6 +64,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const staticPages: MetadataRoute.Sitemap = [
     { url: BASE, lastModified: now, changeFrequency: "weekly", priority: 1 },
+    { url: `${BASE}/blog`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
     { url: `${BASE}/field-notes`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
     { url: `${BASE}/faq`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE}/about`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
@@ -79,12 +81,37 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.9,
   }));
 
-  const fieldNotesPages: MetadataRoute.Sitemap = FIELD_NOTES.map((note) => ({
-    url: `${BASE}/field-notes/${note.slug}`,
-    lastModified: now,
-    changeFrequency: "monthly" as const,
-    priority: 0.7,
-  }));
+  const fieldNotesPages: MetadataRoute.Sitemap = FIELD_NOTES.flatMap((note) => {
+    const fieldNotesEntry = {
+      url: `${BASE}/field-notes/${note.slug}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    };
+    const blogAliasEntry = {
+      url: `${BASE}/blog/${note.slug}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    };
+    return [fieldNotesEntry, blogAliasEntry];
+  });
 
-  return [...staticPages, ...calculatorPages, ...fieldNotesPages];
+  const blogPages: MetadataRoute.Sitemap = BLOG_POSTS.flatMap((post) => {
+    const blogEntry = {
+      url: `${BASE}/blog/${post.slug}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    };
+    const fieldNotesAliasEntry = {
+      url: `${BASE}/field-notes/${post.slug}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    };
+    return [blogEntry, fieldNotesAliasEntry];
+  });
+
+  return [...staticPages, ...calculatorPages, ...fieldNotesPages, ...blogPages];
 }
