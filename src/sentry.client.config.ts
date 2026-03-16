@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/nextjs";
+import { feedbackIntegration } from "@sentry/browser";
 
 const PII_KEYS = [
   "email",
@@ -75,6 +76,14 @@ Sentry.init({
     Sentry.replayIntegration({
       maskAllText: true,
       blockAllMedia: true,
+    }),
+    feedbackIntegration({
+      colorScheme: "dark",
+      isNameRequired: true,
+      isEmailRequired: true,
+      enableScreenshot: true,
+      // We open the dialog explicitly (e.g. on /contact) rather than injecting a floating widget.
+      autoInject: false,
     }),
   ],
 

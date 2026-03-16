@@ -17,7 +17,7 @@ export default function CalcLoading() {
         {/* Hero skeleton */}
         <div className="dark-feature-panel overflow-hidden">
           <div className="relative w-full bg-[#0d0f14] px-5 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
-            <div className="mx-auto max-w-5xl space-y-3">
+            <div className="mx-auto w-full max-w-5xl space-y-3">
               <div className="skeleton h-3 w-28 rounded-full" />
               <div className="skeleton h-8 w-48 rounded-lg" />
               <div className="skeleton h-4 w-72 rounded" />
@@ -27,7 +27,7 @@ export default function CalcLoading() {
         </div>
 
         {/* Card grid skeleton — mirrors the 6-card directory */}
-        <div className="mx-auto max-w-5xl px-4 py-5 pb-24 sm:px-6 sm:py-6 lg:py-8">
+        <div className="mx-auto w-full max-w-5xl px-4 py-5 pb-24 sm:px-6 sm:py-6 lg:py-8">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
               <div

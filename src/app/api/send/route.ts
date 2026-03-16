@@ -3,6 +3,10 @@ import * as Sentry from "@sentry/nextjs";
 import { Resend } from "resend";
 import { z } from "zod";
 
+const SITE_ALERT_TO = "amj111394@gmail.com";
+const FROM_EMAIL = "system@proconstructioncalc.com";
+const SUBJECT_PREFIX = "[PCC-ALERT]";
+
 function getResend() {
   const key = process.env.RESEND_API_KEY;
   if (!key) return null;
@@ -47,12 +51,6 @@ const sendSchema = z.object({
 }).refine((d) => d.html !== undefined || d.estimate !== undefined, {
   message: "Provide either html or estimate.",
 });
-
-// Verified sender: use a From address on your Resend Verified Domain (e.g. @proconstructioncalc.com).
-// Resend requires a Verified Domain Identity; otherwise sends return 502/504 or timeout.
-const FROM_EMAIL =
-  process.env.RESEND_FROM_EMAIL ?? "Pro Construction Calc <system@proconstructioncalc.com>";
-const LEAD_BCC = process.env.RESEND_LEAD_BCC ?? undefined;
 
 function buildEstimateEmailHtml(estimate: z.infer<typeof estimatePayloadSchema>): string {
   const rows = estimate.results
@@ -130,16 +128,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { to, subject, html: rawHtml, estimate, replyTo } = parsed.data;
+    const { subject, html: rawHtml, estimate, replyTo } = parsed.data;
     const html = rawHtml ?? (estimate ? buildEstimateEmailHtml(estimate) : "");
+    const normalizedSubject = subject.startsWith(SUBJECT_PREFIX)
+      ? subject
+      : `${SUBJECT_PREFIX} ${subject}`;
 
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
-      to: [to],
-      subject,
+      to: [SITE_ALERT_TO],
+      subject: normalizedSubject,
       html,
       ...(replyTo && { replyTo }),
-      ...(LEAD_BCC && { bcc: [LEAD_BCC] }),
     });
 
     if (error) {

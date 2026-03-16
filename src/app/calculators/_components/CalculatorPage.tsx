@@ -171,6 +171,8 @@ function clampValue(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
 }
 
+const MAX_WASTE_FACTOR = 30;
+
 /** Category icon — trade-specific Lucide icons, centered large on every card. */
 const CATEGORY_ICON_MAP: Record<TradePageDefinition["category"], LucideIcon> = {
   concrete: Layers,
@@ -199,7 +201,7 @@ function displayTitle(fullTitle: string): string {
 /** Trade-specific input labels using professional field terminology. */
 function getInputLabels(path: string): { first: string; second: string; third: string } {
   const p = path.toLowerCase();
-  if (p.includes("wall-studs") || p.includes("framing/wall")) return { first: "OC Spacing (On-Center, in)", second: "Span Width (ft)", third: "Plate Count Height (ft)" };
+  if (p.includes("wall-studs") || p.includes("framing/wall")) return { first: "Running Lineal Feet", second: "OC Spacing (On-Center, in)", third: "Plate Count" };
   if (p.includes("rafter-length") || p.includes("rafters")) return { first: "Common Rafter Length (ft)", second: "OC Spacing (On-Center, in)", third: "Span Width (ft)" };
   if (p.includes("header")) return { first: "Span Width (ft)", second: "Plate Count", third: "Header Depth (in)" };
   if (p.includes("deck-joists")) return { first: "Span Width (ft)", second: "OC Spacing (On-Center, in)", third: "Joist Depth (in)" };
@@ -289,8 +291,9 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     clampValue(widthSpan, 1, 10000) *
     (clampValue(depthThickness, 1, 96) / 12);
   const adjustedVolume =
-    volumeCubicFeet * (1 + clampValue(wasteFactor, 0, 25) / 100);
+    volumeCubicFeet * (1 + clampValue(wasteFactor, 0, MAX_WASTE_FACTOR) / 100);
   const materialQty = Math.ceil(adjustedVolume * 1.7);
+  const adjustedCubicYards = adjustedVolume / 27;
 
   // Debounced haptic — fires 300 ms after inputs settle so the user feels a
   // physical "click" when the live calculation stabilises on a new result.
@@ -728,16 +731,18 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
 
                   <div className="rounded-xl border border-white/15 bg-[--color-nav-bg] p-3">
                     <div className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-[0.12em] text-[--color-nav-text]/80">
-                      <span>Waste Factor</span>
+                      <span>Waste Factor %</span>
                       <span>{wasteFactor}%</span>
                     </div>
                     <input
                       type="range"
                       min={0}
-                      max={25}
+                      max={MAX_WASTE_FACTOR}
                       value={wasteFactor}
                       onChange={(event) =>
-                        setWasteFactor(clampValue(Number(event.target.value), 0, 25))
+                        setWasteFactor(
+                          clampValue(Number(event.target.value), 0, MAX_WASTE_FACTOR),
+                        )
                       }
                       className="w-full accent-[--color-orange-brand]"
                     />
@@ -756,10 +761,13 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                   <div className="mt-3 space-y-3">
                     <div className="rounded-xl border border-[--color-orange-brand]/30 bg-black/35 p-4 shadow-[0_12px_24px_rgba(247,148,29,0.12)]">
                       <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[--color-nav-text]/80">
-                        Total Estimate
+                        {page.category === "concrete" ? "Cubic Yards" : "Total Estimate"}
                       </p>
                       <p className="mt-1 text-3xl font-black text-white">
-                        {adjustedVolume.toFixed(2)}
+                        {(page.category === "concrete"
+                          ? adjustedCubicYards
+                          : adjustedVolume
+                        ).toFixed(2)}
                       </p>
                     </div>
 

@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { HardHat, Calculator, Sparkles, FileDown } from "lucide-react";
+import { HardHat, Calculator, Sparkles, FileDown, DraftingCompass } from "lucide-react";
 import { AboutContactSection } from "@/components/contact/AboutContactSection";
 
 export const metadata: Metadata = {
@@ -16,7 +15,7 @@ export default function AboutPage() {
     <div className="page-shell flex min-h-screen flex-col bg-[#0F0F10] text-white">
       <Header />
       <main id="main-content" className="flex-1 bg-[#0F0F10]">
-        <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+        <div className="mx-auto w-full max-w-3xl px-4 py-12 sm:px-6">
           {/* Hero */}
           <div className="mb-8 flex items-center gap-4 rounded-2xl border border-white/10 bg-[#1A1A1C] p-6 text-white">
             <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/6 shadow-lg">
@@ -38,15 +37,12 @@ export default function AboutPage() {
             </div>
           </div>
 
-          <div className="content-card mb-8 overflow-hidden w-full max-h-48 flex items-center justify-center bg-black/20">
-            <Image
-              src="/images/wall-framing.svg"
-              alt="Framing crew layout used to plan stud counts and materials"
-              width={1200}
-              height={700}
-              priority
-              className="w-full max-h-48 object-contain overflow-hidden"
-            />
+          <div className="content-card mb-8 w-full max-h-48 overflow-hidden rounded-2xl border border-white/10 bg-[#1A1A1C] p-6">
+            <div className="flex h-full w-full items-center justify-center">
+              <div className="rounded-full bg-orange-600/15 p-5">
+                <DraftingCompass size={64} strokeWidth={1.5} className="text-orange-600" aria-hidden />
+              </div>
+            </div>
           </div>
 
           <div className="mb-8 space-y-5 rounded-2xl border border-white/10 bg-[#1A1A1C] p-8 leading-relaxed text-white/75">

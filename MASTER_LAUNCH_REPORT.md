@@ -145,3 +145,53 @@ Copy to `.env.local` and fill for local/CI; set same vars in Vercel for producti
 - [ ] Set Sentry and Resend env vars in Vercel.
 - [ ] Confirm Sentry release/source maps after first production build.
 - [ ] Wire "Email Estimate" to CRM when Phase 2 is ready.
+
+GOAL: Update the Content Security Policy (CSP) to allow Sentry, Google Analytics, AdSense, and Supabase while resolving the Service Worker fetch errors.
+
+1. LOCATE & UPDATE CSP
+Search the project for the Content-Security-Policy string. Whether it is in next.config.js, middleware.ts, or layout.tsx, update the connect-src and script-src directives to include:
+
+connect-src: * https://*.google-analytics.com
+
+https://*.analytics.google.com
+
+https://*.googletagmanager.com
+
+https://*.g.doubleclick.net
+
+https://*.pagead2.googlesyndication.com
+
+https://*.google.com
+
+https://*.sentry.io
+
+https://*.supabase.co
+
+script-src:
+
+https://*.googletagmanager.com
+
+https://pagead2.googlesyndication.com
+
+https://*.google-analytics.com
+
+'unsafe-inline'
+
+'unsafe-eval' (only if required by Turbopack/Dev mode)
+
+2. FIX ADSENSE "data-nscript" ERROR
+File: src/components/OptionalTracking.tsx (or wherever AdSense is called).
+
+Action: Replace the Next.js <Script /> component for AdSense with a standard HTML <script> tag. Next.js adds a data-nscript attribute that AdSense explicitly rejects.
+
+Replacement Code:
+
+HTML
+<script 
+  async 
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9267885260213830"
+  crossorigin="anonymous"
+></script>
+
+3. SERVICE WORKER BYPASS
+Action: Ensure the Service Worker (sw.js) is configured to allow these external domains. If using next-pwa, ensure buildExcludes or runtimeCaching rules don't try to "pre-cache" Google Analytics scripts, as they are blocked by CSP when served from a worker.

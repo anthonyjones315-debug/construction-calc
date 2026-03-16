@@ -63,16 +63,50 @@ const nextConfig: NextConfig = {
     ];
   },
   async headers() {
+    const isDev = process.env.NODE_ENV !== "production";
+
+    const scriptSrc = [
+      "script-src",
+      "'self'",
+      "'unsafe-inline'",
+      ...(isDev ? ["'unsafe-eval'"] : []),
+      "https://va.vercel-scripts.com",
+      "https://cdn.vercel-insights.com",
+      "https://browser.sentry-cdn.com",
+      "https://js.sentry-cdn.com",
+      "https://*.googletagmanager.com",
+      "https://static.cloudflareinsights.com",
+      "https://pagead2.googlesyndication.com",
+      "https://adservice.google.com",
+      "https://*.google-analytics.com",
+    ].join(" ");
+
+    const connectSrc = [
+      "connect-src",
+      "'self'",
+      "https://*.google-analytics.com",
+      "https://*.analytics.google.com",
+      "https://*.googletagmanager.com",
+      "https://*.g.doubleclick.net",
+      "https://*.pagead2.googlesyndication.com",
+      "https://*.google.com",
+      "https://*.sentry.io",
+      "https://o4511044273766400.ingest.us.sentry.io",
+      "https://vitals.vercel-insights.com",
+      "https://va.vercel-scripts.com",
+      "https://*.supabase.co",
+    ].join(" ");
+
     const ContentSecurityPolicy = [
       "default-src 'self'",
       // Next.js requires 'unsafe-inline' for its hydration scripts without a nonce setup.
       // Sentry, Vercel, Google Tag Manager, Cloudflare Insights, and ad scripts allow-listed.
-      "script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com https://cdn.vercel-insights.com https://browser.sentry-cdn.com https://js.sentry-cdn.com https://www.googletagmanager.com https://static.cloudflareinsights.com https://pagead2.googlesyndication.com https://adservice.google.com",
+      scriptSrc,
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' data: https://fonts.gstatic.com",
       "img-src 'self' data: blob: https://images.unsplash.com https://www.googletagmanager.com https://*.google-analytics.com https://*.googlesyndication.com https://*.doubleclick.net https://*.supabase.co",
       // Sentry ingest + Vercel + Google Analytics + ads + Supabase Auth (required for password reset / auth recovery)
-      "connect-src 'self' https://*.sentry.io https://o4511044273766400.ingest.us.sentry.io https://vitals.vercel-insights.com https://va.vercel-scripts.com https://*.google-analytics.com https://*.analytics.google.com https://*.g.doubleclick.net https://*.supabase.co",
+      connectSrc,
       "media-src 'none'",
       "object-src 'none'",
       "frame-src 'self' https://googleads.g.doubleclick.net https://*.googlesyndication.com",

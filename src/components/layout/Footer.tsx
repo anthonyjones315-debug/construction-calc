@@ -17,9 +17,9 @@ const footerAccountLinks = [
   { label: "Command Center", slug: "dashboard" },
 ];
 const footerLegalLinks = [
-  { label: "Field Notes", slug: "interior" },
-  { label: "FAQ", slug: "trade-modules" },
-  { label: "About", slug: "trade-modules" },
+  { label: "Field Notes", slug: "field-notes" },
+  { label: "FAQ", slug: "faq" },
+  { label: "About", slug: "about" },
   { label: "Privacy Policy", slug: "privacy" },
   { label: "Terms of Service", slug: "terms" },
 ];

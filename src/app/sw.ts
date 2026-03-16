@@ -1,6 +1,6 @@
 import { defaultCache } from "@serwist/next/worker";
 import type { PrecacheEntry } from "serwist";
-import { NetworkFirst, Serwist } from "serwist";
+import { NetworkFirst, NetworkOnly, Serwist } from "serwist";
 
 declare global {
   interface WorkerGlobalScope {
@@ -9,6 +9,21 @@ declare global {
 }
 
 declare const self: ServiceWorkerGlobalScope;
+
+function shouldBypassExternalHost(hostname: string): boolean {
+  // Ensure analytics/ads/telemetry and Supabase calls stay network-only.
+  // This prevents accidental caching/precaching and avoids SW-related fetch noise.
+  return (
+    hostname.endsWith("google-analytics.com") ||
+    hostname.endsWith("analytics.google.com") ||
+    hostname.endsWith("googletagmanager.com") ||
+    hostname.endsWith("g.doubleclick.net") ||
+    hostname.endsWith("pagead2.googlesyndication.com") ||
+    hostname.endsWith("google.com") ||
+    hostname.endsWith("sentry.io") ||
+    hostname.endsWith("supabase.co")
+  );
+}
 
 const serwist = new Serwist({
   // INLINE FILTER: The bundler replaces self.__SW_MANIFEST right here,
@@ -27,6 +42,12 @@ const serwist = new Serwist({
   clientsClaim: true,
   navigationPreload: true,
   runtimeCaching: [
+    // External telemetry/ads/auth providers: always go to network, never cache.
+    {
+      matcher: ({ url, sameOrigin }) =>
+        !sameOrigin && shouldBypassExternalHost(url.hostname),
+      handler: new NetworkOnly(),
+    },
     {
       matcher: ({ url, sameOrigin }) =>
         sameOrigin && url.pathname.startsWith("/calculators"),

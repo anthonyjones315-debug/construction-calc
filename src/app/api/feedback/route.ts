@@ -4,7 +4,7 @@ import { Resend } from "resend";
 import { z } from "zod";
 
 const SITE_ALERT_TO = "amj111394@gmail.com";
-const FROM_EMAIL = "Pro Construction Calc <system@proconstructioncalc.com>";
+const FROM_EMAIL = "system@proconstructioncalc.com";
 const SUBJECT_PREFIX = "[PCC-ALERT]";
 
 const feedbackSchema = z.object({
@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
 </body></html>`;
 
     const { data, error } = await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL ?? FROM_EMAIL,
+      from: FROM_EMAIL,
       to: [SITE_ALERT_TO],
       replyTo: email,
       subject,

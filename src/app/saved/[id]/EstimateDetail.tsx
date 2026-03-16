@@ -18,6 +18,7 @@ import type { SafeEstimateDTO } from "@/lib/dal/estimates";
 import { sanitizeFilename } from "@/utils/sanitize-filename";
 import { useContractorProfile } from "@/components/pdf/useContractorProfile";
 import { useHaptic } from "@/hooks/useHaptic";
+import { supabase } from "@/lib/supabase/client";
 
 // ─── Local types ────────────────────────────────────────────────────────────
 
@@ -105,6 +106,26 @@ function toNum(s: string): number {
 }
 function toFixed2(s: string): number {
   return Number(toNum(s).toFixed(2));
+}
+
+function generateShareCode(): string {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const array = new Uint8Array(8);
+  let code = "";
+
+  if (
+    typeof crypto !== "undefined" &&
+    typeof crypto.getRandomValues === "function"
+  ) {
+    crypto.getRandomValues(array);
+    for (let i = 0; i < 8; i++) code += chars[array[i]! % chars.length];
+    return code;
+  }
+
+  for (let i = 0; i < 8; i++) {
+    code += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return code;
 }
 function isMobile(): boolean {
   if (typeof navigator === "undefined") return false;
@@ -560,17 +581,50 @@ export function EstimateDetail({ estimate }: Props) {
     }
   }
 
-  async function regenShareCode() {
+  async function regenCode() {
     setRegenShareBusy(true);
     setSaveError(null);
     setSaveSuccess(null);
     try {
+      let shareCodeCandidate = generateShareCode();
+      let attempts = 0;
+      const maxAttempts = 5;
+
+      while (attempts < maxAttempts) {
+        const { data, error } = await supabase
+          .from("saved_estimates")
+          .update({ share_code: shareCodeCandidate })
+          .eq("id", estimate.id)
+          .select("share_code")
+          .maybeSingle();
+
+        if (!error) {
+          const nextCode = data?.share_code ?? shareCodeCandidate;
+          setShareCode(nextCode);
+          setSaveSuccess("Share code updated.");
+          haptic(10);
+          return;
+        }
+
+        if ((error as { code?: string }).code === "23505") {
+          attempts++;
+          shareCodeCandidate = generateShareCode();
+          continue;
+        }
+
+        // Most commonly: auth/RLS on anon browser client. Fall back to server route.
+        break;
+      }
+
       const res = await fetch(`/api/estimates/${estimate.id}/regen-share`, {
         method: "POST",
       });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data?.error ?? "Failed to regenerate share code.");
-      const newCode = data.share_code as string | undefined;
+      const payload = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(payload?.error ?? "Failed to regenerate share code.");
+      }
+
+      const newCode = payload.share_code as string | undefined;
       if (typeof newCode === "string" && newCode.trim()) {
         setShareCode(newCode.trim());
         setSaveSuccess("Share code updated.");
@@ -1072,7 +1126,7 @@ export function EstimateDetail({ estimate }: Props) {
           </code>
           <button
             type="button"
-            onClick={regenShareCode}
+            onClick={regenCode}
             disabled={regenShareBusy}
             className="inline-flex items-center gap-2 rounded-xl border border-[--color-orange-brand]/40 px-4 py-2 text-sm font-medium text-[--color-orange-brand] hover:border-[--color-orange-brand] disabled:opacity-50 transition-colors"
           >

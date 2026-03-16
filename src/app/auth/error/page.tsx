@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { HardHat } from "lucide-react";
 import { routes } from "@routes";
+import { useSession } from "next-auth/react";
 
 type AuthErrorContentModel = {
   title: string;
@@ -81,6 +82,8 @@ const errorMessages: Record<string, AuthErrorContentModel> = {
 };
 
 function AuthErrorContent() {
+  const router = useRouter();
+  const { data: session } = useSession();
   const searchParams = useSearchParams();
   const rawErrorCode = searchParams.get("error") ?? "Default";
   const errorCode = normalizeAuthErrorCode(rawErrorCode);
@@ -155,12 +158,15 @@ function AuthErrorContent() {
             >
               {primaryActionLabel}
             </Link>
-            <Link
-              href="/command-center"
+            <button
+              type="button"
+              onClick={() =>
+                router.push(session?.user?.id ? routes.commandCenter : routes.home)
+              }
               className="block w-full rounded-lg border border-slate-800 bg-transparent px-4 py-2.5 text-sm font-medium text-slate-400 transition hover:bg-slate-800/50 hover:text-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2 focus:ring-offset-slate-950"
             >
               Back to Command Center
-            </Link>
+            </button>
           </div>
         </section>
 

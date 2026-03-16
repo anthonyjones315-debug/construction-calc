@@ -10,7 +10,6 @@ import type { DocumentProps } from "@react-pdf/renderer";
 import type { ReactElement } from "react";
 
 const SLATE_950 = "#020617";
-const SLATE_800 = "#1e293b";
 const SLATE_200 = "#e2e8f0";
 const SLATE_400 = "#94a3b8";
 const ORANGE_600 = "#ea580c";

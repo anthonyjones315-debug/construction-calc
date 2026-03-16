@@ -52,7 +52,7 @@ export function CalculatorsDirectoryClient() {
         <section className="dark-feature-panel overflow-hidden text-white">
           <div className="relative w-full bg-[radial-gradient(ellipse_at_top_right,rgba(30,35,45,0.95),#0a0a0b_70%),linear-gradient(180deg,#0d0f14_0%,#0A0A0B_100%)] px-5 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
             <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(247,148,29,0.06),transparent_45%)]" />
-            <div className="relative z-10 mx-auto max-w-5xl">
+            <div className="relative z-10 mx-auto w-full max-w-5xl">
               <div className="flex items-center gap-2 text-[--color-orange-brand]">
                 <HardHat className="h-4 w-4" aria-hidden />
                 <p className="section-kicker">Trade Modules</p>
@@ -72,7 +72,7 @@ export function CalculatorsDirectoryClient() {
         </section>
 
         {/* Trade Module Directory Grid */}
-        <div className="mx-auto max-w-5xl px-4 py-5 pb-24 sm:px-6 sm:py-6 sm:pb-24 lg:py-8 lg:pb-8">
+        <div className="mx-auto w-full max-w-5xl px-4 py-5 pb-24 sm:px-6 sm:py-6 sm:pb-24 lg:py-8 lg:pb-8">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {DIRECTORY_CATEGORIES.map(({ key, icon: Icon, label }) => {
               const page = getCategoryPage(key);

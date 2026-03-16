@@ -125,14 +125,16 @@ export function Header() {
 
         {/* Right side: offline badge + auth + mobile hamburger */}
         <div className="flex items-center gap-2 sm:gap-3">
-          {!online && (
-            <span
-              className="rounded-full border border-slate-600 bg-slate-800/80 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400"
-              aria-live="polite"
-            >
-              Offline
-            </span>
-          )}
+          {/* Hydration-safe offline badge: render a placeholder until mounted. */}
+          <span
+            className={`rounded-full border border-slate-600 bg-slate-800/80 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400 ${
+              isMounted && !online ? "" : "invisible"
+            }`}
+            aria-live="polite"
+            aria-hidden={!(isMounted && !online)}
+          >
+            Offline
+          </span>
           {/* Auth area */}
           {!isMounted ? (
             <div className="h-8 w-8 rounded-full bg-slate-800 animate-pulse" />
