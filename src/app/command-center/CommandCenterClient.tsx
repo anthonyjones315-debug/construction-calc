@@ -406,7 +406,7 @@ export default function CommandCenterClient({
       <div className="grid min-h-[720px] lg:grid-cols-[240px,1fr]">
         <aside className="hidden border-r border-slate-800 bg-slate-950 px-2 py-2 text-slate-300 lg:flex lg:flex-col">
           <div className="flex items-center gap-1.5 rounded-xl px-1.5 py-1">
-            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[--color-orange-brand] text-xs font-bold text-black">
+            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[--color-orange-brand] text-xs font-bold text-white">
               P
             </div>
             <p className="truncate text-xs font-semibold text-white">

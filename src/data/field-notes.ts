@@ -21,6 +21,50 @@ export interface FieldNote {
 
 export const FIELD_NOTES: FieldNote[] = [
   {
+    slug: "2026-ny-construction-updates",
+    title: "2026 NY Construction Updates: All-Electric Mandate, Marcy UDC, and Tax Compliance",
+    description:
+      "What Mohawk Valley contractors need for 2026: NYS all-electric new-building mandate (Jan 1, 2026), Town of Marcy UDC checkpoints, and sales-tax rules for capital improvements.",
+    category: "Code & Compliance",
+    date: "April 2026",
+    relatedToolLinks: [
+      { href: "/calculators/business/tax-save", label: "Tax Save Calculator" },
+      { href: "/calculators/business/profit-margin", label: "Profit Margin" },
+      { href: "/calculators/business/labor-rate", label: "Labor Rate" },
+      { href: "/calculators/business/lead-estimator", label: "Lead Estimator" },
+    ],
+    content: `
+## 1) All-Electric New Building Mandate — Starts Jan 1, 2026
+
+- **Scope:** Most new residential buildings under seven stories in New York State must be all-electric starting **January 1, 2026** (per NYS 2026 code update). Larger buildings and special occupancies follow in 2027/2028.
+- **Plan impacts:** Budget electric service upgrades, panel space for heat pumps, and electric water/space heating. Model load early to avoid redesign.
+- **Bid checklist:**
+  - Include heat pump (ASHP/GSHP) line items and electrical rough-ins.
+  - Coordinate service size and meter stacks with the utility during precon.
+  - Flag any exemptions (critical infrastructure, some commercial process loads) in your proposal.
+
+## 2) Town of Marcy Unified Development Code (UDC)
+
+- **What to check:** Zoning district use tables, site plan triggers, parking, lighting, and stormwater chapters in the Marcy UDC.
+- **Pre-bid actions:**
+  - Confirm your parcel's zoning and allowed use.
+  - Note any site plan review or special permit requirements before you price schedule and fees.
+  - Align exterior materials, lighting cutoff, and buffering with UDC standards to avoid redesign.
+
+## 3) Sales Tax Compliance — Capital Improvements vs Repairs
+
+- **Capital Improvements:** Use NYS **Form ST-124** signed by the owner; you do **not** charge sales tax on labor when the form is on file. Materials may still be taxable at purchase—plan margin accordingly.
+- **Repairs/Maintenance:** Charge sales tax at the local rate (e.g., **Oneida County 8.75%**). Break out state/local portions in estimates.
+- **Estimator workflow:** Run the **Tax Save** calculator with the Capital Improvement toggle; keep ST-124 in your job file for audit trails.
+
+## Quick Actions for 2026 Bids
+
+- Add an **all-electric allowance** (panels, circuits, heat pumps) to new-build proposals.
+- For Marcy jobs, attach a UDC compliance note to your scope and list any required approvals.
+- Collect **ST-124** for qualifying projects; for repairs, show the applied **8.75% Oneida** rate line-item.
+    `,
+  },
+  {
     slug: "oneida-county-freeze-lines",
     title: "Oneida County Freeze-Lines: Rome vs. Utica Requirements",
     description:

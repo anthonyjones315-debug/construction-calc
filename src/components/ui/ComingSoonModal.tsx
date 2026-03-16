@@ -64,7 +64,7 @@ export function ComingSoonModal({
           <div className="mt-6 flex flex-col gap-2">
             <Link
               href={routes.fieldNotes}
-              className="inline-flex items-center justify-center rounded-xl bg-[--color-orange-brand] px-4 py-2.5 text-sm font-bold text-black transition-colors hover:brightness-95"
+              className="inline-flex items-center justify-center rounded-xl bg-[--color-orange-brand] px-4 py-2.5 text-sm font-bold text-white transition-colors hover:brightness-95"
               onClick={onClose}
             >
               Visit Field Notes

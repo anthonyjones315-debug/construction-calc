@@ -43,6 +43,11 @@
     --color-nav-bg: #0a0f1a;
     --color-nav-text: #cbd5f5;
   }
+
+  /* Ensure Crisp chat bubble stays visible on dark backgrounds */
+  .crisp-client .cc-floating {
+    z-index: 60 !important;
+  }
 }
 
 /* ── Manual dark mode class (for future toggle) ─────────────────── */

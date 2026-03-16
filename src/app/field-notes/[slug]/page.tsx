@@ -278,7 +278,7 @@ export default async function FieldNoteArticlePage({ params }: Props) {
                 </ul>
                 <Link
                   href={routes.calculators}
-                  className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[--color-orange-brand] px-4 py-2.5 text-sm font-bold text-black transition-colors hover:brightness-95"
+                  className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[--color-orange-brand] px-4 py-2.5 text-sm font-bold text-white transition-colors hover:brightness-95"
                 >
                   All Calculators →
                 </Link>

@@ -320,7 +320,7 @@ export default async function OnboardingPage({
 
           <button
             type="submit"
-            className="inline-flex h-11 items-center justify-center rounded-lg bg-[#FF8C00] px-5 text-sm font-black uppercase text-black transition hover:brightness-95"
+            className="inline-flex h-11 items-center justify-center rounded-lg bg-[#FF8C00] px-5 text-sm font-black uppercase text-white transition hover:brightness-95"
           >
             Create Business Profile
           </button>

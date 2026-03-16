@@ -100,7 +100,7 @@ export default function CartPage() {
                   <button
                     type="button"
                     onClick={handleCheckout}
-                    className="rounded-xl bg-[--color-orange-brand] px-4 py-2 text-sm font-bold text-black hover:brightness-95"
+                    className="rounded-xl bg-[--color-orange-brand] px-4 py-2 text-sm font-bold text-white hover:brightness-95"
                   >
                     Checkout
                   </button>
@@ -114,4 +114,3 @@ export default function CartPage() {
     </div>
   );
 }
-

@@ -19,7 +19,7 @@ export function AboutContactSection() {
         <button
           type="button"
           onClick={() => setModalOpen(true)}
-          className="inline-flex items-center gap-2 rounded-xl bg-[#FF8C00] px-5 py-2.5 text-sm font-black uppercase text-black transition-all hover:brightness-95"
+          className="inline-flex items-center gap-2 rounded-xl bg-[#FF8C00] px-5 py-2.5 text-sm font-black uppercase text-white transition-all hover:brightness-95"
         >
           Contact me
         </button>

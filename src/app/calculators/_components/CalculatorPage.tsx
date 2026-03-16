@@ -2538,7 +2538,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                 <section className="rounded-xl border border-slate-800 bg-slate-900/50 p-3 transition-colors">
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
-                      <div className="rounded-md bg-[--color-orange-brand] p-1.5 text-black">
+                      <div className="rounded-md bg-[--color-orange-brand] p-1.5 text-white">
                         <Sparkles className="h-3.5 w-3.5" aria-hidden />
                       </div>
                       <div>
@@ -2605,7 +2605,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                 </p>
                 <Link
                   href={routes.fieldNotes}
-                  className="mt-2 inline-flex min-h-9 items-center gap-2 rounded-lg bg-[--color-orange-brand] px-3 py-1.5 text-xs font-black uppercase tracking-widest text-black transition-all duration-200 hover:brightness-95 active:scale-[0.98]"
+                  className="mt-2 inline-flex min-h-9 items-center gap-2 rounded-lg bg-[--color-orange-brand] px-3 py-1.5 text-xs font-black uppercase tracking-widest text-white transition-all duration-200 hover:brightness-95 active:scale-[0.98]"
                 >
                   Open Field Notes
                   <ArrowRight className="h-3.5 w-3.5" aria-hidden />
