@@ -58,17 +58,19 @@ export async function GET() {
     }
 
     return NextResponse.json({
-    role: businessContext.role,
-    isOwner: businessContext.isOwner,
-    profile: data
-      ? {
-          ...data,
-          business_email: accountEmail,
-        }
-      : {
-          business_email: accountEmail,
-        },
-  });
+      role: businessContext.role,
+      isOwner: businessContext.isOwner,
+      profile: data
+        ? {
+            ...data,
+            company_name: data.business_name ?? null,
+            business_email: data.business_email ?? accountEmail,
+          }
+        : {
+            company_name: null,
+            business_email: accountEmail,
+          },
+    });
   } catch (error) {
     Sentry.captureException(error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
@@ -110,10 +112,13 @@ export async function PUT(req: NextRequest) {
     }
     const upsertPayload: Record<string, unknown> = {
       user_id: session.user.id,
-      business_name: String(body.business_name ?? "").slice(0, 200) || null,
+      business_name:
+        String(body.business_name ?? body.company_name ?? "").slice(0, 200) ||
+        null,
       business_tax_id: String(body.business_tax_id ?? "").slice(0, 100) || null,
       business_phone: String(body.business_phone ?? "").slice(0, 50) || null,
-      business_email: accountEmail,
+      business_email:
+        String(body.business_email ?? "").slice(0, 200).trim() || accountEmail,
       business_address: String(body.business_address ?? "").slice(0, 500) || null,
       business_website: String(body.business_website ?? "").slice(0, 200) || null,
       logo_url: body.logo_url ? String(body.logo_url).slice(0, 500) : null,

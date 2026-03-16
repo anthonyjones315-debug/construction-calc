@@ -154,7 +154,7 @@ function AuthErrorContent() {
           <div className="space-y-3">
             <Link
               href={routes.auth.signIn}
-              className="block w-full rounded-lg bg-orange-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-slate-950"
+              className="block w-full rounded-lg bg-[--color-orange-brand] px-4 py-2.5 text-sm font-black text-white transition hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-slate-950"
             >
               {primaryActionLabel}
             </Link>

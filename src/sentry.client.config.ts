@@ -32,14 +32,13 @@ function scrubPii(obj: unknown): unknown {
   return out;
 }
 
-// DSN: env override with hardcoded fallback. No tunnel (tunnel: "/api/sentry-tunnel") — route not set up.
+// DSN: prefer env variables; no hardcoded fallback. No tunnel (tunnel: "/api/sentry-tunnel") — route not set up.
 const SENTRY_DSN =
-  process.env.NEXT_PUBLIC_SENTRY_DSN ??
-  "https://9f18e85026327139b1708b7c4600c4b6@o4511044273766400.ingest.us.sentry.io/4511044275732480";
+  process.env.NEXT_PUBLIC_SENTRY_DSN ?? process.env.SENTRY_DSN;
 
 Sentry.init({
   dsn: SENTRY_DSN,
-  enabled: true,
+  enabled: Boolean(SENTRY_DSN),
   sendDefaultPii: false,
 
   beforeSend(event, hint) {

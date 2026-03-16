@@ -46,7 +46,9 @@ export async function GET() {
 
     const { data: businessData, error: businessError } = await db
       .from("business_profiles")
-      .select("business_name, business_phone, business_email, business_address")
+      .select(
+        "business_name, business_phone, business_email, business_address, logo_url",
+      )
       .eq(tenantColumn, tenantId)
       .single();
 
@@ -59,18 +61,19 @@ export async function GET() {
     }
 
     return NextResponse.json({
-    profile: {
-      businessName: businessData?.business_name ?? userData?.name ?? null,
-      logoUrl: userData?.image ?? null,
-      businessAddress: businessData?.business_address ?? null,
-      businessPhone: businessData?.business_phone ?? null,
-      businessEmail:
-        businessData?.business_email ??
-        userData?.email ??
-        session.user.email ??
-        null,
-    },
-  });
+      profile: {
+        businessName: businessData?.business_name ?? userData?.name ?? null,
+        companyName: businessData?.business_name ?? userData?.name ?? null,
+        logoUrl: businessData?.logo_url ?? userData?.image ?? null,
+        businessAddress: businessData?.business_address ?? null,
+        businessPhone: businessData?.business_phone ?? null,
+        businessEmail:
+          businessData?.business_email ??
+          userData?.email ??
+          session.user.email ??
+          null,
+      },
+    });
   } catch (error) {
     Sentry.captureException(error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

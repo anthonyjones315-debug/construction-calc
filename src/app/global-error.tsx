@@ -1,8 +1,8 @@
 "use client";
 
 import * as Sentry from "@sentry/nextjs";
-import Link from "next/link";
-import { useEffect } from "react";
+import { TriangleAlert } from "lucide-react";
+import { useEffect, useRef } from "react";
 
 export default function GlobalError({
   error,
@@ -11,105 +11,45 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const eventIdRef = useRef<string | null>(null);
+
   useEffect(() => {
-    Sentry.captureException(error);
+    const id = Sentry.captureException(error);
+    if (id) eventIdRef.current = id;
   }, [error]);
 
   return (
     <html lang="en">
-      <body style={{ margin: 0, background: "#0f172a", minHeight: "100vh" }}>
-        <div
-          style={{
-            display: "flex",
-            minHeight: "100vh",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: 16,
-            fontFamily: "system-ui, sans-serif",
-          }}
-        >
-          <div style={{ maxWidth: 400, textAlign: "center" }}>
-            <div
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 8,
-                marginBottom: 32,
-              }}
-            >
-              <div
-                style={{
-                  width: 32,
-                  height: 32,
-                  background: "#f97316",
-                  borderRadius: 6,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#fff",
-                  fontWeight: 700,
-                  fontSize: 14,
-                }}
+      <body className="bg-slate-950 text-slate-200">
+        <div className="flex flex-col items-center justify-center min-h-[70vh] px-4">
+          <div className="flex flex-col items-center text-center max-w-md">
+            <TriangleAlert className="h-12 w-12 text-red-500 mb-4" aria-hidden />
+            <h1 className="text-xl font-black uppercase tracking-wide">
+              System Error Detected
+            </h1>
+            <p className="mt-3 text-sm text-slate-400">
+              An unexpected error occurred in the calculation engine. Our engineering team has been
+              notified.
+            </p>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={reset}
+                className="rounded-lg border border-slate-500 px-4 py-2 text-sm font-medium text-slate-200 hover:bg-slate-800 transition"
               >
-                P
-              </div>
-              <span style={{ color: "#fff", fontWeight: 700, fontSize: 20 }}>
-                Pro Construction Calc
-              </span>
-            </div>
-            <div
-              style={{
-                borderRadius: 16,
-                border: "1px solid #334155",
-                background: "#1e293b",
-                padding: 32,
-                boxShadow: "0 24px 50px rgba(0,0,0,0.45)",
-              }}
-            >
-              <h1 style={{ color: "#fff", fontSize: 20, marginBottom: 8 }}>
-                Something went wrong
-              </h1>
-              <p style={{ color: "#94a3b8", fontSize: 14, marginBottom: 24 }}>
-                An unexpected error occurred. Your data is safe. Try refreshing.
-              </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                <button
-                  type="button"
-                  onClick={reset}
-                  style={{
-                    width: "100%",
-                    padding: "10px 16px",
-                    background: "#f97316",
-                    color: "#fff",
-                    fontWeight: 600,
-                    border: "none",
-                    borderRadius: 8,
-                    cursor: "pointer",
-                    fontSize: 14,
-                  }}
-                >
-                  Try Again
-                </button>
-                <Link
-                  href="/"
-                  style={{
-                    display: "block",
-                    padding: "10px 16px",
-                    background: "#334155",
-                    color: "#cbd5e1",
-                    borderRadius: 8,
-                    textDecoration: "none",
-                    fontSize: 14,
-                  }}
-                >
-                  Go to Home
-                </Link>
-              </div>
-              {error.digest && (
-                <p style={{ marginTop: 16, fontSize: 12, color: "#64748b" }}>
-                  Error ID: {error.digest}
-                </p>
-              )}
+                Try Again
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  Sentry.showReportDialog(
+                    eventIdRef.current ? { eventId: eventIdRef.current } : undefined,
+                  )
+                }
+                className="rounded-lg bg-orange-600 px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-orange-500"
+              >
+                Report Issue
+              </button>
             </div>
           </div>
         </div>

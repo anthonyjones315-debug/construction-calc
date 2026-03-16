@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { HardHat, Loader2 } from "lucide-react";
 import { routes } from "@routes";
+import posthog from "posthog-js";
 
 const callbackHandlerErrorCodes = new Set([
   "OAUTH_CALLBACK_HANDLER_ERROR",
@@ -44,10 +45,14 @@ export default function SignInClient({
   const router = useRouter();
 
   useEffect(() => {
-    if (status === "authenticated") {
+    if (status === "authenticated" && session?.user?.id) {
+      posthog.identify(session.user.id, {
+        email: session.user.email ?? undefined,
+        name: session.user.name ?? undefined,
+      });
       router.replace(routes.commandCenter);
     }
-  }, [router, status]);
+  }, [router, status, session]);
 
   const errorMessages: Record<string, string> = {
     OAUTH_CALLBACK_HANDLER_ERROR:
@@ -65,6 +70,7 @@ export default function SignInClient({
   async function handleGoogleSignIn() {
     setCredentialsError(null);
     setIsSigningIn(true);
+    posthog.capture("sign_in_attempted", { method: "google" });
     await signIn("google", { callbackUrl });
     setIsSigningIn(false);
   }
@@ -75,6 +81,7 @@ export default function SignInClient({
     event.preventDefault();
     setCredentialsError(null);
     setIsCredentialsSigningIn(true);
+    posthog.capture("sign_in_attempted", { method: "credentials" });
 
     const result = await signIn("credentials", {
       email,
@@ -86,12 +93,20 @@ export default function SignInClient({
     setIsCredentialsSigningIn(false);
 
     if (result?.error) {
+      posthog.capture("sign_in_failed", { method: "credentials" });
       setCredentialsError("Invalid email or password.");
       return;
     }
 
     const activeSession = await getSession();
     console.log("Auth State:", activeSession?.user ?? null);
+
+    if (activeSession?.user?.id) {
+      posthog.identify(activeSession.user.id, {
+        email: activeSession.user.email ?? undefined,
+        name: activeSession.user.name ?? undefined,
+      });
+    }
 
     window.location.assign(result?.url ?? callbackUrl);
   }
@@ -109,7 +124,7 @@ export default function SignInClient({
           aria-live="polite"
           aria-busy="true"
         >
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl border-2 border-orange-600/50 bg-orange-600/10">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl border-2 border-[--color-orange-brand]/50 bg-[--color-orange-brand]/10">
             <Loader2 className="h-7 w-7 animate-spin text-orange-600" aria-hidden />
           </div>
           <p className="text-sm font-semibold uppercase tracking-wide text-slate-200">
@@ -160,7 +175,7 @@ export default function SignInClient({
             onClick={handleGoogleSignIn}
             disabled={isSigningIn || isCredentialsSigningIn}
             aria-busy={isSigningIn}
-            className="w-full flex items-center justify-center gap-3 rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-orange-600/50 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:cursor-wait disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-3 rounded-lg border-2 border-white/80 bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:cursor-wait disabled:opacity-50"
           >
             <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
               <path
@@ -205,7 +220,7 @@ export default function SignInClient({
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 required
-                className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm text-white placeholder-white/40 outline-none focus:border-orange-600 focus:ring-2 focus:ring-orange-600/30 transition"
+                className="w-full rounded-lg border border-slate-500 bg-slate-900 px-3.5 py-2.5 text-sm text-white placeholder-white/40 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500 transition"
               />
             </div>
 
@@ -234,14 +249,14 @@ export default function SignInClient({
                 onChange={(event) => setPassword(event.target.value)}
                 minLength={8}
                 required
-                className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm text-white placeholder-white/40 outline-none focus:border-orange-600 focus:ring-2 focus:ring-orange-600/30 transition"
+                className="w-full rounded-lg border border-slate-500 bg-slate-900 px-3.5 py-2.5 text-sm text-white placeholder-white/40 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500 transition"
               />
             </div>
 
             <button
               type="submit"
               disabled={isSigningIn || isCredentialsSigningIn}
-              className="w-full rounded-lg bg-orange-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:cursor-wait disabled:opacity-60"
+              className="w-full rounded-lg bg-[--color-orange-brand] px-4 py-3 text-sm font-black text-white transition hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:cursor-wait disabled:opacity-60"
             >
               {isCredentialsSigningIn ? "Signing in…" : "Continue with Email"}
             </button>
@@ -270,7 +285,7 @@ export default function SignInClient({
             onClick={() =>
               router.push(session?.user?.id ? routes.commandCenter : routes.home)
             }
-            className="inline-flex w-full items-center justify-center rounded-lg border border-slate-800 bg-transparent px-4 py-2.5 text-sm font-medium text-slate-400 transition-colors hover:bg-slate-800/50 hover:text-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2 focus:ring-offset-slate-950"
+            className="inline-flex w-full items-center justify-center rounded-lg border-2 border-white/80 bg-transparent px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-slate-800/50 hover:text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-slate-950"
           >
             Back to Command Center
           </button>
@@ -291,7 +306,7 @@ export default function SignInClient({
             </Link>
             .
           </p>
-          <p className="pt-2 text-center text-[10px] font-display uppercase tracking-widest text-slate-500">
+          <p className="pt-2 text-center text-[10px] font-display uppercase tracking-widest text-slate-400">
             Designed for the Mohawk Valley · Rome, NY
           </p>
         </div>

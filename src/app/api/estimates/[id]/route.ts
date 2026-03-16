@@ -15,6 +15,7 @@ import {
   getFinancialDashboardTag,
   getSavedEstimatesTag,
 } from "@/lib/cache-tags";
+import { isEstimateStatus, type EstimateStatus } from "@/lib/estimates/status";
 
 async function loadEstimateScope(
   db: ReturnType<typeof createServerClient>,
@@ -119,7 +120,7 @@ export async function PATCH(
       total_cost?: number | null;
       client_name?: string | null;
       job_site_address?: string | null;
-      status?: "Draft" | "Sent" | "Approved" | "Lost";
+      status?: EstimateStatus;
       budget_items?: unknown[] | null;
       inputs?: Record<string, unknown> | null;
       share_code?: string | null;
@@ -139,7 +140,7 @@ export async function PATCH(
     total_cost?: number | null;
     client_name?: string | null;
     job_site_address?: string | null;
-    status?: "Draft" | "Sent" | "Approved" | "Lost";
+    status?: EstimateStatus;
     budget_items?: unknown[] | null;
     inputs?: Record<string, unknown> | null;
     share_code?: string | null;
@@ -166,10 +167,7 @@ export async function PATCH(
         : null;
     }
     if (body.status !== undefined) {
-      const isValidStatus = ["Draft", "Sent", "Approved", "Lost"].includes(
-        body.status,
-      );
-      if (!isValidStatus) {
+      if (!isEstimateStatus(body.status)) {
         return NextResponse.json(
           { error: "Invalid status value." },
           { status: 400 },

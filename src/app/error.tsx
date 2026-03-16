@@ -1,69 +1,55 @@
 "use client";
 
-import Link from "next/link";
+import * as Sentry from "@sentry/nextjs";
+import { TriangleAlert } from "lucide-react";
+import { useEffect, useRef } from "react";
 
-export default function GlobalError({
+export default function ErrorBoundary({
   error,
   reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4">
-      <div className="w-full max-w-md text-center">
-        <div className="inline-flex items-center gap-2 mb-8">
-          <div className="w-8 h-8 bg-orange-brand rounded flex items-center justify-center">
-            <span className="text-white font-bold text-sm font-display">P</span>
-          </div>
-          <span className="text-white font-display font-bold text-xl tracking-wide">
-            Pro Construction Calc
-          </span>
-        </div>
+  const eventIdRef = useRef<string | null>(null);
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-8 shadow-[0_24px_50px_rgba(0,0,0,0.45)] transition-colors">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-orange-brand/10">
-            <svg
-              className="w-7 h-7 text-orange-brand"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 9v2m0 4h.01M12 3a9 9 0 110 18A9 9 0 0112 3z"
-              />
-            </svg>
-          </div>
-          <h1 className="text-white font-semibold text-xl mb-2">
-            Something went wrong
-          </h1>
-          <p className="mb-6 text-sm text-slate-400">
-            An unexpected error occurred. Your calculation data is safe. Try
-            refreshing the page.
-          </p>
-          <div className="space-y-3">
-            <button
-              onClick={reset}
-              className="btn-tactile min-h-11 w-full rounded-lg bg-orange-brand px-4 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-orange-dark active:scale-[0.98]"
-            >
-              Try Again
-            </button>
-            <Link
-              href="/"
-              className="btn-tactile flex min-h-11 w-full items-center justify-center rounded-lg bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-300 transition-all duration-200 hover:bg-slate-700 active:scale-[0.98]"
-            >
-              Go to Home
-            </Link>
-          </div>
-          {error.digest && (
-            <p className="mt-4 text-xs text-slate-600">
-              Error ID: {error.digest}
-            </p>
-          )}
+  useEffect(() => {
+    const id = Sentry.captureException(error);
+    if (id) eventIdRef.current = id;
+  }, [error]);
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[70vh] bg-slate-950 text-slate-200 px-4">
+      <div className="flex flex-col items-center text-center max-w-md">
+        <TriangleAlert className="h-12 w-12 text-red-500 mb-4" aria-hidden />
+        <h1 className="text-xl font-black uppercase tracking-wide">
+          System Error Detected
+        </h1>
+        <p className="mt-3 text-sm text-slate-400">
+          An unexpected error occurred in the calculation engine. Our engineering
+          team has been notified.
+        </p>
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={reset}
+            className="rounded-lg border border-slate-500 px-4 py-2 text-sm font-medium text-slate-200 hover:bg-slate-800 transition"
+          >
+            Try Again
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              Sentry.showReportDialog(
+                eventIdRef.current
+                  ? { eventId: eventIdRef.current }
+                  : undefined,
+              )
+            }
+            className="rounded-lg bg-orange-600 px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-orange-500"
+          >
+            Report Issue
+          </button>
         </div>
       </div>
     </div>

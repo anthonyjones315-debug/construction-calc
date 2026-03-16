@@ -15,21 +15,7 @@ import {
   SAVED_ESTIMATES_TAG,
 } from "@/lib/cache-tags";
 import { revalidateTag } from "next/cache";
-
-function generateShareCode(): string {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  let code = "";
-  const random = typeof crypto !== "undefined" && crypto.getRandomValues;
-  const array = new Uint8Array(8);
-  if (random) {
-    crypto.getRandomValues(array);
-    for (let i = 0; i < 8; i++) code += chars[array[i]! % chars.length];
-  } else {
-    for (let i = 0; i < 8; i++)
-      code += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return code;
-}
+import { buildSigningMeta, generateEstimateShareCode } from "@/lib/estimates/finalize";
 
 async function loadEstimateScope(
   db: ReturnType<typeof createServerClient>,
@@ -89,14 +75,40 @@ export async function POST(
       );
     }
 
-    let shareCode = generateShareCode();
+    const { data: estimateRow, error: estimateError } = await db
+      .from("saved_estimates")
+      .select("id, inputs")
+      .eq("id", id)
+      .eq(tenantColumn, tenantId)
+      .single();
+
+    if (estimateError || !estimateRow) {
+      return NextResponse.json(
+        { error: estimateError?.message ?? "Estimate not found." },
+        { status: estimateError ? 500 : 404 },
+      );
+    }
+
+    let shareCode = generateEstimateShareCode();
     let attempts = 0;
     const maxAttempts = 5;
 
     while (attempts < maxAttempts) {
+      const signing = buildSigningMeta(shareCode);
+      const inputs =
+        estimateRow.inputs && typeof estimateRow.inputs === "object"
+          ? estimateRow.inputs
+          : {};
+
       const { error } = await db
         .from("saved_estimates")
-        .update({ share_code: shareCode })
+        .update({
+          share_code: shareCode,
+          inputs: {
+            ...inputs,
+            signing,
+          },
+        })
         .eq("id", id)
         .eq(tenantColumn, tenantId);
 
@@ -110,7 +122,7 @@ export async function POST(
       }
 
       if (error.code === "23505") {
-        shareCode = generateShareCode();
+        shareCode = generateEstimateShareCode();
         attempts++;
         continue;
       }

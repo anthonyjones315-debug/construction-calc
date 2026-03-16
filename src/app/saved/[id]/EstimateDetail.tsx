@@ -10,11 +10,12 @@ import {
   Plus,
   RefreshCw,
 } from "lucide-react";
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import type { SafeEstimateDTO } from "@/lib/dal/estimates";
+import { normalizeEstimateStatus, type EstimateStatus } from "@/lib/estimates/status";
 import { sanitizeFilename } from "@/utils/sanitize-filename";
 import { useContractorProfile } from "@/components/pdf/useContractorProfile";
 import { useHaptic } from "@/hooks/useHaptic";
@@ -22,7 +23,6 @@ import { supabase } from "@/lib/supabase/client";
 
 // ─── Local types ────────────────────────────────────────────────────────────
 
-type EstimateStatus = "Draft" | "Sent" | "Approved" | "Lost";
 type InvoiceStatus = "Draft" | "Sent" | "Partially Paid" | "Paid";
 
 type BudgetRow = {
@@ -110,7 +110,7 @@ function toFixed2(s: string): number {
 
 function generateShareCode(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  const array = new Uint8Array(8);
+  const array = new Uint8Array(6);
   let code = "";
 
   if (
@@ -118,11 +118,11 @@ function generateShareCode(): string {
     typeof crypto.getRandomValues === "function"
   ) {
     crypto.getRandomValues(array);
-    for (let i = 0; i < 8; i++) code += chars[array[i]! % chars.length];
+    for (let i = 0; i < 6; i++) code += chars[array[i]! % chars.length];
     return code;
   }
 
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < 6; i++) {
     code += chars[Math.floor(Math.random() * chars.length)];
   }
   return code;
@@ -136,8 +136,7 @@ function parseInvoiceStatus(v: unknown): InvoiceStatus {
   return "Draft";
 }
 function parseEstimateStatus(v: unknown): EstimateStatus {
-  if (v === "Sent" || v === "Approved" || v === "Lost") return v;
-  return "Draft";
+  return normalizeEstimateStatus(v);
 }
 
 function parseBudgetRows(estimate: SafeEstimateDTO): BudgetRow[] {
@@ -335,6 +334,79 @@ export function EstimateDetail({ estimate }: Props) {
     }));
   }
 
+  function buildEstimatePdfPayload() {
+    const inputs =
+      estimate.inputs && typeof estimate.inputs === "object"
+        ? (estimate.inputs as Record<string, unknown>)
+        : {};
+    const finalize =
+      inputs.finalize && typeof inputs.finalize === "object"
+        ? (inputs.finalize as Record<string, unknown>)
+        : {};
+    const signing =
+      inputs.signing && typeof inputs.signing === "object"
+        ? (inputs.signing as Record<string, unknown>)
+        : {};
+    const storedMaterialList = Array.isArray(finalize.materialList)
+      ? finalize.materialList.filter(
+          (line): line is string => typeof line === "string" && line.trim().length > 0,
+        )
+      : [];
+    const draftMaterialList = draft.budgetRows
+      .filter((row) => row.name.trim())
+      .map(
+        (row) =>
+          `Order ${row.quantity || 0} ${row.name.trim()} @ ${USD.format(row.pricePerUnit || 0)}`,
+      );
+
+    return {
+      name: draft.name || estimate.name,
+      calculator_id: estimate.calculatorId,
+      client_name: draft.clientName || null,
+      job_site_address: draft.jobSiteAddress || null,
+      total_cost: draft.totalCost.trim() ? Number(draft.totalCost) : null,
+      results: estimate.results.map((result) => ({
+        label: result.label,
+        value: result.value,
+        unit: result.unit ?? "",
+      })),
+      material_list:
+        storedMaterialList.length > 0
+          ? storedMaterialList
+          : draftMaterialList.length > 0
+            ? draftMaterialList
+            : [`Order estimate for ${draft.name || estimate.name}`],
+      inputs,
+      metadata: {
+        title: draft.name || estimate.name,
+        calculatorLabel:
+          typeof finalize.calculatorLabel === "string" && finalize.calculatorLabel
+            ? finalize.calculatorLabel
+            : estimate.calculatorId,
+        generatedAt: new Date().toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        }),
+        jobName:
+          typeof finalize.jobName === "string" && finalize.jobName
+            ? finalize.jobName
+            : draft.name || estimate.name,
+      },
+      signature: {
+        signerName:
+          typeof signing.signerName === "string" ? signing.signerName : null,
+        signerEmail:
+          typeof signing.signerEmail === "string" ? signing.signerEmail : null,
+        signatureDataUrl:
+          typeof signing.signatureDataUrl === "string"
+            ? signing.signatureDataUrl
+            : null,
+        signedAt: typeof signing.signedAt === "string" ? signing.signedAt : null,
+      },
+    };
+  }
+
   // ── Save ──────────────────────────────────────────────────────────────────
 
   async function handleSave() {
@@ -446,54 +518,22 @@ export function EstimateDetail({ estimate }: Props) {
 
   // ── Estimate PDF ──────────────────────────────────────────────────────────
 
-  const getBudgetItemsForPdf = useCallback(() => {
-    return draft.budgetRows
-      .map((row) => ({
-        id: row.id,
-        name: row.name,
-        quantity: row.quantity,
-        unit: "unit",
-        pricePerUnit: row.pricePerUnit,
-      }))
-      .filter((r) => r.quantity > 0 && r.pricePerUnit > 0);
-  }, [draft.budgetRows]);
-
   async function downloadEstimatePdf() {
     setBusy("estimate-pdf");
     try {
-      const [{ pdf }, { createEstimatePDF }] = await Promise.all([
-        import("@react-pdf/renderer"),
-        import("@/components/pdf/EstimatePDF"),
-      ]);
-      const totalCost = toNum(draft.totalCost);
-      const pdfResults = estimate.results.map((result) => ({
-        ...result,
-        unit: result.unit ?? "",
-      }));
-      const blob = await pdf(
-        createEstimatePDF({
-          title: draft.name || estimate.name,
-          calculatorLabel: estimate.calculatorId,
-          controlNumber: estimateControlNumber,
-          clientName: draft.clientName || null,
-          jobSiteAddress: draft.jobSiteAddress || null,
-          results: pdfResults,
-          budgetItems: getBudgetItemsForPdf(),
-          totalCost,
-          contractorProfile: {
-            businessName: contractor.businessName,
-            logoUrl: contractor.logoUrl,
-            businessAddress: contractor.businessAddress,
-            businessPhone: contractor.businessPhone,
-            businessEmail: contractor.businessEmail,
-          },
-          generatedAt: new Date().toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          }),
-        }),
-      ).toBlob();
+      const response = await fetch("/api/generate-pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(buildEstimatePdfPayload()),
+      });
+      if (!response.ok) {
+        const payload = await response
+          .json()
+          .catch(() => ({ error: "PDF generation failed." }));
+        throw new Error(payload?.error ?? "PDF generation failed.");
+      }
+
+      const blob = await response.blob();
       triggerDownload(
         blob,
         `${sanitizeFilename(draft.name || estimate.name, "estimate")}.pdf`,
@@ -510,40 +550,20 @@ export function EstimateDetail({ estimate }: Props) {
   async function shareEstimate() {
     setBusy("estimate-share");
     try {
-      const [{ pdf }, { createEstimatePDF }] = await Promise.all([
-        import("@react-pdf/renderer"),
-        import("@/components/pdf/EstimatePDF"),
-      ]);
-      const totalCost = toNum(draft.totalCost);
       const filename = `${sanitizeFilename(draft.name || estimate.name, "estimate")}.pdf`;
-      const pdfResults = estimate.results.map((result) => ({
-        ...result,
-        unit: result.unit ?? "",
-      }));
-      const blob = await pdf(
-        createEstimatePDF({
-          title: draft.name || estimate.name,
-          calculatorLabel: estimate.calculatorId,
-          controlNumber: estimateControlNumber,
-          clientName: draft.clientName || null,
-          jobSiteAddress: draft.jobSiteAddress || null,
-          results: pdfResults,
-          budgetItems: getBudgetItemsForPdf(),
-          totalCost,
-          contractorProfile: {
-            businessName: contractor.businessName,
-            logoUrl: contractor.logoUrl,
-            businessAddress: contractor.businessAddress,
-            businessPhone: contractor.businessPhone,
-            businessEmail: contractor.businessEmail,
-          },
-          generatedAt: new Date().toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          }),
-        }),
-      ).toBlob();
+      const response = await fetch("/api/generate-pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(buildEstimatePdfPayload()),
+      });
+      if (!response.ok) {
+        const payload = await response
+          .json()
+          .catch(() => ({ error: "Failed to share estimate." }));
+        throw new Error(payload?.error ?? "Failed to share estimate.");
+      }
+
+      const blob = await response.blob();
 
       const nav = navigator as Navigator & {
         canShare?: (data?: ShareData) => boolean;
@@ -755,6 +775,7 @@ export function EstimateDetail({ estimate }: Props) {
   );
   const contractTotal = toNum(draft.totalCost);
   const remaining = Math.max(0, contractTotal - totalBilled);
+  const signLinkPath = shareCode ? `/estimate/sign/${shareCode}` : null;
 
   // ── Render ────────────────────────────────────────────────────────────────
 
@@ -807,7 +828,7 @@ export function EstimateDetail({ estimate }: Props) {
             <input
               value={estimateControlNumber}
               readOnly
-              className="rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink]"
+              className="rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
           </label>
 
@@ -816,7 +837,7 @@ export function EstimateDetail({ estimate }: Props) {
             <input
               value={draft.name}
               onChange={(e) => patchDraft({ name: e.target.value })}
-              className="rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink]"
+              className="rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
           </label>
 
@@ -827,11 +848,13 @@ export function EstimateDetail({ estimate }: Props) {
               onChange={(e) =>
                 patchDraft({ status: e.target.value as EstimateStatus })
               }
-              className="rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink]"
+              className="rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
             >
               <option value="Draft">Draft</option>
               <option value="Sent">Sent</option>
+              <option value="PENDING">Pending Signature</option>
               <option value="Approved">Approved</option>
+              <option value="SIGNED">Signed</option>
               <option value="Lost">Lost</option>
             </select>
           </label>
@@ -844,7 +867,7 @@ export function EstimateDetail({ estimate }: Props) {
               step="0.01"
               value={draft.totalCost}
               onChange={(e) => patchDraft({ totalCost: e.target.value })}
-              className="rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink]"
+              className="rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
           </label>
 
@@ -853,7 +876,7 @@ export function EstimateDetail({ estimate }: Props) {
             <input
               value={draft.clientName}
               onChange={(e) => patchDraft({ clientName: e.target.value })}
-              className="rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink]"
+              className="rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
           </label>
         </div>
@@ -863,7 +886,7 @@ export function EstimateDetail({ estimate }: Props) {
           <input
             value={draft.jobSiteAddress}
             onChange={(e) => patchDraft({ jobSiteAddress: e.target.value })}
-            className="rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink]"
+            className="rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
           />
         </label>
       </section>
@@ -903,7 +926,7 @@ export function EstimateDetail({ estimate }: Props) {
                       next[i] = { ...next[i], actualCost: e.target.value };
                       patchDraft({ budgetRows: next });
                     }}
-                    className="w-28 rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink]"
+                    className="w-28 rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
                   />
                 </div>
               );
@@ -921,7 +944,7 @@ export function EstimateDetail({ estimate }: Props) {
           <button
             type="button"
             onClick={addInvoice}
-            className="inline-flex items-center gap-1 rounded-lg border border-[--color-border] px-3 py-1.5 text-xs font-medium text-[--color-ink] hover:border-[--color-orange-brand] transition-colors"
+            className="inline-flex items-center gap-1 rounded-lg border-2 border-slate-500 px-3 py-1.5 text-xs font-medium text-[--color-ink] transition-colors hover:border-orange-400"
           >
             <Plus className="w-3.5 h-3.5" aria-hidden />
             Add Invoice
@@ -1115,15 +1138,25 @@ export function EstimateDetail({ estimate }: Props) {
       {/* ── Share code ── */}
       <section className="mb-6 rounded-2xl border border-[--color-border] bg-[--color-surface-alt] p-4">
         <h3 className="text-sm font-bold uppercase tracking-wide text-[--color-ink-mid]">
-          Share code
+          Sign link
         </h3>
         <p className="mt-1 text-xs text-[--color-ink-dim]">
-          Client-facing code for share links. Regenerate to invalidate the previous code.
+          Client-facing short code for signature links. Regenerate to invalidate the previous code.
         </p>
         <div className="mt-3 flex flex-wrap items-center gap-3">
           <code className="rounded-lg border border-[--color-border] bg-[--color-surface] px-3 py-2 text-sm font-mono font-semibold text-[--color-ink]">
             {shareCode || "—"}
           </code>
+          {signLinkPath ? (
+            <Link
+              href={signLinkPath as import("next").Route}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 rounded-xl border border-[--color-border] px-4 py-2 text-sm font-medium text-[--color-ink] hover:border-[--color-orange-brand] transition-colors"
+            >
+              Open Sign Page
+            </Link>
+          ) : null}
           <button
             type="button"
             onClick={regenCode}

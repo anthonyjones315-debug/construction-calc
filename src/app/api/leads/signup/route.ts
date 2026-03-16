@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import * as Sentry from '@sentry/nextjs'
 import { createServerClient } from '@/lib/supabase/server'
+import { getPostHogClient } from '@/lib/posthog-server'
 
 const EMAIL_RE = /^[^\s@]{1,64}@[^\s@]{1,253}\.[^\s@]{2,}$/
 const FORMSPREE_URL = 'https://formspree.io/f/xyknwlrz'
@@ -84,6 +85,18 @@ export async function POST(req: NextRequest) {
   }).catch(() => {
     // Non-critical — lead already persisted in Supabase
   })
+
+  const posthog = getPostHogClient()
+  posthog.capture({
+    distinctId: email,
+    event: 'lead_signup',
+    properties: { source },
+  })
+  posthog.identify({
+    distinctId: email,
+    properties: { email },
+  })
+  await posthog.shutdown()
 
   return NextResponse.json({ ok: true })
   } catch (error) {

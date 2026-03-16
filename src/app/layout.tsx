@@ -7,6 +7,9 @@ import { OptionalTracking } from "@/components/layout/OptionalTracking";
 import { ServiceWorker } from "@/components/layout/ServiceWorker";
 import { ScrollToTop } from "@/components/layout/ScrollToTop";
 import { PWAInstallBanner } from "@/components/layout/PWAInstallBanner";
+import { CrispChat } from "@/components/support/CrispChat";
+import { CSPostHogProvider } from "@/components/providers/PostHogProvider";
+import { PostHogPageView } from "@/components/providers/PostHogPageView";
 import { Providers } from "@app/providers";
 
 // Prevents accidental zoom-on-input-focus on iOS and Android.
@@ -94,7 +97,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="bg-slate-950 text-slate-100">
+    <html lang="en" className="bg-slate-950 text-slate-200 overflow-x-hidden">
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="manifest" href="/site.webmanifest" />
@@ -130,17 +133,25 @@ export default function RootLayout({
           Skip to main content
         </a>
         <Suspense fallback={null}>
-          <Providers>
+          <CSPostHogProvider>
             <Suspense fallback={null}>
-              <ScrollToTop />
+              <PostHogPageView />
             </Suspense>
-            {children}
-          </Providers>
+            <Providers>
+              <Suspense fallback={null}>
+                <ScrollToTop />
+              </Suspense>
+              {children}
+            </Providers>
+          </CSPostHogProvider>
         </Suspense>
         <CookieConsentBanner />
         <ServiceWorker />
         <OptionalTracking />
         <PWAInstallBanner />
+        <Suspense fallback={null}>
+          <CrispChat />
+        </Suspense>
       </body>
     </html>
   );

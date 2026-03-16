@@ -2,6 +2,7 @@
 import { z } from "zod";
 import * as Sentry from "@sentry/nextjs";
 import { createServerClient } from "@/lib/supabase/server";
+import { getPostHogClient } from "@/lib/posthog-server";
 
 export type RegisterActionState = {
   status: "idle" | "success" | "error";
@@ -188,6 +189,20 @@ export async function registerUserAction(
         });
       }
     }
+  }
+
+  if (data.user?.id) {
+    const posthog = getPostHogClient();
+    posthog.capture({
+      distinctId: data.user.id,
+      event: "user_registered",
+      properties: { email },
+    });
+    posthog.identify({
+      distinctId: data.user.id,
+      properties: { email, name: fullName },
+    });
+    await posthog.shutdown();
   }
 
   return {

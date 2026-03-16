@@ -38,7 +38,7 @@ const categoryLinks: Record<TradePageDefinition["category"], RelatedLink[]> = {
     { href: "/calculators/concrete/slab", label: "Slab-on-Grade Calculator" },
     {
       href: "/calculators/concrete/footing",
-      label: "Footing Volume Calculator",
+      label: "Footing Material Estimator",
     },
     {
       href: "/calculators/concrete/block-wall",
@@ -51,11 +51,20 @@ const categoryLinks: Record<TradePageDefinition["category"], RelatedLink[]> = {
       label: "Wall Studs Calculator",
     },
     {
+      href: "/calculators/framing/floor",
+      label: "Floor Joists Calculator",
+    },
+    {
+      href: "/calculators/framing/roof",
+      label: "Roof Rafters Calculator",
+    },
+    {
       href: "/calculators/framing/rafter-length",
       label: "Rafter Length Calculator",
     },
     { href: "/calculators/framing/headers", label: "Header Sizing Estimator" },
     { href: "/calculators/framing/deck-joists", label: "Deck Joists Calculator" },
+    { href: "/calculators/decking", label: "Decking Material Calculator" },
   ],
   roofing: [
     {
@@ -339,7 +348,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     key: "concrete-footing",
     type: "calculator",
     category: "concrete",
-    title: "Concrete Footing Volume Calculator for Foundation Work",
+    title: "Concrete Footing Material Estimator for Foundation Work",
     description:
       "Calculate footing concrete volume and total cubic yards for foundation trenches and continuous perimeter runs.",
     heroKicker: "Concrete / Footings",
@@ -410,6 +419,40 @@ export const tradePages: Record<string, TradePageDefinition> = {
     keywords: ["rafter calculator", "roof framing", "rafter length"],
     relatedLinks: categoryLinks.framing,
     altText: "Industrial rafter length and roof framing calculator icon",
+  },
+  "framing-floor": {
+    key: "framing-floor",
+    type: "calculator",
+    category: "framing",
+    title: "Floor Joists Calculator for Framing Layout",
+    description:
+      "Calculate floor joist counts and spacing for accurate framing takeoffs and lumber ordering.",
+    heroKicker: "Framing / Floor",
+    proTip:
+      "Match joist spacing to span tables before ordering so floor stiffness and load performance stay on target.",
+    localFocus:
+      "Built for Mohawk Valley framing crews handling floor layouts in remodel and new construction scopes.",
+    canonicalPath: "/calculators/framing/floor",
+    keywords: ["floor joists calculator", "joist spacing", "floor framing takeoff"],
+    relatedLinks: categoryLinks.framing,
+    altText: "Industrial floor joists framing calculator icon",
+  },
+  "framing-roof": {
+    key: "framing-roof",
+    type: "calculator",
+    category: "framing",
+    title: "Roof Rafters Calculator for Framing Layout",
+    description:
+      "Estimate roof rafter quantities and spacing for practical framing cut lists and material orders.",
+    heroKicker: "Framing / Roof",
+    proTip:
+      "Verify rafter spacing and roof geometry together before production cuts to avoid framing waste.",
+    localFocus:
+      "Designed for Upstate framing conditions where roof load requirements drive tighter rafter planning.",
+    canonicalPath: "/calculators/framing/roof",
+    keywords: ["roof rafters calculator", "rafter spacing", "roof framing takeoff"],
+    relatedLinks: categoryLinks.framing,
+    altText: "Industrial roof rafters framing calculator icon",
   },
   "framing-headers": {
     key: "framing-headers",
@@ -702,6 +745,23 @@ export const tradePages: Record<string, TradePageDefinition> = {
     keywords: ["deck joist calculator", "deck framing", "joist spacing"],
     relatedLinks: categoryLinks.framing,
     altText: "Industrial deck joists calculator icon",
+  },
+  decking: {
+    key: "decking",
+    type: "calculator",
+    category: "framing",
+    title: "Decking Calculator for Joists and Surface Boards",
+    description:
+      "Estimate deck joists and deck boards with spacing-aware quantities for complete surface framing orders.",
+    heroKicker: "Decking / Surface & Frame",
+    proTip:
+      "Align deck board direction and joist spacing before final quantities so field cuts and waste stay controlled.",
+    localFocus:
+      "Built for regional deck builds where weather exposure and stock length availability impact material planning.",
+    canonicalPath: "/calculators/decking",
+    keywords: ["decking calculator", "deck joists and boards", "deck material list"],
+    relatedLinks: categoryLinks.framing,
+    altText: "Industrial decking material calculator icon",
   },
   "roofing-shingle-bundles": {
     key: "roofing-shingle-bundles",

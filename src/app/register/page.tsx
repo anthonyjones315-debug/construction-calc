@@ -58,7 +58,7 @@ export default function RegisterPage() {
                 type="text"
                 autoComplete="name"
                 required
-                className="mt-1 w-full rounded-lg border border-[--color-border] bg-[--color-surface] px-3 py-2 text-sm text-[--color-ink] outline-none ring-0 transition focus:border-[--color-orange-brand]"
+                className="mt-1 w-full rounded-lg border border-slate-500 bg-[--color-surface] px-3 py-2 text-sm text-[--color-ink] outline-none ring-0 transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
               />
             </div>
 
@@ -75,7 +75,7 @@ export default function RegisterPage() {
                 type="email"
                 autoComplete="email"
                 required
-                className="mt-1 w-full rounded-lg border border-[--color-border] bg-[--color-surface] px-3 py-2 text-sm text-[--color-ink] outline-none ring-0 transition focus:border-[--color-orange-brand]"
+                className="mt-1 w-full rounded-lg border border-slate-500 bg-[--color-surface] px-3 py-2 text-sm text-[--color-ink] outline-none ring-0 transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
               />
             </div>
 
@@ -93,7 +93,7 @@ export default function RegisterPage() {
                 autoComplete="new-password"
                 minLength={8}
                 required
-                className="mt-1 w-full rounded-lg border border-[--color-border] bg-[--color-surface] px-3 py-2 text-sm text-[--color-ink] outline-none ring-0 transition focus:border-[--color-orange-brand]"
+                className="mt-1 w-full rounded-lg border border-slate-500 bg-[--color-surface] px-3 py-2 text-sm text-[--color-ink] outline-none ring-0 transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
               />
             </div>
 

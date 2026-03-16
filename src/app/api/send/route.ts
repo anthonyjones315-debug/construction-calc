@@ -3,9 +3,7 @@ import * as Sentry from "@sentry/nextjs";
 import { Resend } from "resend";
 import { z } from "zod";
 
-const SITE_ALERT_TO = "amj111394@gmail.com";
 const FROM_EMAIL = "system@proconstructioncalc.com";
-const SUBJECT_PREFIX = "[PCC-ALERT]";
 
 function getResend() {
   const key = process.env.RESEND_API_KEY;
@@ -27,6 +25,8 @@ const estimatePayloadSchema = z.object({
   controlNumber: z.string().nullable().optional(),
   clientName: z.string().nullable().optional(),
   jobSiteAddress: z.string().nullable().optional(),
+  fromName: z.string().nullable().optional(),
+  fromEmail: z.string().nullable().optional(),
   results: z.array(resultRowSchema),
   budgetItems: z
     .array(
@@ -73,6 +73,12 @@ function buildEstimateEmailHtml(estimate: z.infer<typeof estimatePayloadSchema>)
       ? `<p style="margin-top:12px;font-weight:700;color:#0f172a">Total: $${Number(estimate.totalCost).toFixed(2)}</p>`
       : "";
   const meta = [
+    estimate.fromEmail &&
+      `From: ${escapeHtml(
+        estimate.fromName
+          ? `${estimate.fromName} <${estimate.fromEmail}>`
+          : estimate.fromEmail,
+      )}`,
     estimate.controlNumber && `Control #: ${escapeHtml(estimate.controlNumber)}`,
     estimate.clientName && `Client: ${escapeHtml(estimate.clientName)}`,
     estimate.jobSiteAddress && `Job site: ${escapeHtml(estimate.jobSiteAddress)}`,
@@ -128,16 +134,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { subject, html: rawHtml, estimate, replyTo } = parsed.data;
+    const { to, subject, html: rawHtml, estimate, replyTo } = parsed.data;
     const html = rawHtml ?? (estimate ? buildEstimateEmailHtml(estimate) : "");
-    const normalizedSubject = subject.startsWith(SUBJECT_PREFIX)
-      ? subject
-      : `${SUBJECT_PREFIX} ${subject}`;
-
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
-      to: [SITE_ALERT_TO],
-      subject: normalizedSubject,
+      to: [to],
+      subject,
       html,
       ...(replyTo && { replyTo }),
     });

@@ -48,7 +48,7 @@ export default function HomePage() {
               <div className="mt-6 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap">
                 <Link
                   href={`${routes.commandCenter}?mode=draft`}
-                  className="btn-tactile inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-orange-600 px-4 py-3 text-sm font-bold text-white transition-all duration-200 hover:bg-orange-700 active:scale-[0.98] sm:w-auto"
+                  className="btn-tactile inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[--color-orange-brand] px-4 py-3 text-sm font-black text-white transition-all duration-200 hover:bg-orange-700 active:scale-[0.98] sm:w-auto"
                 >
                   Begin Estimate{" "}
                   <ArrowRight className="h-4 w-4" aria-hidden />

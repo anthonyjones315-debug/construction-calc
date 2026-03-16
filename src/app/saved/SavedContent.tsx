@@ -21,6 +21,7 @@ import {
   type SavedEstimate,
 } from "@/components/financial/FinancialDashboard";
 import type { FinancialData } from "@/components/financial/FinancialDataFetcher";
+import type { EstimateStatus } from "@/lib/estimates/status";
 import { sanitizeFilename } from "@/utils/sanitize-filename";
 import { useContractorProfile } from "@/components/pdf/useContractorProfile";
 import { useHaptic } from "@/hooks/useHaptic";
@@ -51,8 +52,6 @@ type BuilderRow = {
   materialId: string;
   quantity: number;
 };
-
-type EstimateStatus = "Draft" | "Sent" | "Approved" | "Lost";
 
 type EstimateBudgetRow = {
   id: string;
@@ -310,6 +309,8 @@ export function SavedContent({
       .filter((row): row is NonNullable<typeof row> => Boolean(row));
   }
 
+  void toPdfBudgetItems;
+
   function isMobileSharePreferred(): boolean {
     if (typeof navigator === "undefined") return false;
     return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -537,93 +538,6 @@ export function SavedContent({
     } catch (error) {
       setUpdateError(
         error instanceof Error ? error.message : "Failed to send invoice.",
-      );
-    } finally {
-      setInvoiceBusyId(null);
-    }
-  }
-
-  async function sendEstimateForSignature(estimate: SavedEstimate) {
-    setInvoiceBusyId(`estimate-${estimate.id}`);
-    setUpdateError(null);
-    setUpdateSuccess(null);
-
-    try {
-      const { pdf } = await import("@react-pdf/renderer");
-      const { createEstimatePDF } =
-        await import("@/components/pdf/EstimatePDF");
-      const blob = await pdf(
-        createEstimatePDF({
-          title: estimate.name,
-          calculatorLabel: estimate.calculator_id,
-          controlNumber: getEstimateControlNumber(estimate),
-          clientName: estimate.client_name ?? null,
-          jobSiteAddress: estimate.job_site_address ?? null,
-          results: estimate.results,
-          budgetItems: toPdfBudgetItems(estimate),
-          totalCost: Number(estimate.total_cost ?? 0),
-          contractorProfile: {
-            businessName: contractorProfile.businessName,
-            logoUrl: contractorProfile.logoUrl,
-            businessAddress: contractorProfile.businessAddress,
-            businessPhone: contractorProfile.businessPhone,
-            businessEmail: contractorProfile.businessEmail,
-          },
-          generatedAt: new Date().toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          }),
-        }),
-      ).toBlob();
-
-      const estimateFileName = `${sanitizeFilename(estimate.name, "estimate")}.pdf`;
-
-      if (isMobileSharePreferred() && typeof navigator !== "undefined") {
-        const mobileNavigator = navigator as Navigator & {
-          canShare?: (data?: ShareData) => boolean;
-        };
-
-        const file = new File([blob], estimateFileName, {
-          type: "application/pdf",
-        });
-
-        if (
-          typeof mobileNavigator.share === "function" &&
-          typeof mobileNavigator.canShare === "function" &&
-          mobileNavigator.canShare({ files: [file] })
-        ) {
-          await mobileNavigator.share({
-            title: `${estimate.name} Estimate`,
-            text: "Please review, sign, and return this estimate via email.",
-            files: [file],
-          });
-          setUpdateSuccess("Estimate shared.");
-          return;
-        }
-      }
-
-      triggerDownload(blob, estimateFileName);
-      const subject = encodeURIComponent(`${estimate.name} - Estimate`);
-      const body = encodeURIComponent(
-        `Hi ${estimate.client_name || "there"},\n\nPlease review the attached estimate and return a signed copy by email to proceed.\n\nThanks,\n${contractorProfile.businessName || "Contractor"}`,
-      );
-      const emailTo = getClientEmail(estimate) ?? "";
-      const opened = openDefaultMailClient(
-        `mailto:${encodeURIComponent(emailTo)}?subject=${subject}&body=${body}`,
-      );
-      if (!opened) {
-        setUpdateError(
-          "Could not open your email client automatically. Estimate was downloaded—attach it manually.",
-        );
-        return;
-      }
-      setUpdateSuccess(
-        "Email compose opened. Estimate downloaded for attachment.",
-      );
-    } catch (error) {
-      setUpdateError(
-        error instanceof Error ? error.message : "Failed to send estimate.",
       );
     } finally {
       setInvoiceBusyId(null);
@@ -925,7 +839,6 @@ export function SavedContent({
   }
 
   void shareOrEmailInvoice;
-  void sendEstimateForSignature;
   void openEstimateEditor;
   void saveEstimateFinancials;
   void addInvoiceToDraft;
@@ -1235,32 +1148,93 @@ export function SavedContent({
 
   async function downloadPDF(estimate: SavedEstimate) {
     try {
-      const { pdf } = await import("@react-pdf/renderer");
-      const { createEstimatePDF } =
-        await import("@/components/pdf/EstimatePDF");
-      const blob = await pdf(
-        createEstimatePDF({
-          title: estimate.name,
-          calculatorLabel: estimate.calculator_id,
-          controlNumber: getEstimateControlNumber(estimate),
-          clientName: estimate.client_name ?? null,
-          jobSiteAddress: estimate.job_site_address ?? null,
-          results: estimate.results,
-          budgetItems: toPdfBudgetItems(estimate),
-          totalCost: Number(estimate.total_cost ?? 0),
-          contractorProfile: {
-            businessName: contractorProfile.businessName,
-            logoUrl: contractorProfile.logoUrl,
-            businessAddress: contractorProfile.businessAddress,
-            businessPhone: contractorProfile.businessPhone,
-            businessEmail: contractorProfile.businessEmail,
+      const inputs =
+        estimate.inputs && typeof estimate.inputs === "object"
+          ? (estimate.inputs as Record<string, unknown>)
+          : {};
+      const finalize =
+        inputs.finalize && typeof inputs.finalize === "object"
+          ? (inputs.finalize as Record<string, unknown>)
+          : {};
+      const signing =
+        inputs.signing && typeof inputs.signing === "object"
+          ? (inputs.signing as Record<string, unknown>)
+          : {};
+      const storedMaterialList = Array.isArray(finalize.materialList)
+        ? finalize.materialList.filter(
+            (line): line is string =>
+              typeof line === "string" && line.trim().length > 0,
+          )
+        : [];
+      const fallbackMaterialList = Array.isArray(estimate.budget_items)
+        ? estimate.budget_items
+            .map((item) => {
+              if (!item || typeof item !== "object") return null;
+              const row = item as Record<string, unknown>;
+              const name = String(row.name ?? row.label ?? "").trim();
+              if (!name) return null;
+              const quantity = Number(row.quantity ?? row.qty ?? 0);
+              return `Order ${Number.isFinite(quantity) ? quantity : 0} ${name}`;
+            })
+            .filter((line): line is string => Boolean(line))
+        : [];
+
+      const response = await fetch("/api/generate-pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: estimate.name,
+          calculator_id: estimate.calculator_id,
+          client_name: estimate.client_name ?? null,
+          job_site_address: estimate.job_site_address ?? null,
+          total_cost: estimate.total_cost ?? null,
+          results: estimate.results.map((result) => ({
+            label: result.label,
+            value: result.value,
+            unit: result.unit ?? "",
+          })),
+          material_list:
+            storedMaterialList.length > 0
+              ? storedMaterialList
+              : fallbackMaterialList.length > 0
+                ? fallbackMaterialList
+                : [`Order estimate for ${estimate.name}`],
+          inputs,
+          metadata: {
+            title: estimate.name,
+            calculatorLabel:
+              typeof finalize.calculatorLabel === "string" &&
+              finalize.calculatorLabel
+                ? finalize.calculatorLabel
+                : estimate.calculator_id,
+            generatedAt: new Date(estimate.created_at).toLocaleDateString(
+              "en-US",
+              { year: "numeric", month: "long", day: "numeric" },
+            ),
+            jobName:
+              typeof finalize.jobName === "string" && finalize.jobName
+                ? finalize.jobName
+                : estimate.name,
           },
-          generatedAt: new Date(estimate.created_at).toLocaleDateString(
-            "en-US",
-            { year: "numeric", month: "long", day: "numeric" },
-          ),
+          signature: {
+            signerName:
+              typeof signing.signerName === "string" ? signing.signerName : null,
+            signerEmail:
+              typeof signing.signerEmail === "string" ? signing.signerEmail : null,
+            signatureDataUrl:
+              typeof signing.signatureDataUrl === "string"
+                ? signing.signatureDataUrl
+                : null,
+            signedAt: typeof signing.signedAt === "string" ? signing.signedAt : null,
+          },
         }),
-      ).toBlob();
+      });
+
+      if (!response.ok) {
+        throw new Error("PDF export failed");
+      }
+
+      const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;

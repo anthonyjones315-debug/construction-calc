@@ -17,6 +17,7 @@ import {
   getSavedEstimatesTag,
 } from "@/lib/cache-tags";
 import { isUnauthorizedError } from "@/lib/errors/unauthorized";
+import { getPostHogClient } from "@/lib/posthog-server";
 
 const saveEstimateSchema = z
   .object({
@@ -28,7 +29,7 @@ const saveEstimateSchema = z
     client_name: z.string().trim().max(200).nullable().optional(),
     job_site_address: z.string().trim().max(500).nullable().optional(),
     total_cost: z.number().finite().nullable().optional(),
-    status: z.enum(["Draft", "Sent", "Approved", "Lost"]).optional(),
+    status: z.enum(["Draft", "Sent", "Approved", "Lost", "PENDING", "SIGNED"]).optional(),
   })
   .strict();
 
@@ -175,6 +176,19 @@ export async function POST(req: NextRequest) {
     revalidateTag(SAVED_ESTIMATES_TAG, "max");
     revalidateTag(getSavedEstimatesTag(tenantId), "max");
     revalidateTag(getEstimateTag(data.id), "max");
+
+    const posthog = getPostHogClient();
+    posthog.capture({
+      distinctId: session.user.id,
+      event: "estimate_saved",
+      properties: {
+        estimate_id: data.id,
+        calculator_id: body.calculator_id ?? "unknown",
+        has_client: Boolean(body.client_name),
+        status: body.status ?? "Draft",
+      },
+    });
+    await posthog.shutdown();
 
     return NextResponse.json({ ok: true, id: data.id });
   } catch (error) {

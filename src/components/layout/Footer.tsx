@@ -35,7 +35,7 @@ const buildCommandCenterLink = (slug?: string) =>
 export function Footer() {
   return (
     <footer className="border-t border-slate-800 bg-slate-950 text-sm text-slate-300">
-      <div className="max-w-screen-xl mx-auto px-4 py-10">
+      <div className="max-w-7xl mx-auto px-4 py-10">
         <div className="mb-8 grid grid-cols-2 gap-8 md:grid-cols-4">
           {/* Brand */}
           <div className="col-span-2 sm:col-span-1">
@@ -50,7 +50,7 @@ export function Footer() {
             <p className="mt-2 text-xs leading-relaxed text-slate-300">
               Pro Construction Calc · Rome, NY, USA
             </p>
-            <div className="mt-4 inline-flex flex-col rounded-md border border-orange-600/60 bg-orange-600/10 px-3 py-2 text-white">
+            <div className="mt-4 inline-flex flex-col rounded-md border border-[--color-orange-brand]/60 bg-[--color-orange-brand]/10 px-3 py-2 text-white">
               <span className="font-display text-[11px] font-black uppercase tracking-[0.14em]">
                 Built for the Field
               </span>
@@ -100,7 +100,7 @@ export function Footer() {
           <div>
             <div className="mb-3 flex items-center gap-2">
               <div
-                className="flex h-7 w-7 items-center justify-center rounded bg-orange-600 text-white font-display font-black text-xs"
+                className="flex h-7 w-7 items-center justify-center rounded bg-[--color-orange-brand] text-white font-display font-black text-xs"
                 aria-hidden
               >
                 P

@@ -25,6 +25,9 @@ import {
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { routes } from "@routes";
+import { CalculatorPage } from "@/app/calculators/_components/CalculatorPage";
+import { getTradePageByPath } from "@/app/calculators/_lib/trade-pages";
+import { useProMode } from "@/hooks/useProMode";
 
 type TeamMember = {
   membershipId: string;
@@ -35,10 +38,20 @@ type TeamMember = {
   joinedAt: string;
 };
 
+type RecentEstimate = {
+  id: string;
+  name: string;
+  clientName: string | null;
+  status: string | null;
+  updatedAt: string;
+};
+
 type CommandCenterClientProps = {
   businessName: string;
   joinCode: string;
   initialMembers: TeamMember[];
+  recentEstimates: RecentEstimate[];
+  needsBusinessProfileSetup: boolean;
   draftMode?: boolean;
   initialToolSlug?: string;
 };
@@ -187,10 +200,28 @@ function initialsForName(name: string): string {
   return parts.map((part) => part[0]?.toUpperCase() ?? "").join("");
 }
 
+function formatEstimateStatus(status: string | null) {
+  if (status === "SIGNED" || status === "Approved") return "SIGNED";
+  if (status === "PENDING" || status === "Sent") return "PENDING";
+  return "Draft";
+}
+
+function estimateStatusClasses(status: string | null) {
+  if (status === "SIGNED" || status === "Approved") {
+    return "border-emerald-500/30 bg-emerald-500/12 text-emerald-300";
+  }
+  if (status === "PENDING" || status === "Sent") {
+    return "border-orange-500/30 bg-orange-500/12 text-orange-300";
+  }
+  return "border-slate-700 bg-slate-800/80 text-slate-300";
+}
+
 export default function CommandCenterClient({
   businessName,
   joinCode,
   initialMembers,
+  recentEstimates,
+  needsBusinessProfileSetup,
   draftMode = false,
   initialToolSlug,
 }: CommandCenterClientProps) {
@@ -204,6 +235,7 @@ export default function CommandCenterClient({
   const [activeTool, setActiveTool] = useState<NavItem | null>(null);
   const [toolFilter, setToolFilter] = useState("");
   const [handledDeepLink, setHandledDeepLink] = useState<string | null>(null);
+  const { proMode, setProMode, mounted: proModeMounted } = useProMode();
   const searchParams = useSearchParams();
   const toolFromQuery = searchParams.get("tool") ?? initialToolSlug;
 
@@ -231,6 +263,8 @@ export default function CommandCenterClient({
       })
     : toolNavItems;
   const toolFromQuerySlug = toolFromQuery?.toLowerCase() ?? "";
+  const activeToolHref = typeof activeTool?.href === "string" ? activeTool.href : null;
+  const activeTradePage = activeToolHref ? getTradePageByPath(activeToolHref) : undefined;
 
   useEffect(() => {
     if (!toolFromQuerySlug) return;
@@ -419,12 +453,12 @@ export default function CommandCenterClient({
               value={toolFilter}
               onChange={(event) => setToolFilter(event.target.value)}
               placeholder="Search tools"
-              className="w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-slate-300 placeholder:text-slate-500 focus:border-orange-600 focus:ring-2 focus:ring-orange-600/30"
+              className="w-full rounded-xl border border-slate-500 bg-slate-900 px-3 py-2 text-sm text-slate-200 placeholder:text-slate-500 focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
             />
           </div>
 
           {filteredToolItems.length === 0 ? (
-            <div className="px-4 py-3 text-xs text-slate-500">
+            <div className="px-4 py-3 text-xs text-slate-400">
               No tools match that term.
             </div>
           ) : (
@@ -433,7 +467,8 @@ export default function CommandCenterClient({
                 "flex w-full items-center gap-2 rounded-lg border border-transparent px-3 py-1.5 text-left text-sm font-medium transition-colors";
               const className = `${sharedClasses} text-slate-300 hover:bg-slate-900 hover:border-slate-800 hover:text-white`;
               const href = item.href ?? routes.commandCenter;
-              const isCalculator = typeof href === "string" && href.startsWith("/calculators");
+              const opensCalculatorModal =
+                typeof href === "string" && Boolean(getTradePageByPath(href));
 
               const navContent = (
                 <>
@@ -442,7 +477,7 @@ export default function CommandCenterClient({
                 </>
               );
 
-              if (isCalculator && typeof href === "string") {
+              if (opensCalculatorModal && typeof href === "string") {
                 return (
                   <button
                     key={item.slug}
@@ -472,11 +507,25 @@ export default function CommandCenterClient({
         </aside>
 
         <section className="bg-slate-950">
-          <div className="flex items-center justify-between border-b border-slate-800 px-4 py-3 sm:px-6">
+          <div className="flex items-center justify-between border-b border-slate-800 px-4 py-2 sm:px-6">
             <p className="text-base font-black uppercase tracking-[0.12em] text-white">
               Dashboard
             </p>
             <div className="flex items-center gap-3">
+              {proModeMounted ? (
+                <button
+                  type="button"
+                  onClick={() => setProMode(!proMode)}
+                  className={`inline-flex min-h-9 items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-bold uppercase tracking-[0.12em] transition ${
+                    proMode
+                      ? "border-orange-500/70 bg-orange-500/20 text-orange-400"
+                      : "border-slate-700 bg-slate-900 text-slate-300"
+                  }`}
+                  aria-pressed={proMode}
+                >
+                  Pro Mode
+                </button>
+              ) : null}
               <button
                 type="button"
                 className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-[--color-border] bg-[--color-surface-alt] text-[--color-ink-mid] transition hover:text-[--color-orange-brand]"
@@ -506,8 +555,23 @@ export default function CommandCenterClient({
               Owner&apos;s Command Center
             </h1>
 
+            {needsBusinessProfileSetup ? (
+              <div className="rounded-2xl border border-orange-500/25 bg-orange-500/8 px-4 py-3 text-sm text-slate-200">
+                <span className="font-semibold text-orange-300">
+                  Setup your Business Profile.
+                </span>{" "}
+                Add your company name so PDFs, emails, and client-facing signing pages use your branding.
+                <Link
+                  href={routes.settings}
+                  className="ml-2 font-semibold text-orange-400 transition hover:text-orange-300"
+                >
+                  Open settings
+                </Link>
+              </div>
+            ) : null}
+
             {draftMode && (
-              <div className="rounded-2xl border border-orange-600/50 bg-orange-600/10 px-5 py-4">
+              <div className="rounded-2xl border border-[--color-orange-brand]/50 bg-[--color-orange-brand]/10 px-5 py-4">
                 <p className="text-xs font-bold uppercase tracking-[0.15em] text-orange-600">
                   Drafting mode
                 </p>
@@ -517,7 +581,7 @@ export default function CommandCenterClient({
                 <div className="mt-3 flex flex-wrap gap-2">
                   <Link
                     href={routes.calculators}
-                    className="inline-flex min-h-10 items-center justify-center rounded-xl bg-orange-600 px-4 text-sm font-bold text-white transition hover:bg-orange-700"
+                    className="inline-flex min-h-10 items-center justify-center rounded-xl bg-[--color-orange-brand] px-4 text-sm font-black text-white transition hover:bg-orange-700"
                   >
                     Open Calculators
                   </Link>
@@ -565,7 +629,7 @@ export default function CommandCenterClient({
                     type="button"
                     onClick={refreshInviteCode}
                     disabled={isRefreshingInvite}
-                    className="inline-flex items-center justify-center gap-1 rounded-lg border border-[--color-orange-brand]/70 bg-transparent px-2 py-2 text-[--color-orange-brand] transition hover:bg-[--color-orange-brand]/10 disabled:opacity-60"
+                    className="inline-flex items-center justify-center gap-1 rounded-lg border-2 border-orange-400 bg-transparent px-2 py-2 text-orange-300 transition hover:bg-orange-500/10 disabled:opacity-60"
                   >
                     <RefreshCw className="h-3.5 w-3.5" aria-hidden />
                     {isRefreshingInvite ? "Refreshing" : "Regenerate Code"}
@@ -592,6 +656,63 @@ export default function CommandCenterClient({
                 )}
               </div>
             )}
+
+            <div className="command-card space-y-4 p-5 xl:col-span-3">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-500">
+                    Recent Estimates
+                  </p>
+                  <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-white">
+                    Latest Activity
+                  </h2>
+                </div>
+                <Link
+                  href={routes.saved}
+                  className="inline-flex min-h-10 items-center justify-center rounded-xl border border-slate-700 px-4 text-sm font-semibold text-slate-200 transition hover:border-slate-500 hover:text-white"
+                >
+                  View All
+                </Link>
+              </div>
+
+              {recentEstimates.length === 0 ? (
+                <div className="rounded-2xl border border-dashed border-slate-700 bg-slate-950/60 px-4 py-5 text-sm text-slate-400">
+                  No estimates yet. Start a draft from any calculator and it will appear here.
+                </div>
+              ) : (
+                <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                  {recentEstimates.map((estimate) => (
+                    <div
+                      key={estimate.id}
+                      className="rounded-2xl border border-slate-800 bg-slate-950/70 p-4"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-bold text-white">
+                            {estimate.name}
+                          </p>
+                          <p className="mt-1 truncate text-xs text-slate-400">
+                            {estimate.clientName || "No client name"}
+                          </p>
+                        </div>
+                        <span
+                          className={`inline-flex shrink-0 items-center rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest ${estimateStatusClasses(estimate.status)}`}
+                        >
+                          {formatEstimateStatus(estimate.status)}
+                        </span>
+                      </div>
+                      <p className="mt-3 text-xs text-slate-500">
+                        Updated{" "}
+                        {new Date(estimate.updatedAt).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                        })}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
 
             <div className="command-card space-y-4 p-0 xl:col-span-3">
               <div className="border-b border-[--color-border] px-5 py-4 text-xl font-sans font-black uppercase tracking-tight text-white">
@@ -677,53 +798,86 @@ export default function CommandCenterClient({
       </div>
 
       {activeTool && (
-        <div className="fixed inset-0 z-50 flex">
+        <div className="fixed inset-0 z-50 flex items-stretch justify-center sm:px-4 sm:py-4">
           <button
             type="button"
             onClick={() => setActiveTool(null)}
             className="absolute inset-0 bg-black/60"
           />
-          <div className="relative ml-auto flex h-full w-full max-w-md flex-col overflow-hidden rounded-tl-3xl rounded-bl-3xl border border-slate-800 bg-slate-900 shadow-[0_24px_50px_rgba(0,0,0,0.6)]">
-            <div className="flex items-center justify-between border-b border-slate-800 px-4 py-3">
-              <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-slate-400">
-                  Tool Details
-                </p>
-                <p className="text-lg font-black uppercase tracking-tight text-white">
-                  {activeTool.label}
-                </p>
+          {activeTradePage ? (
+            <div className="relative z-10 flex h-full w-full max-w-6xl flex-col overflow-hidden border border-slate-800 bg-slate-950 shadow-[0_24px_50px_rgba(0,0,0,0.6)] sm:rounded-3xl">
+              <div className="sticky top-0 z-20 flex h-12 items-center justify-between gap-2 border-b border-slate-800 bg-slate-900/95 px-3 backdrop-blur-sm">
+                <nav className="truncate text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-400">
+                  Calculators &gt; {activeTradePage.heroKicker.split("/")[0]?.trim() ?? "Category"}
+                </nav>
+                <div className="flex items-center justify-between gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setActiveTool(null)}
+                    className="inline-flex h-8 items-center rounded-lg border border-slate-700 px-2 text-[10px] font-bold uppercase tracking-widest text-slate-200 transition hover:border-orange-600 hover:text-white"
+                  >
+                    Back
+                  </button>
+                  <p className="max-w-[220px] truncate text-xs font-black uppercase tracking-[0.08em] text-white">
+                    {activeTradePage.heroKicker}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTool(null)}
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-700 text-slate-300 transition hover:border-orange-600 hover:text-white"
+                    aria-label="Close calculator modal"
+                  >
+                    <X className="h-4 w-4" aria-hidden />
+                  </button>
+                </div>
               </div>
-              <button
-                type="button"
-                onClick={() => setActiveTool(null)}
-                className="rounded-full border border-slate-800 p-1 text-slate-300 transition hover:border-orange-600 hover:text-white"
-                aria-label="Close tool detail pane"
-              >
-                <X className="h-4 w-4" aria-hidden />
-              </button>
+              <div className="flex-1 overflow-y-auto bg-slate-950">
+                <CalculatorPage page={activeTradePage} />
+              </div>
             </div>
-            <div className="flex-1 overflow-y-auto px-4 py-4 text-sm text-slate-300">
-              <p className="text-slate-400">
-                {activeTool.description ??
-                  "Field-ready figures, templates, and workflow context for this tool."}
-              </p>
-              <div className="mt-4 flex flex-col gap-3">
-                <Link
-                  href={activeTool.href ?? routes.commandCenter}
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-orange-600 bg-orange-600 px-4 py-2 text-sm font-black uppercase text-white transition hover:bg-orange-700"
-                >
-                  Open {activeTool.label}
-                </Link>
+          ) : (
+            <div className="relative z-10 ml-auto flex h-full w-full max-w-md flex-col overflow-hidden rounded-tl-3xl rounded-bl-3xl border border-slate-800 bg-slate-900 shadow-[0_24px_50px_rgba(0,0,0,0.6)]">
+              <div className="flex items-center justify-between border-b border-slate-800 px-4 py-3">
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-slate-400">
+                    Tool Details
+                  </p>
+                  <p className="text-lg font-black uppercase tracking-tight text-white">
+                    {activeTool.label}
+                  </p>
+                </div>
                 <button
                   type="button"
                   onClick={() => setActiveTool(null)}
-                  className="inline-flex items-center justify-center rounded-2xl border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-orange-600 hover:text-white"
+                  className="rounded-full border border-slate-800 p-1 text-slate-300 transition hover:border-orange-600 hover:text-white"
+                  aria-label="Close tool detail pane"
                 >
-                  Close panel
+                  <X className="h-4 w-4" aria-hidden />
                 </button>
               </div>
+              <div className="flex-1 overflow-y-auto px-4 py-4 text-sm text-slate-300">
+                <p className="text-slate-400">
+                  {activeTool.description ??
+                    "Field-ready figures, templates, and workflow context for this tool."}
+                </p>
+                <div className="mt-4 flex flex-col gap-3">
+                  <Link
+                    href={activeTool.href ?? routes.commandCenter}
+                    className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[--color-orange-brand] bg-[--color-orange-brand] px-4 py-2 text-sm font-black uppercase text-white transition hover:bg-orange-700"
+                  >
+                    Open {activeTool.label}
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTool(null)}
+                    className="inline-flex items-center justify-center rounded-2xl border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-orange-600 hover:text-white"
+                  >
+                    Close panel
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
 

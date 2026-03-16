@@ -28,7 +28,7 @@ export interface SavedEstimate {
   total_cost: number | null;
   client_name: string | null;
   job_site_address: string | null;
-  status: "Draft" | "Sent" | "Approved" | "Lost";
+  status: "Draft" | "Sent" | "Approved" | "Lost" | "PENDING" | "SIGNED";
   share_code?: string | null;
   created_at: string;
   updated_at: string;

@@ -23,7 +23,8 @@ create table if not exists public.users (
   name            text,
   email           text unique,
   "emailVerified" timestamptz,
-  image           text
+  image           text,
+  pro_mode_enabled boolean
 );
 
 revoke all on public.users from anon, authenticated;
@@ -41,7 +42,7 @@ create table if not exists saved_estimates (
   -- CRM fields (from schema screenshot)
   client_name      text,
   job_site_address text,
-  status           text default 'Draft' check (status in ('Draft','Sent','Approved','Lost')),
+  status           text default 'Draft' check (status in ('Draft','Sent','Approved','Lost','PENDING','SIGNED')),
   created_at       timestamptz not null default now(),
   updated_at       timestamptz not null default now()
 );

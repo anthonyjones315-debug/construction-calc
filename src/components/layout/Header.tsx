@@ -7,14 +7,14 @@ import {
   User,
   LogOut,
   ChevronDown,
-  Bookmark,
   LayoutDashboard,
   Menu,
   X,
 } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { primaryNavigation, routes } from "@routes";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
+import { useClickOutside } from "@/hooks/useClickOutside";
 
 export function Header() {
   const pathname = usePathname();
@@ -23,17 +23,12 @@ export function Header() {
   const [isMounted, setIsMounted] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [businessName, setBusinessName] = useState<string | null>(null);
+  const headerRef = useRef<HTMLElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  const online = useOnlineStatus();
   const isCommandCenterActive =
     pathname === "/command-center" || pathname === "/dashboard";
-
-  const online = useOnlineStatus();
-  const displayName = session?.user?.name ?? "User";
-  const businessLabel =
-    session?.user && businessName !== undefined
-      ? (businessName?.trim() || "Pro Account")
-      : "Guest";
 
   useEffect(() => {
     let cancelled = false;
@@ -52,14 +47,18 @@ export function Header() {
           return;
         }
 
-        const data: { profile?: { business_name?: string | null } } | null =
+        const data:
+          | { profile?: { business_name?: string | null; company_name?: string | null } }
+          | null =
           await res.json();
         if (cancelled || !data?.profile) return;
 
         const name =
-          typeof data.profile.business_name === "string"
-            ? data.profile.business_name.trim()
-            : null;
+          typeof data.profile.company_name === "string"
+            ? data.profile.company_name.trim()
+            : typeof data.profile.business_name === "string"
+              ? data.profile.business_name.trim()
+              : null;
         setBusinessName(name);
       } catch {
         if (!cancelled) {
@@ -80,43 +79,48 @@ export function Header() {
     return () => cancelAnimationFrame(frame);
   }, []);
 
+  const closeAccountMenu = useCallback(() => setMenuOpen(false), []);
+  const closeMobileMenu = useCallback(() => setMobileNavOpen(false), []);
+  useClickOutside(menuRef, closeAccountMenu, menuOpen);
+  useClickOutside(headerRef, closeMobileMenu, mobileNavOpen);
+
   useEffect(() => {
-    if (!menuOpen) return;
+    if (!mobileNavOpen) return;
     const handleMouseDown = (e: MouseEvent) => {
-      if (menuRef.current?.contains(e.target as Node)) return;
-      setMenuOpen(false);
+      if (headerRef.current?.contains(e.target as Node)) return;
+      setMobileNavOpen(false);
     };
     document.addEventListener("mousedown", handleMouseDown);
     return () => document.removeEventListener("mousedown", handleMouseDown);
-  }, [menuOpen]);
+  }, [mobileNavOpen]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-800 bg-slate-950 text-slate-100 shadow-[0_10px_30px_rgba(0,0,0,0.22)]">
-      <div className="mx-auto flex h-14 max-w-screen-xl items-center justify-between gap-1 px-4 sm:gap-4">
+    <header ref={headerRef} className="sticky top-0 z-50 border-b border-slate-800 bg-slate-950 text-slate-100 shadow-[0_10px_30px_rgba(0,0,0,0.22)]">
+      <div className="mx-auto flex h-10 max-w-7xl items-center justify-between gap-1 px-3 sm:gap-3 sm:px-4">
         {/* Logo — P brand: always to Command Center dashboard */}
             <Link
               href={routes.commandCenter}
-              className="flex shrink-0 items-center gap-2 text-base font-display font-black tracking-wide text-white transition-colors hover:text-orange-500 sm:text-xl"
+              className="flex shrink-0 items-center gap-1.5 text-sm font-display font-black tracking-wide text-white transition-colors hover:text-orange-500 sm:text-lg"
               aria-label="Pro Construction Calc - Command Center"
             >
-              <HardHat className="w-6 h-6 text-orange-500" aria-hidden />
+              <HardHat className="h-5 w-5 text-orange-500" aria-hidden />
           <span className="hidden sm:block">Pro Construction Calc</span>
           <span className="sm:hidden">PC</span>
-          <span className="ml-1 hidden rounded bg-orange-600 px-1.5 py-0.5 text-[10px] font-sans font-black uppercase tracking-wider text-white sm:inline">
+          <span className="ml-1 hidden rounded bg-[--color-orange-brand] px-1.5 py-0.5 text-[10px] font-sans font-black uppercase tracking-wider text-white sm:inline">
             Beta
           </span>
         </Link>
 
         {/* Desktop nav */}
         <nav
-          className="hidden items-center gap-4 text-sm text-slate-300 md:flex"
+          className="hidden items-center gap-3 text-sm text-slate-300 md:flex"
           aria-label="Main navigation"
         >
           {primaryNavigation.map(({ href, label }) => (
             <Link
               key={href}
               href={href}
-              className="flex min-h-11 items-center rounded-lg px-3 py-1.5 text-sm transition-colors hover:text-white"
+              className="flex min-h-8 items-center rounded-lg px-2.5 py-1 text-xs transition-colors hover:text-white"
             >
               {label}
             </Link>
@@ -124,7 +128,7 @@ export function Header() {
         </nav>
 
         {/* Right side: offline badge + auth + mobile hamburger */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           {/* Hydration-safe offline badge: render a placeholder until mounted. */}
           <span
             className={`rounded-full border border-slate-600 bg-slate-800/80 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400 ${
@@ -144,7 +148,7 @@ export function Header() {
             <div className="relative" ref={menuRef}>
               <button
                 onClick={() => setMenuOpen((o) => !o)}
-                className="flex items-center gap-2 text-sm text-slate-300 transition-colors hover:text-white"
+                className="flex items-center gap-1 rounded-full text-sm text-slate-300 transition-colors hover:text-white"
                 aria-expanded={menuOpen}
                 aria-haspopup="true"
                 aria-controls="account-menu"
@@ -154,21 +158,15 @@ export function Header() {
                   <img
                     src={session.user.image}
                     alt={`${session.user?.name ?? "User"} profile picture`}
-                    className="w-7 h-7 rounded-full"
+                    className="h-8 w-8 rounded-full border border-slate-700 object-cover"
                     referrerPolicy="no-referrer"
                   />
                 ) : (
-                  <div className="w-7 h-7 rounded-full bg-orange-600 flex items-center justify-center">
-                    <User className="w-4 h-4 text-white" aria-hidden />
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[--color-orange-brand]">
+                    <User className="h-4 w-4 text-white" aria-hidden />
                   </div>
                 )}
-                <span className="hidden sm:flex sm:flex-col sm:items-start sm:leading-tight">
-                  <span className="text-xs font-semibold text-slate-100">{displayName}</span>
-                  <span className="text-[10px] uppercase tracking-[0.1em] text-orange-600">
-                    {businessLabel}
-                  </span>
-                </span>
-                <ChevronDown className="w-3 h-3" aria-hidden />
+                <ChevronDown className="h-3 w-3" aria-hidden />
               </button>
 
               {menuOpen && (
@@ -183,26 +181,20 @@ export function Header() {
                       Signed in as
                     </p>
                     <p className="truncate text-sm font-medium text-slate-100">
-                      {session.user?.email}
+                      {businessName?.trim() || session.user?.name || "Pro Account"}
                     </p>
+                    <p className="truncate text-xs text-slate-400">{session.user?.email}</p>
                   </div>
                   <Link
-                    href={routes.commandCenter}
+                    href={routes.settings}
                     role="menuitem"
-                    className={`flex items-center gap-2 px-4 py-2 text-sm transition-colors hover:bg-slate-800 hover:text-orange-500 ${
-                      isCommandCenterActive
-                        ? "text-orange-600 font-bold"
-                        : "text-slate-200"
-                    }`}
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-slate-200 transition-colors hover:bg-slate-800 hover:text-orange-500"
                     onClick={() => setMenuOpen(false)}
                   >
-                    <LayoutDashboard
-                      className={`h-4 w-4 shrink-0 ${
-                        isCommandCenterActive ? "text-orange-600" : "text-slate-300"
-                      }`}
-                      aria-hidden
-                    />
-                    Command Center
+                    <span className="w-4 text-center text-slate-300" aria-hidden>
+                      ⚙
+                    </span>
+                    Business Profile
                   </Link>
                   <Link
                     href={routes.saved}
@@ -210,30 +202,10 @@ export function Header() {
                     className="flex items-center gap-2 px-4 py-2 text-sm text-slate-200 transition-colors hover:bg-slate-800 hover:text-orange-500"
                     onClick={() => setMenuOpen(false)}
                   >
-                    <Bookmark className="w-4 h-4 text-slate-300" aria-hidden />
-                    Saved Estimates
-                  </Link>
-                  <Link
-                    href={routes.pricebook}
-                    role="menuitem"
-                    className="flex items-center gap-2 px-4 py-2 text-sm text-slate-200 transition-colors hover:bg-slate-800 hover:text-orange-500"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    <span className="w-4 h-4 text-center text-slate-300" aria-hidden>
-                      📋
+                    <span className="w-4 text-center text-slate-300" aria-hidden>
+                      ▣
                     </span>
-                    Price Book
-                  </Link>
-                  <Link
-                    href={routes.settings}
-                    role="menuitem"
-                    className="flex items-center gap-2 px-4 py-2 text-sm text-slate-200 transition-colors hover:bg-slate-800 hover:text-orange-500"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    <span className="w-4 h-4 text-center text-slate-300" aria-hidden>
-                      ⚙️
-                    </span>
-                    Business Profile
+                    My Estimates
                   </Link>
                   <button
                     onClick={() => {
@@ -252,7 +224,7 @@ export function Header() {
           ) : (
             <Link
               href={routes.auth.signIn}
-              className="btn-tactile flex min-h-11 items-center rounded-lg bg-orange-600 px-4 text-sm font-black uppercase text-white transition-all duration-200 hover:bg-orange-700 active:scale-[0.98]"
+              className="btn-tactile flex min-h-8 items-center rounded-lg bg-orange-600 px-3 text-xs font-black uppercase text-white transition-all duration-200 hover:bg-orange-700 active:scale-[0.98]"
               aria-label="Sign in to your Estimating Cockpit"
             >
               Sign In
@@ -261,7 +233,7 @@ export function Header() {
 
           {/* Mobile hamburger */}
           <button
-            className="btn-tactile flex h-11 min-h-11 w-11 items-center justify-center rounded-lg text-slate-300 transition-all duration-200 hover:bg-slate-800 hover:text-white active:scale-[0.98] md:hidden"
+            className="btn-tactile flex h-9 min-h-9 w-9 items-center justify-center rounded-lg text-slate-300 transition-all duration-200 hover:bg-slate-800 hover:text-white active:scale-[0.98] md:hidden"
             onClick={() => setMobileNavOpen((o) => !o)}
             aria-expanded={mobileNavOpen}
             aria-controls="mobile-navigation"
@@ -280,14 +252,14 @@ export function Header() {
       {mobileNavOpen && (
         <nav
           id="mobile-navigation"
-          className="flex flex-col gap-1 border-t border-slate-800 bg-slate-900 px-4 py-3 md:hidden"
+          className="flex flex-col gap-1 border-t border-slate-800 bg-slate-900 px-4 py-2 md:hidden"
           aria-label="Mobile navigation"
         >
           {session && (
             <Link
               href={routes.commandCenter}
               onClick={() => setMobileNavOpen(false)}
-              className={`flex min-h-11 items-center gap-2 rounded-lg px-4 py-2 text-sm transition-colors hover:bg-slate-800 hover:text-orange-500 ${
+              className={`flex min-h-9 items-center gap-2 rounded-lg px-4 py-1.5 text-sm transition-colors hover:bg-slate-800 hover:text-orange-500 ${
                 isCommandCenterActive
                   ? "text-orange-600 font-bold"
                   : "text-slate-200"
@@ -307,7 +279,7 @@ export function Header() {
               key={href}
               href={href}
               onClick={() => setMobileNavOpen(false)}
-              className="flex min-h-11 items-center rounded-lg px-4 py-2 text-sm text-slate-200 transition-colors hover:bg-slate-800 hover:text-orange-500"
+              className="flex min-h-9 items-center rounded-lg px-4 py-1.5 text-sm text-slate-200 transition-colors hover:bg-slate-800 hover:text-orange-500"
             >
               {label}
             </Link>

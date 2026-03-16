@@ -1,7 +1,9 @@
-"use client";
+ "use client";
 
+import * as Sentry from "@sentry/nextjs";
 import { useState } from "react";
 import { X, Mail, Loader2 } from "lucide-react";
+import posthog from "posthog-js";
 
 export type EstimatePayload = {
   title: string;
@@ -9,6 +11,8 @@ export type EstimatePayload = {
   controlNumber?: string | null;
   clientName?: string | null;
   jobSiteAddress?: string | null;
+  fromName?: string | null;
+  fromEmail?: string | null;
   results: Array<{
     label: string;
     value: string | number;
@@ -30,6 +34,7 @@ interface EmailEstimateModalProps {
   open: boolean;
   onClose: () => void;
   estimate: EstimatePayload;
+  replyTo?: string | null;
 }
 
 const DEFAULT_SUBJECT = "Estimate from Pro Construction Calc";
@@ -38,6 +43,7 @@ export function EmailEstimateModal({
   open,
   onClose,
   estimate,
+  replyTo,
 }: EmailEstimateModalProps) {
   const [to, setTo] = useState("");
   const [subject, setSubject] = useState(DEFAULT_SUBJECT);
@@ -60,6 +66,7 @@ export function EmailEstimateModal({
         body: JSON.stringify({
           to: email,
           subject: subject.trim() || DEFAULT_SUBJECT,
+          replyTo: replyTo ?? undefined,
           estimate: {
             ...estimate,
             generatedAt:
@@ -74,8 +81,13 @@ export function EmailEstimateModal({
       if (!res.ok) {
         throw new Error(data?.error ?? "Failed to send email.");
       }
+      posthog.capture("estimate_emailed", {
+        calculator_label: estimate.calculatorLabel,
+        has_budget_items: Boolean(estimate.budgetItems?.length),
+      });
       setStatus("sent");
     } catch (err) {
+      Sentry.captureException(err);
       setStatus("error");
       setErrorMessage(err instanceof Error ? err.message : "Failed to send.");
     }
@@ -114,7 +126,9 @@ export function EmailEstimateModal({
             Email Estimate
           </h2>
           <p className="mt-1 text-sm text-slate-400">
-            Send this estimate to a client. Emails are sent from system@proconstructioncalc.com.
+            Send this estimate to a client. Emails are sent from{" "}
+            <code>system@proconstructioncalc.com</code>
+            {replyTo ? ` and replies go to ${replyTo}.` : "."}
           </p>
 
           {status === "sent" ? (
@@ -131,7 +145,7 @@ export function EmailEstimateModal({
                   value={to}
                   onChange={(e) => setTo(e.target.value)}
                   placeholder="client@example.com"
-                  className="h-10 rounded-xl border border-white/15 bg-black/30 px-3 text-white placeholder:text-slate-500 focus:border-[--color-orange-brand]/80 focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/40"
+                  className="h-10 rounded-xl border border-slate-500 bg-slate-900 px-3 text-white placeholder:text-slate-500 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </label>
               <label className="flex flex-col gap-1 text-sm text-slate-300">
@@ -141,11 +155,20 @@ export function EmailEstimateModal({
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
                   maxLength={200}
-                  className="h-10 rounded-xl border border-white/15 bg-black/30 px-3 text-white placeholder:text-slate-500 focus:border-[--color-orange-brand]/80 focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/40"
+                  className="h-10 rounded-xl border border-slate-500 bg-slate-900 px-3 text-white placeholder:text-slate-500 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </label>
               {status === "error" && errorMessage && (
-                <p className="text-sm text-red-300">{errorMessage}</p>
+                <p className="text-sm text-red-300">
+                  {errorMessage}{" "}
+                  <button
+                    type="button"
+                    onClick={() => Sentry.showReportDialog()}
+                    className="ml-1 text-xs font-medium underline underline-offset-2 text-red-200 hover:text-red-100"
+                  >
+                    Report this issue
+                  </button>
+                </p>
               )}
               <div className="flex gap-2">
                 <button
@@ -163,7 +186,7 @@ export function EmailEstimateModal({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="rounded-xl border border-white/20 px-4 py-2 text-sm font-semibold text-slate-300 transition hover:bg-white/8 hover:text-white"
+                  className="rounded-xl border-2 border-white/80 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/8 hover:text-white"
                 >
                   Close
                 </button>

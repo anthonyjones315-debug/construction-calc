@@ -107,7 +107,7 @@ export function SplashPopup() {
         role="dialog"
         aria-modal="true"
         aria-labelledby="splash-title"
-        className="fixed left-1/2 top-1/2 z-[60] w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 -translate-y-1/2"
+        className="fixed left-1/2 top-1/2 z-60 w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 -translate-y-1/2"
         onClick={(event) => event.stopPropagation()}
         style={{ animation: "splashUp 0.25s ease forwards" }}
       >

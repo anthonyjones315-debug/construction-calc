@@ -4,8 +4,13 @@ import { AlertTriangle, DollarSign, TrendingUp, Wallet } from "lucide-react";
 import { useMemo } from "react";
 import type { CalculationResult } from "@/types";
 import type { FinancialData } from "@/components/financial/FinancialDataFetcher";
-
-type EstimateStatus = "Draft" | "Sent" | "Approved" | "Lost";
+import {
+  formatEstimateStatus,
+  isEstimateOpen,
+  isEstimateSettled,
+  normalizeEstimateStatus,
+  type EstimateStatus,
+} from "@/lib/estimates/status";
 
 const USD_CURRENCY = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -99,17 +104,7 @@ function toOptionalFiniteNumber(value: unknown): number | null {
 }
 
 export function getEstimateStatus(estimate: SavedEstimate): EstimateStatus {
-  const status = estimate.status;
-  if (
-    status === "Draft" ||
-    status === "Sent" ||
-    status === "Approved" ||
-    status === "Lost"
-  ) {
-    return status;
-  }
-
-  return "Draft";
+  return normalizeEstimateStatus(estimate.status);
 }
 
 function getBudgetItemCost(item: unknown): number {
@@ -373,7 +368,7 @@ export function getProjectProfitMargin(estimate: SavedEstimate): number | null {
 }
 
 export function formatStatus(status: EstimateStatus): string {
-  return status === "Approved" ? "Billed" : status;
+  return formatEstimateStatus(status);
 }
 
 function computeFinancialDashboard(estimates: SavedEstimate[]) {
@@ -399,10 +394,10 @@ function computeFinancialDashboard(estimates: SavedEstimate[]) {
     });
 
   const billedProjects = projectMargins.filter((project) => {
-    return project.status === "Approved";
+    return isEstimateSettled(project.status);
   });
   const unbilledProjects = projectMargins.filter((project) => {
-    return project.status === "Draft" || project.status === "Sent";
+    return isEstimateOpen(project.status);
   });
   const marginProjects = projectMargins.filter((project) => {
     return (
@@ -487,7 +482,7 @@ export function FinancialDashboard({
             {USD_CURRENCY.format(billedAmount)}
           </p>
           <p className="text-xs text-[--color-ink-dim] mt-1">
-            {billedCount} approved project
+            {billedCount} signed project
             {billedCount === 1 ? "" : "s"}
           </p>
         </div>
@@ -501,7 +496,7 @@ export function FinancialDashboard({
             {USD_CURRENCY.format(unbilledAmount)}
           </p>
           <p className="text-xs text-[--color-ink-dim] mt-1">
-            {unbilledCount} draft/sent project
+            {unbilledCount} open project
             {unbilledCount === 1 ? "" : "s"}
           </p>
         </div>

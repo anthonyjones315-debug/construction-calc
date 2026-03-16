@@ -18,6 +18,24 @@ type TeamMember = {
   joinedAt: string;
 };
 
+type RecentEstimate = {
+  id: string;
+  name: string;
+  clientName: string | null;
+  status: string | null;
+  updatedAt: string;
+};
+
+type CommandCenterData = {
+  hasBusiness: boolean;
+  isOwner: boolean;
+  businessName: string;
+  joinCode: string;
+  members: TeamMember[];
+  recentEstimates: RecentEstimate[];
+  needsBusinessProfileSetup: boolean;
+};
+
 function getSetupErrorMessage(
   code: string | undefined,
   details: string | undefined,
@@ -215,7 +233,7 @@ function CommandCenterOnboarding({
               type="text"
               required
               placeholder="Acme Construction"
-              className="h-11 rounded-lg border border-slate-700 bg-slate-950 px-3 text-white placeholder:text-white/35 outline-none transition focus:border-slate-600 focus:ring-2 focus:ring-orange-600/30"
+              className="h-11 rounded-lg border border-slate-500 bg-slate-900 px-3 text-white placeholder:text-white/35 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
             />
           </label>
 
@@ -245,7 +263,7 @@ function NotOwnerState() {
         <div className="mt-5">
           <Link
             href={routes.calculators}
-            className="inline-flex h-10 items-center justify-center rounded-lg border border-orange-600/60 bg-transparent px-4 text-sm font-black uppercase text-orange-500 shadow-lg transition hover:bg-orange-600/10"
+            className="inline-flex h-10 items-center justify-center rounded-lg border-2 border-orange-400 bg-transparent px-4 text-sm font-black uppercase text-orange-300 shadow-lg transition hover:bg-orange-600/10"
           >
             Go to Calculators
           </Link>
@@ -255,13 +273,7 @@ function NotOwnerState() {
   );
 }
 
-async function loadCommandCenterData(userId: string): Promise<{
-  hasBusiness: boolean;
-  isOwner: boolean;
-  businessName: string;
-  joinCode: string;
-  members: TeamMember[];
-}> {
+async function loadCommandCenterData(userId: string): Promise<CommandCenterData> {
   const db = createServerClient();
 
   const { data: membership } = await db
@@ -279,6 +291,8 @@ async function loadCommandCenterData(userId: string): Promise<{
       businessName: "",
       joinCode: "",
       members: [],
+      recentEstimates: [],
+      needsBusinessProfileSetup: false,
     };
   }
 
@@ -295,6 +309,8 @@ async function loadCommandCenterData(userId: string): Promise<{
       businessName: "",
       joinCode: "",
       members: [],
+      recentEstimates: [],
+      needsBusinessProfileSetup: false,
     };
   }
 
@@ -316,6 +332,19 @@ async function loadCommandCenterData(userId: string): Promise<{
           }[],
         };
 
+  const { data: recentEstimates } = await db
+    .from("saved_estimates")
+    .select("id, name, client_name, status, updated_at")
+    .eq("business_id", business.id)
+    .order("updated_at", { ascending: false })
+    .limit(6);
+
+  const { data: businessProfile } = await db
+    .from("business_profiles")
+    .select("business_name")
+    .eq("business_id", business.id)
+    .maybeSingle();
+
   const userMap = new Map((users ?? []).map((row) => [row.id, row]));
   let joinCodeHash = 0;
   for (const char of business.id) {
@@ -327,6 +356,16 @@ async function loadCommandCenterData(userId: string): Promise<{
     isOwner: membership.role === "owner",
     businessName: business.name,
     joinCode: String(Math.abs(joinCodeHash)).padStart(6, "0"),
+    recentEstimates: (recentEstimates ?? []).map((estimate) => ({
+      id: estimate.id,
+      name: estimate.name,
+      clientName: estimate.client_name,
+      status: estimate.status,
+      updatedAt: estimate.updated_at,
+    })),
+    needsBusinessProfileSetup:
+      !businessProfile?.business_name ||
+      !businessProfile.business_name.trim().length,
     members: (memberships ?? []).map((member) => {
       const user = userMap.get(member.user_id);
       return {
@@ -384,6 +423,8 @@ export default async function CommandCenterPage({
         businessName={commandCenterData.businessName}
         joinCode={commandCenterData.joinCode}
         initialMembers={commandCenterData.members}
+        recentEstimates={commandCenterData.recentEstimates}
+        needsBusinessProfileSetup={commandCenterData.needsBusinessProfileSetup}
         draftMode={draftMode}
         initialToolSlug={toolParam ?? undefined}
       />

@@ -46,7 +46,7 @@ export function ContactForm() {
   }
 
   const inputClass =
-    "h-10 w-full rounded-xl border border-white/15 bg-black/30 px-3 text-white placeholder:text-slate-500 focus:border-[--color-orange-brand]/80 focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/40";
+    "h-10 w-full rounded-xl border border-slate-500 bg-slate-900 px-3 text-white placeholder:text-slate-500 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500";
   const labelClass = "flex flex-col gap-1 text-sm text-slate-300";
 
   if (status === "sent") {
@@ -101,7 +101,7 @@ export function ContactForm() {
           placeholder="Your message..."
           rows={4}
           maxLength={10000}
-          className={`min-h-[100px] resize-y rounded-xl border border-white/15 bg-black/30 px-3 py-2 text-white placeholder:text-slate-500 focus:border-[--color-orange-brand]/80 focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/40`}
+          className={`min-h-[100px] resize-y rounded-xl border border-slate-500 bg-slate-900 px-3 py-2 text-white placeholder:text-slate-500 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500`}
         />
       </label>
       {status === "error" && errorMessage && (

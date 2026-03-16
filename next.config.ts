@@ -5,6 +5,7 @@ import { withSentryConfig } from "@sentry/nextjs";
 const withSerwist = withSerwistInit({
   swSrc: "src/app/sw.ts",
   swDest: "public/sw.js",
+  disable: process.env.NODE_ENV === "development",
   additionalPrecacheEntries: [{ url: "/offline", revision: "offline-v3" }],
   // Exclude fonts from precache so they never cause bad-precaching-response 404s.
   exclude: [
@@ -50,7 +51,21 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "www.google-analytics.com" },
       { protocol: "https", hostname: "www.googlesyndication.com" },
       { protocol: "https", hostname: "googleads.g.doubleclick.net" },
+      { protocol: "https", hostname: "lh3.googleusercontent.com" },
     ],
+  },
+  skipTrailingSlashRedirect: true,
+  async rewrites() {
+    return [
+      {
+        source: "/ingest/static/:path*",
+        destination: "https://us-assets.i.posthog.com/static/:path*",
+      },
+      {
+        source: "/ingest/:path*",
+        destination: "https://us.i.posthog.com/:path*",
+      },
+    ];
   },
   async redirects() {
     return [
@@ -63,13 +78,12 @@ const nextConfig: NextConfig = {
     ];
   },
   async headers() {
-    const isDev = process.env.NODE_ENV !== "production";
-
     const scriptSrc = [
       "script-src",
       "'self'",
       "'unsafe-inline'",
-      ...(isDev ? ["'unsafe-eval'"] : []),
+      "'unsafe-eval'",
+      "'wasm-unsafe-eval'",
       "https://va.vercel-scripts.com",
       "https://cdn.vercel-insights.com",
       "https://browser.sentry-cdn.com",
@@ -78,17 +92,23 @@ const nextConfig: NextConfig = {
       "https://static.cloudflareinsights.com",
       "https://pagead2.googlesyndication.com",
       "https://adservice.google.com",
+      "https://*.adtrafficquality.google",
       "https://*.google-analytics.com",
     ].join(" ");
 
     const connectSrc = [
       "connect-src",
       "'self'",
+      "data:",
+      "blob:",
       "https://*.google-analytics.com",
       "https://*.analytics.google.com",
       "https://*.googletagmanager.com",
       "https://*.g.doubleclick.net",
       "https://*.pagead2.googlesyndication.com",
+      "https://*.googlesyndication.com",
+      "https://*.adtrafficquality.google",
+      "https://ep1.adtrafficquality.google",
       "https://*.google.com",
       "https://*.sentry.io",
       "https://o4511044273766400.ingest.us.sentry.io",
@@ -104,11 +124,12 @@ const nextConfig: NextConfig = {
       scriptSrc,
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' data: https://fonts.gstatic.com",
-      "img-src 'self' data: blob: https://images.unsplash.com https://www.googletagmanager.com https://*.google-analytics.com https://*.googlesyndication.com https://*.doubleclick.net https://*.supabase.co",
+      "img-src 'self' data: blob: https://images.unsplash.com https://www.googletagmanager.com https://*.google-analytics.com https://*.googlesyndication.com https://*.doubleclick.net https://*.supabase.co https://*.googleusercontent.com https://lh3.googleusercontent.com http://googleusercontent.com",
       // Sentry ingest + Vercel + Google Analytics + ads + Supabase Auth (required for password reset / auth recovery)
       connectSrc,
       "media-src 'none'",
       "object-src 'none'",
+      "worker-src 'self' blob:",
       "frame-src 'self' https://googleads.g.doubleclick.net https://*.googlesyndication.com",
       // frame-ancestors mirrors X-Frame-Options: DENY for CSP-aware browsers
       "frame-ancestors 'none'",

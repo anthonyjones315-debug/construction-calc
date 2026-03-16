@@ -11,3 +11,4 @@ public/swe-worker*
 tsconfig.tsbuildinfo
 *.tsbuildinfo
 dist-calcs
+.env.local

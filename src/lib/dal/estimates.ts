@@ -3,14 +3,13 @@ import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { auth } from "@/lib/auth/config";
 import { getEstimateTag, getSavedEstimatesTag } from "@/lib/cache-tags";
+import { normalizeEstimateStatus, type EstimateStatus } from "@/lib/estimates/status";
 import {
   redirectForUnauthorizedError,
   UnauthorizedError,
 } from "@/lib/errors/unauthorized";
 import type { MembershipRole } from "@/lib/supabase/business";
 import { createServerClient } from "@/lib/supabase/server";
-
-type EstimateStatus = "Draft" | "Sent" | "Approved" | "Lost";
 
 type EstimateResult = {
   label: string;
@@ -119,7 +118,7 @@ function toSafeEstimate(
     totalCost: row.total_cost,
     clientName: row.client_name,
     jobSiteAddress: row.job_site_address,
-    status: row.status ?? "Draft",
+    status: normalizeEstimateStatus(row.status),
     shareCode: row.share_code ?? null,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
