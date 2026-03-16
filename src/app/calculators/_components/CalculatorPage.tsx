@@ -487,6 +487,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   const haptic = useHaptic();
   const hapticTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isFirstCalcRender = useRef(true);
+  const userInteracted = useRef(false);
   const resultsCardRef = useRef<HTMLElement | null>(null);
   const moduleDropdownRef = useRef<HTMLDivElement | null>(null);
   const [iconPulse, setIconPulse] = useState(false);
@@ -1461,8 +1462,20 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   // Skipped on the very first render to avoid a buzz on page load.
   // When haptic fires, scroll the results card into view and trigger icon pulse (100ms).
   useEffect(() => {
+    const handlePointerDown = () => {
+      userInteracted.current = true;
+      window.removeEventListener("pointerdown", handlePointerDown);
+    };
+    window.addEventListener("pointerdown", handlePointerDown, { once: true });
+    return () => window.removeEventListener("pointerdown", handlePointerDown);
+  }, []);
+
+  useEffect(() => {
     if (isFirstCalcRender.current) {
       isFirstCalcRender.current = false;
+      return;
+    }
+    if (!userInteracted.current) {
       return;
     }
     if (hapticTimerRef.current) clearTimeout(hapticTimerRef.current);

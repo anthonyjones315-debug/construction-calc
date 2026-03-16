@@ -128,6 +128,8 @@ const nextConfig: NextConfig = {
       // Crisp chat WebSocket / API
       "https://client.relay.crisp.chat",
       "https://client.crisp.chat",
+      "wss://client.relay.crisp.chat",
+      "wss://client.crisp.chat",
     ].join(" ");
 
     const ContentSecurityPolicy = [
