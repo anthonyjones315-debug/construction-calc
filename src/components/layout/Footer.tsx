@@ -17,11 +17,13 @@ const footerAccountLinks = [
   { label: "Command Center", slug: "dashboard" },
 ];
 const footerLegalLinks = [
-  { label: "Field Notes", slug: "field-notes" },
-  { label: "FAQ", slug: "faq" },
-  { label: "About", slug: "about" },
-  { label: "Privacy Policy", slug: "privacy" },
-  { label: "Terms of Service", slug: "terms" },
+  { label: "Field Notes", href: routes.fieldNotes },
+  { label: "FAQ", href: routes.faq },
+  { label: "About", href: routes.about },
+  { label: "Glossary", href: routes.glossary },
+  { label: "User Guide", href: routes.guide },
+  { label: "Privacy Policy", href: routes.privacy },
+  { label: "Terms of Service", href: routes.terms },
 ];
 
 const buildCommandCenterLink = (slug?: string) =>
@@ -110,10 +112,10 @@ export function Footer() {
               </span>
             </div>
             <div className="space-y-2">
-              {footerLegalLinks.map(({ label, slug }) => (
+              {footerLegalLinks.map(({ label, href }) => (
                 <Link
-                  key={slug}
-                  href={buildCommandCenterLink(slug)}
+                  key={href}
+                  href={href}
                   className="block hover:text-orange-500 transition-colors text-slate-300"
                 >
                   {label}

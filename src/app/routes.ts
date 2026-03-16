@@ -15,6 +15,8 @@ export const routes = {
   privacy: "/privacy" as Route,
   saved: "/saved" as Route,
   settings: "/settings" as Route,
+  glossary: "/glossary" as Route,
+  guide: "/guide" as Route,
   terms: "/terms" as Route,
   unauthorized: "/unauthorized" as Route,
   auth: {
@@ -60,6 +62,8 @@ export const legalNavigation = [
   { href: routes.fieldNotes, label: "Field Notes" },
   { href: routes.faq, label: "FAQ" },
   { href: routes.about, label: "About" },
+  { href: routes.glossary, label: "Glossary" },
+  { href: routes.guide, label: "User Guide" },
   { href: routes.privacy, label: "Privacy Policy" },
   { href: routes.terms, label: "Terms of Service" },
 ] as const;
