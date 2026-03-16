@@ -292,7 +292,9 @@ export default function CommandCenterClient({
         throw new Error(payload?.error ?? "Unable to refresh the invite code.");
       }
 
-      setActiveJoinCode(payload.business?.joinCode ?? activeJoinCode);
+      const nextCode = payload.business?.joinCode ?? activeJoinCode;
+      setActiveJoinCode(nextCode);
+      setJoinCodeLabel(nextCode);
 
       if (Array.isArray(payload.members)) {
         setMembers(
@@ -682,9 +684,12 @@ export default function CommandCenterClient({
               ) : (
                 <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
                   {recentEstimates.map((estimate) => (
-                    <div
+                    <Link
                       key={estimate.id}
+                      href={`${routes.saved}?id=${estimate.id}`}
                       className="rounded-2xl border border-slate-800 bg-slate-950/70 p-4"
+                      aria-label={`Open estimate ${estimate.name}`}
+                      prefetch={false}
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
@@ -708,7 +713,7 @@ export default function CommandCenterClient({
                           day: "numeric",
                         })}
                       </p>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               )}
