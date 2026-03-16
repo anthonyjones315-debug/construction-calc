@@ -53,6 +53,11 @@ import { EmailEstimateModal, type EstimatePayload } from "@/components/ui/EmailE
 import { JsonLD } from "@/seo";
 import { getTradePageSchema, type TradePageDefinition } from "../_lib/trade-pages";
 import { NYS_COUNTY_TAX_RATES } from "@/data/nys-tax-rates";
+import {
+  getFinancialCalculatorCopy,
+  getFinancialTermDefinition,
+  getFinancialTermLabel,
+} from "@/data/financial-terms";
 import { routes } from "@routes";
 import { UnitToggle } from "./UnitToggle";
 import { ProInput } from "@/components/ui/ProInput";
@@ -303,12 +308,33 @@ function displayTitle(fullTitle: string): string {
   return fullTitle;
 }
 
+function inferUnitFromLabel(label: string, fallback?: string): string | undefined {
+  const l = label.toLowerCase();
+  if (label.includes("$")) return "$";
+  if (l.includes("%") || l.includes("rate") || l.includes("margin") || l.includes("markup") || l.includes("burden")) return "%";
+  if (l.includes("sq ft")) return "sq ft";
+  if (l.includes("lf") || l.includes("lineal")) return "lf";
+  if (l.includes("ft") || l.includes("foot") || l.includes("span")) return "ft";
+  if (l.includes("hour")) return "hr";
+  return fallback;
+}
+
 /** Trade-specific input labels using professional field terminology. */
 function getInputLabels(
   path: string,
   selectedFramingMaterial: FramingMaterialKind,
 ): { first: string; second: string; third: string } {
   const p = path.toLowerCase();
+
+  const financialCopy = getFinancialCalculatorCopy(path);
+  if (financialCopy) {
+    const [first, second, third] = financialCopy.inputs;
+    return {
+      first: first.label ?? getFinancialTermLabel(first.term),
+      second: second.label ?? getFinancialTermLabel(second.term),
+      third: third.label ?? getFinancialTermLabel(third.term),
+    };
+  }
 
   const concreteCopy = getConcreteInputLabelsFromCopy(path);
   if (concreteCopy) return concreteCopy;
@@ -419,6 +445,10 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   const { proMode, mounted } = useProMode();
   const effectiveProMode = mounted && proMode;
   const lockedFramingMaterial = getLockedFramingMaterial(page.canonicalPath);
+  const financialCopy = useMemo(
+    () => getFinancialCalculatorCopy(page.canonicalPath),
+    [page.canonicalPath],
+  );
   const [search, setSearch] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedFramingMaterial, setSelectedFramingMaterial] = useState<FramingMaterialKind>(
@@ -481,10 +511,19 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     setVolumeInputMode("dimensions");
     setWallInputMode("lineal-feet");
     setTrimInputMode("dimensions");
-    setBaseMeasurement(10);
-    setWidthSpan(10);
-    setDepthThickness(4);
-  }, [page.canonicalPath]);
+    setOpeningDeductionSqFt(0);
+    setFlooringBoxMode("custom");
+
+    if (financialCopy) {
+      setBaseMeasurement(financialCopy.inputs[0].defaultValue);
+      setWidthSpan(financialCopy.inputs[1].defaultValue);
+      setDepthThickness(financialCopy.inputs[2].defaultValue);
+    } else {
+      setBaseMeasurement(10);
+      setWidthSpan(10);
+      setDepthThickness(4);
+    }
+  }, [financialCopy, page.canonicalPath]);
 
   useEffect(() => {
     setEstimateName(`${displayTitle(page.title)} Estimate`);
@@ -676,7 +715,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     const effectiveSpacingOcInches =
       activeFramingMaterial === "wall-studs" && isWallStudTotalMode
         ? wallDerivedSpacingOcInches
-        : spacingOcInches;
+      : spacingOcInches;
     const spacingFeet = effectiveSpacingOcInches / 12;
     const getBoardFeet = (
       pieces: number,
@@ -684,6 +723,191 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       widthInches: number,
       lengthFeet: number,
     ) => (pieces * thicknessInches * widthInches * lengthFeet) / 12;
+
+    if (page.category === "business" || page.category === "management") {
+      const currency = (value: number) => value.toFixed(2);
+
+      if (
+        page.canonicalPath.includes("profit-margin") ||
+        page.canonicalPath.includes("management/margin")
+      ) {
+        const directCost = clampValue(baseMeasurement, 0, 100000000);
+        const overheadPct = clampValue(widthSpan, 0, 100);
+        const targetMarginPct = clampValue(depthThickness, 0, 95);
+        const overheadDollars = directCost * (overheadPct / 100);
+        const breakEvenPrice = directCost + overheadDollars;
+        const sellPrice =
+          targetMarginPct >= 95 ? breakEvenPrice : breakEvenPrice / (1 - targetMarginPct / 100);
+        const grossProfit = sellPrice - breakEvenPrice;
+        const grossMarginPct = sellPrice === 0 ? 0 : (grossProfit / sellPrice) * 100;
+        const markupPct = directCost === 0 ? 0 : ((sellPrice - directCost) / directCost) * 100;
+
+        return {
+          primary: {
+            label: "Bid / Selling Price",
+            value: currency(sellPrice),
+            unit: "$",
+          },
+          secondary: [
+            {
+              label: "Break-even Price",
+              value: currency(breakEvenPrice),
+              unit: "$",
+            },
+            {
+              label: "Gross Profit",
+              value: currency(grossProfit),
+              unit: "$",
+            },
+            {
+              label: "Gross Margin",
+              value: grossMarginPct.toFixed(1),
+              unit: "%",
+            },
+            {
+              label: "Markup on Cost",
+              value: markupPct.toFixed(1),
+              unit: "%",
+            },
+          ],
+          materialList: [
+            `Break-even covers $${currency(overheadDollars)} overhead at ${overheadPct.toFixed(1)}%.`,
+            `Bid price targets ${targetMarginPct.toFixed(1)}% gross margin (${markupPct.toFixed(1)}% markup).`,
+          ],
+        };
+      }
+
+      if (
+        page.canonicalPath.includes("labor-rate") ||
+        page.canonicalPath.includes("management/labor")
+      ) {
+        const baseWage = clampValue(baseMeasurement, 0, 1000000);
+        const burdenPct = clampValue(widthSpan, 0, 200);
+        const overheadPct = clampValue(depthThickness, 0, 200);
+        const burdenedRate = baseWage * (1 + burdenPct / 100);
+        const loadedRate = baseWage * (1 + (burdenPct + overheadPct) / 100);
+        const profitTargetPct = 15;
+        const billableRate = loadedRate / (1 - profitTargetPct / 100);
+        const profitPerHour = billableRate - loadedRate;
+
+        return {
+          primary: {
+            label: "Billable Rate (target 15% profit)",
+            value: currency(billableRate),
+            unit: "$/hr",
+          },
+          secondary: [
+            {
+              label: "Loaded Cost Rate",
+              value: currency(loadedRate),
+              unit: "$/hr",
+            },
+            {
+              label: "Burdened Labor Rate",
+              value: currency(burdenedRate),
+              unit: "$/hr",
+            },
+            {
+              label: "Profit per Hour",
+              value: currency(profitPerHour),
+              unit: "$/hr",
+            },
+          ],
+          materialList: [
+            `Loaded labor includes ${burdenPct.toFixed(1)}% burden and ${overheadPct.toFixed(1)}% overhead.`,
+            `Charge ~$${currency(billableRate)} per hour to hold ~${profitTargetPct}% profit after overhead.`,
+          ],
+        };
+      }
+
+      if (
+        page.canonicalPath.includes("lead-estimator") ||
+        page.canonicalPath.includes("management/leads")
+      ) {
+        const costPerLead = clampValue(baseMeasurement, 0, 100000000);
+        const closeRatePct = clampValue(widthSpan, 0.01, 100);
+        const avgJobValue = clampValue(depthThickness, 0, 1_000_000_000);
+        const closeRate = closeRatePct / 100;
+        const customerAcquisitionCost = closeRate === 0 ? 0 : costPerLead / closeRate;
+        const revenuePerLead = avgJobValue * closeRate;
+        const paybackMultiple =
+          customerAcquisitionCost === 0 ? 0 : avgJobValue / customerAcquisitionCost;
+
+        return {
+          primary: {
+            label: "Customer Acquisition Cost (CAC)",
+            value: currency(customerAcquisitionCost),
+            unit: "$",
+          },
+          secondary: [
+            {
+              label: "Revenue per Lead",
+              value: currency(revenuePerLead),
+              unit: "$",
+            },
+            {
+              label: "Close Rate",
+              value: closeRatePct.toFixed(1),
+              unit: "%",
+            },
+            {
+              label: "Payback Ratio",
+              value: paybackMultiple.toFixed(2),
+              unit: "x",
+            },
+          ],
+          materialList: [
+            `CAC assumes ${closeRatePct.toFixed(1)}% close rate on $${currency(costPerLead)} CPL.`,
+            `Avg job value $${currency(avgJobValue)} yields ${paybackMultiple.toFixed(2)}x payback.`,
+          ],
+        };
+      }
+
+      if (page.canonicalPath.includes("tax-save")) {
+        const grossRevenue = clampValue(baseMeasurement, 0, 1_000_000_000);
+        const taxRatePct = clampValue(widthSpan, 0, 100);
+        const deductionsValue = clampValue(depthThickness, 0, 1_000_000_000);
+        const taxableIncome = Math.max(0, grossRevenue - deductionsValue);
+        const taxOwed = taxableIncome * (taxRatePct / 100);
+        const netIncome = grossRevenue - taxOwed;
+        const effectiveTaxRate = grossRevenue === 0 ? 0 : (taxOwed / grossRevenue) * 100;
+        const taxSavings = deductionsValue * (taxRatePct / 100);
+
+        return {
+          primary: {
+            label: "Projected Tax",
+            value: currency(taxOwed),
+            unit: "$",
+          },
+          secondary: [
+            {
+              label: "Taxable Income",
+              value: currency(taxableIncome),
+              unit: "$",
+            },
+            {
+              label: "Net Income After Tax",
+              value: currency(netIncome),
+              unit: "$",
+            },
+            {
+              label: "Effective Tax Rate",
+              value: effectiveTaxRate.toFixed(2),
+              unit: "%",
+            },
+            {
+              label: "Tax Savings From Deductions",
+              value: currency(taxSavings),
+              unit: "$",
+            },
+          ],
+          materialList: [
+            `${taxRatePct.toFixed(2)}% blended tax on $${currency(taxableIncome)} taxable income.`,
+            `Deductions reduce tax by $${currency(taxSavings)}.`,
+          ],
+        };
+      }
+    }
 
     if (isDrywallCalculator) {
       const rawAreaSqFt = clampValue(baseMeasurement, 1, 100000000);
@@ -1289,6 +1513,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   }
 
   function getInlineSubLabel(label: string): string | undefined {
+    const financialDefinition = getFinancialTermDefinition(label);
+    if (financialDefinition) return financialDefinition;
     const l = label.toLowerCase();
     if (l.includes("oc")) return "Distance from center to center of each board.";
     if (l.includes("running lineal feet")) return "The total length of the wall or floor edge.";
@@ -1302,8 +1528,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     if (l.includes("total cubic feet")) return "Cubic feet before converting to total yards.";
     if (l.includes("waste factor")) return "Extra material to cover cuts, scraps, and mistakes.";
     if (l.includes("miter waste")) return "Extra trim for corner cuts and angle mistakes.";
-  if (l.includes("block size"))
-    return "Face height of the block in inches (standard CMU is 8\"). Adjust when using non-standard units.";
+    if (l.includes("block size"))
+      return 'Face height of the block in inches (standard CMU is 8"). Adjust when using non-standard units.';
     return undefined;
   }
 
@@ -1889,8 +2115,23 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
 
                 {(() => {
                   const labels = getInputLabels(page.canonicalPath, activeFramingMaterial);
-                  const thirdInputMax = isTrimRoute ? 20 : isFlooringRoute ? 250 : 96;
-                  const thirdInputMin = isTrimRoute ? 4 : 1;
+                  const thirdInputMaxBase = isTrimRoute ? 20 : isFlooringRoute ? 250 : 96;
+                  const thirdInputMinBase = isTrimRoute ? 4 : 1;
+                  const firstInputMin = financialCopy?.inputs[0].min ?? 1;
+                  const firstInputMax = financialCopy?.inputs[0].max ?? 100000000;
+                  const secondInputMin = financialCopy?.inputs[1].min ?? 0;
+                  const secondInputMax = financialCopy?.inputs[1].max ?? 100;
+                  const thirdInputMin = financialCopy?.inputs[2].min ?? thirdInputMinBase;
+                  const thirdInputMax = financialCopy?.inputs[2].max ?? thirdInputMaxBase;
+                  const firstUnitSuffix =
+                    financialCopy?.inputs[0].unit ??
+                    (isBusinessTaxSave ? "$" : inferUnitFromLabel(labels.first, "ft"));
+                  const secondUnitSuffix =
+                    financialCopy?.inputs[1].unit ??
+                    (isBusinessTaxSave ? "%" : inferUnitFromLabel(labels.second, "%"));
+                  const thirdUnitSuffix =
+                    financialCopy?.inputs[2].unit ??
+                    (isBusinessTaxSave ? "$" : inferUnitFromLabel(labels.third));
                   return (
                 <div className="mt-2 space-y-2">
                   {showFramingMaterialSelector && (
@@ -2117,13 +2358,13 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                           label={labels.first}
                           subLabel={getInlineSubLabel(labels.first)}
                           type="number"
-                          min={1}
-                          max={100000000}
+                          min={firstInputMin}
+                          max={firstInputMax}
                           value={String(baseMeasurement)}
                           onChange={(next) =>
-                            parseAndSet(next, setBaseMeasurement, 1, 100000000)
+                            parseAndSet(next, setBaseMeasurement, firstInputMin, firstInputMax)
                           }
-                          unitSuffix={isBusinessTaxSave ? "$" : "ft"}
+                          unitSuffix={firstUnitSuffix}
                         />
                         <ProInput
                           label={
@@ -2135,13 +2376,13 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                               : getInlineSubLabel(labels.second)
                           }
                           type="number"
-                          min={0}
-                          max={100}
+                          min={secondInputMin}
+                          max={secondInputMax}
                           value={String(widthSpan)}
                           onChange={(next) =>
-                            parseAndSet(next, setWidthSpan, 0, 100)
+                            parseAndSet(next, setWidthSpan, secondInputMin, secondInputMax)
                           }
-                          unitSuffix="%"
+                          unitSuffix={secondUnitSuffix}
                         />
                         <ProInput
                           label={
@@ -2153,13 +2394,13 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                               : getInlineSubLabel(labels.third)
                           }
                           type="number"
-                          min={0}
-                          max={100000000}
+                          min={thirdInputMin}
+                          max={thirdInputMax}
                           value={String(depthThickness)}
                           onChange={(next) =>
-                            parseAndSet(next, setDepthThickness, 0, 100000000)
+                            parseAndSet(next, setDepthThickness, thirdInputMin, thirdInputMax)
                           }
-                          unitSuffix={isBusinessTaxSave ? "$" : undefined}
+                          unitSuffix={thirdUnitSuffix}
                         />
                         {isSidingRoute && (
                           <ProInput

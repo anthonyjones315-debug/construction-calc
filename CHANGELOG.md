@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [1.1.0] - 2026-03-16
+
+### Added
+
+- Financial terminology database with reusable definitions and calculator input copy for business/management tools.
+
+### Changed
+
+- Profit Margin, Labor Rate, Lead Estimator, and Tax Save calculators now use industry-standard inputs, units, and outputs (bid price, CAC, loaded labor rates, tax impact).
+- Calculator inputs reset to trade-appropriate defaults per tool, including financial calculators.
+
+---
+
 ## [1.0.0] - 2026-03-15
 
 ### Added
