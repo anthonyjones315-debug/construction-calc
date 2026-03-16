@@ -172,36 +172,12 @@ function getFramingInputLabels(material: FramingMaterialKind): {
 }
 
 const tradeNav: TradeModule[] = [
-  {
-    label: "Concrete & Masonry",
-    href: "/calculators/concrete" as Route,
-    icon: BrickWall,
-  },
-  {
-    label: "Framing & Lumber",
-    href: "/calculators/framing" as Route,
-    icon: Hammer,
-  },
-  {
-    label: "Roofing & Siding",
-    href: "/calculators/roofing" as Route,
-    icon: Triangle,
-  },
-  {
-    label: "Mechanical & Site",
-    href: "/calculators/mechanical" as Route,
-    icon: Thermometer,
-  },
-  {
-    label: "Finish & Interior",
-    href: "/calculators/interior" as Route,
-    icon: Layout,
-  },
-  {
-    label: "Business/Sales",
-    href: "/calculators/business" as Route,
-    icon: BarChart3,
-  },
+  { label: "Concrete", href: "/calculators/concrete/slab" as Route, icon: BrickWall },
+  { label: "Framing", href: "/calculators/framing/wall" as Route, icon: Hammer },
+  { label: "Roofing", href: "/calculators/roofing/shingles" as Route, icon: Triangle },
+  { label: "Mechanical", href: "/calculators/mechanical/btu-estimator" as Route, icon: Thermometer },
+  { label: "Finish", href: "/calculators/finish/trim" as Route, icon: Layout },
+  { label: "Business", href: "/calculators/business/profit-margin" as Route, icon: BarChart3 },
 ];
 
 const tradeModuleGroups: TradeModuleGroup[] = [
@@ -209,7 +185,6 @@ const tradeModuleGroups: TradeModuleGroup[] = [
     label: "Concrete",
     icon: BrickWall,
     modules: [
-      { label: "Category", href: "/calculators/concrete" as Route, icon: SquareStack },
       { label: "Slab", href: "/calculators/concrete/slab" as Route, icon: Layers3 },
       { label: "Footing", href: "/calculators/concrete/footing" as Route, icon: Tractor },
       { label: "Block", href: "/calculators/concrete/block" as Route, icon: ClipboardList },
@@ -220,7 +195,6 @@ const tradeModuleGroups: TradeModuleGroup[] = [
     label: "Framing",
     icon: Hammer,
     modules: [
-      { label: "Category", href: "/calculators/framing" as Route, icon: FolderKanban },
       { label: "Wall", href: "/calculators/framing/wall" as Route, icon: Layout },
       { label: "Floor", href: "/calculators/framing/floor" as Route, icon: Layout },
       { label: "Roof", href: "/calculators/framing/roof" as Route, icon: Triangle },
@@ -236,7 +210,6 @@ const tradeModuleGroups: TradeModuleGroup[] = [
     label: "Roofing",
     icon: Triangle,
     modules: [
-      { label: "Category", href: "/calculators/roofing" as Route, icon: FolderKanban },
       { label: "Shingles", href: "/calculators/roofing/shingles" as Route, icon: Gauge },
       { label: "Shingle Bundles", href: "/calculators/roofing/shingle-bundles" as Route, icon: SquareStack },
       { label: "Pitch", href: "/calculators/roofing/pitch" as Route, icon: SlidersHorizontal },
@@ -249,7 +222,6 @@ const tradeModuleGroups: TradeModuleGroup[] = [
     label: "Mechanical",
     icon: ThermometerSnowflake,
     modules: [
-      { label: "Category", href: "/calculators/mechanical" as Route, icon: FolderKanban },
       { label: "BTU Estimator", href: "/calculators/mechanical/btu-estimator" as Route, icon: Thermometer },
       { label: "Ventilation", href: "/calculators/mechanical/ventilation-calc" as Route, icon: Gauge },
       { label: "Drywall Sheets", href: "/calculators/mechanical/drywall-sheets" as Route, icon: Layout },
@@ -259,7 +231,6 @@ const tradeModuleGroups: TradeModuleGroup[] = [
     label: "Finish",
     icon: Layout,
     modules: [
-      { label: "Category", href: "/calculators/finish" as Route, icon: FolderKanban },
       { label: "Trim", href: "/calculators/finish/trim" as Route, icon: Wrench },
       { label: "Flooring", href: "/calculators/finish/flooring" as Route, icon: Layers3 },
       { label: "Stairs", href: "/calculators/finish/stairs" as Route, icon: SlidersHorizontal },
@@ -269,7 +240,6 @@ const tradeModuleGroups: TradeModuleGroup[] = [
     label: "Business",
     icon: CircleDollarSign,
     modules: [
-      { label: "Category", href: "/calculators/business" as Route, icon: FolderKanban },
       { label: "Profit Margin", href: "/calculators/business/profit-margin" as Route, icon: BarChart3 },
       { label: "Labor Rate", href: "/calculators/business/labor-rate" as Route, icon: Calculator },
       { label: "Lead Estimator", href: "/calculators/business/lead-estimator" as Route, icon: ClipboardList },
