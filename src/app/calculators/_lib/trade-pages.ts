@@ -1072,6 +1072,27 @@ export function getTradePage(key: TradePageKey): TradePageDefinition {
   return tradePages[key];
 }
 
+export function getTradeCalculators(
+  category: TradePageDefinition["category"],
+): TradePageDefinition[] {
+  const calculators = Object.values(tradePages).filter(
+    (page) => page.type === "calculator" && page.category === category,
+  );
+
+  const preferredOrder =
+    categoryLinks[category]?.map((link) => link.href) ?? [];
+
+  return calculators.sort((a, b) => {
+    const aIndex = preferredOrder.indexOf(a.canonicalPath);
+    const bIndex = preferredOrder.indexOf(b.canonicalPath);
+
+    if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
+    if (aIndex !== -1) return -1;
+    if (bIndex !== -1) return 1;
+    return a.title.localeCompare(b.title);
+  });
+}
+
 export function getTradePageByPath(path: string): TradePageDefinition | undefined {
   return Object.values(tradePages).find((p) => p.canonicalPath === path);
 }
@@ -1105,6 +1126,95 @@ export function getTradePageMetadata(page: TradePageDefinition): Metadata {
       images: [{ url: "/og-image.png", width: 1200, height: 630 }],
       type: "website",
     },
+  };
+}
+
+export function getTradeLandingSchema(
+  page: TradePageDefinition,
+  calculators: TradePageDefinition[],
+) {
+  const url = `${SITE_URL}${page.canonicalPath}`;
+  const website = {
+    "@type": "WebSite",
+    "@id": `${SITE_URL}#website`,
+    url: SITE_URL,
+    name: "Pro Construction Calc",
+  };
+
+  const calculatorNodes = calculators.map((calculator) => {
+    const calculatorUrl = `${SITE_URL}${calculator.canonicalPath}`;
+    return {
+      "@type": "SoftwareApplication",
+      "@id": `${calculatorUrl}#app`,
+      name: calculator.title,
+      applicationCategory: `${calculator.category} calculator`,
+      operatingSystem: "Web",
+      url: calculatorUrl,
+      description: calculator.description,
+      offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+    };
+  });
+
+  const itemList = {
+    "@type": "ItemList",
+    "@id": `${url}#item-list`,
+    name: `${page.heroKicker} calculators`,
+    numberOfItems: calculators.length,
+    itemListElement: calculators.map((calculator, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: calculator.title,
+      url: `${SITE_URL}${calculator.canonicalPath}`,
+      item: { "@id": `${SITE_URL}${calculator.canonicalPath}#app` },
+    })),
+  };
+
+  const breadcrumbList = {
+    "@type": "BreadcrumbList",
+    "@id": `${url}#breadcrumbs`,
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: SITE_URL,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "All Calculators",
+        item: `${SITE_URL}/calculators`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: page.title,
+        item: url,
+      },
+    ],
+  };
+
+  const collectionPage = {
+    "@type": "CollectionPage",
+    "@id": `${url}#collection`,
+    name: page.title,
+    description: page.description,
+    url,
+    breadcrumb: { "@id": `${url}#breadcrumbs` },
+    mainEntity: { "@id": `${url}#item-list` },
+    isPartOf: { "@id": `${SITE_URL}#website` },
+    inLanguage: "en-US",
+  };
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      website,
+      collectionPage,
+      itemList,
+      breadcrumbList,
+      ...calculatorNodes,
+    ],
   };
 }
 
@@ -1142,4 +1252,3 @@ export function getTradePageSchema(page: TradePageDefinition) {
     ],
   };
 }
-

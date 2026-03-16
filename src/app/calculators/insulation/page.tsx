@@ -1,4 +1,4 @@
-import { CalculatorPage } from "@/app/calculators/_components/CalculatorPage";
+import { TradeLanding } from "@/app/calculators/_components/TradeLanding";
 import {
   getTradePage,
   getTradePageMetadata,
@@ -11,5 +11,5 @@ export function generateMetadata() {
 }
 
 export default function InsulationCategoryPage() {
-  return <CalculatorPage page={page} />;
+  return <TradeLanding page={page} />;
 }

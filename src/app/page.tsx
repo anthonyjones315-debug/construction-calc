@@ -5,7 +5,6 @@ import { ArrowRight, HardHat, ShieldCheck, FileText } from "lucide-react";
 import { JsonLD, getWebAppSchema, getWebSiteSchema } from "@/seo";
 import type { Metadata } from "next";
 import { routes } from "@routes";
-import { PostHogTest } from "@/components/PostHogTest";
 
 export const metadata: Metadata = {
   title: "Pro Construction Calc | Contractor-Grade Estimating for the Field",
@@ -112,12 +111,6 @@ export default function HomePage() {
               <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 text-slate-100 transition-colors">
                 <p className="section-kicker">Explore next</p>
                 <div className="mt-4 space-y-3">
-                  <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 text-slate-100 transition-colors">
-                    <p className="section-kicker">PostHog Test</p>
-                    <div className="mt-4">
-                      <PostHogTest />
-                    </div>
-                  </div>
                   {[
                     {
                       href: routes.blog,
