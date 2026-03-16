@@ -3318,6 +3318,14 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
               }
             />
             <div className="relative z-10 w-full max-w-lg rounded-t-3xl border border-slate-800 bg-slate-950 p-5 shadow-[0_24px_60px_rgba(0,0,0,0.55)] sm:rounded-3xl">
+              <button
+                type="button"
+                onClick={() => (finalizeBusy ? undefined : setFinalizeOpen(false))}
+                className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/15 text-slate-300 transition hover:border-orange-500 hover:text-white"
+                aria-label="Close Finalize & Send"
+              >
+                <X className="h-4 w-4" aria-hidden />
+              </button>
               <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-500">
                 Finalize &amp; Send
               </p>
