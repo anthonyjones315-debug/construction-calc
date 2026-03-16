@@ -1,5 +1,7 @@
+ "use client";
+
 import { useState } from "react";
-import { posthog } from "../instrumentation-client";
+import { usePostHog } from "posthog-js/react";
 import { captureServerPostHogTest } from "@/app/actions/posthog-test";
 
 interface PostHogTestProps {
@@ -7,6 +9,7 @@ interface PostHogTestProps {
 }
 
 export const PostHogTest = ({ onEventCaptured }: PostHogTestProps) => {
+  const posthog = usePostHog();
   const [testEventSent, setTestEventSent] = useState(false);
   const [testEventStatus, setTestEventStatus] = useState("");
   const [serverTestStatus, setServerTestStatus] = useState<string | null>(null);

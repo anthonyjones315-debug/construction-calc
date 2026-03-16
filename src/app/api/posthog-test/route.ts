@@ -8,7 +8,9 @@ const TEST_EVENT = "server_posthog_test";
  * Use from browser or: curl -s http://localhost:3000/api/posthog-test
  */
 export async function GET() {
-  if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+  const token =
+    process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN ?? process.env.NEXT_PUBLIC_POSTHOG_KEY;
+  if (!token) {
     return NextResponse.json(
       { ok: false, message: "PostHog project token not configured" },
       { status: 503 }

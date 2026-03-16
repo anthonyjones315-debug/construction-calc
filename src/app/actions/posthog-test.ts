@@ -13,7 +13,9 @@ export async function captureServerPostHogTest(): Promise<{
   message: string;
   event?: string;
 }> {
-  if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+  const token =
+    process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN ?? process.env.NEXT_PUBLIC_POSTHOG_KEY;
+  if (!token) {
     return { ok: false, message: "PostHog project token not configured" };
   }
 

@@ -28,7 +28,6 @@ import {
   Gauge,
   FileDown,
   FileSpreadsheet,
-  FolderKanban,
   HardHat,
   Hammer,
   Layers,
