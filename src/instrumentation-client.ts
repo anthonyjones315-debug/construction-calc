@@ -12,12 +12,18 @@ if (
   process.env.NEXT_PUBLIC_POSTHOG_HOST &&
   !globalAny.__POSTHOG_INITTED
 ) {
-  posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
-    api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
-    defaults: "2026-01-30",
-  });
-  globalAny.__POSTHOG_INITTED = true;
-  if (typeof window !== "undefined") {
-    (window as unknown as { posthog: typeof posthog }).posthog = posthog;
+  const alreadyWindowInited =
+    typeof window !== "undefined" &&
+    (window as unknown as { __PH_INIT?: boolean }).__PH_INIT;
+  if (!alreadyWindowInited) {
+    posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
+      api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+      defaults: "2026-01-30",
+    });
+    globalAny.__POSTHOG_INITTED = true;
+    if (typeof window !== "undefined") {
+      (window as unknown as { posthog: typeof posthog }).posthog = posthog;
+      (window as unknown as { __PH_INIT?: boolean }).__PH_INIT = true;
+    }
   }
 }

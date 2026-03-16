@@ -8,10 +8,7 @@ type Props = {
   children: ReactNode;
 };
 
-const globalAny = globalThis as typeof globalThis & { __POSTHOG_INITTED?: boolean };
-let posthogInitialized = typeof globalAny.__POSTHOG_INITTED === "boolean"
-  ? globalAny.__POSTHOG_INITTED
-  : false;
+let posthogInitialized = false;
 
 export function CSPostHogProvider({ children }: Props) {
   const token =
@@ -20,8 +17,8 @@ export function CSPostHogProvider({ children }: Props) {
 
   useEffect(() => {
     if (!token) return;
-    if (posthogInitialized) return;
     if (typeof window === "undefined") return;
+    if (posthogInitialized || (window as unknown as { __PH_INIT?: boolean }).__PH_INIT) return;
 
     posthog.init(token, {
       api_host: host,
@@ -33,7 +30,7 @@ export function CSPostHogProvider({ children }: Props) {
       persistence: "localStorage",
     });
     posthogInitialized = true;
-    globalAny.__POSTHOG_INITTED = true;
+    (window as unknown as { __PH_INIT?: boolean }).__PH_INIT = true;
   }, [host, token]);
 
   if (!token) return <>{children}</>;
