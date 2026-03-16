@@ -7,7 +7,11 @@ import type { LucideIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import * as Sentry from "@sentry/nextjs";
 import posthog from "posthog-js";
-import { getCalculatorAuditRef, setCalculatorAuditSnapshot } from "../_lib/calculator-audit-ref";
+import { round } from "mathjs";
+import {
+  getCalculatorAuditRef,
+  setCalculatorAuditSnapshot,
+} from "../_lib/calculator-audit-ref";
 import { useHaptic } from "@/hooks/useHaptic";
 import {
   ArrowLeft,
@@ -49,9 +53,15 @@ import {
   Wrench,
   X,
 } from "lucide-react";
-import { EmailEstimateModal, type EstimatePayload } from "@/components/ui/EmailEstimateModal";
+import {
+  EmailEstimateModal,
+  type EstimatePayload,
+} from "@/components/ui/EmailEstimateModal";
 import { JsonLD } from "@/seo";
-import { getTradePageSchema, type TradePageDefinition } from "../_lib/trade-pages";
+import {
+  getTradePageSchema,
+  type TradePageDefinition,
+} from "../_lib/trade-pages";
 import { NYS_COUNTY_TAX_RATES } from "@/data/nys-tax-rates";
 import {
   getFinancialCalculatorCopy,
@@ -69,7 +79,6 @@ import { sanitizeFilename } from "@/utils/sanitize-filename";
 import { useContractorProfile } from "@/components/pdf/useContractorProfile";
 import { getConcreteInputLabelsFromCopy } from "@/data/construction-terms";
 import { useStore } from "@/lib/store";
-
 
 type TradeModule = {
   label: string;
@@ -113,7 +122,8 @@ function getFramingMaterialFromPath(path: string): FramingMaterialKind {
   if (p.includes("/decking") || p.includes("deck-joists")) return "decking";
   if (p.includes("/framing/floor")) return "floor-joists";
   if (p.includes("/framing/ceiling")) return "ceiling-joists";
-  if (p.includes("/framing/roof") || p.includes("rafter")) return "roof-rafters";
+  if (p.includes("/framing/roof") || p.includes("rafter"))
+    return "roof-rafters";
   return "wall-studs";
 }
 
@@ -172,12 +182,32 @@ function getFramingInputLabels(material: FramingMaterialKind): {
 }
 
 const tradeNav: TradeModule[] = [
-  { label: "Concrete", href: "/calculators/concrete/slab" as Route, icon: BrickWall },
-  { label: "Framing", href: "/calculators/framing/wall" as Route, icon: Hammer },
-  { label: "Roofing", href: "/calculators/roofing/shingles" as Route, icon: Triangle },
-  { label: "Mechanical", href: "/calculators/mechanical/btu-estimator" as Route, icon: Thermometer },
+  {
+    label: "Concrete",
+    href: "/calculators/concrete/slab" as Route,
+    icon: BrickWall,
+  },
+  {
+    label: "Framing",
+    href: "/calculators/framing/wall" as Route,
+    icon: Hammer,
+  },
+  {
+    label: "Roofing",
+    href: "/calculators/roofing/shingles" as Route,
+    icon: Triangle,
+  },
+  {
+    label: "Mechanical",
+    href: "/calculators/mechanical/btu-estimator" as Route,
+    icon: Thermometer,
+  },
   { label: "Finish", href: "/calculators/finish/trim" as Route, icon: Layout },
-  { label: "Business", href: "/calculators/business/profit-margin" as Route, icon: BarChart3 },
+  {
+    label: "Business",
+    href: "/calculators/business/profit-margin" as Route,
+    icon: BarChart3,
+  },
 ];
 
 const tradeModuleGroups: TradeModuleGroup[] = [
@@ -185,65 +215,181 @@ const tradeModuleGroups: TradeModuleGroup[] = [
     label: "Concrete",
     icon: BrickWall,
     modules: [
-      { label: "Slab", href: "/calculators/concrete/slab" as Route, icon: Layers3 },
-      { label: "Footing", href: "/calculators/concrete/footing" as Route, icon: Tractor },
-      { label: "Block", href: "/calculators/concrete/block" as Route, icon: ClipboardList },
-      { label: "Block Wall", href: "/calculators/concrete/block-wall" as Route, icon: Building2 },
+      {
+        label: "Slab",
+        href: "/calculators/concrete/slab" as Route,
+        icon: Layers3,
+      },
+      {
+        label: "Footing",
+        href: "/calculators/concrete/footing" as Route,
+        icon: Tractor,
+      },
+      {
+        label: "Block",
+        href: "/calculators/concrete/block" as Route,
+        icon: ClipboardList,
+      },
+      {
+        label: "Block Wall",
+        href: "/calculators/concrete/block-wall" as Route,
+        icon: Building2,
+      },
     ],
   },
   {
     label: "Framing",
     icon: Hammer,
     modules: [
-      { label: "Wall", href: "/calculators/framing/wall" as Route, icon: Layout },
-      { label: "Floor", href: "/calculators/framing/floor" as Route, icon: Layout },
-      { label: "Roof", href: "/calculators/framing/roof" as Route, icon: Triangle },
-      { label: "Wall Studs", href: "/calculators/framing/wall-studs" as Route, icon: Layout },
-      { label: "Headers", href: "/calculators/framing/headers" as Route, icon: ShieldCheck },
-      { label: "Rafters", href: "/calculators/framing/rafters" as Route, icon: Triangle },
-      { label: "Rafter Length", href: "/calculators/framing/rafter-length" as Route, icon: SlidersHorizontal },
-      { label: "Deck Joists", href: "/calculators/framing/deck-joists" as Route, icon: ClipboardList },
-      { label: "Decking", href: "/calculators/decking" as Route, icon: ClipboardList },
+      {
+        label: "Wall",
+        href: "/calculators/framing/wall" as Route,
+        icon: Layout,
+      },
+      {
+        label: "Floor",
+        href: "/calculators/framing/floor" as Route,
+        icon: Layout,
+      },
+      {
+        label: "Roof",
+        href: "/calculators/framing/roof" as Route,
+        icon: Triangle,
+      },
+      {
+        label: "Wall Studs",
+        href: "/calculators/framing/wall-studs" as Route,
+        icon: Layout,
+      },
+      {
+        label: "Headers",
+        href: "/calculators/framing/headers" as Route,
+        icon: ShieldCheck,
+      },
+      {
+        label: "Rafters",
+        href: "/calculators/framing/rafters" as Route,
+        icon: Triangle,
+      },
+      {
+        label: "Rafter Length",
+        href: "/calculators/framing/rafter-length" as Route,
+        icon: SlidersHorizontal,
+      },
+      {
+        label: "Deck Joists",
+        href: "/calculators/framing/deck-joists" as Route,
+        icon: ClipboardList,
+      },
+      {
+        label: "Decking",
+        href: "/calculators/decking" as Route,
+        icon: ClipboardList,
+      },
     ],
   },
   {
     label: "Roofing",
     icon: Triangle,
     modules: [
-      { label: "Shingles", href: "/calculators/roofing/shingles" as Route, icon: Gauge },
-      { label: "Shingle Bundles", href: "/calculators/roofing/shingle-bundles" as Route, icon: SquareStack },
-      { label: "Pitch", href: "/calculators/roofing/pitch" as Route, icon: SlidersHorizontal },
-      { label: "Pitch & Slope", href: "/calculators/roofing/pitch-slope" as Route, icon: Timer },
-      { label: "Siding", href: "/calculators/roofing/siding" as Route, icon: Wrench },
-      { label: "Siding Squares", href: "/calculators/roofing/siding-squares" as Route, icon: FileSpreadsheet },
+      {
+        label: "Shingles",
+        href: "/calculators/roofing/shingles" as Route,
+        icon: Gauge,
+      },
+      {
+        label: "Shingle Bundles",
+        href: "/calculators/roofing/shingle-bundles" as Route,
+        icon: SquareStack,
+      },
+      {
+        label: "Pitch",
+        href: "/calculators/roofing/pitch" as Route,
+        icon: SlidersHorizontal,
+      },
+      {
+        label: "Pitch & Slope",
+        href: "/calculators/roofing/pitch-slope" as Route,
+        icon: Timer,
+      },
+      {
+        label: "Siding",
+        href: "/calculators/roofing/siding" as Route,
+        icon: Wrench,
+      },
+      {
+        label: "Siding Squares",
+        href: "/calculators/roofing/siding-squares" as Route,
+        icon: FileSpreadsheet,
+      },
     ],
   },
   {
     label: "Mechanical",
     icon: ThermometerSnowflake,
     modules: [
-      { label: "BTU Estimator", href: "/calculators/mechanical/btu-estimator" as Route, icon: Thermometer },
-      { label: "Ventilation", href: "/calculators/mechanical/ventilation-calc" as Route, icon: Gauge },
-      { label: "Drywall Sheets", href: "/calculators/mechanical/drywall-sheets" as Route, icon: Layout },
+      {
+        label: "BTU Estimator",
+        href: "/calculators/mechanical/btu-estimator" as Route,
+        icon: Thermometer,
+      },
+      {
+        label: "Ventilation",
+        href: "/calculators/mechanical/ventilation-calc" as Route,
+        icon: Gauge,
+      },
+      {
+        label: "Drywall Sheets",
+        href: "/calculators/mechanical/drywall-sheets" as Route,
+        icon: Layout,
+      },
     ],
   },
   {
     label: "Finish",
     icon: Layout,
     modules: [
-      { label: "Trim", href: "/calculators/finish/trim" as Route, icon: Wrench },
-      { label: "Flooring", href: "/calculators/finish/flooring" as Route, icon: Layers3 },
-      { label: "Stairs", href: "/calculators/finish/stairs" as Route, icon: SlidersHorizontal },
+      {
+        label: "Trim",
+        href: "/calculators/finish/trim" as Route,
+        icon: Wrench,
+      },
+      {
+        label: "Flooring",
+        href: "/calculators/finish/flooring" as Route,
+        icon: Layers3,
+      },
+      {
+        label: "Stairs",
+        href: "/calculators/finish/stairs" as Route,
+        icon: SlidersHorizontal,
+      },
     ],
   },
   {
     label: "Business",
     icon: CircleDollarSign,
     modules: [
-      { label: "Profit Margin", href: "/calculators/business/profit-margin" as Route, icon: BarChart3 },
-      { label: "Labor Rate", href: "/calculators/business/labor-rate" as Route, icon: Calculator },
-      { label: "Lead Estimator", href: "/calculators/business/lead-estimator" as Route, icon: ClipboardList },
-      { label: "Tax Save", href: "/calculators/business/tax-save" as Route, icon: FileDown },
+      {
+        label: "Profit Margin",
+        href: "/calculators/business/profit-margin" as Route,
+        icon: BarChart3,
+      },
+      {
+        label: "Labor Rate",
+        href: "/calculators/business/labor-rate" as Route,
+        icon: Calculator,
+      },
+      {
+        label: "Lead Estimator",
+        href: "/calculators/business/lead-estimator" as Route,
+        icon: ClipboardList,
+      },
+      {
+        label: "Tax Save",
+        href: "/calculators/business/tax-save" as Route,
+        icon: FileDown,
+      },
     ],
   },
 ];
@@ -279,10 +425,20 @@ function displayTitle(fullTitle: string): string {
   return fullTitle;
 }
 
-function inferUnitFromLabel(label: string, fallback?: string): string | undefined {
+function inferUnitFromLabel(
+  label: string,
+  fallback?: string,
+): string | undefined {
   const l = label.toLowerCase();
   if (label.includes("$")) return "$";
-  if (l.includes("%") || l.includes("rate") || l.includes("margin") || l.includes("markup") || l.includes("burden")) return "%";
+  if (
+    l.includes("%") ||
+    l.includes("rate") ||
+    l.includes("margin") ||
+    l.includes("markup") ||
+    l.includes("burden")
+  )
+    return "%";
   if (l.includes("sq ft")) return "sq ft";
   if (l.includes("lf") || l.includes("lineal")) return "lf";
   if (l.includes("ft") || l.includes("foot") || l.includes("span")) return "ft";
@@ -313,7 +469,12 @@ function getInputLabels(
   if (p.includes("framing") || p.includes("decking")) {
     return getFramingInputLabels(selectedFramingMaterial);
   }
-  if (p.includes("header")) return { first: "Span Width (ft)", second: "Plate Count", third: "Header Depth (in)" };
+  if (p.includes("header"))
+    return {
+      first: "Span Width (ft)",
+      second: "Plate Count",
+      third: "Header Depth (in)",
+    };
   if (p.includes("slab"))
     return {
       first: "Running Lineal Feet",
@@ -333,35 +494,118 @@ function getInputLabels(
       third: "Block Size (in, face height)",
     };
   if (p.includes("block") || p.includes("concrete"))
-    return { first: "Running Lineal Feet", second: "Width (ft)", third: "Bag Yield Depth (in)" };
-  if (p.includes("shingle")) return { first: "Squares (Roof Area)", second: "Bundle Overlap Factor", third: "Pitch Ratio" };
-  if (p.includes("pitch")) return { first: "Roof Run (ft)", second: "Roof Rise (ft)", third: "Pitch Ratio" };
-  if (p.includes("siding")) return { first: "Wall Length (ft)", second: "Wall Height (ft)", third: "Piece Coverage (sq ft)" };
+    return {
+      first: "Running Lineal Feet",
+      second: "Width (ft)",
+      third: "Bag Yield Depth (in)",
+    };
+  if (p.includes("shingle"))
+    return {
+      first: "Squares (Roof Area)",
+      second: "Bundle Overlap Factor",
+      third: "Pitch Ratio",
+    };
+  if (p.includes("pitch"))
+    return {
+      first: "Roof Run (ft)",
+      second: "Roof Rise (ft)",
+      third: "Pitch Ratio",
+    };
+  if (p.includes("siding"))
+    return {
+      first: "Wall Length (ft)",
+      second: "Wall Height (ft)",
+      third: "Piece Coverage (sq ft)",
+    };
   if (p.includes("roofing"))
     return {
       first: "Roof Area (sq ft)",
-      second: "Pitch (rise per 12\")",
+      second: 'Pitch (rise per 12")',
       third: "Unused",
     };
-  if (p.includes("trim") || p.includes("baseboard")) return { first: "Room Length (ft)", second: "Room Width (ft)", third: "Stock Length (ft)" };
-  if (p.includes("flooring")) return { first: "Floor Length (ft)", second: "Floor Width (ft)", third: "Sq Ft per Box" };
+  if (p.includes("trim") || p.includes("baseboard"))
+    return {
+      first: "Room Length (ft)",
+      second: "Room Width (ft)",
+      third: "Stock Length (ft)",
+    };
+  if (p.includes("flooring"))
+    return {
+      first: "Floor Length (ft)",
+      second: "Floor Width (ft)",
+      third: "Sq Ft per Box",
+    };
   if (p.includes("drywall"))
     return {
       first: "Total Area (sq ft)",
       second: "Unused",
       third: "Unused",
     };
-  if (p.includes("r-value") || p.includes("insulation")) return { first: "Total Square Footage", second: "Cavity Depth (in)", third: "R-Value Target" };
-  if (p.includes("btu")) return { first: "BTU Load (sq ft)", second: "Ceiling Height (ft)", third: "Climate Zone Factor" };
-  if (p.includes("ventilation")) return { first: "Ventilation CFM Area (sq ft)", second: "Ceiling Height (ft)", third: "Duct Static Pressure" };
-  if (p.includes("duct")) return { first: "Duct Static Pressure (in w.c.)", second: "Ventilation CFM", third: "Duct Run (ft)" };
-  if (p.includes("mechanical")) return { first: "BTU Load (sq ft)", second: "Ventilation CFM", third: "Duct Static Pressure" };
-  if (p.includes("profit") || p.includes("margin")) return { first: "Job Cost ($)", second: "Markup Rate (%)", third: "Overhead (%)" };
-  if (p.includes("labor")) return { first: "Hourly Rate ($)", second: "Burden Rate (%)", third: "Crew Size" };
-  if (p.includes("lead")) return { first: "Cost Per Lead ($)", second: "Close Rate (%)", third: "Monthly Leads" };
-  if (p.includes("tax")) return { first: "Gross Revenue ($)", second: "Tax Rate (%)", third: "Deductions ($)" };
-  if (p.includes("business")) return { first: "Base Amount ($)", second: "Rate / Factor (%)", third: "Quantity / Units" };
-  return { first: "Primary Measurement", second: "Secondary Measurement", third: "Tertiary Measurement" };
+  if (p.includes("r-value") || p.includes("insulation"))
+    return {
+      first: "Total Square Footage",
+      second: "Cavity Depth (in)",
+      third: "R-Value Target",
+    };
+  if (p.includes("btu"))
+    return {
+      first: "BTU Load (sq ft)",
+      second: "Ceiling Height (ft)",
+      third: "Climate Zone Factor",
+    };
+  if (p.includes("ventilation"))
+    return {
+      first: "Ventilation CFM Area (sq ft)",
+      second: "Ceiling Height (ft)",
+      third: "Duct Static Pressure",
+    };
+  if (p.includes("duct"))
+    return {
+      first: "Duct Static Pressure (in w.c.)",
+      second: "Ventilation CFM",
+      third: "Duct Run (ft)",
+    };
+  if (p.includes("mechanical"))
+    return {
+      first: "BTU Load (sq ft)",
+      second: "Ventilation CFM",
+      third: "Duct Static Pressure",
+    };
+  if (p.includes("profit") || p.includes("margin"))
+    return {
+      first: "Job Cost ($)",
+      second: "Markup Rate (%)",
+      third: "Overhead (%)",
+    };
+  if (p.includes("labor"))
+    return {
+      first: "Hourly Rate ($)",
+      second: "Burden Rate (%)",
+      third: "Crew Size",
+    };
+  if (p.includes("lead"))
+    return {
+      first: "Cost Per Lead ($)",
+      second: "Close Rate (%)",
+      third: "Monthly Leads",
+    };
+  if (p.includes("tax"))
+    return {
+      first: "Gross Revenue ($)",
+      second: "Tax Rate (%)",
+      third: "Deductions ($)",
+    };
+  if (p.includes("business"))
+    return {
+      first: "Base Amount ($)",
+      second: "Rate / Factor (%)",
+      third: "Quantity / Units",
+    };
+  return {
+    first: "Primary Measurement",
+    second: "Secondary Measurement",
+    third: "Tertiary Measurement",
+  };
 }
 
 function getPrimaryDisplayUnit(result: CalculatorResult): string {
@@ -400,7 +644,9 @@ function normalizeDisplayedLabel(label: string, path: string): string {
 
 function buildBreadcrumbs(pathname: string) {
   const segments = pathname.split("/").filter(Boolean);
-  const crumbs: Array<{ label: string; href: Route }> = [{ label: "Home", href: "/" as Route }];
+  const crumbs: Array<{ label: string; href: Route }> = [
+    { label: "Home", href: "/" as Route },
+  ];
 
   let current = "";
   segments.forEach((segment) => {
@@ -438,7 +684,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       .map((input) => {
         const label = getFinancialTermLabel(input.term);
         const definition =
-          getFinancialTermDefinition(label) ?? getFinancialTermDefinition(input.term);
+          getFinancialTermDefinition(label) ??
+          getFinancialTermDefinition(input.term);
         if (!definition || seen.has(label)) return null;
         seen.add(label);
         return {
@@ -449,15 +696,23 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         };
       })
       .filter(
-        (entry): entry is { key: string; label: string; definition: string; unit: string } =>
-          Boolean(entry),
+        (
+          entry,
+        ): entry is {
+          key: import("@/data/financial-terms").FinancialTermKey;
+          label: string;
+          definition: string;
+          unit: string;
+        } => Boolean(entry),
       );
   }, [financialCopy]);
   const [search, setSearch] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [selectedFramingMaterial, setSelectedFramingMaterial] = useState<FramingMaterialKind>(
-    () => lockedFramingMaterial ?? getFramingMaterialFromPath(page.canonicalPath),
-  );
+  const [selectedFramingMaterial, setSelectedFramingMaterial] =
+    useState<FramingMaterialKind>(
+      () =>
+        lockedFramingMaterial ?? getFramingMaterialFromPath(page.canonicalPath),
+    );
   const [openModuleGroup, setOpenModuleGroup] = useState<string | null>(null);
   const [crmModalOpen, setCrmModalOpen] = useState(false);
   const [baseMeasurement, setBaseMeasurement] = useState(10);
@@ -465,23 +720,30 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   const [depthThickness, setDepthThickness] = useState(4);
   const [wasteFactor, setWasteFactor] = useState(10);
   const [saveLocked, setSaveLocked] = useState(false);
-  const [areaInputMode, setAreaInputMode] = useState<AreaInputMode>("dimensions");
-  const [volumeInputMode, setVolumeInputMode] = useState<VolumeInputMode>("dimensions");
-  const [wallInputMode, setWallInputMode] = useState<WallInputMode>("lineal-feet");
+  const [areaInputMode, setAreaInputMode] =
+    useState<AreaInputMode>("dimensions");
+  const [volumeInputMode, setVolumeInputMode] =
+    useState<VolumeInputMode>("dimensions");
+  const [wallInputMode, setWallInputMode] =
+    useState<WallInputMode>("lineal-feet");
   const [totalSquareFeetInput, setTotalSquareFeetInput] = useState(100);
   const [totalCubicYardsInput, setTotalCubicYardsInput] = useState(1);
   const [totalCubicFeetInput, setTotalCubicFeetInput] = useState(27);
   const [totalStudsInput, setTotalStudsInput] = useState(16);
-  const [trimInputMode, setTrimInputMode] = useState<TrimInputMode>("dimensions");
+  const [trimInputMode, setTrimInputMode] =
+    useState<TrimInputMode>("dimensions");
   const [totalLinealFeetInput, setTotalLinealFeetInput] = useState(100);
   const [openingDeductionSqFt, setOpeningDeductionSqFt] = useState(0);
-  const [flooringBoxMode, setFlooringBoxMode] = useState<FlooringBoxMode>("custom");
+  const [flooringBoxMode, setFlooringBoxMode] =
+    useState<FlooringBoxMode>("custom");
   const [finalizeOpen, setFinalizeOpen] = useState(false);
   const [finalizeBusy, setFinalizeBusy] = useState<"pdf" | "sign" | null>(null);
   const [finalizeError, setFinalizeError] = useState<string | null>(null);
   const [finalizeSuccess, setFinalizeSuccess] = useState<string | null>(null);
   const [createdSignUrl, setCreatedSignUrl] = useState<string | null>(null);
-  const [estimateName, setEstimateName] = useState(`${displayTitle(page.title)} Estimate`);
+  const [estimateName, setEstimateName] = useState(
+    `${displayTitle(page.title)} Estimate`,
+  );
   const [estimateClientName, setEstimateClientName] = useState("");
   const [estimateClientEmail, setEstimateClientEmail] = useState("");
   const [estimateJobName, setEstimateJobName] = useState("");
@@ -592,7 +854,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   const isFlooringRoute = page.canonicalPath.includes("flooring");
   const isSidingRoute = page.canonicalPath.includes("siding");
   const isTrimRoute =
-    page.canonicalPath.includes("trim") || page.canonicalPath.includes("baseboard");
+    page.canonicalPath.includes("trim") ||
+    page.canonicalPath.includes("baseboard");
 
   const supportsAreaToggle =
     page.type === "calculator" &&
@@ -602,13 +865,13 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     page.type === "calculator" &&
     page.category === "concrete" &&
     !page.canonicalPath.includes("block-wall");
-  const activeFramingMaterial = lockedFramingMaterial ?? selectedFramingMaterial;
+  const activeFramingMaterial =
+    lockedFramingMaterial ?? selectedFramingMaterial;
   const supportsWallStudToggle =
     page.type === "calculator" &&
     page.category === "framing" &&
     activeFramingMaterial === "wall-studs";
-  const supportsTrimLfToggle =
-    page.type === "calculator" && isTrimRoute;
+  const supportsTrimLfToggle = page.type === "calculator" && isTrimRoute;
   const isAreaTotalMode = supportsAreaToggle && areaInputMode === "total-sq-ft";
   const isConcreteTotalVolumeMode =
     supportsConcreteVolumeToggle && volumeInputMode !== "dimensions";
@@ -646,7 +909,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     volumeCubicFeet * (1 + clampValue(wasteFactor, 0, MAX_WASTE_FACTOR) / 100);
   const materialQty = Math.ceil(adjustedVolume * 1.7);
   const adjustedCubicYards = adjustedVolume / 27;
-  const wasteMultiplier = 1 + clampValue(wasteFactor, 0, MAX_WASTE_FACTOR) / 100;
+  const wasteMultiplier =
+    1 + clampValue(wasteFactor, 0, MAX_WASTE_FACTOR) / 100;
   const adjustedAreaSquareFeet = areaSquareFeet * wasteMultiplier;
   const showFramingMaterialSelector =
     page.category === "framing" &&
@@ -673,7 +937,9 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
 
     if (nextMode === "total-cu-yd") {
       if (volumeInputMode === "dimensions") {
-        setTotalCubicYardsInput(Number((dimensionsVolumeCubicFeet / 27).toFixed(2)));
+        setTotalCubicYardsInput(
+          Number((dimensionsVolumeCubicFeet / 27).toFixed(2)),
+        );
       } else if (volumeInputMode === "total-cu-ft") {
         setTotalCubicYardsInput(Number((totalCubicFeetInput / 27).toFixed(2)));
       }
@@ -711,19 +977,23 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     const isFlooringCalculator = page.canonicalPath.includes("flooring");
     const isSidingCalculator = page.canonicalPath.includes("siding");
     const isTrimCalculator =
-      page.canonicalPath.includes("trim") || page.canonicalPath.includes("baseboard");
+      page.canonicalPath.includes("trim") ||
+      page.canonicalPath.includes("baseboard");
     const isDrywallCalculator = page.canonicalPath.includes("drywall");
     const spacingOcInches = clampValue(widthSpan, 8, 48);
     const runFeet = clampValue(baseMeasurement, 1, 10000);
     const framingLengthFeet = clampValue(depthThickness, 1, 10000);
     const nominalLength = Math.max(8, Math.ceil(framingLengthFeet));
-    const wallStudTargetCount = Math.max(2, Math.round(clampValue(totalStudsInput, 2, 50000)));
+    const wallStudTargetCount = Math.max(
+      2,
+      Math.round(clampValue(totalStudsInput, 2, 50000)),
+    );
     const wallDerivedSpacingOcInches =
       (runFeet / Math.max(wallStudTargetCount - 1, 1)) * 12;
     const effectiveSpacingOcInches =
       activeFramingMaterial === "wall-studs" && isWallStudTotalMode
         ? wallDerivedSpacingOcInches
-      : spacingOcInches;
+        : spacingOcInches;
     const spacingFeet = effectiveSpacingOcInches / 12;
     const getBoardFeet = (
       pieces: number,
@@ -745,10 +1015,14 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         const overheadDollars = directCost * (overheadPct / 100);
         const breakEvenPrice = directCost + overheadDollars;
         const sellPrice =
-          targetMarginPct >= 95 ? breakEvenPrice : breakEvenPrice / (1 - targetMarginPct / 100);
+          targetMarginPct >= 95
+            ? breakEvenPrice
+            : breakEvenPrice / (1 - targetMarginPct / 100);
         const grossProfit = sellPrice - breakEvenPrice;
-        const grossMarginPct = sellPrice === 0 ? 0 : (grossProfit / sellPrice) * 100;
-        const markupPct = directCost === 0 ? 0 : ((sellPrice - directCost) / directCost) * 100;
+        const grossMarginPct =
+          sellPrice === 0 ? 0 : (grossProfit / sellPrice) * 100;
+        const markupPct =
+          directCost === 0 ? 0 : ((sellPrice - directCost) / directCost) * 100;
 
         return {
           primary: {
@@ -836,10 +1110,13 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         const closeRatePct = clampValue(widthSpan, 0.01, 100);
         const avgJobValue = clampValue(depthThickness, 0, 1_000_000_000);
         const closeRate = closeRatePct / 100;
-        const customerAcquisitionCost = closeRate === 0 ? 0 : costPerLead / closeRate;
+        const customerAcquisitionCost =
+          closeRate === 0 ? 0 : costPerLead / closeRate;
         const revenuePerLead = avgJobValue * closeRate;
         const paybackMultiple =
-          customerAcquisitionCost === 0 ? 0 : avgJobValue / customerAcquisitionCost;
+          customerAcquisitionCost === 0
+            ? 0
+            : avgJobValue / customerAcquisitionCost;
 
         return {
           primary: {
@@ -876,17 +1153,21 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         const taxRatePct = clampValue(widthSpan, 0, 100);
         const deductionsValue = clampValue(depthThickness, 0, 1_000_000_000);
         const taxableIncome = Math.max(0, grossRevenue - deductionsValue);
-        const rateSourceCounty = taxRegion === "NYS" ? taxCounty : "Custom / Other";
+        const rateSourceCounty =
+          taxRegion === "NYS" ? taxCounty : "Custom / Other";
         const taxResult = calculateNysSalesTax({
           county: rateSourceCounty,
           taxableAmount: taxableIncome,
-          projectType: capitalImprovement ? "capital-improvement" : "repair-maintenance",
+          projectType: capitalImprovement
+            ? "capital-improvement"
+            : "repair-maintenance",
           customCombinedRate: taxRegion === "NYS" ? undefined : taxRatePct,
         });
         const rateApplied = taxResult.rateApplied || taxRatePct;
         const taxOwed = taxResult.taxDue;
         const netIncome = grossRevenue - taxOwed;
-        const effectiveTaxRate = grossRevenue === 0 ? 0 : (taxOwed / grossRevenue) * 100;
+        const effectiveTaxRate =
+          grossRevenue === 0 ? 0 : (taxOwed / grossRevenue) * 100;
         const taxSavings = capitalImprovement
           ? 0
           : round(taxableIncome * (rateApplied / 100), 2) -
@@ -989,7 +1270,10 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     if (isTrimCalculator) {
       const stockLengthFeet = clampValue(depthThickness, 4, 20);
       const adjustedLinealFeet = totalLinealFeet * wasteMultiplier;
-      const stickCount = Math.max(1, Math.ceil(adjustedLinealFeet / stockLengthFeet));
+      const stickCount = Math.max(
+        1,
+        Math.ceil(adjustedLinealFeet / stockLengthFeet),
+      );
       return {
         primary: {
           label: "Lineal Feet (LF)",
@@ -1016,7 +1300,10 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
 
     if (isFlooringCalculator) {
       const sqFtPerBox = clampValue(depthThickness, 1, 250);
-      const boxCount = Math.max(1, Math.ceil(adjustedAreaSquareFeet / sqFtPerBox));
+      const boxCount = Math.max(
+        1,
+        Math.ceil(adjustedAreaSquareFeet / sqFtPerBox),
+      );
       return {
         primary: {
           label: "Total Boxes",
@@ -1046,11 +1333,11 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       if (activeFramingMaterial === "floor-joists") {
         const floorLength = runFeet;
         const floorWidth = framingLengthFeet;
-        const totalJoists = Math.max(2, Math.ceil(floorLength / spacingFeet) + 1);
-        const rimJoistsLf = Math.max(
-          1,
-          (floorLength * 2) + (floorWidth * 2),
+        const totalJoists = Math.max(
+          2,
+          Math.ceil(floorLength / spacingFeet) + 1,
         );
+        const rimJoistsLf = Math.max(1, floorLength * 2 + floorWidth * 2);
         const floorAreaSqFt = floorLength * floorWidth;
         const adjustedFloorArea = floorAreaSqFt * wasteMultiplier;
         const subfloorSheets = Math.max(1, Math.ceil(adjustedFloorArea / 32));
@@ -1081,7 +1368,10 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       }
 
       if (activeFramingMaterial === "roof-rafters") {
-        const totalRafters = Math.max(2, (Math.ceil(runFeet / spacingFeet) + 1) * 2);
+        const totalRafters = Math.max(
+          2,
+          (Math.ceil(runFeet / spacingFeet) + 1) * 2,
+        );
         const boardFeet = getBoardFeet(totalRafters, 2, 10, framingLengthFeet);
         return {
           primary: {
@@ -1113,8 +1403,16 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       }
 
       if (activeFramingMaterial === "ceiling-joists") {
-        const totalCeilingJoists = Math.max(2, Math.ceil(runFeet / spacingFeet) + 1);
-        const boardFeet = getBoardFeet(totalCeilingJoists, 2, 10, framingLengthFeet);
+        const totalCeilingJoists = Math.max(
+          2,
+          Math.ceil(runFeet / spacingFeet) + 1,
+        );
+        const boardFeet = getBoardFeet(
+          totalCeilingJoists,
+          2,
+          10,
+          framingLengthFeet,
+        );
         return {
           primary: {
             label: "Ceiling Joists",
@@ -1148,8 +1446,16 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         const totalJoists = Math.max(2, Math.ceil(runFeet / spacingFeet) + 1);
         const boardWidthFeet = clampValue(depthThickness, 1, 12) / 12;
         const deckAreaSquareFeet = runFeet * framingLengthFeet;
-        const deckBoards = Math.max(1, Math.ceil(deckAreaSquareFeet / boardWidthFeet / nominalLength));
-        const joistBoardFeet = getBoardFeet(totalJoists, 2, 10, framingLengthFeet);
+        const deckBoards = Math.max(
+          1,
+          Math.ceil(deckAreaSquareFeet / boardWidthFeet / nominalLength),
+        );
+        const joistBoardFeet = getBoardFeet(
+          totalJoists,
+          2,
+          10,
+          framingLengthFeet,
+        );
         const boardBoardFeet = getBoardFeet(deckBoards, 1.25, 6, nominalLength);
         const totalBoardFeet = joistBoardFeet + boardBoardFeet;
         return {
@@ -1348,7 +1654,10 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     if (page.category === "roofing") {
       if (isSidingCalculator) {
         const pieceCoverageSqFt = clampValue(depthThickness, 1, 50);
-        const pieces = Math.max(1, Math.ceil(adjustedAreaSquareFeet / pieceCoverageSqFt));
+        const pieces = Math.max(
+          1,
+          Math.ceil(adjustedAreaSquareFeet / pieceCoverageSqFt),
+        );
         const sidingSquares = adjustedAreaSquareFeet / 100;
         return {
           primary: {
@@ -1369,7 +1678,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             },
           ],
           materialList: [
-          `Order ${sidingSquares.toFixed(2)} Siding Squares`,
+            `Order ${sidingSquares.toFixed(2)} Siding Squares`,
             `Order ${pieces} Siding Pieces`,
           ],
         };
@@ -1389,10 +1698,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       const effectiveRoofArea = pitchedArea * wasteMultiplier;
       const squares = effectiveRoofArea / 100;
       const bundles = Math.ceil(squares * 3);
-      const rollsUnderlayment = Math.max(
-        1,
-        Math.ceil(effectiveRoofArea / 400),
-      );
+      const rollsUnderlayment = Math.max(1, Math.ceil(effectiveRoofArea / 400));
       return {
         primary: {
           label: "Total Squares",
@@ -1432,9 +1738,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
           unit: "units",
         },
       ],
-      materialList: [
-        `Order ${materialQty} Material Units`,
-      ],
+      materialList: [`Order ${materialQty} Material Units`],
     };
   }, [
     adjustedAreaSquareFeet,
@@ -1499,7 +1803,10 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     let iconPulseTimeout: ReturnType<typeof setTimeout> | null = null;
     hapticTimerRef.current = setTimeout(() => {
       haptic(10);
-      resultsCardRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      resultsCardRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
       setIconPulse(true);
       iconPulseTimeout = setTimeout(() => setIconPulse(false), 100);
     }, 300);
@@ -1507,7 +1814,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       if (hapticTimerRef.current) clearTimeout(hapticTimerRef.current);
       if (iconPulseTimeout) clearTimeout(iconPulseTimeout);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     adjustedAreaSquareFeet,
     adjustedVolume,
@@ -1533,7 +1840,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         subtitle: finalizeError,
         user: {
           email: session?.user?.email ?? undefined,
-          username: session?.user?.name ?? undefined,
+          name: session?.user?.name ?? undefined,
         },
       });
     }
@@ -1609,18 +1916,28 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     const financialDefinition = getFinancialTermDefinition(label);
     if (financialDefinition) return financialDefinition;
     const l = label.toLowerCase();
-    if (l.includes("oc")) return "Distance from center to center of each board.";
-    if (l.includes("running lineal feet")) return "The total length of the wall or floor edge.";
-    if (l.includes("stock length")) return "The board length you buy at the store (8', 12', 16').";
-    if (l.includes("slab depth")) return "The depth of the concrete (standard is usually 4 inches).";
+    if (l.includes("oc"))
+      return "Distance from center to center of each board.";
+    if (l.includes("running lineal feet"))
+      return "The total length of the wall or floor edge.";
+    if (l.includes("stock length"))
+      return "The board length you buy at the store (8', 12', 16').";
+    if (l.includes("slab depth"))
+      return "The depth of the concrete (standard is usually 4 inches).";
     if (l.includes("sq ft per box")) return "Found on the product packaging.";
-    if (l.includes("total square feet")) return "Total surface area for material coverage.";
-    if (l.includes("window/door deduction")) return "Subtract openings so you do not over-order.";
-    if (l.includes("total lineal feet")) return "Use the total perimeter length for trim runs.";
+    if (l.includes("total square feet"))
+      return "Total surface area for material coverage.";
+    if (l.includes("window/door deduction"))
+      return "Subtract openings so you do not over-order.";
+    if (l.includes("total lineal feet"))
+      return "Use the total perimeter length for trim runs.";
     if (l.includes("total yards")) return "Yardage for ready-mix ordering.";
-    if (l.includes("total cubic feet")) return "Cubic feet before converting to total yards.";
-    if (l.includes("waste factor")) return "Extra material to cover cuts, scraps, and mistakes.";
-    if (l.includes("miter waste")) return "Extra trim for corner cuts and angle mistakes.";
+    if (l.includes("total cubic feet"))
+      return "Cubic feet before converting to total yards.";
+    if (l.includes("waste factor"))
+      return "Extra material to cover cuts, scraps, and mistakes.";
+    if (l.includes("miter waste"))
+      return "Extra trim for corner cuts and angle mistakes.";
     if (l.includes("block size"))
       return 'Face height of the block in inches (standard CMU is 8"). Adjust when using non-standard units.';
     return undefined;
@@ -1635,11 +1952,13 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       client_name: estimateClientName.trim() || null,
       job_site_address: estimateJobAddress.trim() || null,
       total_cost: null,
-      results: [calculatorResults.primary, ...calculatorResults.secondary].map((result) => ({
-        label: result.label,
-        value: result.value,
-        unit: result.unit,
-      })),
+      results: [calculatorResults.primary, ...calculatorResults.secondary].map(
+        (result) => ({
+          label: result.label,
+          value: result.value,
+          unit: result.unit,
+        }),
+      ),
       material_list: calculatorResults.materialList,
       inputs: {
         calculator_path: page.canonicalPath,
@@ -1654,7 +1973,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
           month: "long",
           day: "numeric",
         }),
-        jobName: estimateJobName.trim() || estimateName.trim() || page.heroKicker,
+        jobName:
+          estimateJobName.trim() || estimateName.trim() || page.heroKicker,
       },
     }),
     [
@@ -1698,7 +2018,9 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       setFinalizeError(null);
     } catch (error) {
       setFinalizeError(
-        error instanceof Error ? error.message : "Unable to copy material order.",
+        error instanceof Error
+          ? error.message
+          : "Unable to copy material order.",
       );
     }
   }
@@ -1709,7 +2031,9 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       setFinalizeError("Sign in to download a branded PDF.");
       setFinalizeSuccess(null);
       if (typeof Sentry.showReportDialog === "function") {
-        Sentry.showReportDialog({ user: { email: session?.user?.email ?? undefined } });
+        Sentry.showReportDialog({
+          user: { email: session?.user?.email ?? undefined },
+        });
       }
       return;
     }
@@ -1738,7 +2062,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       haptic(10);
     } catch (error) {
       Sentry.captureException(error);
-      const message = error instanceof Error ? error.message : "Failed to generate PDF.";
+      const message =
+        error instanceof Error ? error.message : "Failed to generate PDF.";
       setFinalizeError(message);
       setFinalizeSuccess(null);
       if (typeof Sentry.showReportDialog === "function") {
@@ -1747,7 +2072,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
           subtitle: "Include what calculator and inputs you used.",
           user: {
             email: session?.user?.email ?? undefined,
-            username: session?.user?.name ?? undefined,
+            name: session?.user?.name ?? undefined,
           },
         });
       }
@@ -1774,7 +2099,9 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
 
   async function handleSendForSignature() {
     if (!canUseSignAndReturn) {
-      setFinalizeError("Sign & Return is available in Pro Mode for signed-in users.");
+      setFinalizeError(
+        "Sign & Return is available in Pro Mode for signed-in users.",
+      );
       return;
     }
     if (!estimateClientEmail.trim()) {
@@ -1862,24 +2189,31 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       fallback={({ error, resetError }) => {
         const message = error instanceof Error ? error.message : String(error);
         return (
-        <main id="main-content" className="command-theme bg-[--color-bg] text-white min-h-[40vh] flex items-center justify-center p-6">
-          <div className="rounded-2xl border border-white/20 bg-black/25 p-6 max-w-lg text-center">
-            <h2 className="text-lg font-bold text-white">Calculator error</h2>
-            <p className="mt-2 text-sm text-[--color-nav-text]/90">
-              Something went wrong. The exact inputs have been reported so we can fix it.
-            </p>
-            <p className="mt-2 text-xs text-[--color-nav-text]/60 font-mono truncate" title={message}>
-              {message}
-            </p>
-            <button
-              type="button"
-              onClick={resetError}
-              className="mt-4 rounded-xl border border-[--color-orange-brand]/50 bg-[--color-orange-brand]/20 px-4 py-2 text-sm font-bold uppercase tracking-wide text-[--color-orange-brand]"
-            >
-              Try again
-            </button>
-          </div>
-        </main>
+          <main
+            id="main-content"
+            className="command-theme bg-[--color-bg] text-white min-h-[40vh] flex items-center justify-center p-6"
+          >
+            <div className="rounded-2xl border border-white/20 bg-black/25 p-6 max-w-lg text-center">
+              <h2 className="text-lg font-bold text-white">Calculator error</h2>
+              <p className="mt-2 text-sm text-[--color-nav-text]/90">
+                Something went wrong. The exact inputs have been reported so we
+                can fix it.
+              </p>
+              <p
+                className="mt-2 text-xs text-[--color-nav-text]/60 font-mono truncate"
+                title={message}
+              >
+                {message}
+              </p>
+              <button
+                type="button"
+                onClick={resetError}
+                className="mt-4 rounded-xl border border-[--color-orange-brand]/50 bg-[--color-orange-brand]/20 px-4 py-2 text-sm font-bold uppercase tracking-wide text-[--color-orange-brand]"
+              >
+                Try again
+              </button>
+            </div>
+          </main>
         );
       }}
       onError={() => {
@@ -1894,261 +2228,278 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         });
       }}
     >
-    <main
-      id="main-content"
-      className="command-theme bg-[--color-bg] text-white flex min-h-screen flex-col"
-    >
-      {closeModal && (
-        <div className="sticky top-0 z-40 flex h-12 items-center justify-between border-b border-slate-800 bg-slate-900/95 px-3 backdrop-blur-sm">
-          <div className="min-w-0">
-            <p className="truncate text-[10px] font-bold uppercase tracking-[0.12em] text-orange-400">
-              {page.heroKicker}
-            </p>
-            <p className="truncate text-sm font-semibold text-white">
-              {displayTitle(page.title)}
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={closeModal}
-            className="inline-flex min-h-8 items-center gap-1 rounded-lg px-2 text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
-            aria-label="Back"
-          >
-            <ArrowLeft className="h-4 w-4" aria-hidden />
-            <span className="text-xs font-semibold uppercase tracking-widest">Back</span>
-          </button>
-        </div>
-      )}
-      <section className="mx-auto w-full max-w-6xl px-3 py-4 sm:px-5 sm:py-5 lg:px-7 pb-14">
-        <JsonLD schema={getTradePageSchema(page)} />
-
-        <div className="mb-3 flex items-center justify-between gap-2.5">
-          <nav
-            aria-label="Breadcrumb"
-            className="flex flex-wrap items-center gap-2 text-xs text-[--color-nav-text]/70"
-          >
-            {breadcrumbs.map((crumb, index) => {
-              const isLast = index === breadcrumbs.length - 1;
-              return (
-                <div key={crumb.href} className="inline-flex items-center gap-2">
-                  {index > 0 ? <span className="text-[--color-nav-text]/45">&gt;</span> : null}
-                  <Link
-                    href={crumb.href}
-                    className={`transition-all duration-300 ease-in-out ${
-                      isLast
-                        ? "font-semibold text-white"
-                        : "text-[--color-nav-text]/75 hover:text-[--color-orange-brand]"
-                    }`}
-                    aria-current={isLast ? "page" : undefined}
-                  >
-                    {crumb.label}
-                  </Link>
-                </div>
-              );
-            })}
-          </nav>
-
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen((current) => !current)}
-            className="inline-flex min-h-9 items-center gap-2 rounded-xl border border-white/20 bg-black/25 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-[--color-nav-text] transition-all duration-200 hover:border-[--color-orange-brand]/45 active:scale-[0.98] lg:hidden"
-          >
-            {mobileMenuOpen ? (
-              <X className="h-4 w-4" aria-hidden />
-            ) : (
-              <Menu className="h-4 w-4" aria-hidden />
-            )}
-            Tools
-          </button>
-        </div>
-
-        {mobileMenuOpen ? (
-          <section className="mb-3 rounded-2xl border border-slate-800 bg-slate-900/50 p-3 transition-colors lg:hidden">
-            <div className="relative">
-              <Search
-                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[--color-nav-text]/60"
-                aria-hidden
-              />
-              <input
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                placeholder="Search trade tools"
-                className="h-10 w-full rounded-xl border border-slate-500 bg-slate-900 pl-9 pr-3 text-sm text-white outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
-              />
-            </div>
-            <div className="mt-3 grid gap-2 sm:grid-cols-2">
-              {filteredGroups.map((group) => (
-                <div
-                  key={group.label}
-                  className="rounded-xl border border-white/10 bg-black/25 p-3"
-                >
-                  <p className="mb-2 text-xs font-bold uppercase tracking-[0.15em] text-orange-500">
-                    {group.label}
-                  </p>
-                  <ul className="space-y-1.5">
-                    {group.modules.map((module) => (
-                      <li key={module.href}>
-                        <Link
-                          href={module.href}
-                          className="inline-flex items-center gap-2 text-xs text-[--color-nav-text] transition-all duration-300 ease-in-out hover:text-white"
-                          onClick={() => setMobileMenuOpen(false)}
-                        >
-                          <module.icon className="h-3.5 w-3.5" aria-hidden />
-                          {normalizeDisplayedLabel(module.label, page.canonicalPath)}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </section>
-        ) : null}
-
-        <div className="overflow-hidden rounded-3xl border trim-nav-border bg-[--color-nav-bg] shadow-[0_18px_40px_rgba(0,0,0,0.38)]">
-          <div
-            className="grid grid-cols-1 gap-2 px-4 py-4 sm:px-6 sm:py-5 lg:grid-cols-2 lg:items-center bg-[radial-gradient(ellipse_at_top_right,rgba(30,35,45,0.95),#0a0a0b_70%),linear-gradient(180deg,#0d0f14_0%,#0A0A0B_100%)]"
-          >
-            <div className="relative z-10 max-w-xl">
-              <div className="inline-flex items-center gap-2 rounded-full border border-[--color-orange-brand]/45 bg-[--color-orange-brand]/15 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.15em] text-orange-500">
-                <HardHat className="h-3.5 w-3.5" aria-hidden />
+      <main
+        id="main-content"
+        className="command-theme bg-[--color-bg] text-white flex min-h-screen flex-col"
+      >
+        {closeModal && (
+          <div className="sticky top-0 z-40 flex h-12 items-center justify-between border-b border-slate-800 bg-slate-900/95 px-3 backdrop-blur-sm">
+            <div className="min-w-0">
+              <p className="truncate text-[10px] font-bold uppercase tracking-[0.12em] text-orange-400">
                 {page.heroKicker}
-              </div>
-
-              {!closeModal ? (
-                <h1 className="mt-2 text-2xl font-black leading-tight text-white md:text-3xl">
-                  {displayTitle(page.title)}
-                </h1>
-              ) : null}
-              <p className="mt-2 text-sm leading-relaxed text-[--color-nav-text]/82 sm:text-base">
-                {page.description}
               </p>
+              <p className="truncate text-sm font-semibold text-white">
+                {displayTitle(page.title)}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={closeModal}
+              className="inline-flex min-h-8 items-center gap-1 rounded-lg px-2 text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+              aria-label="Back"
+            >
+              <ArrowLeft className="h-4 w-4" aria-hidden />
+              <span className="text-xs font-semibold uppercase tracking-widest">
+                Back
+              </span>
+            </button>
+          </div>
+        )}
+        <section className="mx-auto w-full max-w-6xl px-3 py-4 sm:px-5 sm:py-5 lg:px-7 pb-14">
+          <JsonLD schema={getTradePageSchema(page)} />
 
-              <div className="mt-3 inline-flex items-center gap-2 rounded-lg border border-[--color-orange-brand]/30 bg-[--color-orange-brand]/10 px-3 py-1.5 text-sm text-[--color-orange-brand]">
-                <MapPin className="h-3.5 w-3.5 shrink-0" aria-hidden />
-                {page.localFocus}
-              </div>
-
-              <div className="mt-3 flex flex-wrap items-center gap-2">
-                <button
-                  type="button"
-                  onClick={openFinalizeModal}
-                  className="inline-flex h-9 min-h-9 items-center gap-2 rounded-xl border-2 border-orange-400/80 bg-transparent px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white transition-all duration-200 hover:border-orange-400 hover:text-white active:scale-[0.98]"
-                >
-                  <PenSquare className="h-3.5 w-3.5" aria-hidden />
-                    Finalize &amp; Send
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCrmModalOpen(true)}
-                  className="inline-flex h-9 min-h-9 items-center gap-2 rounded-xl border-2 border-orange-400/80 bg-transparent px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white transition-all duration-200 hover:border-orange-400 hover:text-white active:scale-[0.98]"
-                >
-                  <Mail className="h-3.5 w-3.5" aria-hidden />
-                  Email Estimate
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSaveEstimate}
-                  disabled={saveLocked}
-                  className={`inline-flex h-9 min-h-9 items-center gap-2 rounded-xl border-2 border-white/80 bg-transparent px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white transition-all duration-200 hover:border-orange-400 hover:text-white active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 ${saveLocked ? "scale-95" : ""}`}
-                >
-                  {saveLocked ? (
-                    <>
-                      <Check className="h-3.5 w-3.5 text-emerald-400" aria-hidden />
-                      Synced
-                    </>
-                  ) : (
-                    <>
-                      <Save className="h-3.5 w-3.5" aria-hidden />
-                      Save Estimate
-                    </>
-                  )}
-                </button>
-              </div>
-
-              {primaryMaterialOrder ? (
-                <div className="mt-3 rounded-xl border border-orange-500/30 bg-orange-500/10 px-3 py-2">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-400">
-                    Material Order
-                  </p>
-                  <p className="mt-1 text-sm font-semibold text-white">
-                    {primaryMaterialOrder}
-                  </p>
-                </div>
-              ) : null}
-
-              {isBusinessTaxSave && (
-                <div className="mt-3 grid gap-2 rounded-xl border border-slate-700 bg-slate-900/70 p-3 text-xs sm:grid-cols-[minmax(0,1.1fr)_minmax(0,1.1fr)] sm:text-sm">
-                  <div className="space-y-1">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
-                      Tax Region
-                    </p>
-                    <select
-                      value={taxRegion}
-                      onChange={(event) =>
-                        setTaxRegion(event.target.value === "NYS" ? "NYS" : "Other")
-                      }
-                      className="h-9 w-full rounded-lg border border-slate-600 bg-slate-950 px-2 text-xs text-slate-100 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500 sm:text-sm"
+          <div className="mb-3 flex items-center justify-between gap-2.5">
+            <nav
+              aria-label="Breadcrumb"
+              className="flex flex-wrap items-center gap-2 text-xs text-[--color-nav-text]/70"
+            >
+              {breadcrumbs.map((crumb, index) => {
+                const isLast = index === breadcrumbs.length - 1;
+                return (
+                  <div
+                    key={crumb.href}
+                    className="inline-flex items-center gap-2"
+                  >
+                    {index > 0 ? (
+                      <span className="text-[--color-nav-text]/45">&gt;</span>
+                    ) : null}
+                    <Link
+                      href={crumb.href}
+                      className={`transition-all duration-300 ease-in-out ${
+                        isLast
+                          ? "font-semibold text-white"
+                          : "text-[--color-nav-text]/75 hover:text-[--color-orange-brand]"
+                      }`}
+                      aria-current={isLast ? "page" : undefined}
                     >
-                      <option value="NYS">New York State (NYS)</option>
-                      <option value="Other">Outside NYS / Custom</option>
-                    </select>
-                    <p className="text-[10px] leading-snug text-slate-400">
-                      NYS region uses combined county + state sales tax; otherwise enter your own blended tax rate below.
+                      {crumb.label}
+                    </Link>
+                  </div>
+                );
+              })}
+            </nav>
+
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen((current) => !current)}
+              className="inline-flex min-h-9 items-center gap-2 rounded-xl border border-white/20 bg-black/25 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-[--color-nav-text] transition-all duration-200 hover:border-[--color-orange-brand]/45 active:scale-[0.98] lg:hidden"
+            >
+              {mobileMenuOpen ? (
+                <X className="h-4 w-4" aria-hidden />
+              ) : (
+                <Menu className="h-4 w-4" aria-hidden />
+              )}
+              Tools
+            </button>
+          </div>
+
+          {mobileMenuOpen ? (
+            <section className="mb-3 rounded-2xl border border-slate-800 bg-slate-900/50 p-3 transition-colors lg:hidden">
+              <div className="relative">
+                <Search
+                  className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[--color-nav-text]/60"
+                  aria-hidden
+                />
+                <input
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  placeholder="Search trade tools"
+                  className="h-10 w-full rounded-xl border border-slate-500 bg-slate-900 pl-9 pr-3 text-sm text-white outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
+                />
+              </div>
+              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                {filteredGroups.map((group) => (
+                  <div
+                    key={group.label}
+                    className="rounded-xl border border-white/10 bg-black/25 p-3"
+                  >
+                    <p className="mb-2 text-xs font-bold uppercase tracking-[0.15em] text-orange-500">
+                      {group.label}
                     </p>
-                    <label className="mt-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-white">
-                      <input
-                        type="checkbox"
-                        className="h-4 w-4 rounded border-slate-600 bg-slate-900 text-orange-500"
-                        checked={capitalImprovement}
-                        onChange={(event) => setCapitalImprovement(event.target.checked)}
-                      />
-                      Capital Improvement (ST-124)
-                    </label>
-                    <p className="text-[10px] leading-snug text-slate-400">
-                      Capital improvements require NYS Form ST-124; no sales tax charged to the client when on file.
+                    <ul className="space-y-1.5">
+                      {group.modules.map((module) => (
+                        <li key={module.href}>
+                          <Link
+                            href={module.href}
+                            className="inline-flex items-center gap-2 text-xs text-[--color-nav-text] transition-all duration-300 ease-in-out hover:text-white"
+                            onClick={() => setMobileMenuOpen(false)}
+                          >
+                            <module.icon className="h-3.5 w-3.5" aria-hidden />
+                            {normalizeDisplayedLabel(
+                              module.label,
+                              page.canonicalPath,
+                            )}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          <div className="overflow-hidden rounded-3xl border trim-nav-border bg-[--color-nav-bg] shadow-[0_18px_40px_rgba(0,0,0,0.38)]">
+            <div className="grid grid-cols-1 gap-2 px-4 py-4 sm:px-6 sm:py-5 lg:grid-cols-2 lg:items-center bg-[radial-gradient(ellipse_at_top_right,rgba(30,35,45,0.95),#0a0a0b_70%),linear-gradient(180deg,#0d0f14_0%,#0A0A0B_100%)]">
+              <div className="relative z-10 max-w-xl">
+                <div className="inline-flex items-center gap-2 rounded-full border border-[--color-orange-brand]/45 bg-[--color-orange-brand]/15 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.15em] text-orange-500">
+                  <HardHat className="h-3.5 w-3.5" aria-hidden />
+                  {page.heroKicker}
+                </div>
+
+                {!closeModal ? (
+                  <h1 className="mt-2 text-2xl font-black leading-tight text-white md:text-3xl">
+                    {displayTitle(page.title)}
+                  </h1>
+                ) : null}
+                <p className="mt-2 text-sm leading-relaxed text-[--color-nav-text]/82 sm:text-base">
+                  {page.description}
+                </p>
+
+                <div className="mt-3 inline-flex items-center gap-2 rounded-lg border border-[--color-orange-brand]/30 bg-[--color-orange-brand]/10 px-3 py-1.5 text-sm text-[--color-orange-brand]">
+                  <MapPin className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                  {page.localFocus}
+                </div>
+
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={openFinalizeModal}
+                    className="inline-flex h-9 min-h-9 items-center gap-2 rounded-xl border-2 border-orange-400/80 bg-transparent px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white transition-all duration-200 hover:border-orange-400 hover:text-white active:scale-[0.98]"
+                  >
+                    <PenSquare className="h-3.5 w-3.5" aria-hidden />
+                    Finalize &amp; Send
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCrmModalOpen(true)}
+                    className="inline-flex h-9 min-h-9 items-center gap-2 rounded-xl border-2 border-orange-400/80 bg-transparent px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white transition-all duration-200 hover:border-orange-400 hover:text-white active:scale-[0.98]"
+                  >
+                    <Mail className="h-3.5 w-3.5" aria-hidden />
+                    Email Estimate
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSaveEstimate}
+                    disabled={saveLocked}
+                    className={`inline-flex h-9 min-h-9 items-center gap-2 rounded-xl border-2 border-white/80 bg-transparent px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white transition-all duration-200 hover:border-orange-400 hover:text-white active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 ${saveLocked ? "scale-95" : ""}`}
+                  >
+                    {saveLocked ? (
+                      <>
+                        <Check
+                          className="h-3.5 w-3.5 text-emerald-400"
+                          aria-hidden
+                        />
+                        Synced
+                      </>
+                    ) : (
+                      <>
+                        <Save className="h-3.5 w-3.5" aria-hidden />
+                        Save Estimate
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {primaryMaterialOrder ? (
+                  <div className="mt-3 rounded-xl border border-orange-500/30 bg-orange-500/10 px-3 py-2">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-400">
+                      Material Order
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-white">
+                      {primaryMaterialOrder}
                     </p>
                   </div>
+                ) : null}
 
-                  {taxRegion === "NYS" && (
+                {isBusinessTaxSave && (
+                  <div className="mt-3 grid gap-2 rounded-xl border border-slate-700 bg-slate-900/70 p-3 text-xs sm:grid-cols-[minmax(0,1.1fr)_minmax(0,1.1fr)] sm:text-sm">
                     <div className="space-y-1">
                       <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
-                        NYS County
+                        Tax Region
                       </p>
                       <select
-                        value={taxCounty}
-                        onChange={(event) => {
-                          const nextCounty = event.target.value;
-                          setTaxCounty(nextCounty);
-                          const match = NYS_COUNTY_TAX_RATES.find(
-                            (entry) => entry.county === nextCounty,
-                          );
-                          if (match) {
-                            setWidthSpan(match.combinedRate);
-                          }
-                        }}
+                        value={taxRegion}
+                        onChange={(event) =>
+                          setTaxRegion(
+                            event.target.value === "NYS" ? "NYS" : "Other",
+                          )
+                        }
                         className="h-9 w-full rounded-lg border border-slate-600 bg-slate-950 px-2 text-xs text-slate-100 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500 sm:text-sm"
                       >
-                        {NYS_COUNTY_TAX_RATES.map((entry) => (
-                          <option key={entry.county} value={entry.county}>
-                            {entry.county} — {entry.combinedRate.toFixed(2)}%
-                            {entry.mctd ? " (MCTD)" : ""}
-                          </option>
-                        ))}
+                        <option value="NYS">New York State (NYS)</option>
+                        <option value="Other">Outside NYS / Custom</option>
                       </select>
                       <p className="text-[10px] leading-snug text-slate-400">
-                        County pick auto-fills your Tax Rate (%) input using the latest combined NYS guidance.
+                        NYS region uses combined county + state sales tax;
+                        otherwise enter your own blended tax rate below.
+                      </p>
+                      <label className="mt-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-white">
+                        <input
+                          type="checkbox"
+                          className="h-4 w-4 rounded border-slate-600 bg-slate-900 text-orange-500"
+                          checked={capitalImprovement}
+                          onChange={(event) =>
+                            setCapitalImprovement(event.target.checked)
+                          }
+                        />
+                        Capital Improvement (ST-124)
+                      </label>
+                      <p className="text-[10px] leading-snug text-slate-400">
+                        Capital improvements require NYS Form ST-124; no sales
+                        tax charged to the client when on file.
                       </p>
                     </div>
-                  )}
-                </div>
-              )}
+
+                    {taxRegion === "NYS" && (
+                      <div className="space-y-1">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                          NYS County
+                        </p>
+                        <select
+                          value={taxCounty}
+                          onChange={(event) => {
+                            const nextCounty = event.target.value;
+                            setTaxCounty(nextCounty);
+                            const match = NYS_COUNTY_TAX_RATES.find(
+                              (entry) => entry.county === nextCounty,
+                            );
+                            if (match) {
+                              setWidthSpan(match.combinedRate);
+                            }
+                          }}
+                          className="h-9 w-full rounded-lg border border-slate-600 bg-slate-950 px-2 text-xs text-slate-100 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500 sm:text-sm"
+                        >
+                          {NYS_COUNTY_TAX_RATES.map((entry) => (
+                            <option key={entry.county} value={entry.county}>
+                              {entry.county} — {entry.combinedRate.toFixed(2)}%
+                              {entry.mctd ? " (MCTD)" : ""}
+                            </option>
+                          ))}
+                        </select>
+                        <p className="text-[10px] leading-snug text-slate-400">
+                          County pick auto-fills your Tax Rate (%) input using
+                          the latest combined NYS guidance.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
 
-          <div className="space-y-2 p-3 sm:p-4 bg-[--color-nav-bg]">
-
-            <aside className="mb-3 hidden rounded-2xl border border-slate-800 bg-slate-900/50 p-3 transition-colors lg:block">
+            <div className="space-y-2 p-3 sm:p-4 bg-[--color-nav-bg]">
+              <aside className="mb-3 hidden rounded-2xl border border-slate-800 bg-slate-900/50 p-3 transition-colors lg:block">
                 <h2 className="text-sm font-black uppercase tracking-[0.12em] text-white">
                   Tool Navigator
                 </h2>
@@ -2165,7 +2516,10 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                   />
                 </div>
 
-                <div ref={moduleDropdownRef} className="mt-3 grid grid-cols-3 gap-2">
+                <div
+                  ref={moduleDropdownRef}
+                  className="mt-3 grid grid-cols-3 gap-2"
+                >
                   {filteredGroups.map((group) => (
                     <div key={group.label} className="relative">
                       <button
@@ -2179,9 +2533,15 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                         aria-haspopup="true"
                         className="flex min-h-11 w-full flex-col items-center justify-center gap-1 rounded-xl border-2 border-slate-500 bg-slate-900 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.09em] text-[--color-nav-text] transition-all duration-200 ease-in-out hover:border-orange-400 hover:text-white active:scale-[0.98]"
                       >
-                        <group.icon className="h-4 w-4 text-[--color-orange-brand]" aria-hidden />
+                        <group.icon
+                          className="h-4 w-4 text-[--color-orange-brand]"
+                          aria-hidden
+                        />
                         {group.label}
-                        <ChevronDown className="h-3 w-3 text-[--color-nav-text]/75" aria-hidden />
+                        <ChevronDown
+                          className="h-3 w-3 text-[--color-nav-text]/75"
+                          aria-hidden
+                        />
                       </button>
 
                       <div
@@ -2203,7 +2563,10 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                             }`}
                           >
                             <module.icon className="h-3.5 w-3.5" aria-hidden />
-                            {normalizeDisplayedLabel(module.label, page.canonicalPath)}
+                            {normalizeDisplayedLabel(
+                              module.label,
+                              page.canonicalPath,
+                            )}
                           </Link>
                         ))}
                       </div>
@@ -2212,739 +2575,894 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                 </div>
               </aside>
 
-            <div className="grid gap-2 lg:grid-cols-[minmax(0,1.15fr)_340px]">
-
-              <section className={`rounded-2xl border border-slate-800 bg-slate-900/50 transition-colors ${effectiveProMode ? "p-3" : "p-3 sm:p-4"}`}>
-                <div className="flex justify-center">
-                  <div
-                    className={`rounded-full bg-orange-600/15 p-4 mb-3 flex items-center justify-center ${iconPulse ? "animate-pulse" : ""}`}
-                  >
-                    {(() => {
-                      const IconComponent = getCategoryIcon(page);
-                      return (
-                        <IconComponent
-                          size={52}
-                          strokeWidth={1.5}
-                          className="text-orange-600"
-                          aria-hidden
-                        />
-                      );
-                    })()}
-                  </div>
-                </div>
-                <h2 className="text-sm font-black uppercase tracking-[0.12em] text-white">
-                  Inputs
-                </h2>
-
-                {(() => {
-                  const labels = getInputLabels(page.canonicalPath, activeFramingMaterial);
-                  const thirdInputMaxBase = isTrimRoute ? 20 : isFlooringRoute ? 250 : 96;
-                  const thirdInputMinBase = isTrimRoute ? 4 : 1;
-                  const firstInputMin = financialCopy?.inputs[0].min ?? 1;
-                  const firstInputMax = financialCopy?.inputs[0].max ?? 100000000;
-                  const secondInputMin = financialCopy?.inputs[1].min ?? 0;
-                  const secondInputMax = financialCopy?.inputs[1].max ?? 100;
-                  const thirdInputMin = financialCopy?.inputs[2].min ?? thirdInputMinBase;
-                  const thirdInputMax = financialCopy?.inputs[2].max ?? thirdInputMaxBase;
-                  const firstUnitSuffix =
-                    financialCopy?.inputs[0].unit ??
-                    (isBusinessTaxSave ? "$" : inferUnitFromLabel(labels.first, "ft"));
-                  const secondUnitSuffix =
-                    financialCopy?.inputs[1].unit ??
-                    (isBusinessTaxSave ? "%" : inferUnitFromLabel(labels.second, "%"));
-                  const thirdUnitSuffix =
-                    financialCopy?.inputs[2].unit ??
-                    (isBusinessTaxSave ? "$" : inferUnitFromLabel(labels.third));
-                  return (
-                <div className="mt-2 space-y-2">
-                  {showFramingMaterialSelector && (
-                    <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-[--color-nav-text]/80">
-                      Material Type
-                      <select
-                        value={selectedFramingMaterial}
-                        onChange={(event) =>
-                          setSelectedFramingMaterial(event.target.value as FramingMaterialKind)
-                        }
-                        className="h-11 rounded-xl border border-slate-500 bg-slate-900 px-3 text-sm text-white outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
-                      >
-                        <option value="wall-studs">Wall Studs</option>
-                        <option value="floor-joists">Floor Joists</option>
-                        <option value="roof-rafters">Roof Rafters</option>
-                        <option value="ceiling-joists">Ceiling Joists</option>
-                        <option value="decking">Decking</option>
-                      </select>
-                    </label>
-                  )}
-                  <div className="space-y-1">
-                    <div className="min-h-[24px] space-y-1">
-                      {supportsAreaToggle && (
-                        <UnitToggle
-                          label="Area"
-                          value={areaInputMode}
-                          options={[
-                            { value: "dimensions", label: "Dimensions" },
-                            { value: "total-sq-ft", label: "Total Sq Ft" },
-                          ]}
-                          onChange={handleAreaInputModeChange}
-                        />
-                      )}
-                      {supportsConcreteVolumeToggle && (
-                        <UnitToggle
-                          label="Yardage"
-                          value={volumeInputMode}
-                          options={[
-                            { value: "dimensions", label: "Dimensions" },
-                            { value: "total-cu-yd", label: "Total Yards" },
-                            { value: "total-cu-ft", label: "Total Cu Ft" },
-                          ]}
-                          onChange={handleVolumeInputModeChange}
-                        />
-                      )}
-                      {supportsWallStudToggle && (
-                        <UnitToggle
-                          label="Wall Framing"
-                          value={wallInputMode}
-                          options={[
-                            { value: "lineal-feet", label: "Running Lineal Feet" },
-                            { value: "total-studs", label: "Total Studs" },
-                          ]}
-                          onChange={handleWallInputModeChange}
-                        />
-                      )}
-                      {supportsTrimLfToggle && (
-                        <UnitToggle
-                          label="Trim Layout"
-                          value={trimInputMode}
-                          options={[
-                            { value: "dimensions", label: "Dimensions" },
-                            { value: "total-lf", label: "Total LF" },
-                          ]}
-                          onChange={handleTrimInputModeChange}
-                        />
-                      )}
-                      {isFlooringRoute && (
-                        <UnitToggle
-                          label="Sq Ft per Box"
-                          value={flooringBoxMode}
-                          options={[
-                            { value: "20", label: "20" },
-                            { value: "24", label: "24" },
-                            { value: "30", label: "30" },
-                            { value: "custom", label: "Custom" },
-                          ]}
-                          onChange={handleFlooringBoxModeChange}
-                        />
-                      )}
-                    </div>
-                    <div className="min-h-[24px]">
-                      {!effectiveProMode && (isSidingRoute || (page.category === "roofing" && !page.canonicalPath.includes("pitch"))) && (
-                        <p className="text-[10px] leading-tight text-slate-500">
-                          One "Square" covers 100 square feet of area.
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="grid gap-3">
-                    {isConcreteTotalVolumeMode ? (
-                      <ProInput
-                        label={volumeInputMode === "total-cu-yd" ? "Total Yards" : "Total Cubic Feet"}
-                        subLabel={getInlineSubLabel(
-                          volumeInputMode === "total-cu-yd" ? "Total Yards" : "Total Cubic Feet",
-                        )}
-                        helpText={
-                          volumeInputMode === "total-cu-yd"
-                            ? "Total Yards: (Length x Width x Depth) divided by 27."
-                            : undefined
-                        }
-                        type="number"
-                        min={volumeInputMode === "total-cu-yd" ? 0.01 : 1}
-                        max={100000000}
-                        value={
-                          volumeInputMode === "total-cu-yd"
-                            ? String(totalCubicYardsInput)
-                            : String(totalCubicFeetInput)
-                        }
-                        onChange={(next) =>
-                          volumeInputMode === "total-cu-yd"
-                            ? parseAndSet(next, setTotalCubicYardsInput, 0.01, 1000000)
-                            : parseAndSet(next, setTotalCubicFeetInput, 1, 100000000)
-                        }
-                        unitSuffix={volumeInputMode === "total-cu-yd" ? "yd³" : "ft³"}
-                      />
-                    ) : isTrimTotalLfMode ? (
-                      <>
-                        <ProInput
-                          label="Total Lineal Feet (LF)"
-                          subLabel={getInlineSubLabel("Total Lineal Feet (LF)")}
-                          type="number"
-                          min={1}
-                          max={100000000}
-                          value={String(totalLinealFeetInput)}
-                          onChange={(next) =>
-                            parseAndSet(next, setTotalLinealFeetInput, 1, 100000000)
-                          }
-                          unitSuffix="lf"
-                        />
-                        <ProInput
-                          label="Stock Length"
-                          subLabel={getInlineSubLabel("Stock Length")}
-                          type="number"
-                          min={4}
-                          max={20}
-                          value={String(depthThickness)}
-                          onChange={(next) => parseAndSet(next, setDepthThickness, 4, 20)}
-                          unitSuffix="ft"
-                        />
-                      </>
-                    ) : isAreaTotalMode ? (
-                      <>
-                        <ProInput
-                          label="Total Square Feet"
-                          subLabel={getInlineSubLabel("Total Square Feet")}
-                          type="number"
-                          min={1}
-                          max={100000000}
-                          value={String(totalSquareFeetInput)}
-                          onChange={(next) =>
-                            parseAndSet(next, setTotalSquareFeetInput, 1, 100000000)
-                          }
-                          unitSuffix="sq ft"
-                        />
-                        {isSidingRoute && (
-                          <ProInput
-                            label="Window/Door Deductions"
-                            subLabel={getInlineSubLabel("Window/Door Deduction")}
-                            type="number"
-                            min={0}
-                            max={100000000}
-                            value={String(openingDeductionSqFt)}
-                            onChange={(next) =>
-                              parseAndSet(next, setOpeningDeductionSqFt, 0, 100000000)
-                            }
-                            unitSuffix="sq ft"
-                          />
-                        )}
-                        <ProInput
-                          label={labels.third}
-                          subLabel={getInlineSubLabel(labels.third)}
-                          type="number"
-                          min={thirdInputMin}
-                          max={thirdInputMax}
-                          value={String(depthThickness)}
-                          onChange={(next) =>
-                            parseAndSet(next, setDepthThickness, thirdInputMin, thirdInputMax)
-                          }
-                        />
-                      </>
-                    ) : isWallStudTotalMode ? (
-                      <>
-                        <ProInput
-                          label={labels.first}
-                          subLabel={getInlineSubLabel(labels.first)}
-                          type="number"
-                          min={1}
-                          max={10000}
-                          value={String(baseMeasurement)}
-                          onChange={(next) =>
-                            parseAndSet(next, setBaseMeasurement, 1, 10000)
-                          }
-                          unitSuffix="ft"
-                        />
-                        <ProInput
-                          label="Total Studs"
-                          subLabel="Use your desired stud count to back-calculate spacing."
-                          type="number"
-                          min={2}
-                          max={50000}
-                          value={String(totalStudsInput)}
-                          onChange={(next) =>
-                            parseAndSet(next, setTotalStudsInput, 2, 50000)
-                          }
-                        />
-                        <ProInput
-                          label={labels.third}
-                          subLabel={getInlineSubLabel(labels.third)}
-                          type="number"
-                          min={thirdInputMin}
-                          max={thirdInputMax}
-                          value={String(depthThickness)}
-                          onChange={(next) =>
-                            parseAndSet(next, setDepthThickness, thirdInputMin, thirdInputMax)
-                          }
-                          unitSuffix="ft"
-                        />
-                      </>
-                    ) : (
-                      <>
-                        <ProInput
-                          label={labels.first}
-                          subLabel={getInlineSubLabel(labels.first)}
-                          type="number"
-                          min={firstInputMin}
-                          max={firstInputMax}
-                          value={String(baseMeasurement)}
-                          onChange={(next) =>
-                            parseAndSet(next, setBaseMeasurement, firstInputMin, firstInputMax)
-                          }
-                          unitSuffix={firstUnitSuffix}
-                        />
-                        <ProInput
-                          label={
-                            isBusinessTaxSave ? "Tax Rate (%)" : labels.second
-                          }
-                          subLabel={
-                            isBusinessTaxSave
-                              ? "Use NYS auto-fill by county or enter your blended rate."
-                              : getInlineSubLabel(labels.second)
-                          }
-                          type="number"
-                          min={secondInputMin}
-                          max={secondInputMax}
-                          value={String(widthSpan)}
-                          onChange={(next) =>
-                            parseAndSet(next, setWidthSpan, secondInputMin, secondInputMax)
-                          }
-                          unitSuffix={secondUnitSuffix}
-                        />
-                        <ProInput
-                          label={
-                            isBusinessTaxSave ? "Deductions ($)" : labels.third
-                          }
-                          subLabel={
-                            isBusinessTaxSave
-                              ? "Optional deductions or adjustments taken before tax."
-                              : getInlineSubLabel(labels.third)
-                          }
-                          type="number"
-                          min={thirdInputMin}
-                          max={thirdInputMax}
-                          value={String(depthThickness)}
-                          onChange={(next) =>
-                            parseAndSet(next, setDepthThickness, thirdInputMin, thirdInputMax)
-                          }
-                          unitSuffix={thirdUnitSuffix}
-                        />
-                        {isSidingRoute && (
-                          <ProInput
-                            label="Window/Door Deductions"
-                            subLabel={getInlineSubLabel("Window/Door Deduction")}
-                            type="number"
-                            min={0}
-                            max={100000000}
-                            value={String(openingDeductionSqFt)}
-                            onChange={(next) =>
-                              parseAndSet(next, setOpeningDeductionSqFt, 0, 100000000)
-                            }
-                            unitSuffix="sq ft"
-                          />
-                        )}
-                      </>
-                    )}
-                  </div>
-
-                  <label className="block rounded-xl border border-white/15 bg-[--color-nav-bg] p-3">
-                    <div className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-[0.12em] text-[--color-nav-text]/80">
-                      <span id="waste-factor-label">
-                        {isTrimRoute ? "Miter Waste %" : "Waste Factor %"}
-                      </span>
-                      <span className="tabular-nums">{wasteFactor}%</span>
-                    </div>
-                    {!effectiveProMode && (
-                      <p className="mb-2 text-[10px] leading-tight text-slate-400">
-                        {getInlineSubLabel(isTrimRoute ? "Miter Waste" : "Waste Factor")}
-                      </p>
-                    )}
-                    <input
-                      type="range"
-                      aria-labelledby="waste-factor-label"
-                      min={0}
-                      max={MAX_WASTE_FACTOR}
-                      value={wasteFactor}
-                      onChange={(event) =>
-                        setWasteFactor(
-                          clampValue(Number(event.target.value), 0, MAX_WASTE_FACTOR),
-                        )
-                      }
-                      className="w-full accent-[--color-orange-brand]"
-                    />
-                  </label>
-                </div>
-                  );
-                })()}
-              </section>
-
-              <aside
-                ref={resultsCardRef}
-                className="self-start pb-8 lg:sticky lg:top-24 lg:self-start lg:pb-0"
-              >
-                <ProResult
-                  primary={displayResults.primary}
-                  secondary={displayResults.secondary}
-                  primaryUnitDisplay={getPrimaryDisplayUnit(displayResults.primary)}
-                  localTip={effectiveProMode ? null : localTip}
-                  materialList={displayResults.materialList}
-                  onCopyOrder={handleCopyOrder}
-                  onFinalize={openFinalizeModal}
-                  finalizeLabel="Finalize & Send"
-                  finalizeIcon={<PenSquare className="h-4 w-4" aria-hidden />}
-                />
-
-                <section className="rounded-xl border border-slate-800 bg-slate-900/50 p-3 transition-colors">
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                      <div className="rounded-md bg-[--color-orange-brand] p-1.5 text-white">
-                        <Sparkles className="h-3.5 w-3.5" aria-hidden />
-                      </div>
-                      <div>
-                        <p className="text-sm font-bold text-white">
-                          AI Material Optimizer
-                        </p>
-                        <p className="text-xs text-[--color-nav-text]/75">
-                          Cost savings & best practices
-                        </p>
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      className="min-h-9 rounded-lg border border-white/20 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.12em] text-[--color-nav-text] transition-all duration-200 hover:border-[--color-orange-brand]/45 hover:text-white active:scale-[0.98]"
+              <div className="grid gap-2 lg:grid-cols-[minmax(0,1.15fr)_340px]">
+                <section
+                  className={`rounded-2xl border border-slate-800 bg-slate-900/50 transition-colors ${effectiveProMode ? "p-3" : "p-3 sm:p-4"}`}
+                >
+                  <div className="flex justify-center">
+                    <div
+                      className={`rounded-full bg-orange-600/15 p-4 mb-3 flex items-center justify-center ${iconPulse ? "animate-pulse" : ""}`}
                     >
-                      Optimize
-                    </button>
+                      {(() => {
+                        const IconComponent = getCategoryIcon(page);
+                        return (
+                          <IconComponent
+                            size={52}
+                            strokeWidth={1.5}
+                            className="text-orange-600"
+                            aria-hidden
+                          />
+                        );
+                      })()}
+                    </div>
                   </div>
+                  <h2 className="text-sm font-black uppercase tracking-[0.12em] text-white">
+                    Inputs
+                  </h2>
+
+                  {(() => {
+                    const labels = getInputLabels(
+                      page.canonicalPath,
+                      activeFramingMaterial,
+                    );
+                    const thirdInputMaxBase = isTrimRoute
+                      ? 20
+                      : isFlooringRoute
+                        ? 250
+                        : 96;
+                    const thirdInputMinBase = isTrimRoute ? 4 : 1;
+                    const firstInputMin = financialCopy?.inputs[0].min ?? 1;
+                    const firstInputMax =
+                      financialCopy?.inputs[0].max ?? 100000000;
+                    const secondInputMin = financialCopy?.inputs[1].min ?? 0;
+                    const secondInputMax = financialCopy?.inputs[1].max ?? 100;
+                    const thirdInputMin =
+                      financialCopy?.inputs[2].min ?? thirdInputMinBase;
+                    const thirdInputMax =
+                      financialCopy?.inputs[2].max ?? thirdInputMaxBase;
+                    const firstUnitSuffix =
+                      financialCopy?.inputs[0].unit ??
+                      (isBusinessTaxSave
+                        ? "$"
+                        : inferUnitFromLabel(labels.first, "ft"));
+                    const secondUnitSuffix =
+                      financialCopy?.inputs[1].unit ??
+                      (isBusinessTaxSave
+                        ? "%"
+                        : inferUnitFromLabel(labels.second, "%"));
+                    const thirdUnitSuffix =
+                      financialCopy?.inputs[2].unit ??
+                      (isBusinessTaxSave
+                        ? "$"
+                        : inferUnitFromLabel(labels.third));
+                    return (
+                      <div className="mt-2 space-y-2">
+                        {showFramingMaterialSelector && (
+                          <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-[--color-nav-text]/80">
+                            Material Type
+                            <select
+                              value={selectedFramingMaterial}
+                              onChange={(event) =>
+                                setSelectedFramingMaterial(
+                                  event.target.value as FramingMaterialKind,
+                                )
+                              }
+                              className="h-11 rounded-xl border border-slate-500 bg-slate-900 px-3 text-sm text-white outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
+                            >
+                              <option value="wall-studs">Wall Studs</option>
+                              <option value="floor-joists">Floor Joists</option>
+                              <option value="roof-rafters">Roof Rafters</option>
+                              <option value="ceiling-joists">
+                                Ceiling Joists
+                              </option>
+                              <option value="decking">Decking</option>
+                            </select>
+                          </label>
+                        )}
+                        <div className="space-y-1">
+                          <div className="min-h-[24px] space-y-1">
+                            {supportsAreaToggle && (
+                              <UnitToggle
+                                label="Area"
+                                value={areaInputMode}
+                                options={[
+                                  { value: "dimensions", label: "Dimensions" },
+                                  {
+                                    value: "total-sq-ft",
+                                    label: "Total Sq Ft",
+                                  },
+                                ]}
+                                onChange={handleAreaInputModeChange}
+                              />
+                            )}
+                            {supportsConcreteVolumeToggle && (
+                              <UnitToggle
+                                label="Yardage"
+                                value={volumeInputMode}
+                                options={[
+                                  { value: "dimensions", label: "Dimensions" },
+                                  {
+                                    value: "total-cu-yd",
+                                    label: "Total Yards",
+                                  },
+                                  {
+                                    value: "total-cu-ft",
+                                    label: "Total Cu Ft",
+                                  },
+                                ]}
+                                onChange={handleVolumeInputModeChange}
+                              />
+                            )}
+                            {supportsWallStudToggle && (
+                              <UnitToggle
+                                label="Wall Framing"
+                                value={wallInputMode}
+                                options={[
+                                  {
+                                    value: "lineal-feet",
+                                    label: "Running Lineal Feet",
+                                  },
+                                  {
+                                    value: "total-studs",
+                                    label: "Total Studs",
+                                  },
+                                ]}
+                                onChange={handleWallInputModeChange}
+                              />
+                            )}
+                            {supportsTrimLfToggle && (
+                              <UnitToggle
+                                label="Trim Layout"
+                                value={trimInputMode}
+                                options={[
+                                  { value: "dimensions", label: "Dimensions" },
+                                  { value: "total-lf", label: "Total LF" },
+                                ]}
+                                onChange={handleTrimInputModeChange}
+                              />
+                            )}
+                            {isFlooringRoute && (
+                              <UnitToggle
+                                label="Sq Ft per Box"
+                                value={flooringBoxMode}
+                                options={[
+                                  { value: "20", label: "20" },
+                                  { value: "24", label: "24" },
+                                  { value: "30", label: "30" },
+                                  { value: "custom", label: "Custom" },
+                                ]}
+                                onChange={handleFlooringBoxModeChange}
+                              />
+                            )}
+                          </div>
+                          <div className="min-h-[24px]">
+                            {!effectiveProMode &&
+                              (isSidingRoute ||
+                                (page.category === "roofing" &&
+                                  !page.canonicalPath.includes("pitch"))) && (
+                                <p className="text-[10px] leading-tight text-slate-500">
+                                  One "Square" covers 100 square feet of area.
+                                </p>
+                              )}
+                          </div>
+                        </div>
+
+                        <div className="grid gap-3">
+                          {isConcreteTotalVolumeMode ? (
+                            <ProInput
+                              label={
+                                volumeInputMode === "total-cu-yd"
+                                  ? "Total Yards"
+                                  : "Total Cubic Feet"
+                              }
+                              subLabel={getInlineSubLabel(
+                                volumeInputMode === "total-cu-yd"
+                                  ? "Total Yards"
+                                  : "Total Cubic Feet",
+                              )}
+                              helpText={
+                                volumeInputMode === "total-cu-yd"
+                                  ? "Total Yards: (Length x Width x Depth) divided by 27."
+                                  : undefined
+                              }
+                              type="number"
+                              min={volumeInputMode === "total-cu-yd" ? 0.01 : 1}
+                              max={100000000}
+                              value={
+                                volumeInputMode === "total-cu-yd"
+                                  ? String(totalCubicYardsInput)
+                                  : String(totalCubicFeetInput)
+                              }
+                              onChange={(next) =>
+                                volumeInputMode === "total-cu-yd"
+                                  ? parseAndSet(
+                                      next,
+                                      setTotalCubicYardsInput,
+                                      0.01,
+                                      1000000,
+                                    )
+                                  : parseAndSet(
+                                      next,
+                                      setTotalCubicFeetInput,
+                                      1,
+                                      100000000,
+                                    )
+                              }
+                              unitSuffix={
+                                volumeInputMode === "total-cu-yd"
+                                  ? "yd³"
+                                  : "ft³"
+                              }
+                            />
+                          ) : isTrimTotalLfMode ? (
+                            <>
+                              <ProInput
+                                label="Total Lineal Feet (LF)"
+                                subLabel={getInlineSubLabel(
+                                  "Total Lineal Feet (LF)",
+                                )}
+                                type="number"
+                                min={1}
+                                max={100000000}
+                                value={String(totalLinealFeetInput)}
+                                onChange={(next) =>
+                                  parseAndSet(
+                                    next,
+                                    setTotalLinealFeetInput,
+                                    1,
+                                    100000000,
+                                  )
+                                }
+                                unitSuffix="lf"
+                              />
+                              <ProInput
+                                label="Stock Length"
+                                subLabel={getInlineSubLabel("Stock Length")}
+                                type="number"
+                                min={4}
+                                max={20}
+                                value={String(depthThickness)}
+                                onChange={(next) =>
+                                  parseAndSet(next, setDepthThickness, 4, 20)
+                                }
+                                unitSuffix="ft"
+                              />
+                            </>
+                          ) : isAreaTotalMode ? (
+                            <>
+                              <ProInput
+                                label="Total Square Feet"
+                                subLabel={getInlineSubLabel(
+                                  "Total Square Feet",
+                                )}
+                                type="number"
+                                min={1}
+                                max={100000000}
+                                value={String(totalSquareFeetInput)}
+                                onChange={(next) =>
+                                  parseAndSet(
+                                    next,
+                                    setTotalSquareFeetInput,
+                                    1,
+                                    100000000,
+                                  )
+                                }
+                                unitSuffix="sq ft"
+                              />
+                              {isSidingRoute && (
+                                <ProInput
+                                  label="Window/Door Deductions"
+                                  subLabel={getInlineSubLabel(
+                                    "Window/Door Deduction",
+                                  )}
+                                  type="number"
+                                  min={0}
+                                  max={100000000}
+                                  value={String(openingDeductionSqFt)}
+                                  onChange={(next) =>
+                                    parseAndSet(
+                                      next,
+                                      setOpeningDeductionSqFt,
+                                      0,
+                                      100000000,
+                                    )
+                                  }
+                                  unitSuffix="sq ft"
+                                />
+                              )}
+                              <ProInput
+                                label={labels.third}
+                                subLabel={getInlineSubLabel(labels.third)}
+                                type="number"
+                                min={thirdInputMin}
+                                max={thirdInputMax}
+                                value={String(depthThickness)}
+                                onChange={(next) =>
+                                  parseAndSet(
+                                    next,
+                                    setDepthThickness,
+                                    thirdInputMin,
+                                    thirdInputMax,
+                                  )
+                                }
+                              />
+                            </>
+                          ) : isWallStudTotalMode ? (
+                            <>
+                              <ProInput
+                                label={labels.first}
+                                subLabel={getInlineSubLabel(labels.first)}
+                                type="number"
+                                min={1}
+                                max={10000}
+                                value={String(baseMeasurement)}
+                                onChange={(next) =>
+                                  parseAndSet(
+                                    next,
+                                    setBaseMeasurement,
+                                    1,
+                                    10000,
+                                  )
+                                }
+                                unitSuffix="ft"
+                              />
+                              <ProInput
+                                label="Total Studs"
+                                subLabel="Use your desired stud count to back-calculate spacing."
+                                type="number"
+                                min={2}
+                                max={50000}
+                                value={String(totalStudsInput)}
+                                onChange={(next) =>
+                                  parseAndSet(
+                                    next,
+                                    setTotalStudsInput,
+                                    2,
+                                    50000,
+                                  )
+                                }
+                              />
+                              <ProInput
+                                label={labels.third}
+                                subLabel={getInlineSubLabel(labels.third)}
+                                type="number"
+                                min={thirdInputMin}
+                                max={thirdInputMax}
+                                value={String(depthThickness)}
+                                onChange={(next) =>
+                                  parseAndSet(
+                                    next,
+                                    setDepthThickness,
+                                    thirdInputMin,
+                                    thirdInputMax,
+                                  )
+                                }
+                                unitSuffix="ft"
+                              />
+                            </>
+                          ) : (
+                            <>
+                              <ProInput
+                                label={labels.first}
+                                subLabel={getInlineSubLabel(labels.first)}
+                                type="number"
+                                min={firstInputMin}
+                                max={firstInputMax}
+                                value={String(baseMeasurement)}
+                                onChange={(next) =>
+                                  parseAndSet(
+                                    next,
+                                    setBaseMeasurement,
+                                    firstInputMin,
+                                    firstInputMax,
+                                  )
+                                }
+                                unitSuffix={firstUnitSuffix}
+                              />
+                              <ProInput
+                                label={
+                                  isBusinessTaxSave
+                                    ? "Tax Rate (%)"
+                                    : labels.second
+                                }
+                                subLabel={
+                                  isBusinessTaxSave
+                                    ? "Use NYS auto-fill by county or enter your blended rate."
+                                    : getInlineSubLabel(labels.second)
+                                }
+                                type="number"
+                                min={secondInputMin}
+                                max={secondInputMax}
+                                value={String(widthSpan)}
+                                onChange={(next) =>
+                                  parseAndSet(
+                                    next,
+                                    setWidthSpan,
+                                    secondInputMin,
+                                    secondInputMax,
+                                  )
+                                }
+                                unitSuffix={secondUnitSuffix}
+                              />
+                              <ProInput
+                                label={
+                                  isBusinessTaxSave
+                                    ? "Deductions ($)"
+                                    : labels.third
+                                }
+                                subLabel={
+                                  isBusinessTaxSave
+                                    ? "Optional deductions or adjustments taken before tax."
+                                    : getInlineSubLabel(labels.third)
+                                }
+                                type="number"
+                                min={thirdInputMin}
+                                max={thirdInputMax}
+                                value={String(depthThickness)}
+                                onChange={(next) =>
+                                  parseAndSet(
+                                    next,
+                                    setDepthThickness,
+                                    thirdInputMin,
+                                    thirdInputMax,
+                                  )
+                                }
+                                unitSuffix={thirdUnitSuffix}
+                              />
+                              {isSidingRoute && (
+                                <ProInput
+                                  label="Window/Door Deductions"
+                                  subLabel={getInlineSubLabel(
+                                    "Window/Door Deduction",
+                                  )}
+                                  type="number"
+                                  min={0}
+                                  max={100000000}
+                                  value={String(openingDeductionSqFt)}
+                                  onChange={(next) =>
+                                    parseAndSet(
+                                      next,
+                                      setOpeningDeductionSqFt,
+                                      0,
+                                      100000000,
+                                    )
+                                  }
+                                  unitSuffix="sq ft"
+                                />
+                              )}
+                            </>
+                          )}
+                        </div>
+
+                        <label className="block rounded-xl border border-white/15 bg-[--color-nav-bg] p-3">
+                          <div className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-[0.12em] text-[--color-nav-text]/80">
+                            <span id="waste-factor-label">
+                              {isTrimRoute ? "Miter Waste %" : "Waste Factor %"}
+                            </span>
+                            <span className="tabular-nums">{wasteFactor}%</span>
+                          </div>
+                          {!effectiveProMode && (
+                            <p className="mb-2 text-[10px] leading-tight text-slate-400">
+                              {getInlineSubLabel(
+                                isTrimRoute ? "Miter Waste" : "Waste Factor",
+                              )}
+                            </p>
+                          )}
+                          <input
+                            type="range"
+                            aria-labelledby="waste-factor-label"
+                            min={0}
+                            max={MAX_WASTE_FACTOR}
+                            value={wasteFactor}
+                            onChange={(event) =>
+                              setWasteFactor(
+                                clampValue(
+                                  Number(event.target.value),
+                                  0,
+                                  MAX_WASTE_FACTOR,
+                                ),
+                              )
+                            }
+                            className="w-full accent-[--color-orange-brand]"
+                          />
+                        </label>
+                      </div>
+                    );
+                  })()}
                 </section>
 
-                {terminologyTerms.length ? (
-                  <section className="mt-2 rounded-xl border border-slate-800 bg-slate-900/50 p-3 transition-colors">
-                    <div className="flex items-center justify-between gap-2">
-                      <div>
-                        <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[--color-orange-brand]">
-                          Terminology
-                        </p>
-                        <p className="text-xs text-[--color-nav-text]">
-                          Industry-standard inputs used in this calculator.
-                        </p>
-                      </div>
-                      <Link
-                        href={routes.glossary}
-                        className="text-[11px] font-semibold uppercase tracking-[0.12em] text-white underline-offset-4 hover:text-[--color-orange-brand]"
-                      >
-                        Glossary
-                      </Link>
-                    </div>
-                    <ul className="mt-3 space-y-2">
-                      {terminologyTerms.slice(0, 3).map((term) => (
-                        <li
-                          key={term.key}
-                          className="rounded-lg border border-white/10 bg-white/5 px-3 py-2"
-                        >
-                          <div className="flex items-center justify-between gap-2">
-                            <span className="text-xs font-bold uppercase tracking-[0.12em] text-white">
-                              {term.label}
-                            </span>
-                            {term.unit ? (
-                              <span className="text-[10px] uppercase tracking-[0.12em] text-[--color-nav-text]">
-                                {term.unit}
-                              </span>
-                            ) : null}
-                          </div>
-                          <p className="mt-1 text-xs leading-relaxed text-[--color-nav-text]">
-                            {term.definition}
-                          </p>
-                        </li>
-                      ))}
-                    </ul>
-                  </section>
-                ) : null}
-              </aside>
-            </div>
+                <aside
+                  ref={resultsCardRef}
+                  className="self-start pb-8 lg:sticky lg:top-24 lg:self-start lg:pb-0"
+                >
+                  <ProResult
+                    primary={displayResults.primary}
+                    secondary={displayResults.secondary}
+                    primaryUnitDisplay={getPrimaryDisplayUnit(
+                      displayResults.primary,
+                    )}
+                    localTip={effectiveProMode ? null : localTip}
+                    materialList={displayResults.materialList}
+                    onCopyOrder={handleCopyOrder}
+                    onFinalize={openFinalizeModal}
+                    finalizeLabel="Finalize & Send"
+                    finalizeIcon={<PenSquare className="h-4 w-4" aria-hidden />}
+                  />
 
-            <section className="rounded-2xl border border-slate-800 bg-slate-900/50 p-3 sm:p-4 transition-colors">
-              <h3 className="text-xs font-bold uppercase tracking-[0.14em] text-white/70">
-                Trade Module Paths
-              </h3>
-              <div className="mt-2 grid gap-2 sm:grid-cols-3">
-                {tradeNav.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="group flex min-h-9 items-center gap-2 rounded-xl border border-slate-800 bg-slate-900/50 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.08em] text-[--color-nav-text] transition-all duration-200 hover:border-orange-500/50 hover:text-[--color-orange-brand] active:scale-[0.98]"
-                  >
-                    <item.icon className="h-3.5 w-3.5 transition-all duration-200 group-hover:text-[--color-orange-brand]" aria-hidden />
-                    <span className="truncate">{item.label}</span>
-                  </Link>
-                ))}
+                  <section className="rounded-xl border border-slate-800 bg-slate-900/50 p-3 transition-colors">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <div className="rounded-md bg-[--color-orange-brand] p-1.5 text-white">
+                          <Sparkles className="h-3.5 w-3.5" aria-hidden />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-white">
+                            AI Material Optimizer
+                          </p>
+                          <p className="text-xs text-[--color-nav-text]/75">
+                            Cost savings & best practices
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        className="min-h-9 rounded-lg border border-white/20 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.12em] text-[--color-nav-text] transition-all duration-200 hover:border-[--color-orange-brand]/45 hover:text-white active:scale-[0.98]"
+                      >
+                        Optimize
+                      </button>
+                    </div>
+                  </section>
+
+                  {terminologyTerms.length ? (
+                    <section className="mt-2 rounded-xl border border-slate-800 bg-slate-900/50 p-3 transition-colors">
+                      <div className="flex items-center justify-between gap-2">
+                        <div>
+                          <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[--color-orange-brand]">
+                            Terminology
+                          </p>
+                          <p className="text-xs text-[--color-nav-text]">
+                            Industry-standard inputs used in this calculator.
+                          </p>
+                        </div>
+                        <Link
+                          href={routes.glossary}
+                          className="text-[11px] font-semibold uppercase tracking-[0.12em] text-white underline-offset-4 hover:text-[--color-orange-brand]"
+                        >
+                          Glossary
+                        </Link>
+                      </div>
+                      <ul className="mt-3 space-y-2">
+                        {terminologyTerms.slice(0, 3).map((term) => (
+                          <li
+                            key={term.key}
+                            className="rounded-lg border border-white/10 bg-white/5 px-3 py-2"
+                          >
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="text-xs font-bold uppercase tracking-[0.12em] text-white">
+                                {term.label}
+                              </span>
+                              {term.unit ? (
+                                <span className="text-[10px] uppercase tracking-[0.12em] text-[--color-nav-text]">
+                                  {term.unit}
+                                </span>
+                              ) : null}
+                            </div>
+                            <p className="mt-1 text-xs leading-relaxed text-[--color-nav-text]">
+                              {term.definition}
+                            </p>
+                          </li>
+                        ))}
+                      </ul>
+                    </section>
+                  ) : null}
+                </aside>
               </div>
 
-              <ul className="mt-2 grid gap-2 sm:grid-cols-2">
-                {page.relatedLinks.map((link) => (
-                  <li key={link.href}>
+              <section className="rounded-2xl border border-slate-800 bg-slate-900/50 p-3 sm:p-4 transition-colors">
+                <h3 className="text-xs font-bold uppercase tracking-[0.14em] text-white/70">
+                  Trade Module Paths
+                </h3>
+                <div className="mt-2 grid gap-2 sm:grid-cols-3">
+                  {tradeNav.map((item) => (
                     <Link
-                      href={link.href as Route}
-                      className="inline-flex items-center gap-2 text-sm text-[--color-nav-text]/85 transition-all duration-300 ease-in-out hover:text-white"
+                      key={item.href}
+                      href={item.href}
+                      className="group flex min-h-9 items-center gap-2 rounded-xl border border-slate-800 bg-slate-900/50 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.08em] text-[--color-nav-text] transition-all duration-200 hover:border-orange-500/50 hover:text-[--color-orange-brand] active:scale-[0.98]"
                     >
-                      <ArrowRight
-                        className="h-3.5 w-3.5 text-[--color-orange-brand]"
+                      <item.icon
+                        className="h-3.5 w-3.5 transition-all duration-200 group-hover:text-[--color-orange-brand]"
                         aria-hidden
                       />
-                      {normalizeDisplayedLabel(link.label, page.canonicalPath)}
+                      <span className="truncate">{item.label}</span>
                     </Link>
-                  </li>
-                ))}
-              </ul>
-
-              <div className="mt-3 rounded-xl border border-[--color-orange-brand]/35 bg-[--color-orange-brand]/10 p-3">
-                <p className="text-xs font-bold uppercase tracking-[0.15em] text-orange-500">
-                  Field Notes
-                </p>
-                <p className="mt-2 text-sm text-[--color-nav-text]/90">
-                  Regional guides and contractor tips — 100% on-site, no
-                  external links.
-                </p>
-                <Link
-                  href={routes.fieldNotes}
-                  className="mt-2 inline-flex min-h-9 items-center gap-2 rounded-lg bg-[--color-orange-brand] px-3 py-1.5 text-xs font-black uppercase tracking-widest text-white transition-all duration-200 hover:brightness-95 active:scale-[0.98]"
-                >
-                  Open Field Notes
-                  <ArrowRight className="h-3.5 w-3.5" aria-hidden />
-                </Link>
-              </div>
-            </section>
-          </div>
-        </div>
-
-        <nav
-          className="fixed bottom-14 left-0 right-0 z-40 flex min-h-10 items-center justify-between border-t trim-nav-border bg-[--color-nav-bg]/95 px-4 py-1.5 backdrop-blur-xl lg:hidden"
-          aria-label="Mobile tool actions"
-        >
-          <Link
-            href={routes.commandCenter}
-            className="inline-flex min-h-9 items-center gap-1.5 px-3 text-xs font-semibold uppercase tracking-widest text-[--color-nav-text] transition-all duration-200 active:scale-[0.98]"
-          >
-            <HardHat className="h-3.5 w-3.5" aria-hidden />
-            Dashboard
-          </Link>
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen((current) => !current)}
-            className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-white/20 px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-[--color-orange-brand] transition-all duration-200 active:scale-[0.98]"
-          >
-            <Menu className="h-3.5 w-3.5" aria-hidden />
-            Modules
-          </button>
-          <button
-            type="button"
-            onClick={openFinalizeModal}
-            className="inline-flex min-h-9 items-center gap-1.5 px-3 text-xs font-semibold uppercase tracking-widest text-[--color-nav-text] transition-all duration-200 active:scale-[0.98]"
-          >
-            <PenSquare className="h-3.5 w-3.5" aria-hidden />
-            Finalize &amp; Send
-          </button>
-        </nav>
-      </section>
-
-      <div className="fixed bottom-0 left-0 w-full z-40 border-t border-slate-800 bg-slate-950 px-4 py-3 pb-safe lg:hidden">
-             <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-3">
-          <div className="min-w-0">
-                <p className="truncate text-xs font-bold uppercase tracking-[0.14em] text-[--color-nav-text]/80">
-              {calculatorResults.primary.label}
-            </p>
-                <p className="truncate text-lg font-black tabular-nums tracking-tight text-orange-500">
-              {calculatorResults.primary.value}{" "}
-              <span className="text-white">{getPrimaryDisplayUnit(calculatorResults.primary)}</span>
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={openFinalizeModal}
-            className="inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-lg border-2 border-orange-400/80 px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white"
-          >
-            <PenSquare className="h-3.5 w-3.5" aria-hidden />
-            Finalize &amp; Send
-          </button>
-        </div>
-      </div>
-
-      <EmailEstimateModal
-        open={crmModalOpen}
-        onClose={() => setCrmModalOpen(false)}
-        estimate={emailEstimatePayload}
-        replyTo={contractorProfile.businessEmail}
-      />
-      {finalizeOpen ? (
-        <div className="fixed inset-0 z-60 flex items-end justify-center bg-black/70 p-0 sm:items-center sm:p-4">
-          <button
-            type="button"
-            className="absolute inset-0"
-            aria-label="Close finalize estimate dialog"
-            onClick={() => (finalizeBusy ? undefined : setFinalizeOpen(false))}
-          />
-          <div className="relative z-10 w-full max-w-lg rounded-t-3xl border border-slate-800 bg-slate-950 p-5 shadow-[0_24px_60px_rgba(0,0,0,0.55)] sm:rounded-3xl">
-            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-500">
-              Finalize &amp; Send
-            </p>
-            <h3 className="mt-2 text-xl font-black text-white">
-              Download or send for signature
-            </h3>
-            <p className="mt-2 text-sm text-slate-400">
-              Create the server PDF or email the customer a signature link.
-            </p>
-
-            <div className="mt-4 grid gap-3">
-              <label className="text-sm text-slate-300">
-                Estimate Name
-                <input
-                  value={estimateName}
-                  onChange={(event) => setEstimateName(event.target.value)}
-                  className="mt-1 h-11 w-full rounded-xl border border-slate-500 bg-slate-900 px-3 text-white outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
-                />
-              </label>
-              <label className="text-sm text-slate-300">
-                Client Name
-                <input
-                  value={estimateClientName}
-                  onChange={(event) => setEstimateClientName(event.target.value)}
-                  className="mt-1 h-11 w-full rounded-xl border border-slate-500 bg-slate-900 px-3 text-white outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
-                  placeholder="Optional"
-                />
-              </label>
-              <label className="text-sm text-slate-300">
-                Client Email
-                <input
-                  value={estimateClientEmail}
-                  onChange={(event) => setEstimateClientEmail(event.target.value)}
-                  className="mt-1 h-11 w-full rounded-xl border border-slate-500 bg-slate-900 px-3 text-white outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
-                  placeholder="Optional"
-                  type="email"
-                />
-              </label>
-              <label className="text-sm text-slate-300">
-                Job Name
-                <input
-                  value={estimateJobName}
-                  onChange={(event) => setEstimateJobName(event.target.value)}
-                  className="mt-1 h-11 w-full rounded-xl border border-slate-500 bg-slate-900 px-3 text-white outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
-                  placeholder="Optional"
-                />
-              </label>
-              <label className="text-sm text-slate-300">
-                Job Site Address
-                <input
-                  value={estimateJobAddress}
-                  onChange={(event) => setEstimateJobAddress(event.target.value)}
-                  className="mt-1 h-11 w-full rounded-xl border border-slate-500 bg-slate-900 px-3 text-white outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
-                  placeholder="Optional"
-                />
-              </label>
-            </div>
-
-            {primaryMaterialOrder ? (
-              <div className="mt-4 rounded-2xl border border-orange-500/30 bg-orange-500/10 px-4 py-3">
-                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-400">
-                  First Material Order
-                </p>
-                <p className="mt-1 text-sm font-semibold text-white">
-                  {primaryMaterialOrder}
-                </p>
-              </div>
-            ) : null}
-
-            {createdSignUrl ? (
-              <div className="mt-4 rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3">
-                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
-                  Sign Link
-                </p>
-                <p className="mt-1 break-all text-sm text-white">{createdSignUrl}</p>
-                <div className="mt-3 flex gap-2">
-                  <button
-                    type="button"
-                    onClick={handleCopySignUrl}
-                    className="inline-flex min-h-10 flex-1 items-center justify-center rounded-xl border border-orange-500/40 px-3 text-sm font-semibold text-orange-400"
-                  >
-                    Copy Link
-                  </button>
-                  <a
-                    href={createdSignUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex min-h-10 flex-1 items-center justify-center rounded-xl border-2 border-white/80 px-3 text-sm font-semibold text-white"
-                  >
-                    Open
-                  </a>
+                  ))}
                 </div>
-              </div>
-            ) : null}
 
-            {!canUseSignAndReturn ? (
-              <p className="mt-4 text-xs text-slate-500">
-                Sign & Return only appears for signed-in users with Pro Mode enabled.
-              </p>
-            ) : null}
+                <ul className="mt-2 grid gap-2 sm:grid-cols-2">
+                  {page.relatedLinks.map((link) => (
+                    <li key={link.href}>
+                      <Link
+                        href={link.href as Route}
+                        className="inline-flex items-center gap-2 text-sm text-[--color-nav-text]/85 transition-all duration-300 ease-in-out hover:text-white"
+                      >
+                        <ArrowRight
+                          className="h-3.5 w-3.5 text-[--color-orange-brand]"
+                          aria-hidden
+                        />
+                        {normalizeDisplayedLabel(
+                          link.label,
+                          page.canonicalPath,
+                        )}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
 
-            <div className="mt-4 min-h-[56px] space-y-2">
-              {finalizeError ? (
-                <p className="rounded-xl border border-red-500/25 bg-red-500/10 px-3 py-2 text-sm text-red-200">
-                  {finalizeError}{" "}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (typeof Sentry.showReportDialog === "function") {
-                        Sentry.showReportDialog();
-                      }
-                    }}
-                    className="ml-1 text-xs font-medium underline underline-offset-2 text-red-100 hover:text-red-50"
+                <div className="mt-3 rounded-xl border border-[--color-orange-brand]/35 bg-[--color-orange-brand]/10 p-3">
+                  <p className="text-xs font-bold uppercase tracking-[0.15em] text-orange-500">
+                    Field Notes
+                  </p>
+                  <p className="mt-2 text-sm text-[--color-nav-text]/90">
+                    Regional guides and contractor tips — 100% on-site, no
+                    external links.
+                  </p>
+                  <Link
+                    href={routes.fieldNotes}
+                    className="mt-2 inline-flex min-h-9 items-center gap-2 rounded-lg bg-[--color-orange-brand] px-3 py-1.5 text-xs font-black uppercase tracking-widest text-white transition-all duration-200 hover:brightness-95 active:scale-[0.98]"
                   >
-                    Report this issue
-                  </button>
-                </p>
-              ) : null}
-              {finalizeSuccess ? (
-                <p className="rounded-xl border border-emerald-500/25 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-200">
-                  {finalizeSuccess}
-                </p>
-              ) : null}
+                    Open Field Notes
+                    <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+                  </Link>
+                </div>
+              </section>
             </div>
+          </div>
 
-            <div
-              className={`mt-5 grid gap-2 ${
-                canUseSignAndReturn ? "sm:grid-cols-3" : "sm:grid-cols-2"
-              }`}
+          <nav
+            className="fixed bottom-14 left-0 right-0 z-40 flex min-h-10 items-center justify-between border-t trim-nav-border bg-[--color-nav-bg]/95 px-4 py-1.5 backdrop-blur-xl lg:hidden"
+            aria-label="Mobile tool actions"
+          >
+            <Link
+              href={routes.commandCenter}
+              className="inline-flex min-h-9 items-center gap-1.5 px-3 text-xs font-semibold uppercase tracking-widest text-[--color-nav-text] transition-all duration-200 active:scale-[0.98]"
             >
-              <button
-                type="button"
-                onClick={handleDownloadPdf}
-                disabled={finalizeBusy !== null}
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-900 px-4 text-sm font-semibold text-white transition hover:border-orange-500 disabled:opacity-60"
+              <HardHat className="h-3.5 w-3.5" aria-hidden />
+              Dashboard
+            </Link>
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen((current) => !current)}
+              className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-white/20 px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-[--color-orange-brand] transition-all duration-200 active:scale-[0.98]"
+            >
+              <Menu className="h-3.5 w-3.5" aria-hidden />
+              Modules
+            </button>
+            <button
+              type="button"
+              onClick={openFinalizeModal}
+              className="inline-flex min-h-9 items-center gap-1.5 px-3 text-xs font-semibold uppercase tracking-widest text-[--color-nav-text] transition-all duration-200 active:scale-[0.98]"
+            >
+              <PenSquare className="h-3.5 w-3.5" aria-hidden />
+              Finalize &amp; Send
+            </button>
+          </nav>
+        </section>
+
+        <div className="fixed bottom-0 left-0 w-full z-40 border-t border-slate-800 bg-slate-950 px-4 py-3 pb-safe lg:hidden">
+          <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="truncate text-xs font-bold uppercase tracking-[0.14em] text-[--color-nav-text]/80">
+                {calculatorResults.primary.label}
+              </p>
+              <p className="truncate text-lg font-black tabular-nums tracking-tight text-orange-500">
+                {calculatorResults.primary.value}{" "}
+                <span className="text-white">
+                  {getPrimaryDisplayUnit(calculatorResults.primary)}
+                </span>
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={openFinalizeModal}
+              className="inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-lg border-2 border-orange-400/80 px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white"
+            >
+              <PenSquare className="h-3.5 w-3.5" aria-hidden />
+              Finalize &amp; Send
+            </button>
+          </div>
+        </div>
+
+        <EmailEstimateModal
+          open={crmModalOpen}
+          onClose={() => setCrmModalOpen(false)}
+          estimate={emailEstimatePayload}
+          replyTo={contractorProfile.businessEmail}
+        />
+        {finalizeOpen ? (
+          <div className="fixed inset-0 z-60 flex items-end justify-center bg-black/70 p-0 sm:items-center sm:p-4">
+            <button
+              type="button"
+              className="absolute inset-0"
+              aria-label="Close finalize estimate dialog"
+              onClick={() =>
+                finalizeBusy ? undefined : setFinalizeOpen(false)
+              }
+            />
+            <div className="relative z-10 w-full max-w-lg rounded-t-3xl border border-slate-800 bg-slate-950 p-5 shadow-[0_24px_60px_rgba(0,0,0,0.55)] sm:rounded-3xl">
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-500">
+                Finalize &amp; Send
+              </p>
+              <h3 className="mt-2 text-xl font-black text-white">
+                Download or send for signature
+              </h3>
+              <p className="mt-2 text-sm text-slate-400">
+                Create the server PDF or email the customer a signature link.
+              </p>
+
+              <div className="mt-4 grid gap-3">
+                <label className="text-sm text-slate-300">
+                  Estimate Name
+                  <input
+                    value={estimateName}
+                    onChange={(event) => setEstimateName(event.target.value)}
+                    className="mt-1 h-11 w-full rounded-xl border border-slate-500 bg-slate-900 px-3 text-white outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
+                  />
+                </label>
+                <label className="text-sm text-slate-300">
+                  Client Name
+                  <input
+                    value={estimateClientName}
+                    onChange={(event) =>
+                      setEstimateClientName(event.target.value)
+                    }
+                    className="mt-1 h-11 w-full rounded-xl border border-slate-500 bg-slate-900 px-3 text-white outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
+                    placeholder="Optional"
+                  />
+                </label>
+                <label className="text-sm text-slate-300">
+                  Client Email
+                  <input
+                    value={estimateClientEmail}
+                    onChange={(event) =>
+                      setEstimateClientEmail(event.target.value)
+                    }
+                    className="mt-1 h-11 w-full rounded-xl border border-slate-500 bg-slate-900 px-3 text-white outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
+                    placeholder="Optional"
+                    type="email"
+                  />
+                </label>
+                <label className="text-sm text-slate-300">
+                  Job Name
+                  <input
+                    value={estimateJobName}
+                    onChange={(event) => setEstimateJobName(event.target.value)}
+                    className="mt-1 h-11 w-full rounded-xl border border-slate-500 bg-slate-900 px-3 text-white outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
+                    placeholder="Optional"
+                  />
+                </label>
+                <label className="text-sm text-slate-300">
+                  Job Site Address
+                  <input
+                    value={estimateJobAddress}
+                    onChange={(event) =>
+                      setEstimateJobAddress(event.target.value)
+                    }
+                    className="mt-1 h-11 w-full rounded-xl border border-slate-500 bg-slate-900 px-3 text-white outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
+                    placeholder="Optional"
+                  />
+                </label>
+              </div>
+
+              {primaryMaterialOrder ? (
+                <div className="mt-4 rounded-2xl border border-orange-500/30 bg-orange-500/10 px-4 py-3">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-400">
+                    First Material Order
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-white">
+                    {primaryMaterialOrder}
+                  </p>
+                </div>
+              ) : null}
+
+              {createdSignUrl ? (
+                <div className="mt-4 rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
+                    Sign Link
+                  </p>
+                  <p className="mt-1 break-all text-sm text-white">
+                    {createdSignUrl}
+                  </p>
+                  <div className="mt-3 flex gap-2">
+                    <button
+                      type="button"
+                      onClick={handleCopySignUrl}
+                      className="inline-flex min-h-10 flex-1 items-center justify-center rounded-xl border border-orange-500/40 px-3 text-sm font-semibold text-orange-400"
+                    >
+                      Copy Link
+                    </button>
+                    <a
+                      href={createdSignUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex min-h-10 flex-1 items-center justify-center rounded-xl border-2 border-white/80 px-3 text-sm font-semibold text-white"
+                    >
+                      Open
+                    </a>
+                  </div>
+                </div>
+              ) : null}
+
+              {!canUseSignAndReturn ? (
+                <p className="mt-4 text-xs text-slate-500">
+                  Sign & Return only appears for signed-in users with Pro Mode
+                  enabled.
+                </p>
+              ) : null}
+
+              <div className="mt-4 min-h-[56px] space-y-2">
+                {finalizeError ? (
+                  <p className="rounded-xl border border-red-500/25 bg-red-500/10 px-3 py-2 text-sm text-red-200">
+                    {finalizeError}{" "}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (typeof Sentry.showReportDialog === "function") {
+                          Sentry.showReportDialog();
+                        }
+                      }}
+                      className="ml-1 text-xs font-medium underline underline-offset-2 text-red-100 hover:text-red-50"
+                    >
+                      Report this issue
+                    </button>
+                  </p>
+                ) : null}
+                {finalizeSuccess ? (
+                  <p className="rounded-xl border border-emerald-500/25 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-200">
+                    {finalizeSuccess}
+                  </p>
+                ) : null}
+              </div>
+
+              <div
+                className={`mt-5 grid gap-2 ${
+                  canUseSignAndReturn ? "sm:grid-cols-3" : "sm:grid-cols-2"
+                }`}
               >
-                <FileDown className="h-4 w-4" aria-hidden />
-                {finalizeBusy === "pdf" ? "Generating..." : "Download PDF"}
-              </button>
-              <button
-                type="button"
-                onClick={handleAddToCart}
-                disabled={finalizeBusy !== null}
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-900 px-4 text-sm font-semibold text-white transition hover:border-orange-500 disabled:opacity-60"
-              >
-                Add to Cart
-              </button>
-              {canUseSignAndReturn ? (
                 <button
                   type="button"
-                  onClick={handleSendForSignature}
+                  onClick={handleDownloadPdf}
                   disabled={finalizeBusy !== null}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-orange-500 px-4 text-sm font-bold text-white transition hover:bg-orange-600 disabled:opacity-60"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-900 px-4 text-sm font-semibold text-white transition hover:border-orange-500 disabled:opacity-60"
                 >
-                  <Mail className="h-4 w-4" aria-hidden />
-                  {finalizeBusy === "sign"
-                    ? "Creating Link..."
-                    : "Send to Client for Signature"}
+                  <FileDown className="h-4 w-4" aria-hidden />
+                  {finalizeBusy === "pdf" ? "Generating..." : "Download PDF"}
                 </button>
-              ) : null}
+                <button
+                  type="button"
+                  onClick={handleAddToCart}
+                  disabled={finalizeBusy !== null}
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-900 px-4 text-sm font-semibold text-white transition hover:border-orange-500 disabled:opacity-60"
+                >
+                  Add to Cart
+                </button>
+                {canUseSignAndReturn ? (
+                  <button
+                    type="button"
+                    onClick={handleSendForSignature}
+                    disabled={finalizeBusy !== null}
+                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-orange-500 px-4 text-sm font-bold text-white transition hover:bg-orange-600 disabled:opacity-60"
+                  >
+                    <Mail className="h-4 w-4" aria-hidden />
+                    {finalizeBusy === "sign"
+                      ? "Creating Link..."
+                      : "Send to Client for Signature"}
+                  </button>
+                ) : null}
+              </div>
             </div>
           </div>
-        </div>
-      ) : null}
-    </main>
+        ) : null}
+      </main>
     </Sentry.ErrorBoundary>
   );
 }

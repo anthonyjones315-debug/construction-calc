@@ -40,7 +40,7 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   typedRoutes: true,
   // Use webpack for compatibility with Serwist and Sentry sourcemaps.
-  turbopack: false,
+  // Turbopack disabled (defaults to webpack in Next.js 16 when not specified)
   // Enable client sourcemaps so Sentry uploads map correctly.
   productionBrowserSourceMaps: true,
   experimental: {
@@ -49,7 +49,11 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
-      { protocol: "https", hostname: "*.supabase.co", pathname: "/storage/v1/object/**" },
+      {
+        protocol: "https",
+        hostname: "*.supabase.co",
+        pathname: "/storage/v1/object/**",
+      },
       { protocol: "https", hostname: "www.googletagmanager.com" },
       { protocol: "https", hostname: "www.google-analytics.com" },
       { protocol: "https", hostname: "www.googlesyndication.com" },
