@@ -233,6 +233,17 @@ export function Header() {
                     Business Profile
                   </Link>
                   <Link
+                    href={routes.commandCenter}
+                    role="menuitem"
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-slate-200 transition-colors hover:bg-slate-800 hover:text-orange-500"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    <span className="w-4 text-center text-slate-300" aria-hidden>
+                      🏠
+                    </span>
+                    Command Center
+                  </Link>
+                  <Link
                     href={routes.saved}
                     role="menuitem"
                     className="flex items-center gap-2 px-4 py-2 text-sm text-slate-200 transition-colors hover:bg-slate-800 hover:text-orange-500"
