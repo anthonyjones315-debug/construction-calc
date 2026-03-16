@@ -39,6 +39,7 @@ import {
   PenSquare,
   Search,
   Save,
+  ShoppingCart,
   ShieldCheck,
   SlidersHorizontal,
   Sparkles,
@@ -3463,7 +3464,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
 
               <div
                 className={`mt-5 grid gap-2 ${
-                  canUseSignAndReturn ? "sm:grid-cols-3" : "sm:grid-cols-2"
+                  canUseSignAndReturn ? "sm:grid-cols-4" : "sm:grid-cols-3"
                 }`}
               >
                 <button
@@ -3481,7 +3482,19 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                   disabled={finalizeBusy !== null}
                   className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-900 px-4 text-sm font-semibold text-white transition hover:border-orange-500 disabled:opacity-60"
                 >
+                  <ShoppingCart className="h-4 w-4" aria-hidden />
                   Add to Cart
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCrmModalOpen(true);
+                  }}
+                  disabled={finalizeBusy !== null}
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-900 px-4 text-sm font-semibold text-white transition hover:border-orange-500 disabled:opacity-60"
+                >
+                  <Mail className="h-4 w-4" aria-hidden />
+                  Email Client
                 </button>
                 {canUseSignAndReturn ? (
                   <button

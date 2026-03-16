@@ -9,11 +9,13 @@ import {
   LayoutDashboard,
   Menu,
   X,
+  ShoppingCart,
 } from "lucide-react";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { primaryNavigation, routes } from "@routes";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import { useClickOutside } from "@/hooks/useClickOutside";
+import { useStore } from "@/lib/store";
 
 export function Header() {
   const pathname = usePathname();
@@ -24,6 +26,7 @@ export function Header() {
   const [businessName, setBusinessName] = useState<string | null>(null);
   const headerRef = useRef<HTMLElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const cartCount = useStore((s) => s.estimateCart.length);
 
   const online = useOnlineStatus();
   const isCommandCenterActive =
@@ -145,10 +148,22 @@ export function Header() {
                 ? "border-orange-500 bg-orange-600/20 text-orange-300"
                 : "border-slate-700 bg-slate-900/70 text-slate-200 hover:border-orange-500 hover:text-orange-300"
             } hidden xs:inline-flex sm:hidden`}
-            aria-label="Open Command Center dashboard"
+              aria-label="Open Command Center dashboard"
           >
             <LayoutDashboard className="mr-1 h-3.5 w-3.5" aria-hidden />
             Command
+          </Link>
+          {/* Cart quick access */}
+          <Link
+            href={routes.cart}
+            className="hidden items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white transition hover:border-orange-400/60 hover:text-orange-200 sm:inline-flex"
+            aria-label={`Open cart (${cartCount} item${cartCount === 1 ? "" : "s"})`}
+          >
+            <ShoppingCart className="h-4 w-4" aria-hidden />
+            <span>Cart</span>
+            <span className="rounded-full bg-orange-500 px-2 py-[2px] text-[10px] font-black text-white">
+              {cartCount}
+            </span>
           </Link>
           {/* Hydration-safe offline badge: render a placeholder until mounted. */}
           <span
@@ -305,6 +320,14 @@ export function Header() {
               {label}
             </Link>
           ))}
+          <Link
+            href={routes.cart}
+            onClick={() => setMobileNavOpen(false)}
+            className="flex min-h-9 items-center rounded-lg px-4 py-1.5 text-sm text-slate-200 transition-colors hover:bg-slate-800 hover:text-orange-500"
+          >
+            <ShoppingCart className="h-4 w-4 mr-2 text-slate-300" aria-hidden />
+            Cart ({cartCount})
+          </Link>
         </nav>
       )}
     </header>
