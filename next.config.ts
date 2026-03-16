@@ -133,8 +133,8 @@ const nextConfig: NextConfig = {
       // Sentry, Vercel, Google Tag Manager, Cloudflare Insights, and ad scripts allow-listed.
       scriptSrc,
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://client.crisp.chat",
-      "font-src 'self' data: https://fonts.gstatic.com",
-      "img-src 'self' data: blob: https://images.unsplash.com https://www.googletagmanager.com https://*.google-analytics.com https://*.googlesyndication.com https://*.doubleclick.net https://*.supabase.co https://*.googleusercontent.com https://lh3.googleusercontent.com http://googleusercontent.com https://*.adtrafficquality.google https://ep1.adtrafficquality.google",
+      "font-src 'self' data: https://fonts.gstatic.com https://client.crisp.chat",
+      "img-src 'self' data: blob: https://images.unsplash.com https://www.googletagmanager.com https://*.google-analytics.com https://*.googlesyndication.com https://*.doubleclick.net https://*.supabase.co https://*.googleusercontent.com https://lh3.googleusercontent.com http://googleusercontent.com https://*.adtrafficquality.google https://ep1.adtrafficquality.google https://client.crisp.chat",
       // Sentry ingest + Vercel + Google Analytics + ads + Supabase Auth (required for password reset / auth recovery)
       connectSrc,
       "media-src 'none'",
