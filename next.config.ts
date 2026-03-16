@@ -5,6 +5,7 @@ import { withSentryConfig } from "@sentry/nextjs";
 const withSerwist = withSerwistInit({
   swSrc: "src/app/sw.ts",
   swDest: "public/sw.js",
+  // Keep service worker off in dev to avoid Turbopack incompatibility warnings.
   disable: process.env.NODE_ENV === "development",
   additionalPrecacheEntries: [{ url: "/offline", revision: "offline-v3" }],
   // Exclude fonts from precache so they never cause bad-precaching-response 404s.
@@ -38,8 +39,10 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   reactCompiler: true,
   typedRoutes: true,
-  turbopack: {},
-  productionBrowserSourceMaps: false,
+  // Use webpack for compatibility with Serwist and Sentry sourcemaps.
+  turbopack: false,
+  // Enable client sourcemaps so Sentry uploads map correctly.
+  productionBrowserSourceMaps: true,
   experimental: {
     optimizePackageImports: ["lucide-react"],
   },
