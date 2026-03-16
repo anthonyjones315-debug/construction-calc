@@ -52,6 +52,20 @@ export async function GET() {
       .maybeSingle();
 
     if (error) {
+      // Gracefully handle environments where the column has not been migrated yet.
+      if (
+        error.code === "42703" ||
+        error.message?.toLowerCase().includes("pro_mode_enabled")
+      ) {
+        Sentry.captureMessage("pro_mode_enabled column missing; returning null preference", {
+          level: "info",
+          contexts: { supabase: { code: error.code, message: error.message } },
+        });
+        return NextResponse.json({
+          preferences: { proModeEnabled: null },
+          note: "pro_mode_enabled column not available in this environment.",
+        });
+      }
       throw new Error(error.message);
     }
 
@@ -101,6 +115,23 @@ export async function PUT(request: NextRequest) {
       .eq("id", userId);
 
     if (error) {
+      if (
+        error.code === "42703" ||
+        error.message?.toLowerCase().includes("pro_mode_enabled")
+      ) {
+        Sentry.captureMessage("pro_mode_enabled column missing; update skipped", {
+          level: "info",
+          contexts: { supabase: { code: error.code, message: error.message } },
+        });
+        return NextResponse.json(
+          {
+            ok: false,
+            preferences: { proModeEnabled: null },
+            note: "pro_mode_enabled column not available in this environment; preference not saved.",
+          },
+          { status: 200 },
+        );
+      }
       throw new Error(error.message);
     }
 
