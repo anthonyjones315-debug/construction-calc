@@ -11,13 +11,18 @@ export function ServiceWorker() {
     if (typeof window === "undefined" || !("serviceWorker" in navigator)) return;
 
     const register = () => {
-      navigator.serviceWorker
-        .register("/sw.js")
-        .then(() => {
-          console.log("Service Worker registered: /sw.js");
+      fetch("/sw.js", { method: "HEAD" })
+        .then((res) => {
+          if (!res.ok) {
+            console.info("Service Worker skipped: /sw.js missing (status " + res.status + ")");
+            return;
+          }
+          return navigator.serviceWorker.register("/sw.js").then(() => {
+            console.log("Service Worker registered: /sw.js");
+          });
         })
         .catch((err) => {
-          console.warn("Service Worker registration failed:", err);
+          console.info("Service Worker registration skipped:", err);
         });
     };
 

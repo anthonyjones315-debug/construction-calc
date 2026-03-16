@@ -8,7 +8,10 @@ type Props = {
   children: ReactNode;
 };
 
-let posthogInitialized = false;
+const globalAny = globalThis as typeof globalThis & { __POSTHOG_INITTED?: boolean };
+let posthogInitialized = typeof globalAny.__POSTHOG_INITTED === "boolean"
+  ? globalAny.__POSTHOG_INITTED
+  : false;
 
 export function CSPostHogProvider({ children }: Props) {
   const token =
@@ -30,6 +33,7 @@ export function CSPostHogProvider({ children }: Props) {
       persistence: "localStorage",
     });
     posthogInitialized = true;
+    globalAny.__POSTHOG_INITTED = true;
   }, [host, token]);
 
   if (!token) return <>{children}</>;
