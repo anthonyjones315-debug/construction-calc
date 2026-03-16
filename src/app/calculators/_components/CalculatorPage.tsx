@@ -1692,6 +1692,14 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
 
   async function handleDownloadPdf() {
     if (typeof window === "undefined") return;
+    if (!session?.user?.id) {
+      setFinalizeError("Sign in to download a branded PDF.");
+      setFinalizeSuccess(null);
+      if (typeof Sentry.showReportDialog === "function") {
+        Sentry.showReportDialog({ user: { email: session?.user?.email ?? undefined } });
+      }
+      return;
+    }
     setFinalizeBusy("pdf");
     setFinalizeError(null);
     setFinalizeSuccess(null);
@@ -1717,9 +1725,19 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       haptic(10);
     } catch (error) {
       Sentry.captureException(error);
-      setFinalizeError(
-        error instanceof Error ? error.message : "Failed to generate PDF.",
-      );
+      const message = error instanceof Error ? error.message : "Failed to generate PDF.";
+      setFinalizeError(message);
+      setFinalizeSuccess(null);
+      if (typeof Sentry.showReportDialog === "function") {
+        Sentry.showReportDialog({
+          title: "PDF failed — report this issue",
+          subtitle: "Include what calculator and inputs you used.",
+          user: {
+            email: session?.user?.email ?? undefined,
+            username: session?.user?.name ?? undefined,
+          },
+        });
+      }
     } finally {
       setFinalizeBusy(null);
     }
