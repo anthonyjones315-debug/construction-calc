@@ -35,14 +35,26 @@ export function PWAInstallBanner() {
     useState<BeforeInstallPromptEvent | null>(null);
   const [visible, setVisible] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
     let handler: ((e: Event) => void) | null = null;
     let frame: number | null = null;
+    let mql: MediaQueryList | null = null;
 
     const run = () => {
+      const standaloneNow = isStandaloneMode();
+      setIsStandalone(standaloneNow);
+
+      // If the app is already running as an installed PWA, never show the banner again
+      // on this device unless localStorage is cleared.
+      if (standaloneNow) {
+        localStorage.setItem(DISMISSED_KEY, "1");
+        setVisible(false);
+        return;
+      }
+
       if (localStorage.getItem(DISMISSED_KEY)) return;
-      if (isStandaloneMode()) return;
       if (!isMobile()) return;
 
       const ios = isIOSDevice();
@@ -61,6 +73,24 @@ export function PWAInstallBanner() {
 
         window.addEventListener("beforeinstallprompt", handler);
       });
+
+      // Keep banner state in sync if the user installs the app while the page is open.
+      if ("matchMedia" in window) {
+        mql = window.matchMedia("(display-mode: standalone)");
+        const handleChange = () => {
+          const nowStandalone =
+            mql?.matches ||
+            (("standalone" in window.navigator &&
+              (window.navigator as Navigator & { standalone?: boolean }).standalone) ??
+              false);
+          setIsStandalone(Boolean(nowStandalone));
+          if (nowStandalone) {
+            localStorage.setItem(DISMISSED_KEY, "1");
+            setVisible(false);
+          }
+        };
+        mql.addEventListener("change", handleChange);
+      }
     };
 
     run();
@@ -68,6 +98,13 @@ export function PWAInstallBanner() {
     return () => {
       if (typeof frame === "number") cancelAnimationFrame(frame);
       if (handler) window.removeEventListener("beforeinstallprompt", handler);
+      if (mql) {
+        try {
+          mql.removeEventListener("change", () => {});
+        } catch {
+          // Older Safari may not support removeEventListener on MediaQueryList; ignore.
+        }
+      }
     };
   }, []);
 
@@ -84,14 +121,13 @@ export function PWAInstallBanner() {
     setDeferredPrompt(null);
   }
 
-  if (!visible) return null;
+  if (!visible || isStandalone) return null;
 
   return (
-    // top-14 = below the sticky h-14 header so the header remains usable
     <div
       role="banner"
       aria-label="Install Pro Construction Calc"
-      className="fixed left-0 right-0 top-14 z-40 border-b border-orange-700/60 bg-orange-600 shadow-[0_4px_16px_rgba(0,0,0,0.4)]"
+      className="fixed inset-x-0 z-40 border-b border-orange-700/60 bg-orange-600 shadow-[0_4px_16px_rgba(0,0,0,0.4)] top-[env(safe-area-inset-top,0px)] sm:top-10 md:top-12"
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-2.5">
         {isIOS ? (

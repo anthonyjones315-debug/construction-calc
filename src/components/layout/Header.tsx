@@ -106,12 +106,12 @@ export function Header() {
     <header ref={headerRef} className="sticky top-0 z-50 border-b border-slate-800 bg-slate-950 text-slate-100 shadow-[0_10px_30px_rgba(0,0,0,0.22)]">
       <div className="mx-auto flex h-10 max-w-7xl items-center justify-between gap-1 px-3 sm:gap-3 sm:px-4">
         {/* Logo — P brand: always to Command Center dashboard */}
-            <Link
-              href={routes.commandCenter}
-              className="flex shrink-0 items-center gap-1.5 text-sm font-display font-black tracking-wide text-white transition-colors hover:text-orange-500 sm:text-lg"
-              aria-label="Pro Construction Calc - Command Center"
-            >
-              <HardHat className="h-5 w-5 text-orange-500" aria-hidden />
+        <Link
+          href={routes.commandCenter}
+          className="flex shrink-0 items-center gap-1.5 text-sm font-display font-black tracking-wide text-white transition-colors hover:text-orange-500 sm:text-lg"
+          aria-label="Pro Construction Calc - Command Center"
+        >
+          <HardHat className="h-5 w-5 text-orange-500" aria-hidden />
           <span className="hidden sm:block">Pro Construction Calc</span>
           <span className="sm:hidden">PC</span>
           <span className="ml-1 hidden rounded bg-[--color-orange-brand] px-1.5 py-0.5 text-[10px] font-sans font-black uppercase tracking-wider text-white sm:inline">
@@ -135,8 +135,21 @@ export function Header() {
           ))}
         </nav>
 
-        {/* Right side: offline badge + auth + mobile hamburger */}
+        {/* Right side: command shortcut + offline badge + auth + mobile hamburger */}
         <div className="flex items-center gap-1.5 sm:gap-2">
+          {/* Mobile-friendly quick jump into Command Center */}
+          <Link
+            href={routes.commandCenter}
+            className={`inline-flex h-8 min-w-[92px] items-center justify-center rounded-full border px-2 text-[10px] font-black uppercase tracking-[0.16em] ${
+              isCommandCenterActive
+                ? "border-orange-500 bg-orange-600/20 text-orange-300"
+                : "border-slate-700 bg-slate-900/70 text-slate-200 hover:border-orange-500 hover:text-orange-300"
+            } hidden xs:inline-flex sm:hidden`}
+            aria-label="Open Command Center dashboard"
+          >
+            <LayoutDashboard className="mr-1 h-3.5 w-3.5" aria-hidden />
+            Command
+          </Link>
           {/* Hydration-safe offline badge: render a placeholder until mounted. */}
           <span
             className={`rounded-full border border-slate-600 bg-slate-800/80 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400 ${

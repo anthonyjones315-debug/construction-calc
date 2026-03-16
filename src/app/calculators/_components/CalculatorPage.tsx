@@ -52,6 +52,7 @@ import {
 import { EmailEstimateModal, type EstimatePayload } from "@/components/ui/EmailEstimateModal";
 import { JsonLD } from "@/seo";
 import { getTradePageSchema, type TradePageDefinition } from "../_lib/trade-pages";
+import { NYS_COUNTY_TAX_RATES } from "@/data/nys-tax-rates";
 import { routes } from "@routes";
 import { UnitToggle } from "./UnitToggle";
 import { ProInput } from "@/components/ui/ProInput";
@@ -461,6 +462,9 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   const resultsCardRef = useRef<HTMLElement | null>(null);
   const moduleDropdownRef = useRef<HTMLDivElement | null>(null);
   const [iconPulse, setIconPulse] = useState(false);
+  const isBusinessTaxSave =
+    page.canonicalPath === "/calculators/business/tax-save" ||
+    page.key === "business-tax-save";
 
   const breadcrumbs = useMemo(
     () => buildBreadcrumbs(page.canonicalPath),
