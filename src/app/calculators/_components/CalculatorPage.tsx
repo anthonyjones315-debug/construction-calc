@@ -442,9 +442,6 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   const [totalLinealFeetInput, setTotalLinealFeetInput] = useState(100);
   const [openingDeductionSqFt, setOpeningDeductionSqFt] = useState(0);
   const [flooringBoxMode, setFlooringBoxMode] = useState<FlooringBoxMode>("custom");
-  const [baseMeasurementUnit, setBaseMeasurementUnit] = useState<"ft" | "m">("ft");
-  const [spacingUnit, setSpacingUnit] = useState<"in" | "cm">("in");
-  const [concreteDepthUnit, setConcreteDepthUnit] = useState<"in" | "cm">("in");
   const [finalizeOpen, setFinalizeOpen] = useState(false);
   const [finalizeBusy, setFinalizeBusy] = useState<"pdf" | "sign" | null>(null);
   const [finalizeError, setFinalizeError] = useState<string | null>(null);
@@ -465,6 +462,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   const isBusinessTaxSave =
     page.canonicalPath === "/calculators/business/tax-save" ||
     page.key === "business-tax-save";
+  const [taxRegion, setTaxRegion] = useState<"NYS" | "Other">("NYS");
+  const [taxCounty, setTaxCounty] = useState<string>("Oneida");
 
   const breadcrumbs = useMemo(
     () => buildBreadcrumbs(page.canonicalPath),
@@ -1289,22 +1288,6 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     setter(clampValue(parsed, min, max));
   }
 
-  function feetToMeters(value: number): number {
-    return value * 0.3048;
-  }
-
-  function metersToFeet(value: number): number {
-    return value / 0.3048;
-  }
-
-  function inchesToCentimeters(value: number): number {
-    return value * 2.54;
-  }
-
-  function centimetersToInches(value: number): number {
-    return value / 2.54;
-  }
-
   function getInlineSubLabel(label: string): string | undefined {
     const l = label.toLowerCase();
     if (l.includes("oc")) return "Distance from center to center of each board.";
@@ -1756,6 +1739,61 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                   </p>
                 </div>
               ) : null}
+
+              {isBusinessTaxSave && (
+                <div className="mt-3 grid gap-2 rounded-xl border border-slate-700 bg-slate-900/70 p-3 text-xs sm:grid-cols-[minmax(0,1.1fr)_minmax(0,1.1fr)] sm:text-sm">
+                  <div className="space-y-1">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                      Tax Region
+                    </p>
+                    <select
+                      value={taxRegion}
+                      onChange={(event) =>
+                        setTaxRegion(event.target.value === "NYS" ? "NYS" : "Other")
+                      }
+                      className="h-9 w-full rounded-lg border border-slate-600 bg-slate-950 px-2 text-xs text-slate-100 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500 sm:text-sm"
+                    >
+                      <option value="NYS">New York State (NYS)</option>
+                      <option value="Other">Outside NYS / Custom</option>
+                    </select>
+                    <p className="text-[10px] leading-snug text-slate-400">
+                      NYS region uses combined county + state sales tax; otherwise enter your own blended tax rate below.
+                    </p>
+                  </div>
+
+                  {taxRegion === "NYS" && (
+                    <div className="space-y-1">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                        NYS County
+                      </p>
+                      <select
+                        value={taxCounty}
+                        onChange={(event) => {
+                          const nextCounty = event.target.value;
+                          setTaxCounty(nextCounty);
+                          const match = NYS_COUNTY_TAX_RATES.find(
+                            (entry) => entry.county === nextCounty,
+                          );
+                          if (match) {
+                            setWidthSpan(match.combinedRate);
+                          }
+                        }}
+                        className="h-9 w-full rounded-lg border border-slate-600 bg-slate-950 px-2 text-xs text-slate-100 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500 sm:text-sm"
+                      >
+                        {NYS_COUNTY_TAX_RATES.map((entry) => (
+                          <option key={entry.county} value={entry.county}>
+                            {entry.county} — {entry.combinedRate.toFixed(2)}%
+                            {entry.mctd ? " (MCTD)" : ""}
+                          </option>
+                        ))}
+                      </select>
+                      <p className="text-[10px] leading-snug text-slate-400">
+                        County pick auto-fills your Tax Rate (%) input using the latest combined NYS guidance.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
@@ -2082,130 +2120,48 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                           subLabel={getInlineSubLabel(labels.first)}
                           type="number"
                           min={1}
-                          max={10000}
-                          value={
-                            baseMeasurementUnit === "ft"
-                              ? String(baseMeasurement)
-                              : feetToMeters(baseMeasurement).toFixed(2)
+                          max={100000000}
+                          value={String(baseMeasurement)}
+                          onChange={(next) =>
+                            parseAndSet(next, setBaseMeasurement, 1, 100000000)
                           }
-                          onChange={(next) => {
-                            const parsed = Number(next);
-                            if (!Number.isFinite(parsed)) return;
-                            const nextFeet =
-                              baseMeasurementUnit === "ft"
-                                ? parsed
-                                : metersToFeet(parsed);
-                            setBaseMeasurement(clampValue(nextFeet, 1, 10000));
-                          }}
-                          unitSelectOptions={[
-                            { value: "ft", label: "ft" },
-                            { value: "m", label: "m" },
-                          ]}
-                          unitSelectValue={baseMeasurementUnit}
-                          onUnitSelectChange={(unit) => {
-                            if (unit === "ft" || unit === "m") {
-                              setBaseMeasurementUnit(unit);
-                            }
-                          }}
+                          unitSuffix={isBusinessTaxSave ? "$" : "ft"}
                         />
                         <ProInput
-                          label={labels.second}
-                          subLabel={getInlineSubLabel(labels.second)}
+                          label={
+                            isBusinessTaxSave ? "Tax Rate (%)" : labels.second
+                          }
+                          subLabel={
+                            isBusinessTaxSave
+                              ? "Use NYS auto-fill by county or enter your blended rate."
+                              : getInlineSubLabel(labels.second)
+                          }
                           type="number"
-                          min={1}
-                          max={10000}
-                          value={
-                            isFramingCalculator
-                              ? spacingUnit === "in"
-                                ? String(widthSpan)
-                                : inchesToCentimeters(widthSpan).toFixed(1)
-                              : String(widthSpan)
+                          min={0}
+                          max={100}
+                          value={String(widthSpan)}
+                          onChange={(next) =>
+                            parseAndSet(next, setWidthSpan, 0, 100)
                           }
-                          onChange={(next) => {
-                            if (isFramingCalculator) {
-                              const parsed = Number(next);
-                              if (!Number.isFinite(parsed)) return;
-                              const nextInches =
-                                spacingUnit === "in"
-                                  ? parsed
-                                  : centimetersToInches(parsed);
-                              setWidthSpan(clampValue(nextInches, 1, 10000));
-                            } else {
-                              parseAndSet(next, setWidthSpan, 1, 10000);
-                            }
-                          }}
-                          unitSelectOptions={
-                            isFramingCalculator
-                              ? [
-                                  { value: "in", label: "in" },
-                                  { value: "cm", label: "cm" },
-                                ]
-                              : undefined
-                          }
-                          unitSelectValue={isFramingCalculator ? spacingUnit : undefined}
-                          onUnitSelectChange={
-                            isFramingCalculator
-                              ? (unit) => {
-                                  if (unit === "in" || unit === "cm") {
-                                    setSpacingUnit(unit);
-                                  }
-                                }
-                              : undefined
-                          }
+                          unitSuffix="%"
                         />
                         <ProInput
-                          label={labels.third}
-                          subLabel={getInlineSubLabel(labels.third)}
+                          label={
+                            isBusinessTaxSave ? "Deductions ($)" : labels.third
+                          }
+                          subLabel={
+                            isBusinessTaxSave
+                              ? "Optional deductions or adjustments taken before tax."
+                              : getInlineSubLabel(labels.third)
+                          }
                           type="number"
-                          min={thirdInputMin}
-                          max={thirdInputMax}
-                          value={
-                            isConcreteCalculator
-                              ? concreteDepthUnit === "in"
-                                ? String(depthThickness)
-                                : inchesToCentimeters(depthThickness).toFixed(1)
-                              : String(depthThickness)
+                          min={0}
+                          max={100000000}
+                          value={String(depthThickness)}
+                          onChange={(next) =>
+                            parseAndSet(next, setDepthThickness, 0, 100000000)
                           }
-                          onChange={(next) => {
-                            if (isConcreteCalculator) {
-                              const parsed = Number(next);
-                              if (!Number.isFinite(parsed)) return;
-                              const nextInches =
-                                concreteDepthUnit === "in"
-                                  ? parsed
-                                  : centimetersToInches(parsed);
-                              setDepthThickness(
-                                clampValue(nextInches, thirdInputMin, thirdInputMax),
-                              );
-                            } else {
-                              parseAndSet(
-                                next,
-                                setDepthThickness,
-                                thirdInputMin,
-                                thirdInputMax,
-                              );
-                            }
-                          }}
-                          unitSelectOptions={
-                            isConcreteCalculator
-                              ? [
-                                  { value: "in", label: "in" },
-                                  { value: "cm", label: "cm" },
-                                ]
-                              : undefined
-                          }
-                          unitSelectValue={
-                            isConcreteCalculator ? concreteDepthUnit : undefined
-                          }
-                          onUnitSelectChange={
-                            isConcreteCalculator
-                              ? (unit) => {
-                                  if (unit === "in" || unit === "cm") {
-                                    setConcreteDepthUnit(unit);
-                                  }
-                                }
-                              : undefined
-                          }
+                          unitSuffix={isBusinessTaxSave ? "$" : undefined}
                         />
                         {isSidingRoute && (
                           <ProInput
