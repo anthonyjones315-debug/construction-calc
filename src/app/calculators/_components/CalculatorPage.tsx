@@ -469,6 +469,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   const hapticTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isFirstCalcRender = useRef(true);
   const userInteracted = useRef(false);
+  const hasReportedError = useRef(false);
   const resultsCardRef = useRef<HTMLElement | null>(null);
   const moduleDropdownRef = useRef<HTMLDivElement | null>(null);
   const [iconPulse, setIconPulse] = useState(false);
@@ -1495,6 +1496,26 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     volumeInputMode,
     wallInputMode,
   ]);
+
+  // Auto-open Sentry report dialog for any finalize error
+  useEffect(() => {
+    if (!finalizeError) {
+      hasReportedError.current = false;
+      return;
+    }
+    if (hasReportedError.current) return;
+    if (typeof Sentry.showReportDialog === "function") {
+      hasReportedError.current = true;
+      Sentry.showReportDialog({
+        title: "Calculator error",
+        subtitle: finalizeError,
+        user: {
+          email: session?.user?.email ?? undefined,
+          username: session?.user?.name ?? undefined,
+        },
+      });
+    }
+  }, [finalizeError, session?.user?.email, session?.user?.name]);
 
   useEffect(() => {
     if (!openModuleGroup) return;
