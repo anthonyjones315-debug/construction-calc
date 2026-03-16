@@ -9,7 +9,11 @@ import { useEffect } from "react";
 export function ServiceWorker() {
   useEffect(() => {
     // Temporarily disable service worker registration to avoid 404 noise.
-    return;
+    if (typeof navigator !== "undefined" && navigator.serviceWorker?.getRegistrations) {
+      navigator.serviceWorker.getRegistrations().then((regs) => {
+        regs.forEach((reg) => reg.unregister().catch(() => {}));
+      });
+    }
   }, []);
 
   return null;
