@@ -171,6 +171,141 @@ create index if not exists saved_estimates_created_at_idx on saved_estimates(cre
 create index if not exists saved_estimates_status_idx   on saved_estimates(status);
 create index if not exists user_materials_user_id_idx   on user_materials(user_id);
 
+-- =====================================================================
+-- Multi-tenant CRM foundation (organizations, price book, leads, projects)
+-- =====================================================================
+
+-- Organizations (tenants)
+create table if not exists organizations (
+  id                  uuid primary key default uuid_generate_v4(),
+  name                text not null,
+  slug                text unique,
+  plan_tier           text not null default 'free',
+  timezone            text default 'America/New_York',
+  billing_email       text,
+  owner_user_id       uuid references public.users(id) on delete set null,
+  created_at          timestamptz not null default now(),
+  updated_at          timestamptz not null default now()
+);
+
+alter table organizations enable row level security;
+alter table organizations force row level security;
+
+revoke all on organizations from anon;
+revoke all on organizations from authenticated;
+
+-- Business profiles linked to organizations instead of only a single user
+alter table business_profiles
+  add column if not exists organization_id uuid references organizations(id) on delete cascade;
+
+create index if not exists organizations_owner_user_id_idx on organizations(owner_user_id);
+
+-- Centralized price book (per-organization SKUs).
+create table if not exists price_book (
+  id                    uuid primary key default uuid_generate_v4(),
+  organization_id       uuid not null references organizations(id) on delete cascade,
+  sku                   text not null,
+  description           text,
+  category              text,
+  uom                   text not null, -- unit of measure (e.g. 'sq_ft', 'lf', 'each')
+  unit_price            numeric(12,4) not null,
+  waste_factor_default  numeric(5,2) not null default 0,
+  active                boolean not null default true,
+  last_synced_at        timestamptz,
+  metadata              jsonb default '{}'::jsonb,
+  created_at            timestamptz not null default now(),
+  updated_at            timestamptz not null default now()
+);
+
+alter table price_book enable row level security;
+alter table price_book force row level security;
+
+revoke all on price_book from anon;
+revoke all on price_book from authenticated;
+
+create index if not exists price_book_org_sku_idx
+  on price_book(organization_id, sku);
+
+-- Leads table for early-funnel CRM.
+create table if not exists leads (
+  id                uuid primary key default uuid_generate_v4(),
+  organization_id   uuid not null references organizations(id) on delete cascade,
+  created_by_user_id uuid references public.users(id) on delete set null,
+  client_name       text not null,
+  client_email      text,
+  client_phone      text,
+  project_address   text,
+  source            text, -- e.g. 'website', 'referral', 'yard_sign'
+  interest_score    numeric(5,2),
+  notes             text,
+  status            text not null default 'lead', -- lead, qualified, archived
+  created_at        timestamptz not null default now(),
+  updated_at        timestamptz not null default now()
+);
+
+alter table leads enable row level security;
+alter table leads force row level security;
+
+revoke all on leads from anon;
+revoke all on leads from authenticated;
+
+create index if not exists leads_org_status_idx
+  on leads(organization_id, status);
+
+-- Projects pipeline (Kanban-compatible).
+create type project_status as enum ('lead','quoted','won','lost','completed');
+
+create table if not exists projects (
+  id                 uuid primary key default uuid_generate_v4(),
+  organization_id    uuid not null references organizations(id) on delete cascade,
+  lead_id            uuid references leads(id) on delete set null,
+  estimate_id        uuid references saved_estimates(id) on delete set null,
+  name               text not null,
+  status             project_status not null default 'lead',
+  pipeline_value     numeric(12,2), -- expected contract value
+  close_probability  numeric(5,2), -- 0-100
+  start_date         date,
+  end_date           date,
+  last_contact_date  timestamptz,
+  metadata           jsonb default '{}'::jsonb,
+  created_at         timestamptz not null default now(),
+  updated_at         timestamptz not null default now()
+);
+
+alter table projects enable row level security;
+alter table projects force row level security;
+
+revoke all on projects from anon;
+revoke all on projects from authenticated;
+
+create index if not exists projects_org_status_idx
+  on projects(organization_id, status);
+
+-- Takeoff measurements captured from digital takeoff tools.
+create table if not exists takeoff_measurements (
+  id                uuid primary key default uuid_generate_v4(),
+  organization_id   uuid not null references organizations(id) on delete cascade,
+  project_id        uuid references projects(id) on delete cascade,
+  drawing_name      text,
+  measurement_type  text not null, -- 'polyline', 'polygon', 'counter'
+  unit              text not null, -- 'ft', 'sq_ft', 'count', etc.
+  value             numeric(14,4) not null,
+  raw_points        jsonb not null, -- array of points used for reconstruction
+  label             text,
+  metadata          jsonb default '{}'::jsonb,
+  created_at        timestamptz not null default now(),
+  updated_at        timestamptz not null default now()
+);
+
+alter table takeoff_measurements enable row level security;
+alter table takeoff_measurements force row level security;
+
+revoke all on takeoff_measurements from anon;
+revoke all on takeoff_measurements from authenticated;
+
+create index if not exists takeoff_measurements_project_idx
+  on takeoff_measurements(project_id);
+
 -- ─── Storage bucket policy (run after creating bucket in dashboard)
 -- Bucket name: business_logos (PUBLIC)
 -- Bucket name: estimate_pdfs  (PRIVATE — user-scoped)
