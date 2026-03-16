@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import type { Route } from "next";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { SplashPopup } from "@/components/ui/SplashPopup";
+import { COOKIE_CONSENT_CHANGED_EVENT } from "@/lib/privacy/consent";
+import { getRecentPaths } from "@/lib/recommendations/activity";
 import {
   HardHat,
   Search,
@@ -123,6 +125,20 @@ const RECOMMENDED: SearchablePage[] = RECOMMENDED_KEYS
     keywords: page.keywords,
   }));
 
+function suggestedFromActivity(searchIndex: SearchablePage[], limit = 4): SearchablePage[] {
+  const paths = getRecentPaths(limit);
+  const seen = new Set<string>();
+  const out: SearchablePage[] = [];
+  for (const path of paths) {
+    const page = searchIndex.find((p) => p.href === path);
+    if (page && !seen.has(page.key)) {
+      seen.add(page.key);
+      out.push(page);
+    }
+  }
+  return out;
+}
+
 function getCategoryPage(key: TradePageKey): TradePageDefinition | undefined {
   const page = tradePages[key];
   return page?.type === "category" ? page : undefined;
@@ -130,9 +146,23 @@ function getCategoryPage(key: TradePageKey): TradePageDefinition | undefined {
 
 export function CalculatorsDirectoryClient() {
   const [query, setQuery] = useState("");
+  const [suggested, setSuggested] = useState<SearchablePage[]>([]);
 
   const results = useMemo(() => searchPages(query), [query]);
   const showRecommended = !query.trim();
+
+  useEffect(() => {
+    const refresh = () => setSuggested(suggestedFromActivity(SEARCH_INDEX, 4));
+    refresh();
+    window.addEventListener(COOKIE_CONSENT_CHANGED_EVENT, refresh);
+    return () => window.removeEventListener(COOKIE_CONSENT_CHANGED_EVENT, refresh);
+  }, []);
+
+  const recommendedToShow = useMemo(() => {
+    if (suggested.length === 0) return RECOMMENDED;
+    const suggestedKeys = new Set(suggested.map((p) => p.key));
+    return [...suggested, ...RECOMMENDED.filter((p) => !suggestedKeys.has(p.key))];
+  }, [suggested]);
 
   return (
     <>
@@ -182,11 +212,18 @@ export function CalculatorsDirectoryClient() {
             <div className="mt-3">
               {showRecommended ? (
                 <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
-                    Recommended starting points
-                  </p>
+                  {suggested.length > 0 && (
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+                      Suggested for you
+                    </p>
+                  )}
+                  {suggested.length === 0 && (
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+                      Recommended starting points
+                    </p>
+                  )}
                   <div className="mt-2 grid gap-2 md:grid-cols-2">
-                    {RECOMMENDED.map((page) => (
+                    {recommendedToShow.map((page) => (
                       <Link
                         key={page.key}
                         href={page.href as Route}

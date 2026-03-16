@@ -154,9 +154,11 @@
     border-radius: 0 0 6px 6px;
     z-index: 9999;
     transition: top 0.1s;
+    opacity: 0;
   }
   .skip-link:focus {
     top: 0;
+    opacity: 1;
   }
 
   /* Inputs: dark mode */
@@ -339,12 +341,7 @@
   }
 
   .skeleton {
-    background: linear-gradient(
-      90deg,
-      #1e293b 25%,
-      #263348 50%,
-      #1e293b 75%
-    );
+    background: linear-gradient(90deg, #1e293b 25%, #263348 50%, #1e293b 75%);
     background-size: 800px 100%;
     animation: skeleton-shimmer 1.4s ease-in-out infinite;
     border-radius: 0.375rem;

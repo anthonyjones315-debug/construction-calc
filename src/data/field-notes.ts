@@ -24,7 +24,7 @@ export const FIELD_NOTES: FieldNote[] = [
     slug: "2026-ny-construction-updates",
     title: "2026 NY Construction Updates: All-Electric Mandate, Marcy UDC, and Tax Compliance",
     description:
-      "What Mohawk Valley contractors need for 2026: NYS all-electric new-building mandate (Jan 1, 2026), Town of Marcy UDC checkpoints, and sales-tax rules for capital improvements.",
+      "What Mohawk Valley contractors need for 2026: NYS all-electric mandate status (on hold), Town of Marcy UDC checkpoints, and sales-tax rules for capital improvements.",
     category: "Code & Compliance",
     date: "April 2026",
     relatedToolLinks: [
@@ -34,12 +34,12 @@ export const FIELD_NOTES: FieldNote[] = [
       { href: "/calculators/business/lead-estimator", label: "Lead Estimator" },
     ],
     content: `
-## 1) All-Electric New Building Mandate — Starts Jan 1, 2026
+## 1) All-Electric New Building Mandate — Status: On Hold
 
-- **Scope:** Most new residential buildings under seven stories in New York State must be all-electric starting **January 1, 2026** (per NYS 2026 code update). Larger buildings and special occupancies follow in 2027/2028.
-- **Plan impacts:** Budget electric service upgrades, panel space for heat pumps, and electric water/space heating. Model load early to avoid redesign.
+- **Scope:** The NYS all-electric new-building mandate was slated to start **January 1, 2026** for most new residential buildings under seven stories (with larger buildings and special occupancies in 2027/2028). As of 2026, that mandate is **on hold**. Check current NYS and local code for the latest effective dates.
+- **Plan impacts:** When the mandate or local requirements apply, budget for electric service upgrades, panel space for heat pumps, and electric water/space heating. Model load early to avoid redesign.
 - **Bid checklist:**
-  - Include heat pump (ASHP/GSHP) line items and electrical rough-ins.
+  - Where all-electric or electric-ready is required or preferred, include heat pump (ASHP/GSHP) line items and electrical rough-ins.
   - Coordinate service size and meter stacks with the utility during precon.
   - Flag any exemptions (critical infrastructure, some commercial process loads) in your proposal.
 
@@ -59,7 +59,7 @@ export const FIELD_NOTES: FieldNote[] = [
 
 ## Quick Actions for 2026 Bids
 
-- Add an **all-electric allowance** (panels, circuits, heat pumps) to new-build proposals.
+- Where all-electric or electric-ready is required or clients request it, add an **all-electric allowance** (panels, circuits, heat pumps) to new-build proposals.
 - For Marcy jobs, attach a UDC compliance note to your scope and list any required approvals.
 - Collect **ST-124** for qualifying projects; for repairs, show the applied **8.75% Oneida** rate line-item.
     `,
@@ -263,7 +263,7 @@ Use our **R-Value Tracker** to target assembly R-values and the **drywall/insula
     slug: "all-electric-2026",
     title: "All-Electric 2026: What Mohawk Valley Contractors Need to Know",
     description:
-      "New York's push toward all-electric buildings affects Rome, Utica, and Oneida County. Heat pumps, panel sizing, and what to spec in the Mohawk Valley in 2026.",
+      "New York's push toward all-electric buildings affects Rome, Utica, and Oneida County. Heat pumps, panel sizing, and what to spec when all-electric or electric-ready applies in the Mohawk Valley.",
     category: "Energy",
     date: "March 2026",
     relatedToolLinks: [
@@ -273,9 +273,9 @@ Use our **R-Value Tracker** to target assembly R-values and the **drywall/insula
     content: `
 ## Why All-Electric Matters in Oneida County
 
-New York State's climate and energy goals are pushing new construction and major renovations toward **all-electric** or electric-ready design. For contractors and builders in **Rome, NY**, **Utica, NY**, and **Oneida County**, that means more heat-pump specs, larger electrical panels, and different sizing rules than the gas-fired norm.
+New York State's climate and energy goals are pushing new construction and major renovations toward **all-electric** or electric-ready design. The statewide mandate that was slated to take effect in 2026 is currently **on hold**; check NYS and local code for current effective dates. For contractors and builders in **Rome, NY**, **Utica, NY**, and **Oneida County**, voluntary all-electric and electric-ready specs still mean more heat-pump work, larger electrical panels, and different sizing rules than the gas-fired norm.
 
-Staying ahead of code and client expectations in the **Mohawk Valley** means understanding what "all-electric 2026" actually requires and how to estimate and bid it.
+Staying ahead of code and client expectations in the **Mohawk Valley** means understanding what all-electric and electric-ready require and how to estimate and bid them.
 
 ## Heat Pumps and Load in the Mohawk Valley
 
@@ -285,14 +285,16 @@ Cold-climate heat pumps are the default for new all-electric homes. In **Oneida 
 - **Design temperature** for the region is typically in the single digits (e.g., 5°F to 10°F). Equipment must be rated for that.
 - **Electrical service:** All-electric homes often need **200 A** panels; larger homes or all-electric with EV charging may need more. Plan for panel and service upgrades in bids.
 
-## What to Spec for 2026
+## What to Spec When All-Electric Applies
+
+When all-electric or electric-ready is required by code or chosen by the client:
 
 - **Ducted or ductless heat pumps** sized to a proper load calc.
 - **Electric resistance backup** or dual-fuel only where explicitly allowed or grandfathered.
 - **Water heating:** Heat-pump water heaters are the preferred all-electric option; size for occupancy and recovery.
 - **Cooking and drying:** Electric ranges and heat-pump dryers are standard in all-electric specs.
 
-For **Rome** and **Utica** permits, confirm with the local building department whether all-electric or electric-ready is required for your project type and whether any exemptions apply.
+For **Rome** and **Utica** permits, confirm with the local building department whether all-electric or electric-ready is required for your project type (the statewide mandate is on hold; local rules may still apply) and whether any exemptions apply.
 
 ## Use the Calculators
 

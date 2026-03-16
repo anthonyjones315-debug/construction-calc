@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { JsonLD } from "@/seo";
@@ -86,64 +87,59 @@ export default function GuidePage() {
   };
 
   return (
-    <div className="page-shell flex min-h-screen flex-col bg-[#0F0F10] text-white">
+    <div className="command-theme page-shell flex min-h-screen flex-col bg-[--color-bg] text-[--color-ink]">
       <Header />
-      <main id="main-content" className="flex-1 bg-[#0F0F10]">
+      <main id="main-content" className="flex-1">
         <JsonLD schema={howToSchema} />
         <div className="mx-auto w-full max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
-          <div className="mb-6 flex items-center gap-3 rounded-2xl border border-white/10 bg-[#16171C] p-5">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-600/15 shadow-inner">
-              <Compass className="h-7 w-7 text-orange-500" aria-hidden />
+          <div className="dark-feature-panel mb-8 flex items-center gap-4 p-6 text-white">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[--color-orange-brand]/15 shadow-inner">
+              <Compass className="h-7 w-7 text-[--color-orange-brand]" aria-hidden />
             </div>
             <div className="space-y-1">
-              <p className="text-xs font-black uppercase tracking-[0.16em] text-orange-400">
-                Quick Start
-              </p>
-              <h1 className="text-2xl font-black leading-tight text-white sm:text-3xl">
+              <p className="section-kicker">Quick Start</p>
+              <h1 className="mt-2 font-display text-2xl font-bold leading-tight sm:text-3xl">
                 User Guide
               </h1>
-              <p className="text-sm text-white/70">
+              <p className="mt-2 text-[--color-nav-text]/80">
                 Navigate Pro Construction Calc in minutes—pick the right calculator, set inputs confidently, and share estimates.
               </p>
             </div>
           </div>
 
           <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
-            <section className="space-y-3">
+            <section className="space-y-4">
               {HOW_TO_STEPS.map((step, idx) => (
-                <div
-                  key={step.title}
-                  className="rounded-2xl border border-white/10 bg-[#16171C] p-4 sm:p-5"
-                >
+                <div key={step.title} className="content-card p-4 sm:p-5">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="text-[11px] font-black uppercase tracking-[0.16em] text-orange-400">
+                      <p className="section-kicker text-[11px] tracking-[0.16em]">
                         Step {idx + 1}
                       </p>
-                      <h2 className="text-lg font-black text-white">{step.title}</h2>
+                      <h2 className="mt-1 text-lg font-bold text-[--color-ink]">{step.title}</h2>
                     </div>
                     {step.link ? (
-                      <a
+                      <Link
                         href={step.link}
-                        className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-white transition hover:border-orange-500/60 hover:text-orange-100"
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-[--color-ink] transition hover:border-[--color-orange-brand]/50 hover:text-[--color-orange-brand]"
                       >
                         {step.cta ?? "Open"}
                         <ArrowRightCircle className="h-3.5 w-3.5" aria-hidden />
-                      </a>
+                      </Link>
                     ) : null}
                   </div>
-                  <p className="mt-2 text-sm text-white/75">{step.detail}</p>
+                  <p className="mt-2 text-sm text-[--color-ink-mid]">{step.detail}</p>
                   {idx === 2 ? (
-                    <div className="mt-3 grid gap-2 sm:grid-cols-2 text-sm text-white/70">
-                      <div className="rounded-lg border border-white/10 bg-white/5 p-3">
-                        <CheckCircle2 className="h-4 w-4 text-emerald-400" aria-hidden />
-                        <p className="mt-1 font-semibold text-white">Primary Result</p>
-                        <p>Headline value for ordering or pricing (e.g., Total Squares, Bid Price).</p>
+                    <div className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
+                      <div className="content-card-muted flex flex-col gap-1 p-3">
+                        <CheckCircle2 className="h-4 w-4 text-emerald-500" aria-hidden />
+                        <p className="font-semibold text-[--color-ink]">Primary Result</p>
+                        <p className="text-[--color-ink-mid]">Headline value for ordering or pricing (e.g., Total Squares, Bid Price).</p>
                       </div>
-                      <div className="rounded-lg border border-white/10 bg-white/5 p-3">
-                        <Save className="h-4 w-4 text-orange-400" aria-hidden />
-                        <p className="mt-1 font-semibold text-white">Material List</p>
-                        <p>Order-ready bullet list you can copy or send to suppliers.</p>
+                      <div className="content-card-muted flex flex-col gap-1 p-3">
+                        <Save className="h-4 w-4 text-[--color-orange-brand]" aria-hidden />
+                        <p className="font-semibold text-[--color-ink]">Material List</p>
+                        <p className="text-[--color-ink-mid]">Order-ready bullet list you can copy or send to suppliers.</p>
                       </div>
                     </div>
                   ) : null}
@@ -151,70 +147,68 @@ export default function GuidePage() {
               ))}
             </section>
 
-            <aside className="space-y-3">
-              <div className="rounded-2xl border border-white/10 bg-[#16171C] p-4 sm:p-5">
-                <div className="inline-flex items-center gap-2 rounded-full border border-orange-500/40 bg-orange-500/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.14em] text-orange-400">
+            <aside className="space-y-4">
+              <div className="content-card p-4 sm:p-5">
+                <div className="inline-flex items-center gap-2 rounded-full border border-[--color-orange-brand]/30 bg-[--color-orange-brand]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[--color-orange-brand]">
                   <Target className="h-3.5 w-3.5" aria-hidden />
                   Fast answers
                 </div>
-                <ul className="mt-3 space-y-2 text-sm text-white/75">
-                  <li>Use <strong className="text-white">Area</strong> and <strong className="text-white">Yardage</strong> toggles on concrete, flooring, and siding tools.</li>
+                <ul className="mt-3 space-y-2 text-sm text-[--color-ink-mid]">
+                  <li>Use <strong className="text-[--color-ink]">Area</strong> and <strong className="text-[--color-ink]">Yardage</strong> toggles on concrete, flooring, and siding tools.</li>
                   <li>Waste defaults to 10%; raise it for complex layouts or heavy cutting.</li>
                   <li>Business calculators follow the Glossary for markup vs margin, burden, CAC, and tax math.</li>
                 </ul>
               </div>
 
-              <div className="rounded-2xl border border-white/10 bg-[#16171C] p-4 sm:p-5">
-                <div className="inline-flex items-center gap-2 rounded-full border border-orange-500/40 bg-orange-500/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.14em] text-orange-400">
+              <div className="content-card p-4 sm:p-5">
+                <div className="inline-flex items-center gap-2 rounded-full border border-[--color-orange-brand]/30 bg-[--color-orange-brand]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[--color-orange-brand]">
                   2026 Compliance
                 </div>
-                <ul className="mt-3 space-y-2 text-sm text-white/75">
-                  <li>All-electric new building mandate starts January 1, 2026 (NYS Climate Act)—plan electric service in bids.</li>
+                <ul className="mt-3 space-y-2 text-sm text-[--color-ink-mid]">
+                  <li>All-electric new building mandate was slated for January 1, 2026 but is currently on hold (NYS Climate Act)—still plan electric service in bids where all-electric or electric-ready applies.</li>
                   <li>Town of Marcy Unified Development Code applies to local jobs; verify zoning and site plan requirements before permitting.</li>
                   <li>Use Tax Save calculator with ST-124 toggle for capital improvements to stay sales-tax compliant.</li>
                 </ul>
               </div>
 
-              <div className="rounded-2xl border border-white/10 bg-[#16171C] p-4 sm:p-5">
-                <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-black uppercase tracking-[0.14em] text-white/80">
-                  <Handshake className="h-3.5 w-3.5 text-orange-400" aria-hidden />
+              <div className="content-card p-4 sm:p-5">
+                <div className="mb-2 inline-flex items-center gap-2 rounded-full border trim-nav-border bg-white/5 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[--color-nav-text]">
+                  <Handshake className="h-3.5 w-3.5 text-[--color-orange-brand]" aria-hidden />
                   Share & export
                 </div>
-                <div className="space-y-2 text-sm text-white/70">
+                <div className="space-y-2 text-sm text-[--color-ink-mid]">
                   <p className="flex items-center gap-2">
-                    <FileDown className="h-4 w-4 text-orange-400" aria-hidden />
+                    <FileDown className="h-4 w-4 shrink-0 text-[--color-orange-brand]" aria-hidden />
                     Download branded PDFs from the Results panel.
                   </p>
                   <p className="flex items-center gap-2">
-                    <Save className="h-4 w-4 text-orange-400" aria-hidden />
+                    <Save className="h-4 w-4 shrink-0 text-[--color-orange-brand]" aria-hidden />
                     Save estimates to Command Center to revisit inputs and outputs.
                   </p>
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-white/10 bg-[#16171C] p-4 sm:p-5">
-                <p className="text-xs font-black uppercase tracking-[0.16em] text-orange-400">
-                  More help
-                </p>
+              <div className="content-card p-4 sm:p-5">
+                <p className="section-kicker text-[11px]">More help</p>
                 <div className="mt-3 space-y-2 text-sm">
-                  <a
-                    className="block rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-orange-500/60 hover:text-orange-100"
+                  <Link
                     href={routes.glossary}
+                    className="content-card-interactive block rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2 text-[--color-ink] transition hover:border-[--color-orange-brand]/50 hover:text-[--color-orange-brand]"
                   >
                     Open the Glossary
-                  </a>
-                  <a
-                    className="block rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-orange-500/60 hover:text-orange-100"
+                  </Link>
+                  <Link
                     href={routes.faq}
+                    className="content-card-interactive block rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2 text-[--color-ink] transition hover:border-[--color-orange-brand]/50 hover:text-[--color-orange-brand]"
                   >
                     Frequently Asked Questions
-                  </a>
-                  <a
-                    className="block rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-orange-500/60 hover:text-orange-100"
+                  </Link>
+                  <Link
                     href={routes.fieldNotes}
+                    className="content-card-interactive block rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2 text-[--color-ink] transition hover:border-[--color-orange-brand]/50 hover:text-[--color-orange-brand]"
                   >
                     Field Notes Library
-                  </a>
+                  </Link>
                 </div>
               </div>
             </aside>

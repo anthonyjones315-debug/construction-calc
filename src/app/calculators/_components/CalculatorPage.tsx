@@ -79,6 +79,7 @@ import { sanitizeFilename } from "@/utils/sanitize-filename";
 import { useContractorProfile } from "@/components/pdf/useContractorProfile";
 import { getConcreteInputLabelsFromCopy } from "@/data/construction-terms";
 import { useStore } from "@/lib/store";
+import { recordVisit } from "@/lib/recommendations/activity";
 
 type TradeModule = {
   label: string;
@@ -806,6 +807,11 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     setFinalizeSuccess(null);
     setCreatedSignUrl(null);
   }, [page.title]);
+
+  // Personalization: record calculator visit for "recommended starting points" (cookie-gated)
+  useEffect(() => {
+    recordVisit(page.canonicalPath);
+  }, [page.canonicalPath]);
 
   // Calculator Audit: keep Sentry context updated with current inputs for reproduction
   useEffect(() => {

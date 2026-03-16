@@ -105,11 +105,11 @@ export default function FinancialTermsPage() {
                     <p className="text-[11px] font-black uppercase tracking-[0.14em] text-orange-400">
                       Compliance
                     </p>
-                    <p className="text-sm text-white/75">2026 NYS all-electric mandate + Marcy UDC</p>
+                    <p className="text-sm text-white/75">NYS all-electric mandate (on hold) + Marcy UDC</p>
                   </div>
                 </div>
                 <ul className="mt-3 space-y-2 text-sm text-white/75">
-                  <li>All-electric new building mandate starts <strong>January 1, 2026</strong> for most low-rise residential.</li>
+                  <li>All-electric new building mandate was slated for <strong>January 1, 2026</strong> but is currently on hold; check NYS/local code for current dates.</li>
                   <li>Town of Marcy UDC: check zoning, site plan triggers, lighting, and stormwater before bidding.</li>
                   <li>Tax Save calculator separates capital improvements (ST-124) from repairs with clear PDF language.</li>
                 </ul>
