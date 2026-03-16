@@ -34,6 +34,7 @@ export default function PrivacyPage() {
               width={1200}
               height={700}
               className="w-full h-44 object-cover"
+              fetchPriority="low"
             />
           </div>
 

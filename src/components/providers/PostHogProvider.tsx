@@ -11,7 +11,7 @@ type Props = {
 let posthogInitialized = false;
 
 export function CSPostHogProvider({ children }: Props) {
-  const token = process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN;
+  const token = process.env.NEXT_PUBLIC_POSTHOG_KEY;
   const host = process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com";
 
   useEffect(() => {

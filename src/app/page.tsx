@@ -5,6 +5,7 @@ import { ArrowRight, HardHat, ShieldCheck, FileText } from "lucide-react";
 import { JsonLD, getWebAppSchema, getWebSiteSchema } from "@/seo";
 import type { Metadata } from "next";
 import { routes } from "@routes";
+import { PostHogTest } from "@/components/PostHogTest";
 
 export const metadata: Metadata = {
   title: "Pro Construction Calc | Contractor-Grade Estimating for the Field",
@@ -41,17 +42,15 @@ export default function HomePage() {
                 </span>
               </h1>
               <p className="mt-4 max-w-xl text-sm leading-relaxed text-slate-400 sm:text-base">
-                Trade calculators, saved estimates, price book control, and
-                PDF workflows shaped for field use instead of generic
-                dashboards.
+                Trade calculators, saved estimates, price book control, and PDF
+                workflows shaped for field use instead of generic dashboards.
               </p>
               <div className="mt-6 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap">
                 <Link
                   href={`${routes.commandCenter}?mode=draft`}
                   className="btn-tactile inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[--color-orange-brand] px-4 py-3 text-sm font-black text-white transition-all duration-200 hover:bg-orange-700 active:scale-[0.98] sm:w-auto"
                 >
-                  Begin Estimate{" "}
-                  <ArrowRight className="h-4 w-4" aria-hidden />
+                  Begin Estimate <ArrowRight className="h-4 w-4" aria-hidden />
                 </Link>
                 <Link
                   href={routes.calculators}
@@ -113,6 +112,12 @@ export default function HomePage() {
               <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 text-slate-100 transition-colors">
                 <p className="section-kicker">Explore next</p>
                 <div className="mt-4 space-y-3">
+                  <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 text-slate-100 transition-colors">
+                    <p className="section-kicker">PostHog Test</p>
+                    <div className="mt-4">
+                      <PostHogTest />
+                    </div>
+                  </div>
                   {[
                     {
                       href: routes.blog,

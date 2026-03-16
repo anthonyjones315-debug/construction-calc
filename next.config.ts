@@ -1,47 +1,10 @@
 import type { NextConfig } from "next";
-import withSerwistInit from "@serwist/next";
 import { withSentryConfig } from "@sentry/nextjs";
-
-const withSerwist = withSerwistInit({
-  swSrc: "src/app/sw.ts",
-  swDest: "public/sw.js",
-  // Keep service worker off in dev to avoid Turbopack incompatibility warnings.
-  disable: process.env.NODE_ENV === "development",
-  additionalPrecacheEntries: [{ url: "/offline", revision: "offline-v3" }],
-  // Exclude fonts from precache so they never cause bad-precaching-response 404s.
-  exclude: [
-    /\.woff2?$/i,
-    /\.(eot|ttf|otf)$/i,
-    /_next\/static\/media\//,
-    ({ asset }: { asset: { name?: string } }) => {
-      const name = asset?.name ?? "";
-      return (
-        /\.(woff2?|eot|ttf|otf)$/i.test(name) || name.includes("static/media/")
-      );
-    },
-  ],
-  // Final safety: strip any font/static-media entries that still made it into the manifest.
-  manifestTransforms: [
-    (manifestEntries) => {
-      const manifest = manifestEntries.filter((entry) => {
-        const url = typeof entry === "string" ? entry : entry.url;
-        const isFontOrMedia =
-          /\.(woff2?|eot|ttf|otf)$/i.test(url) ||
-          /_next\/static\/media\//.test(url);
-        return !isFontOrMedia;
-      });
-      return { manifest, warnings: [] };
-    },
-  ],
-});
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
   reactCompiler: true,
   typedRoutes: true,
-  // Use webpack for compatibility with Serwist and Sentry sourcemaps.
-  // Turbopack disabled (defaults to webpack in Next.js 16 when not specified)
-  // Enable client sourcemaps so Sentry uploads map correctly.
   productionBrowserSourceMaps: true,
   experimental: {
     optimizePackageImports: ["lucide-react"],
@@ -143,7 +106,7 @@ const nextConfig: NextConfig = {
       scriptSrc,
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://client.crisp.chat",
       "font-src 'self' data: https://fonts.gstatic.com https://client.crisp.chat",
-      "img-src 'self' data: blob: https://images.unsplash.com https://www.googletagmanager.com https://*.google-analytics.com https://*.googlesyndication.com https://*.doubleclick.net https://*.supabase.co https://*.googleusercontent.com https://lh3.googleusercontent.com http://googleusercontent.com https://*.adtrafficquality.google https://ep1.adtrafficquality.google https://client.crisp.chat https://proconstructioncalc.com",
+      "img-src 'self' data: blob: https://images.unsplash.com https://www.googletagmanager.com https://*.google-analytics.com https://*.googlesyndication.com https://*.doubleclick.net https://*.supabase.co https://*.googleusercontent.com https://lh3.googleusercontent.com http://googleusercontent.com https://*.adtrafficquality.google https://ep1.adtrafficquality.google https://client.crisp.chat https://image.crisp.chat https://proconstructioncalc.com",
       // Sentry ingest + Vercel + Google Analytics + ads + Supabase Auth (required for password reset / auth recovery)
       connectSrc,
       "media-src 'none'",
@@ -202,9 +165,7 @@ const nextConfig: NextConfig = {
   },
 };
 
-const configWithSerwist = withSerwist(nextConfig);
-
-export default withSentryConfig(configWithSerwist, {
+export default withSentryConfig(nextConfig, {
   org: process.env.SENTRY_ORG ?? "anthony-jones",
   project: process.env.SENTRY_PROJECT ?? "javascript-nextjs",
   silent: !process.env.CI,
