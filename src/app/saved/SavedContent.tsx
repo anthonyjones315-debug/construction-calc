@@ -1042,14 +1042,14 @@ export function SavedContent({
         ...calculatorResults,
         {
           label: "Price Book Subtotal",
-          value: Number(priceBookSubtotal.toFixed(2)),
-          unit: "USD",
+          value: priceBookSubtotal.toFixed(2),
+          unit: "$",
           highlight: priceBookSubtotal > 0,
         },
         {
           label: "Combined Estimate Total",
-          value: Number(combinedTotal.toFixed(2)),
-          unit: "USD",
+          value: combinedTotal.toFixed(2),
+          unit: "$",
           highlight: true,
         },
       ];
