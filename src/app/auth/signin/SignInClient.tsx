@@ -71,8 +71,11 @@ export default function SignInClient({
     setCredentialsError(null);
     setIsSigningIn(true);
     posthog.capture("sign_in_attempted", { method: "google" });
-    await signIn("google", { callbackUrl });
-    setIsSigningIn(false);
+    await signIn("google", {
+      callbackUrl,
+      redirect: true,
+      prompt: "select_account",
+    });
   }
 
   async function handleCredentialsSignIn(
