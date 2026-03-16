@@ -2,6 +2,21 @@
  * Lightweight safeguards to keep material-price fetching compliant with
  * retailer Terms of Service and robots.txt. This is intentionally conservative.
  */
+export const SCRAPING_MIN_DELAY_MS = 1200;
+
+function getCrawlDelayMs(robotsText: string): number {
+  const delayLine = robotsText
+    .split("\n")
+    .find((line) => /^crawl-delay:/i.test(line.trim()));
+  if (!delayLine) return SCRAPING_MIN_DELAY_MS;
+  const parsed = Number(delayLine.split(":")[1]?.trim());
+  return Number.isFinite(parsed) && parsed > 0 ? parsed * 1000 : SCRAPING_MIN_DELAY_MS;
+}
+
+async function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export async function isScrapingAllowed(targetUrl: string): Promise<boolean> {
   try {
     const { origin, pathname } = new URL(targetUrl);
@@ -44,5 +59,19 @@ export async function assertScrapingPermitted(targetUrl: string) {
   const allowed = await isScrapingAllowed(targetUrl);
   if (!allowed) {
     throw new Error(`Scraping blocked by robots.txt or policy for ${targetUrl}`);
+  }
+
+  // Respect crawl-delay and basic human-like pacing.
+  const { origin } = new URL(targetUrl);
+  try {
+    const robotsRes = await fetch(`${origin}/robots.txt`, { method: "GET" });
+    const robotsText = robotsRes.ok ? await robotsRes.text() : "";
+    const delay = getCrawlDelayMs(robotsText);
+    if (delay > 0) {
+      await sleep(delay);
+    }
+  } catch {
+    // If robots cannot be read, err on the side of a minimal delay.
+    await sleep(SCRAPING_MIN_DELAY_MS);
   }
 }

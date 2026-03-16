@@ -8,6 +8,7 @@
     "build": "npm run check:strict-types && next build --webpack",
     "start": "next start",
     "lint": "npm run check:root-types && npm run lint:src",
+    "test": "vitest run",
     "lint:src": "eslint src --ext .ts,.tsx",
     "typecheck": "tsc --noEmit",
     "check:root-types": "node scripts/enforce-types-only.mjs",
@@ -64,6 +65,7 @@
   "devDependencies": {
     "babel-plugin-react-compiler": "^1.0.0",
     "eslint": "^9.39.4",
-    "eslint-config-next": "^16.1.6"
+    "eslint-config-next": "^16.1.6",
+    "vitest": "^1.6.0"
   }
 }

@@ -20,6 +20,7 @@ const footerLegalLinks = [
   { label: "Field Notes", href: routes.fieldNotes },
   { label: "FAQ", href: routes.faq },
   { label: "About", href: routes.about },
+  { label: "Financial Terms", href: routes.financialTerms },
   { label: "Glossary", href: routes.glossary },
   { label: "User Guide", href: routes.guide },
   { label: "Privacy Policy", href: routes.privacy },

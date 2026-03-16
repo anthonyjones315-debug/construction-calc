@@ -431,6 +431,28 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     () => getFinancialCalculatorCopy(page.canonicalPath),
     [page.canonicalPath],
   );
+  const terminologyTerms = useMemo(() => {
+    if (!financialCopy) return [];
+    const seen = new Set<string>();
+    return financialCopy.inputs
+      .map((input) => {
+        const label = getFinancialTermLabel(input.term);
+        const definition =
+          getFinancialTermDefinition(label) ?? getFinancialTermDefinition(input.term);
+        if (!definition || seen.has(label)) return null;
+        seen.add(label);
+        return {
+          key: input.term,
+          label,
+          definition,
+          unit: input.unit ?? "",
+        };
+      })
+      .filter(
+        (entry): entry is { key: string; label: string; definition: string; unit: string } =>
+          Boolean(entry),
+      );
+  }, [financialCopy]);
   const [search, setSearch] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedFramingMaterial, setSelectedFramingMaterial] = useState<FramingMaterialKind>(
@@ -1897,7 +1919,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
           </button>
         </div>
       )}
-      <section className="mx-auto w-full max-w-5xl px-4 py-5 sm:px-6 sm:py-6 lg:px-8 pb-24">
+      <section className="mx-auto w-full max-w-6xl px-3 py-4 sm:px-5 sm:py-5 lg:px-7 pb-14">
         <JsonLD schema={getTradePageSchema(page)} />
 
         <div className="mb-3 flex items-center justify-between gap-2.5">
@@ -2124,7 +2146,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             </div>
           </div>
 
-          <div className={`${effectiveProMode ? "space-y-2 p-3 sm:p-4" : "space-y-2 p-4 sm:p-5"} bg-[--color-nav-bg]`}>
+          <div className={`${effectiveProMode ? "space-y-2 p-3 sm:p-4" : "space-y-2 p-3 sm:p-4"} bg-[--color-nav-bg]`}>
 
             <aside className="mb-3 hidden rounded-2xl border border-slate-800 bg-slate-900/50 p-3 transition-colors lg:block">
                 <h2 className="text-sm font-black uppercase tracking-[0.12em] text-white">
@@ -2190,18 +2212,18 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                 </div>
               </aside>
 
-            <div className="grid gap-2 lg:grid-cols-[minmax(0,1.2fr)_350px]">
+            <div className="grid gap-2 lg:grid-cols-[minmax(0,1.15fr)_340px]">
 
-              <section className={`rounded-2xl border border-slate-800 bg-slate-900/50 transition-colors ${effectiveProMode ? "p-3" : "p-4"}`}>
+              <section className={`rounded-2xl border border-slate-800 bg-slate-900/50 transition-colors ${effectiveProMode ? "p-3" : "p-3 sm:p-4"}`}>
                 <div className="flex justify-center">
                   <div
-                    className={`rounded-full bg-orange-600/15 p-5 mb-4 flex items-center justify-center ${iconPulse ? "animate-pulse" : ""}`}
+                    className={`rounded-full bg-orange-600/15 p-4 mb-3 flex items-center justify-center ${iconPulse ? "animate-pulse" : ""}`}
                   >
                     {(() => {
                       const IconComponent = getCategoryIcon(page);
                       return (
                         <IconComponent
-                          size={64}
+                          size={52}
                           strokeWidth={1.5}
                           className="text-orange-600"
                           aria-hidden
@@ -2591,10 +2613,53 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                     </button>
                   </div>
                 </section>
+
+                {terminologyTerms.length ? (
+                  <section className="mt-2 rounded-xl border border-slate-800 bg-slate-900/50 p-3 transition-colors">
+                    <div className="flex items-center justify-between gap-2">
+                      <div>
+                        <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[--color-orange-brand]">
+                          Terminology
+                        </p>
+                        <p className="text-xs text-[--color-nav-text]">
+                          Industry-standard inputs used in this calculator.
+                        </p>
+                      </div>
+                      <Link
+                        href={routes.glossary}
+                        className="text-[11px] font-semibold uppercase tracking-[0.12em] text-white underline-offset-4 hover:text-[--color-orange-brand]"
+                      >
+                        Glossary
+                      </Link>
+                    </div>
+                    <ul className="mt-3 space-y-2">
+                      {terminologyTerms.slice(0, 3).map((term) => (
+                        <li
+                          key={term.key}
+                          className="rounded-lg border border-white/10 bg-white/5 px-3 py-2"
+                        >
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-xs font-bold uppercase tracking-[0.12em] text-white">
+                              {term.label}
+                            </span>
+                            {term.unit ? (
+                              <span className="text-[10px] uppercase tracking-[0.12em] text-[--color-nav-text]">
+                                {term.unit}
+                              </span>
+                            ) : null}
+                          </div>
+                          <p className="mt-1 text-xs leading-relaxed text-[--color-nav-text]">
+                            {term.definition}
+                          </p>
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                ) : null}
               </aside>
             </div>
 
-            <section className="rounded-2xl border border-slate-800 bg-slate-900/50 p-4 transition-colors">
+            <section className="rounded-2xl border border-slate-800 bg-slate-900/50 p-3 sm:p-4 transition-colors">
               <h3 className="text-xs font-bold uppercase tracking-[0.14em] text-white/70">
                 Trade Module Paths
               </h3>

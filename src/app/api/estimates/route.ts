@@ -4,11 +4,8 @@ import type { Session } from "next-auth";
 import * as Sentry from "@sentry/nextjs";
 import { auth } from "@/lib/auth/config";
 import { createServerClient } from "@/lib/supabase/server";
-import {
-  getBusinessContextForUserId,
-  getTenantScopeColumn,
-  getTenantScopeId,
-} from "@/lib/supabase/business";
+import { getBusinessContextForUserId } from "@/lib/supabase/business";
+import { tenantScopedSelect } from "@/lib/supabase/tenant-scope";
 
 const SELECT =
   "id, name, calculator_id, inputs, total_cost, status, budget_items, created_at, updated_at, results, client_name, job_site_address";
@@ -58,14 +55,12 @@ export async function GET() {
       return NextResponse.json({ estimates: [] });
     }
 
-    const tenantColumn = getTenantScopeColumn(businessContext);
-    const tenantId = getTenantScopeId(businessContext);
-
-    const { data, error } = await db
-      .from("saved_estimates")
-      .select(SELECT)
-      .eq(tenantColumn, tenantId)
-      .order("created_at", { ascending: false });
+    const { data, error } = await tenantScopedSelect(
+      db,
+      "saved_estimates",
+      SELECT,
+      businessContext,
+    ).order("created_at", { ascending: false });
 
     if (error) {
       Sentry.captureException(error);

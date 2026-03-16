@@ -139,6 +139,12 @@ export default function GlossaryPage() {
                   >
                     Field Notes (Articles)
                   </a>
+                  <a
+                    className="block rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-orange-500/60 hover:text-orange-100"
+                    href={routes.financialTerms}
+                  >
+                    Financial Terms DB
+                  </a>
                 </div>
               </div>
 
