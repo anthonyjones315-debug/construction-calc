@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { Loader2, LockKeyhole } from "lucide-react";
+import { Loader2, LockKeyhole, Trash2 } from "lucide-react";
+import { signOut } from "next-auth/react";
 
 async function parseJsonSafe(
   response: Response,
@@ -28,6 +29,9 @@ export function PasswordSettings() {
   const [passwordSaving, setPasswordSaving] = useState(false);
   const [passwordError, setPasswordError] = useState("");
   const [passwordSuccess, setPasswordSuccess] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
+  const [deleteSuccess, setDeleteSuccess] = useState("");
 
   useEffect(() => {
     if (!session?.user?.id) return;
@@ -182,11 +186,11 @@ export function PasswordSettings() {
             </p>
           )}
 
-          {passwordSuccess && (
-            <p className="rounded-lg border border-emerald-500/25 bg-emerald-500/8 px-4 py-2 text-sm text-emerald-700">
-              {passwordSuccess}
-            </p>
-          )}
+      {passwordSuccess && (
+        <p className="rounded-lg border border-emerald-500/25 bg-emerald-500/8 px-4 py-2 text-sm text-emerald-700">
+          {passwordSuccess}
+        </p>
+      )}
 
           <button
             type="submit"
@@ -202,6 +206,69 @@ export function PasswordSettings() {
           </button>
         </form>
       )}
+
+      <div className="mt-10 border-t border-[--color-border]/60 pt-6">
+        <h3 className="mb-2 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-red-600">
+          <Trash2 className="h-4 w-4" aria-hidden />
+          Delete Account
+        </h3>
+        <p className="text-sm text-[--color-ink-dim] mb-3">
+          Permanently remove your account and linked sign-in methods. This cannot be undone.
+        </p>
+        {deleteError && (
+          <p className="mb-3 rounded-lg border border-red-500/25 bg-red-500/8 px-4 py-2 text-sm text-red-600">
+            {deleteError}
+          </p>
+        )}
+        {deleteSuccess && (
+          <p className="mb-3 rounded-lg border border-emerald-500/25 bg-emerald-500/8 px-4 py-2 text-sm text-emerald-700">
+            {deleteSuccess}
+          </p>
+        )}
+        <button
+          type="button"
+          disabled={deleting}
+          onClick={async () => {
+            setDeleteError("");
+            setDeleteSuccess("");
+            const confirmed = window.confirm(
+              "Delete your account permanently? This cannot be undone.",
+            );
+            if (!confirmed) return;
+
+            setDeleting(true);
+            try {
+              const res = await fetch("/api/auth/delete-account", {
+                method: "POST",
+              });
+              if (!res.ok) {
+                const payload = await res.json().catch(() => ({}));
+                throw new Error(
+                  typeof payload.error === "string"
+                    ? payload.error
+                    : "Failed to delete account",
+                );
+              }
+              setDeleteSuccess("Account deleted. Signing you out…");
+              await signOut({ callbackUrl: "/" });
+            } catch (error) {
+              setDeleteError(
+                error instanceof Error ? error.message : "Failed to delete account",
+              );
+            } finally {
+              setDeleting(false);
+            }
+          }}
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-500/30 bg-red-600/90 py-3 font-bold text-white transition-all hover:bg-red-700 disabled:opacity-70"
+        >
+          {deleting ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Trash2 className="h-4 w-4" />
+          )}
+          {deleting ? "Deleting…" : "Delete Account"}
+        </button>
+      </div>
     </section>
   );
 }
