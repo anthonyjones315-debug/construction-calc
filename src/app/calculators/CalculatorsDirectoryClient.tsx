@@ -168,7 +168,7 @@ export function CalculatorsDirectoryClient() {
     <>
       <main
         id="main-content"
-        className="min-h-0 min-w-0 flex-1 overflow-y-auto lg:overflow-hidden"
+        className="min-h-0 min-w-0 flex-1 overflow-hidden"
         tabIndex={-1}
       >
         {/* Hero: full-width dark industrial gradient, no trade image */}
@@ -281,7 +281,7 @@ export function CalculatorsDirectoryClient() {
         </section>
 
         {/* Trade Module Directory Grid */}
-        <div className="mx-auto w-full max-w-5xl px-4 py-5 pb-24 sm:px-6 sm:py-6 sm:pb-24 lg:py-6 lg:pb-6">
+        <div className="safe-area-pb mx-auto w-full max-w-5xl px-4 py-5 pb-6 sm:px-6 sm:py-6 sm:pb-8 lg:py-6 lg:pb-6">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {DIRECTORY_CATEGORIES.map(({ key, icon: Icon, label }) => {
               const page = getCategoryPage(key);

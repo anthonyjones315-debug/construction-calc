@@ -32,6 +32,7 @@ import { CalculatorPage } from "@/app/calculators/_components/CalculatorPage";
 import { getTradePageByPath } from "@/app/calculators/_lib/trade-pages";
 import { useProMode } from "@/hooks/useProMode";
 import { useStore } from "@/lib/store";
+import * as Sentry from "@sentry/nextjs";
 
 type TeamMember = {
   membershipId: string;
@@ -284,6 +285,17 @@ export default function CommandCenterClient({
       setHandledDeepLink(toolFromQuerySlug);
     }
   }, [toolFromQuerySlug, handledDeepLink]);
+
+  // Mount Sentry User Feedback widget (bottom-right "Report a bug" trigger)
+  useEffect(() => {
+    const feedbackApi = (Sentry as any).getFeedback?.();
+    const widget = feedbackApi?.createWidget?.({
+      triggerLabel: "Report a bug",
+      colorScheme: "system",
+    });
+    widget?.appendToDom?.();
+    return () => widget?.removeFromDom?.();
+  }, []);
 
   async function refreshInviteCode() {
     if (isRefreshingInvite) return;
@@ -952,7 +964,7 @@ export default function CommandCenterClient({
                   </button>
                 </div>
               </div>
-              <div className="flex-1 overflow-y-auto bg-slate-950">
+              <div className="flex-1 overflow-hidden bg-slate-950">
                 <CalculatorPage page={activeTradePage} />
               </div>
             </div>
@@ -976,7 +988,7 @@ export default function CommandCenterClient({
                   <X className="h-4 w-4" aria-hidden />
                 </button>
               </div>
-              <div className="flex-1 overflow-y-auto px-4 py-4 text-sm text-slate-300">
+              <div className="flex-1 overflow-hidden px-4 py-4 text-sm text-slate-300">
                 <p className="text-slate-400">
                   {activeTool.description ??
                     "Field-ready figures, templates, and workflow context for this tool."}

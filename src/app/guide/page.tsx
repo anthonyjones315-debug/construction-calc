@@ -56,6 +56,13 @@ const HOW_TO_STEPS = [
     cta: "Open Glossary",
   },
   {
+    title: "Oneida County workflow",
+    detail:
+      "If you work in Oneida County, set the county before you price or export. Verify sales tax, confirm ST-124 status for exempt projects, and keep your estimate notes consistent so the PDF matches what you calculated.",
+    link: routes.financialTerms,
+    cta: "Financial Terms",
+  },
+  {
     title: "Need deeper help?",
     detail:
       "Field Notes covers crew tips, while the Glossary defines every financial and construction term used across the app.",
@@ -87,7 +94,7 @@ export default function GuidePage() {
   };
 
   return (
-    <div className="command-theme page-shell flex min-h-screen flex-col bg-[--color-bg] text-[--color-ink]">
+    <div className="command-theme page-shell flex min-h-dvh flex-col bg-[--color-bg] text-[--color-ink]">
       <Header />
       <main id="main-content" className="flex-1">
         <JsonLD schema={howToSchema} />

@@ -45,13 +45,26 @@ export default function TermlyCMP({
 
   useEffect(() => {
     if (!scriptSrc || isScriptAdded.current) return;
+
+    // If Termly's resource-blocker script is already present (e.g. injected
+    // via their embed snippet in the HTML), do not inject a second copy.
+    const existing = document.querySelector<HTMLScriptElement>(
+      'script[src^="https://app.termly.io/resource-blocker/"]',
+    );
+    if (existing) {
+      isScriptAdded.current = true;
+      return;
+    }
+
     const script = document.createElement("script");
     script.src = scriptSrc;
     script.async = true;
     document.head.appendChild(script);
     isScriptAdded.current = true;
+
+    // Do not remove the script on unmount; Termly expects it to remain
+    // singleton on the page across client navigations.
     return () => {
-      document.head.removeChild(script);
       isScriptAdded.current = false;
     };
   }, [scriptSrc]);

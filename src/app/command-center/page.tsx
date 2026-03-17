@@ -438,10 +438,10 @@ export default async function CommandCenterPage({
   }
 
   return (
-    <div className="h-screen overflow-hidden grid grid-rows-[auto_1fr_auto] bg-slate-950 text-slate-100">
+    <div className="min-h-dvh overflow-hidden grid grid-rows-[auto_1fr_auto] bg-slate-950 text-slate-100">
       <Header />
       <main className="row-start-2 overflow-hidden">
-        <div className="h-full overflow-y-auto px-4 py-6 sm:px-6">
+        <div className="h-full overflow-hidden px-4 py-6 sm:px-6">
           {mainContent}
         </div>
       </main>

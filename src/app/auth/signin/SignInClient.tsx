@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { HardHat, Loader2 } from "lucide-react";
 import { routes } from "@routes";
 import posthog from "posthog-js";
+import * as Sentry from "@sentry/nextjs";
 
 const callbackHandlerErrorCodes = new Set([
   "OAUTH_CALLBACK_HANDLER_ERROR",
@@ -53,6 +54,40 @@ export default function SignInClient({
       router.replace(routes.commandCenter);
     }
   }, [router, status, session]);
+
+  // Mount Sentry User Feedback widget (bottom-right "Report a bug" trigger)
+  useEffect(() => {
+    const feedbackApi = (Sentry as any).getFeedback?.();
+    const widget = feedbackApi?.createWidget?.({
+      triggerLabel: "Report a bug",
+      colorScheme: "system",
+    });
+    widget?.appendToDom?.();
+    return () => widget?.removeFromDom?.();
+  }, []);
+
+  // Capture Google auth errors and prompt for feedback
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const urlParams = new URLSearchParams(window.location.search);
+    const authError = urlParams.get("error");
+
+    if (authError) {
+      Sentry.captureException(
+        new Error(`Google Login Failure: ${authError}`),
+        {
+          tags: { section: "authentication", error_code: authError },
+        },
+      );
+
+      Sentry.showReportDialog({
+        title: "Login Trouble?",
+        subtitle:
+          "Our system noticed the Google login failed. Can you tell us what happened?",
+        labelSubmit: "Send Feedback",
+      });
+    }
+  }, []);
 
   const errorMessages: Record<string, string> = {
     OAUTH_CALLBACK_HANDLER_ERROR:

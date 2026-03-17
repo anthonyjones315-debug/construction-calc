@@ -87,6 +87,8 @@
   html {
     color-scheme: light dark;
     scroll-padding-top: 80px; /* sticky header height */
+    height: 100%;
+    overflow: hidden;
   }
 
   body {
@@ -94,7 +96,12 @@
     transition:
       background-color 0.2s,
       color 0.2s;
-    overflow-x: hidden;
+    overflow: hidden;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
   }
 
   /* Dark mode: invert white cards to surface color */
@@ -200,6 +207,9 @@
     width: 100%;
     max-width: 72rem;
     padding-inline: 1rem;
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .content-card {
