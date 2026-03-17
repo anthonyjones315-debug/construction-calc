@@ -47,8 +47,6 @@ export function ContactForm({
     setEmail(initialEmail);
     setSubject(initialSubject);
     setMessage(initialMessage);
-    setStatus("idle");
-    setErrorMessage(null);
   }, [initialEmail, initialMessage, initialName, initialSubject]);
 
   async function handleSubmit(e: React.FormEvent) {

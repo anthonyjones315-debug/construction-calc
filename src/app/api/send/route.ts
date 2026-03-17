@@ -23,6 +23,7 @@ const resultRowSchema = z.object({
 const estimatePayloadSchema = z.object({
   title: z.string(),
   calculatorLabel: z.string(),
+  countyLabel: z.string().nullable().optional(),
   controlNumber: z.string().nullable().optional(),
   clientName: z.string().nullable().optional(),
   jobSiteAddress: z.string().nullable().optional(),
@@ -74,7 +75,7 @@ function buildEstimateEmailHtml(estimate: z.infer<typeof estimatePayloadSchema>)
       : "";
   const total =
     estimate.totalCost != null
-      ? `<p style="margin-top:12px;font-weight:700;color:#0f172a">Total: $${normalizeDollars(Number(estimate.totalCost)).toFixed(2)}</p>`
+      ? `<p style="margin-top:12px;font-weight:700;color:#0f172a">Total: $${normalizeDollars(estimate.totalCost).toFixed(2)}</p>`
       : "";
   const meta = [
     estimate.fromEmail &&
@@ -86,6 +87,7 @@ function buildEstimateEmailHtml(estimate: z.infer<typeof estimatePayloadSchema>)
     estimate.controlNumber && `Control #: ${escapeHtml(estimate.controlNumber)}`,
     estimate.clientName && `Client: ${escapeHtml(estimate.clientName)}`,
     estimate.jobSiteAddress && `Job site: ${escapeHtml(estimate.jobSiteAddress)}`,
+    estimate.countyLabel && `County: ${escapeHtml(estimate.countyLabel)}`,
     estimate.generatedAt && `Generated: ${escapeHtml(estimate.generatedAt)}`,
   ]
     .filter(Boolean)

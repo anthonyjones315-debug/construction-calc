@@ -37,8 +37,8 @@ const FAQ_ITEMS = [
     a: "Yes. Once you have calculator results, you can ask the AI Optimizer to generate scoped work notes, inclusions/exclusions, and homeowner-friendly explanations based on your inputs. You stay in control: review and edit the text before sending it to a client or dropping it into your estimating software.",
   },
   {
-    q: "Does the AI understand Oneida County and Mohawk Valley conditions?",
-    a: "It can work with the local context you give it and with the guidance we publish in Field Notes, but it is still guidance, not a stamped engineering design or code ruling. Confirm critical values with the plans, building department, or engineer before you commit.",
+    q: "Does the AI understand tri-county job conditions?",
+    a: "It can work with the local context you give it and with the guidance we publish in Field Notes for Oneida, Madison, and Herkimer counties, but it is still guidance, not a stamped engineering design or code ruling. Confirm critical values with the plans, building department, or engineer before you commit.",
   },
   {
     q: "Is my project data used to train public AI models?",

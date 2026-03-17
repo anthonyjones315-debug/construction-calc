@@ -5,6 +5,11 @@ import { createServerClient } from "@/lib/supabase/server";
 import { getPostHogClient } from "@/lib/posthog-server";
 import { sendWelcomeEmail } from "@/lib/email/welcome";
 import { ensurePublicUserRecord } from "@/lib/supabase/ensurePublicUser";
+import {
+  getPasswordPolicyError,
+  PASSWORD_MAX_LENGTH,
+  PASSWORD_MIN_LENGTH,
+} from "@/lib/security/password-policy";
 
 export type RegisterActionState = {
   status: "idle" | "success" | "error";
@@ -28,8 +33,18 @@ const registerSchema = z.object({
   email: z.string().trim().email("Enter a valid email address."),
   password: z
     .string()
-    .min(8, "Password too short. Use at least 8 characters.")
-    .max(72, "Password must be 72 characters or fewer."),
+    .min(
+      PASSWORD_MIN_LENGTH,
+      `Password must be at least ${PASSWORD_MIN_LENGTH} characters.`,
+    )
+    .max(
+      PASSWORD_MAX_LENGTH,
+      `Password must be ${PASSWORD_MAX_LENGTH} characters or fewer.`,
+    )
+    .refine((value) => !getPasswordPolicyError(value), {
+      message:
+        "Password must be 12-72 characters and include uppercase, lowercase, number, and special character with no spaces.",
+    }),
 });
 
 function getErrorMessage(error: SupabaseErrorLike | null | undefined): string {
@@ -46,8 +61,8 @@ function getErrorMessage(error: SupabaseErrorLike | null | undefined): string {
     return "An account with this email already exists.";
   }
 
-  if (message.includes("password") && message.includes("at least 8")) {
-    return "Password too short. Use at least 8 characters.";
+  if (message.includes("password")) {
+    return "Password must be 12-72 characters and include uppercase, lowercase, number, and special character with no spaces.";
   }
 
   return "We could not create your account right now. Please try again.";

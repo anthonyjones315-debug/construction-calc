@@ -71,6 +71,36 @@ export default async function FieldNoteArticlePage({ params }: Props) {
               <p className="mt-4 text-lg leading-relaxed text-[--color-ink-dim]">
                 {note.description}
               </p>
+              {note.lastVerified || note.sources?.length ? (
+                <div className="mt-5 rounded-2xl border border-white/10 bg-white/5 p-4">
+                  {note.lastVerified ? (
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[--color-ink-dim]">
+                      Last verified: {note.lastVerified}
+                    </p>
+                  ) : null}
+                  {note.sources?.length ? (
+                    <div className="mt-2">
+                      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[--color-ink-dim]">
+                        Sources
+                      </p>
+                      <ul className="mt-2 space-y-1">
+                        {note.sources.map((source) => (
+                          <li key={source}>
+                            <a
+                              href={source}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-sm text-[--color-orange-brand] transition-colors hover:text-[--color-orange-dark] hover:underline"
+                            >
+                              {source}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
 
               <article
                 className="mt-10 rounded-2xl border border-white/10 bg-[var(--color-surface)] p-6 shadow-[0_10px_30px_rgba(0,0,0,0.12)] sm:p-8"

@@ -4,6 +4,11 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Loader2, LockKeyhole, Trash2 } from "lucide-react";
 import { signOut } from "next-auth/react";
+import {
+  PASSWORD_MIN_LENGTH,
+  PASSWORD_REQUIREMENTS,
+  getPasswordPolicyError,
+} from "@/lib/security/password-policy";
 
 async function parseJsonSafe(
   response: Response,
@@ -65,6 +70,12 @@ export function PasswordSettings() {
 
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
       setPasswordError("New password and confirmation must match.");
+      return;
+    }
+
+    const passwordPolicyError = getPasswordPolicyError(passwordForm.newPassword);
+    if (passwordPolicyError) {
+      setPasswordError(passwordPolicyError);
       return;
     }
 
@@ -147,7 +158,7 @@ export function PasswordSettings() {
             <input
               type="password"
               autoComplete="new-password"
-              minLength={8}
+              minLength={PASSWORD_MIN_LENGTH}
               value={passwordForm.newPassword}
               onChange={(e) =>
                 setPasswordForm((current) => ({
@@ -167,7 +178,7 @@ export function PasswordSettings() {
             <input
               type="password"
               autoComplete="new-password"
-              minLength={8}
+              minLength={PASSWORD_MIN_LENGTH}
               value={passwordForm.confirmPassword}
               onChange={(e) =>
                 setPasswordForm((current) => ({
@@ -178,6 +189,17 @@ export function PasswordSettings() {
               required
               className="w-full rounded-xl border border-slate-500 bg-[--color-surface-alt] px-4 py-2.5 text-sm text-[--color-ink] focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
+          </div>
+
+          <div className="rounded-xl border border-[--color-border] bg-[--color-surface-alt] px-4 py-3">
+            <p className="mb-2 text-xs font-bold uppercase tracking-widest text-[--color-ink-dim]">
+              Password Requirements
+            </p>
+            <ul className="space-y-1 text-xs text-[--color-ink-dim]">
+              {PASSWORD_REQUIREMENTS.map((requirement) => (
+                <li key={requirement}>{requirement}</li>
+              ))}
+            </ul>
           </div>
 
           {passwordError && (

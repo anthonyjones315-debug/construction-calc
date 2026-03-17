@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getFeedback } from "@sentry/browser";
 import { ContactModal } from "./ContactModal";
 
@@ -25,6 +25,29 @@ export function ContactAutoOpenFeedback() {
   const openedOnceRef = useRef(false);
   const [openFailed, setOpenFailed] = useState(false);
   const [manualModalOpen, setManualModalOpen] = useState(false);
+  const memoFormProps = useMemo(() => {
+    const pageUrl =
+      typeof window !== "undefined" ? window.location.href : undefined;
+    const userAgent =
+      typeof window !== "undefined" ? window.navigator.userAgent : undefined;
+    const browserTime =
+      typeof window !== "undefined" ? new Date().toISOString() : undefined;
+
+    return {
+      initialSubject: "Manual feedback report",
+      submitLabel: "Send backup report",
+      successMessage:
+        "Thanks. Your manual report is in, even though the Sentry form did not load in this browser.",
+      mode: "error-report" as const,
+      reportContext: {
+        reportType: "error" as const,
+        source: "contact-feedback-fallback",
+        pageUrl,
+        userAgent,
+        browserTime,
+      },
+    };
+  }, []);
 
   useEffect(() => {
     if (openedOnceRef.current) return;
@@ -87,27 +110,7 @@ export function ContactAutoOpenFeedback() {
         onClose={() => setManualModalOpen(false)}
         title="Send a manual feedback report"
         description="If the embedded feedback tool does not load, use this backup form and we’ll still get the report."
-        formProps={{
-          initialSubject: "Manual feedback report",
-          submitLabel: "Send backup report",
-          successMessage:
-            "Thanks. Your manual report is in, even though the Sentry form did not load in this browser.",
-          mode: "error-report",
-          reportContext: {
-            reportType: "error",
-            source: "contact-feedback-fallback",
-            pageUrl:
-              typeof window !== "undefined" ? window.location.href : undefined,
-            userAgent:
-              typeof window !== "undefined"
-                ? window.navigator.userAgent
-                : undefined,
-            browserTime:
-              typeof window !== "undefined"
-                ? new Date().toISOString()
-                : undefined,
-          },
-        }}
+        formProps={memoFormProps}
       />
     </div>
   );

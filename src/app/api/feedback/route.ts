@@ -38,6 +38,11 @@ function escapeHtml(s: string): string {
     .replace(/\n/g, "<br>");
 }
 
+function normalizeString(value?: string): string | undefined {
+  const normalized = value?.trim();
+  return normalized ? normalized : undefined;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const resend = getResend();
@@ -78,24 +83,36 @@ export async function POST(req: NextRequest) {
       userAgent,
       browserTime,
     } = parsed.data;
+    const sourceValue = normalizeString(source);
+    const pageUrlValue = normalizeString(pageUrl);
+    const browserTimeValue = normalizeString(browserTime);
+    const eventIdValue = normalizeString(eventId);
+    const digestValue = normalizeString(digest);
+    const technicalMessageValue = normalizeString(technicalMessage);
+    const userFacingMessageValue = normalizeString(userFacingMessage);
+    const userAgentValue = normalizeString(userAgent);
     const subjectLine =
-      rawSubject?.trim() || "Feedback from Pro Construction Calc";
+      normalizeString(rawSubject) || "Feedback from Pro Construction Calc";
     const subject = `${SUBJECT_PREFIX} ${subjectLine}`;
     const isErrorReport = reportType === "error";
 
     const contextRows = [
-      source ? `<p><strong>Source:</strong> ${escapeHtml(source)}</p>` : "",
-      pageUrl ? `<p><strong>Page:</strong> ${escapeHtml(pageUrl)}</p>` : "",
-      browserTime ? `<p><strong>Browser Time:</strong> ${escapeHtml(browserTime)}</p>` : "",
-      eventId ? `<p><strong>Sentry Event ID:</strong> ${escapeHtml(eventId)}</p>` : "",
-      digest ? `<p><strong>Error Digest:</strong> ${escapeHtml(digest)}</p>` : "",
-      userFacingMessage
-        ? `<p><strong>User-Facing Summary:</strong> ${escapeHtml(userFacingMessage)}</p>`
+      sourceValue ? `<p><strong>Source:</strong> ${escapeHtml(sourceValue)}</p>` : "",
+      pageUrlValue ? `<p><strong>Page:</strong> ${escapeHtml(pageUrlValue)}</p>` : "",
+      browserTimeValue
+        ? `<p><strong>Browser Time:</strong> ${escapeHtml(browserTimeValue)}</p>`
         : "",
-      technicalMessage
-        ? `<p><strong>Technical Error:</strong> ${escapeHtml(technicalMessage)}</p>`
+      eventIdValue
+        ? `<p><strong>Sentry Event ID:</strong> ${escapeHtml(eventIdValue)}</p>`
         : "",
-      userAgent ? `<p><strong>User Agent:</strong> ${escapeHtml(userAgent)}</p>` : "",
+      digestValue ? `<p><strong>Error Digest:</strong> ${escapeHtml(digestValue)}</p>` : "",
+      userFacingMessageValue
+        ? `<p><strong>User-Facing Summary:</strong> ${escapeHtml(userFacingMessageValue)}</p>`
+        : "",
+      technicalMessageValue
+        ? `<p><strong>Technical Error:</strong> ${escapeHtml(technicalMessageValue)}</p>`
+        : "",
+      userAgentValue ? `<p><strong>User Agent:</strong> ${escapeHtml(userAgentValue)}</p>` : "",
     ]
       .filter(Boolean)
       .join("");
@@ -134,12 +151,12 @@ export async function POST(req: NextRequest) {
       Sentry.captureMessage("Manual error report submitted", {
         level: "warning",
         extra: {
-          source,
-          pageUrl,
-          eventId,
-          digest,
-          technicalMessage,
-          userFacingMessage,
+          source: sourceValue,
+          pageUrl: pageUrlValue,
+          eventId: eventIdValue,
+          digest: digestValue,
+          hasTechnicalMessage: Boolean(technicalMessageValue),
+          hasUserFacingMessage: Boolean(userFacingMessageValue),
         },
       });
     }

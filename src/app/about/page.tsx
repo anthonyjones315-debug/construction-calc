@@ -249,7 +249,7 @@ export default function AboutPage() {
                 <ol className="mt-4 space-y-3 text-sm text-[--color-ink-mid]">
                   {workflowSteps.map((step, index) => (
                     <li
-                      key={step}
+                      key={index}
                       className="rounded-2xl border border-[--color-border] bg-[--color-surface-alt] px-4 py-3"
                     >
                       <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[--color-orange-brand]">

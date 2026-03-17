@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getPageMetadata } from "@/seo";
 
 const SITE_URL = "https://proconstructioncalc.com";
-const LOCAL_MARKET_LABEL = "Mohawk Valley, including Rome and Utica, NY";
+const LOCAL_MARKET_LABEL = "Oneida, Madison, and Herkimer counties, NY";
 
 type RelatedLink = {
   href: string;
@@ -154,7 +154,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Always add at least 10% concrete waste when scheduling mixed pours to account for form irregularities and spill loss.",
     localFocus:
-      "Configured for crews working in Mohawk Valley freeze/thaw conditions where over-ordering by one short load can save a second cold-weather dispatch.",
+      "Configured for crews working in tri-county freeze/thaw conditions where over-ordering by one short load can save a second cold-weather dispatch.",
     canonicalPath: "/calculators/concrete",
     keywords: [
       "concrete calculator",
@@ -234,7 +234,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Track cavity depth and thermal bridging separately so nominal R-values don’t overstate real-world performance.",
     localFocus:
-      "Focused on Mohawk Valley winter performance where envelope misses are expensive and callback rates climb fast.",
+      "Focused on tri-county winter performance where envelope misses are expensive and callback rates climb fast.",
     canonicalPath: "/calculators/insulation",
     keywords: [
       "insulation calculator",
@@ -276,7 +276,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Set margin targets after labor burden and permit admin time are applied, or your bid profit will look better than reality.",
     localFocus:
-      "Tailored for contractor pricing pressure in the Mohawk Valley where lead quality and overhead control decide job profitability.",
+      "Tailored for contractor pricing pressure across the tri-county region where lead quality and overhead control decide job profitability.",
     canonicalPath: "/calculators/management",
     keywords: [
       "contractor margin calculator",
@@ -318,7 +318,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Review margin and lead acquisition cost together before final pricing, or profitable jobs can still lose cash.",
     localFocus:
-      "Designed for Mohawk Valley contractors balancing competitive bids with local operating costs and seasonality.",
+      "Designed for tri-county contractors balancing competitive bids with local operating costs and seasonality.",
     canonicalPath: "/calculators/business",
     keywords: [
       "contractor business calculator",
@@ -339,7 +339,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Always add 10% for slab waste and uneven grade correction before sending your batch order.",
     localFocus:
-      "Useful for Mohawk Valley slab planning where subgrade moisture and temperature shifts can increase waste.",
+      "Useful for tri-county slab planning where subgrade moisture and temperature shifts can increase waste.",
     canonicalPath: "/calculators/concrete/slab",
     keywords: ["slab calculator", "3000 psi slab", "concrete slab Rome NY"],
     relatedLinks: categoryLinks.concrete,
@@ -377,7 +377,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Add 5–8% overage for cuts and breakage, especially on patterned brickwork and corner-heavy walls.",
     localFocus:
-      "Built for Mohawk Valley masonry crews dealing with mixed restoration and new-build wall sections.",
+      "Built for tri-county masonry crews dealing with mixed restoration and new-build wall sections.",
     canonicalPath: "/calculators/concrete/block",
     keywords: [
       "block calculator",
@@ -415,7 +415,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Test one complete rafter pair before full production cutting to catch slope and seat-cut errors.",
     localFocus:
-      "Created for Mohawk Valley snow-load framing where pitch precision impacts sheathing and ventilation details.",
+      "Created for tri-county snow-load framing where pitch precision impacts sheathing and ventilation details.",
     canonicalPath: "/calculators/framing/rafters",
     keywords: ["rafter calculator", "roof framing", "rafter length"],
     relatedLinks: categoryLinks.framing,
@@ -432,7 +432,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Match joist spacing to span tables before ordering so floor stiffness and load performance stay on target.",
     localFocus:
-      "Built for Mohawk Valley framing crews handling floor layouts in remodel and new construction scopes.",
+      "Built for tri-county framing crews handling floor layouts in remodel and new construction scopes.",
     canonicalPath: "/calculators/framing/floor",
     keywords: ["floor joists calculator", "joist spacing", "floor framing takeoff"],
     relatedLinks: categoryLinks.framing,
@@ -521,7 +521,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Order accessory metal by perimeter plus contingency so crew flow is not blocked by short trim stock.",
     localFocus:
-      "Made for Mohawk Valley exteriors where wind exposure and weatherproofing details are critical.",
+      "Made for tri-county exteriors where wind exposure and weatherproofing details are critical.",
     canonicalPath: "/calculators/roofing/siding",
     keywords: [
       "siding calculator",
@@ -542,7 +542,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Use cavity and continuous insulation values separately so thermal bridging risk is visible in your estimate.",
     localFocus:
-      "Optimized for cold-weather Mohawk Valley envelope planning where underinsulation drives callbacks.",
+      "Optimized for cold-weather tri-county envelope planning where underinsulation drives callbacks.",
     canonicalPath: "/calculators/insulation/r-value",
     keywords: [
       "r-value calculator",
@@ -580,7 +580,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Group rooms by trim profile and stock length before ordering to minimize mismatched leftover pieces.",
     localFocus:
-      "Suited for Mohawk Valley remodeling work where room transitions and legacy walls affect trim cuts.",
+      "Suited for tri-county remodeling work where room transitions and legacy walls affect trim cuts.",
     canonicalPath: "/calculators/finish/trim",
     keywords: ["trim calculator", "baseboard estimator", "finish carpentry"],
     relatedLinks: categoryLinks.finish,
@@ -631,7 +631,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Set a minimum margin floor per job type and reject scopes that cannot clear it after burdened labor.",
     localFocus:
-      "Built for Mohawk Valley bid environments where price sensitivity is high and margin discipline matters.",
+      "Built for tri-county bid environments where price sensitivity is high and margin discipline matters.",
     canonicalPath: "/calculators/management/margin",
     keywords: ["profit margin calculator", "contractor pricing", "bid margin"],
     relatedLinks: categoryLinks.management,
@@ -669,7 +669,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Track close-rate by lead source monthly so marketing spend shifts toward the channels that actually convert.",
     localFocus:
-      "Designed for Mohawk Valley service contractors where seasonality affects both tax timing and lead quality.",
+      "Designed for tri-county service contractors where seasonality affects both tax timing and lead quality.",
     canonicalPath: "/calculators/management/leads",
     keywords: [
       "lead cost calculator",
@@ -690,7 +690,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Confirm block size, bond-beam courses, and vertical rebar layout before ordering CMU and mortar so your field layout matches the engineer’s details.",
     localFocus:
-      "Useful for Mohawk Valley wall builds where weather and renovation conditions can increase unit waste.",
+      "Useful for tri-county wall builds where weather and renovation conditions can increase unit waste.",
     canonicalPath: "/calculators/concrete/block-wall",
     keywords: ["block wall calculator", "CMU estimator", "masonry wall count"],
     relatedLinks: categoryLinks.concrete,
@@ -741,7 +741,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Confirm joist spacing against decking material specs before locking order quantities.",
     localFocus:
-      "Tailored for Mohawk Valley deck projects where seasonal moisture and structure age affect framing choices.",
+      "Tailored for tri-county deck projects where seasonal moisture and structure age affect framing choices.",
     canonicalPath: "/calculators/framing/deck-joists",
     keywords: ["deck joist calculator", "deck framing", "joist spacing"],
     relatedLinks: categoryLinks.framing,
@@ -809,7 +809,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Add overage for gables and cut-heavy elevations to prevent siding shortfalls late in install.",
     localFocus:
-      "Built for Mohawk Valley exteriors where weatherproofing details and layout waste are high impact.",
+      "Built for tri-county exteriors where weatherproofing details and layout waste are high impact.",
     canonicalPath: "/calculators/roofing/siding-squares",
     keywords: ["siding squares calculator", "siding estimate", "exterior takeoff"],
     relatedLinks: categoryLinks.roofing,
@@ -826,7 +826,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Account for NY frost lines and thermal bridging when calculating final assembly performance.",
     localFocus:
-      "Optimized for Mohawk Valley winter envelope planning where missed R-value targets cause callbacks.",
+      "Optimized for tri-county winter envelope planning where missed R-value targets cause callbacks.",
     canonicalPath: "/calculators/insulation/r-value-tracker",
     keywords: ["r-value tracker", "insulation calculator", "NY frost line insulation"],
     relatedLinks: categoryLinks.insulation,
@@ -860,7 +860,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Validate airflow assumptions room-by-room before final fabrication quantities are approved.",
     localFocus:
-      "Built for Mohawk Valley HVAC installs where retrofits often force non-standard routing.",
+      "Built for tri-county HVAC installs where retrofits often force non-standard routing.",
     canonicalPath: "/calculators/insulation/duct-sizing",
     keywords: ["duct sizing calculator", "hvac airflow", "ductwork estimate"],
     relatedLinks: categoryLinks.insulation,
@@ -945,7 +945,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Set a minimum acceptable margin per trade so discounting never undercuts production reality.",
     localFocus:
-      "Useful for Mohawk Valley bids where pricing pressure is high and margin discipline is critical.",
+      "Useful for tri-county bids where pricing pressure is high and margin discipline is critical.",
     canonicalPath: "/calculators/business/profit-margin",
     keywords: ["profit margin calculator", "contractor margin", "bid profitability"],
     relatedLinks: categoryLinks.business,
@@ -979,7 +979,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Track source-level close rates so paid lead spend follows conversion, not just volume.",
     localFocus:
-      "Designed for Mohawk Valley contractors where seasonal demand changes lead quality.",
+      "Designed for tri-county contractors where seasonal demand changes lead quality.",
     canonicalPath: "/calculators/business/lead-estimator",
     keywords: ["lead estimator", "contractor lead cost", "marketing roi contractor"],
     relatedLinks: categoryLinks.business,
@@ -1013,7 +1013,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "For Upstate NY cold snaps, round temporary heat capacity up after envelope status is reviewed to avoid overnight temperature drops.",
     localFocus:
-      "Tailored for Mohawk Valley GC site planning where enclosed-phase heat checks are needed before finish work.",
+      "Tailored for tri-county GC site planning where enclosed-phase heat checks are needed before finish work.",
     canonicalPath: "/calculators/mechanical/btu-estimator",
     keywords: [
       "btu estimator",
@@ -1055,7 +1055,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Account for basic Oneida County insulation stage requirements before drywall scheduling to reduce rework risk.",
     localFocus:
-      "Made for Mohawk Valley interior sequencing where framing, insulation, and board delivery windows overlap.",
+      "Made for tri-county interior sequencing where framing, insulation, and board delivery windows overlap.",
     canonicalPath: "/calculators/mechanical/drywall-sheets",
     keywords: [
       "drywall sheets calculator",
@@ -1099,14 +1099,14 @@ export function getTradePageByPath(path: string): TradePageDefinition | undefine
 }
 
 export function getTradePageMetadata(page: TradePageDefinition): Metadata {
-  const localDescription = `${page.description} Serving Oneida County, NY and the Mohawk Valley contractor market.`;
+  const localDescription = `${page.description} Serving contractors across Oneida, Madison, and Herkimer counties in New York.`;
   const mergedKeywords = Array.from(
     new Set([
       ...page.keywords,
       "Oneida County NY",
-      "Mohawk Valley",
-      "Rome NY contractor calculator",
-      "Utica NY contractor estimator",
+      "Madison County NY",
+      "Herkimer County NY",
+      "tri-county contractor calculator",
     ]),
   );
 

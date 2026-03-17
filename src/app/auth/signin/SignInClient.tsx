@@ -309,7 +309,7 @@ export default function SignInClient({
             .
           </p>
           <p className="pt-2 text-center text-[10px] font-display uppercase tracking-widest text-slate-400">
-            Designed for the Mohawk Valley · Rome, NY
+            Built for the Tri-County Field
           </p>
         </div>
       </div>

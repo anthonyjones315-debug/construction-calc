@@ -11,11 +11,13 @@ import { routes } from "@routes";
 export const metadata: Metadata = getPageMetadata({
   title: "Financial Terms Database & Tax Defaults | Pro Construction Calc",
   description:
-    "Central glossary of financial and tax terminology used across all calculators, including NYS capital improvement handling and Oneida County's 8.75% rate.",
+    "Central glossary of financial and tax terminology used across all calculators, including NYS capital improvement handling and Tri-County tax defaults.",
   path: "/financial-terms",
 });
 
 const ONEIDA_RATE = NYS_COUNTY_TAX_RATES.find((c) => c.county === "Oneida")?.combinedRate ?? 8.75;
+const MADISON_RATE = NYS_COUNTY_TAX_RATES.find((c) => c.county === "Madison")?.combinedRate ?? 8.0;
+const HERKIMER_RATE = NYS_COUNTY_TAX_RATES.find((c) => c.county === "Herkimer")?.combinedRate ?? 8.25;
 
 export default function FinancialTermsPage() {
   const schema = {
@@ -71,7 +73,7 @@ export default function FinancialTermsPage() {
                   </p>
                 </div>
               </div>
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                 <div className="rounded-xl border border-white/10 bg-white/5 p-4">
                   <p className="text-xs font-black uppercase tracking-[0.14em] text-orange-400">
                     Oneida County
@@ -79,6 +81,24 @@ export default function FinancialTermsPage() {
                   <p className="mt-1 text-2xl font-black text-white">{ONEIDA_RATE.toFixed(2)}%</p>
                   <p className="text-sm text-white/70">
                     Combined state (4.00%) + local (4.75%) rate applied to repairs and maintenance.
+                  </p>
+                </div>
+                <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                  <p className="text-xs font-black uppercase tracking-[0.14em] text-orange-400">
+                    Madison County
+                  </p>
+                  <p className="mt-1 text-2xl font-black text-white">{MADISON_RATE.toFixed(2)}%</p>
+                  <p className="text-sm text-white/70">
+                    Combined state (4.00%) + local (4.00%) rate applied to repairs and maintenance.
+                  </p>
+                </div>
+                <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                  <p className="text-xs font-black uppercase tracking-[0.14em] text-orange-400">
+                    Herkimer County
+                  </p>
+                  <p className="mt-1 text-2xl font-black text-white">{HERKIMER_RATE.toFixed(2)}%</p>
+                  <p className="text-sm text-white/70">
+                    Combined state (4.00%) + local (4.25%) rate applied to repairs and maintenance.
                   </p>
                 </div>
                 <div className="rounded-xl border border-white/10 bg-white/5 p-4">
@@ -103,15 +123,15 @@ export default function FinancialTermsPage() {
                   </div>
                   <div>
                     <p className="text-[11px] font-black uppercase tracking-[0.14em] text-orange-400">
-                      Compliance
+                      Operator Notes
                     </p>
-                    <p className="text-sm text-white/75">2025 NYS code update + Marcy UDC</p>
+                    <p className="text-sm text-white/75">Tri-county estimating checks that show up in the app today</p>
                   </div>
                 </div>
                 <ul className="mt-3 space-y-2 text-sm text-white/75">
-                  <li>The 2025 NYS code update took effect on <strong>December 31, 2025</strong>. The fossil-fuel equipment prohibitions are currently suspended by court order, so verify the current rule set before you lock equipment selections.</li>
-                  <li>Town of Marcy UDC: check zoning, site plan triggers, lighting, and stormwater before bidding.</li>
-                  <li>Tax Save calculator separates capital improvements (ST-124) from repairs with clear PDF language.</li>
+                  <li>Tax Save separates capital improvements from repairs so ST-124 jobs do not get mixed with taxable repair work.</li>
+                  <li>Saved estimates and exported PDFs use the same tax labels shown in the calculators to reduce drift.</li>
+                  <li>Oneida, Madison, and Herkimer defaults are visible here before you audit a live estimate.</li>
                 </ul>
                 <Link
                   href={routes.fieldNotes}

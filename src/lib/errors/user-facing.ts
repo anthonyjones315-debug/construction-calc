@@ -20,6 +20,12 @@ export function getUserFacingErrorDetails(
   fallback?: Partial<UserFacingErrorDetails>,
 ): UserFacingErrorDetails {
   const technicalMessage = getTechnicalMessage(error).toLowerCase();
+  const hasRequiredValidationPhrase =
+    technicalMessage.includes("is required") ||
+    technicalMessage.includes("field is required") ||
+    technicalMessage.includes("required field") ||
+    technicalMessage.includes("required property") ||
+    technicalMessage.includes("required parameter");
 
   if (
     technicalMessage.includes("already registered") ||
@@ -82,7 +88,7 @@ export function getUserFacingErrorDetails(
     technicalMessage.includes("invalid payload") ||
     technicalMessage.includes("invalid json") ||
     technicalMessage.includes("request body") ||
-    technicalMessage.includes("required")
+    hasRequiredValidationPhrase
   ) {
     return {
       title: "Some information needs another look",

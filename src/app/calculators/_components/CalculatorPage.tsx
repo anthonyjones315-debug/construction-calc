@@ -77,6 +77,11 @@ import { useProMode } from "@/hooks/useProMode";
 import { triggerHaptic } from "@/hooks/useHaptic";
 import { sanitizeFilename } from "@/utils/sanitize-filename";
 import { centsToDollars, toCents } from "@/utils/money";
+import {
+  divideCentsByBasisPoints,
+  scaleCentsByBasisPoints,
+  toBasisPoints,
+} from "@/utils/rates";
 import { useContractorProfile } from "@/components/pdf/useContractorProfile";
 import { getConcreteInputLabelsFromCopy } from "@/data/construction-terms";
 import { useStore } from "@/lib/store";
@@ -107,6 +112,21 @@ type CalculatorResultsBundle = {
   materialList: string[];
 };
 
+type EstimateCountySelection =
+  | "Oneida"
+  | "Madison"
+  | "Herkimer"
+  | "None"
+  | "Custom";
+
+const ESTIMATE_COUNTY_OPTIONS: EstimateCountySelection[] = [
+  "Oneida",
+  "Madison",
+  "Herkimer",
+  "None",
+  "Custom",
+];
+
 type FramingMaterialKind =
   | "wall-studs"
   | "floor-joists"
@@ -119,22 +139,6 @@ type VolumeInputMode = "dimensions" | "total-cu-yd" | "total-cu-ft";
 type WallInputMode = "lineal-feet" | "total-studs";
 type TrimInputMode = "dimensions" | "total-lf";
 type FlooringBoxMode = "20" | "24" | "30" | "custom";
-
-function toBasisPoints(percent: number) {
-  return Number((percent * 100).toFixed(0));
-}
-
-function scaleCentsByBasisPoints(cents: number, basisPoints: number) {
-  return Number(((cents * basisPoints) / 10_000).toFixed(0));
-}
-
-function divideCentsByBasisPoints(cents: number, basisPoints: number) {
-  if (!Number.isFinite(cents) || !Number.isFinite(basisPoints) || basisPoints <= 0) {
-    return 0;
-  }
-
-  return Number(((cents * 10_000) / basisPoints).toFixed(0));
-}
 
 function getFramingMaterialFromPath(path: string): FramingMaterialKind {
   const p = path.toLowerCase();
@@ -738,7 +742,9 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   const [widthSpan, setWidthSpan] = useState(10);
   const [depthThickness, setDepthThickness] = useState(4);
   const [wasteFactor, setWasteFactor] = useState(10);
-  const [saveLocked, setSaveLocked] = useState(false);
+  const [saveState, setSaveState] = useState<
+    "idle" | "saving" | "saved" | "downloaded"
+  >("idle");
   const [areaInputMode, setAreaInputMode] =
     useState<AreaInputMode>("dimensions");
   const [volumeInputMode, setVolumeInputMode] =
@@ -767,6 +773,10 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   const [estimateClientEmail, setEstimateClientEmail] = useState("");
   const [estimateJobName, setEstimateJobName] = useState("");
   const [estimateJobAddress, setEstimateJobAddress] = useState("");
+  const [estimateCountySelection, setEstimateCountySelection] = useState<
+    EstimateCountySelection | ""
+  >("");
+  const [estimateCountyCustom, setEstimateCountyCustom] = useState("");
 
   const haptic = useHaptic();
   const hapticTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -820,6 +830,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     setEstimateClientEmail("");
     setEstimateJobName("");
     setEstimateJobAddress("");
+    setEstimateCountySelection("");
+    setEstimateCountyCustom("");
     setFinalizeOpen(false);
     setFinalizeError(null);
     setFinalizeSuccess(null);
@@ -1269,12 +1281,12 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
               : [
                   {
                     label: "State Portion",
-                    value: currency(taxResult.statePortion),
+                    value: currency(toCents(taxResult.statePortion)),
                     unit: "$",
                   },
                   {
                     label: "Local Portion",
-                    value: currency(taxResult.localPortion),
+                    value: currency(toCents(taxResult.localPortion)),
                     unit: "$",
                   },
                 ]),
@@ -1919,12 +1931,67 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     return () => document.removeEventListener("mousedown", handleMouseDown);
   }, [openModuleGroup]);
 
-  function handleSaveEstimate() {
-    if (saveLocked) return;
-    setSaveLocked(true);
-    haptic(10);
-    // 1-second button lock prevents double-tap duplicates
-    setTimeout(() => setSaveLocked(false), 1000);
+  function queueSaveStateReset() {
+    window.setTimeout(() => setSaveState("idle"), 1800);
+  }
+
+  async function handleSaveEstimate() {
+    if (saveState !== "idle") return;
+    if (!ensureEstimateCountySelection()) return;
+
+    setSaveState("saving");
+    setFinalizeError(null);
+    setFinalizeSuccess(null);
+
+    try {
+      if (session?.user?.id) {
+        const response = await fetch("/api/estimates/save", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...finalizePayload,
+            total_cost: null,
+            status: "Draft",
+          }),
+        });
+        const payload = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          throw new Error(payload?.error ?? "Failed to save estimate.");
+        }
+
+        setSaveState("saved");
+        setFinalizeSuccess("Estimate saved to your account.");
+        haptic(10);
+        queueSaveStateReset();
+        return;
+      }
+
+      const deviceExport = {
+        exportedAt: new Date().toISOString(),
+        source: "pro-construction-calc",
+        type: "device-estimate",
+        ...finalizePayload,
+      };
+      const blob = new Blob([JSON.stringify(deviceExport, null, 2)], {
+        type: "application/json",
+      });
+      downloadBlob(
+        blob,
+        `${sanitizeFilename(finalizePayload.name, "estimate")}.json`,
+      );
+      setSaveState("downloaded");
+      setFinalizeSuccess("Estimate downloaded to this device.");
+      haptic(10);
+      queueSaveStateReset();
+    } catch (error) {
+      Sentry.captureException(error);
+      setSaveState("idle");
+      setFinalizeSuccess(null);
+      setFinalizeError(
+        error instanceof Error ? error.message : "Failed to save estimate.",
+      );
+    }
   }
 
   function downloadBlob(blob: Blob, filename: string) {
@@ -1958,7 +2025,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     page.category === "concrete" &&
     !page.proTip.includes("Oneida") &&
     !page.proTip.includes("frost")
-      ? `${page.proTip} For Oneida County, NY slab and footing work, verify frost protection against local depth expectations that can approach 48 inches.`
+      ? `${page.proTip} For tri-county slab and footing work, verify frost protection against the local depth requirements on the job before you finalize the pour.`
       : page.proTip;
 
   function parseAndSet(
@@ -2007,6 +2074,13 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   }
 
   const primaryMaterialOrder = calculatorResults.materialList[0] ?? null;
+  const resolvedEstimateCounty = useMemo(() => {
+    if (!estimateCountySelection) return null;
+    if (estimateCountySelection === "Custom") {
+      return estimateCountyCustom.trim() || null;
+    }
+    return estimateCountySelection;
+  }, [estimateCountyCustom, estimateCountySelection]);
 
   const finalizePayload = useMemo(
     () => ({
@@ -2027,6 +2101,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         calculator_path: page.canonicalPath,
         calculator_label: page.heroKicker,
         client_email: estimateClientEmail.trim() || null,
+        selected_county_mode: estimateCountySelection || null,
+        selected_county: resolvedEstimateCounty,
       },
       metadata: {
         title: page.title,
@@ -2046,6 +2122,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       calculatorResults.secondary,
       estimateClientName,
       estimateClientEmail,
+      estimateCountySelection,
+      resolvedEstimateCounty,
       estimateJobAddress,
       estimateJobName,
       estimateName,
@@ -2054,6 +2132,32 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       page.title,
     ],
   );
+
+  function ensureEstimateCountySelection() {
+    if (!estimateCountySelection) {
+      setFinalizeSuccess(null);
+      setFinalizeError(
+        "Choose Oneida, Madison, Herkimer, None, or Custom before exporting or saving this estimate.",
+      );
+      setFinalizeOpen(true);
+      return null;
+    }
+
+    if (estimateCountySelection === "Custom" && !estimateCountyCustom.trim()) {
+      setFinalizeSuccess(null);
+      setFinalizeError("Enter the custom county or tax market before continuing.");
+      setFinalizeOpen(true);
+      return null;
+    }
+
+    setFinalizeError(null);
+    return resolvedEstimateCounty;
+  }
+
+  function openEmailEstimateModal() {
+    if (!ensureEstimateCountySelection()) return;
+    setCrmModalOpen(true);
+  }
 
   function openFinalizeModal() {
     triggerHaptic([10]);
@@ -2123,6 +2227,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
 
   async function handleDownloadPdf() {
     if (typeof window === "undefined") return;
+    if (!ensureEstimateCountySelection()) return;
     setFinalizeBusy("pdf");
     setFinalizeError(null);
     setFinalizeSuccess(null);
@@ -2190,6 +2295,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       );
       return;
     }
+    if (!ensureEstimateCountySelection()) return;
     if (!estimateClientEmail.trim()) {
       setFinalizeError("Enter the client email before sending for signature.");
       return;
@@ -2251,6 +2357,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     () => ({
       title: page.title,
       calculatorLabel: page.heroKicker,
+      countyLabel: resolvedEstimateCounty,
       fromName: contractorProfile.businessName,
       fromEmail: contractorProfile.businessEmail,
       results: [calculatorResults.primary, ...calculatorResults.secondary].map(
@@ -2264,6 +2371,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     [
       page.title,
       page.heroKicker,
+      resolvedEstimateCounty,
       calculatorResults,
       contractorProfile.businessEmail,
       contractorProfile.businessName,
@@ -2339,7 +2447,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     >
       <main
         id="main-content"
-        className="command-theme bg-[--color-bg] text-white flex min-h-screen flex-col"
+        className="command-theme flex min-h-0 flex-1 flex-col overflow-y-auto bg-[--color-bg] text-white lg:overflow-hidden"
       >
         {closeModal && (
           <div className="sticky top-0 z-40 flex h-12 items-center justify-between border-b border-slate-800 bg-slate-900/95 px-3 backdrop-blur-sm">
@@ -2364,7 +2472,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             </button>
           </div>
         )}
-        <section className="mx-auto w-full max-w-6xl px-3 py-4 sm:px-5 sm:py-5 lg:px-7 pb-14">
+        <section className="mx-auto w-full max-w-6xl px-3 py-4 pb-14 sm:px-5 sm:py-5 lg:px-7 lg:py-4 lg:pb-6">
           <JsonLD schema={getTradePageSchema(page)} />
 
           <div className="mb-3 flex items-center justify-between gap-2.5">
@@ -2491,7 +2599,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setCrmModalOpen(true)}
+                    onClick={openEmailEstimateModal}
                     className="inline-flex h-9 min-h-9 items-center gap-2 rounded-xl border-2 border-orange-400/80 bg-transparent px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white transition-all duration-200 hover:border-orange-400 hover:text-white active:scale-[0.98]"
                   >
                     <Mail className="h-3.5 w-3.5" aria-hidden />
@@ -2500,16 +2608,29 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                   <button
                     type="button"
                     onClick={handleSaveEstimate}
-                    disabled={saveLocked}
-                    className={`inline-flex h-9 min-h-9 items-center gap-2 rounded-xl border-2 border-white/80 bg-transparent px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white transition-all duration-200 hover:border-orange-400 hover:text-white active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 ${saveLocked ? "scale-95" : ""}`}
+                    disabled={saveState !== "idle"}
+                    className={`inline-flex h-9 min-h-9 items-center gap-2 rounded-xl border-2 border-white/80 bg-transparent px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white transition-all duration-200 hover:border-orange-400 hover:text-white active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 ${saveState !== "idle" ? "scale-95" : ""}`}
                   >
-                    {saveLocked ? (
+                    {saveState === "saving" ? (
+                      <>
+                        <Save className="h-3.5 w-3.5" aria-hidden />
+                        Saving
+                      </>
+                    ) : saveState === "saved" ? (
                       <>
                         <Check
                           className="h-3.5 w-3.5 text-emerald-400"
                           aria-hidden
                         />
-                        Synced
+                        Saved
+                      </>
+                    ) : saveState === "downloaded" ? (
+                      <>
+                        <Check
+                          className="h-3.5 w-3.5 text-emerald-400"
+                          aria-hidden
+                        />
+                        Downloaded
                       </>
                     ) : (
                       <>
@@ -3468,7 +3589,46 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                     placeholder="Optional"
                   />
                 </label>
+                <label className="text-sm text-slate-300">
+                  County For This Estimate
+                  <select
+                    value={estimateCountySelection}
+                    onChange={(event) =>
+                      setEstimateCountySelection(
+                        event.target.value as EstimateCountySelection | "",
+                      )
+                    }
+                    className="mt-1 h-11 w-full rounded-xl border border-slate-500 bg-slate-900 px-3 text-white outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
+                  >
+                    <option value="">Choose county or tax handling</option>
+                    {ESTIMATE_COUNTY_OPTIONS.map((option) => (
+                      <option key={option} value={option}>
+                        {option === "None"
+                          ? "None (no county selected)"
+                          : option}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                {estimateCountySelection === "Custom" ? (
+                  <label className="text-sm text-slate-300">
+                    Custom County / Tax Market
+                    <input
+                      value={estimateCountyCustom}
+                      onChange={(event) =>
+                        setEstimateCountyCustom(event.target.value)
+                      }
+                      className="mt-1 h-11 w-full rounded-xl border border-slate-500 bg-slate-900 px-3 text-white outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
+                      placeholder="Example: Onondaga or tax exempt"
+                    />
+                  </label>
+                ) : null}
               </div>
+
+              <p className="mt-3 text-xs text-slate-400">
+                Required for any estimate that leaves the calculator: save,
+                PDF, email, or signature.
+              </p>
 
               {primaryMaterialOrder ? (
                 <div className="mt-4 rounded-2xl border border-orange-500/30 bg-orange-500/10 px-4 py-3">
@@ -3578,7 +3738,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                 <button
                   type="button"
                   onClick={() => {
-                    setCrmModalOpen(true);
+                    openEmailEstimateModal();
                   }}
                   disabled={finalizeBusy !== null}
                   className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-900 px-4 text-sm font-semibold text-white transition hover:border-orange-500 disabled:opacity-60"

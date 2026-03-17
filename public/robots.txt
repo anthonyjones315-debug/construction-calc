@@ -1,11 +1,13 @@
 User-agent: *
-Content-signal: search=yes, ai-train=no
+# Removed the non-standard Content-Signal directive.
+# Use standard crawler rules here, and use response headers or page metadata
+# separately if we ever need to communicate additional bot policies.
 Allow: /
-Disallow: /api/
-Disallow: /auth/
+Disallow: /api
+Disallow: /auth
 Disallow: /cart
 Disallow: /command-center
-Disallow: /estimate/sign/
+Disallow: /estimate/sign
 Disallow: /forgot-password
 Disallow: /offline
 Disallow: /onboarding
@@ -14,7 +16,7 @@ Disallow: /register
 Disallow: /reset-password
 Disallow: /saved
 Disallow: /settings
-Disallow: /sign/
+Disallow: /sign
 Disallow: /unauthorized
-Disallow: /cdn-cgi/
+Disallow: /cdn-cgi
 Sitemap: https://proconstructioncalc.com/sitemap.xml

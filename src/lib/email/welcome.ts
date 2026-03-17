@@ -9,6 +9,7 @@ import {
 
 const FROM_EMAIL = "system@proconstructioncalc.com";
 const DEFAULT_SITE_URL = "https://proconstructioncalc.com";
+const EMAIL_RE = /^[^\s@]{1,64}@[^\s@]{1,253}\.[^\s@]{2,}$/;
 
 function getResend() {
   const key = process.env.RESEND_API_KEY;
@@ -39,6 +40,11 @@ export async function sendWelcomeEmail(input: {
   to: string;
   fullName: string;
 }) {
+  const to = input.to.trim().toLowerCase();
+  if (!EMAIL_RE.test(to) || to.length > 320) {
+    throw new Error("Invalid email address");
+  }
+
   const resend = getResend();
   if (!resend) {
     throw new Error("Email service not configured.");
@@ -69,7 +75,7 @@ export async function sendWelcomeEmail(input: {
 
   const { error } = await resend.emails.send({
     from: FROM_EMAIL,
-    to: [input.to],
+    to: [to],
     subject,
     html,
     text,

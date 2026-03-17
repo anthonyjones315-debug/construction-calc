@@ -14,6 +14,8 @@ export interface FieldNote {
   description: string;
   category: string;
   date: string;
+  lastVerified?: string;
+  sources?: string[];
   /** Calculator/tool links for "Use This Tool" sidebar */
   relatedToolLinks: FieldNoteToolLink[];
   content: string;
@@ -24,9 +26,14 @@ export const FIELD_NOTES: FieldNote[] = [
     slug: "2026-ny-construction-updates",
     title: "2026 NY Construction Updates: Energy Code Pause, Marcy UDC, and ST-124",
     description:
-      "Three items worth checking before you lock a 2026 Mohawk Valley bid: the current energy-code court pause, Marcy site-review rules, and capital-improvement tax handling.",
+      "Three items worth checking before you lock a 2026 tri-county bid: the current energy-code court pause, Marcy site-review rules, and capital-improvement tax handling.",
     category: "Code & Compliance",
     date: "April 2026",
+    lastVerified: "2026-03-17",
+    sources: [
+      "https://www.tax.ny.gov/pdf/publications/sales/pub718.pdf",
+      "https://www.tax.ny.gov/pdf/current_forms/st/st124_fill_in.pdf",
+    ],
     relatedToolLinks: [
       { href: "/calculators/business/tax-save", label: "Tax Save Calculator" },
       { href: "/calculators/business/profit-margin", label: "Profit Margin" },
@@ -98,6 +105,7 @@ Use our [footing volume calculator](/calculators/concrete/footing) once the desi
       "A straightforward guide to Herkimer County's current combined sales tax rate and how ST-124 changes the labor line on a qualifying capital-improvement job.",
     category: "Business & Legal",
     date: "May 2026",
+    lastVerified: "2026-03-17",
     relatedToolLinks: [
       { href: "/calculators/business/tax-save", label: "Tax Save Calculator" },
       { href: "/calculators/business/profit-margin", label: "Profit Margin" },
@@ -132,6 +140,7 @@ Use our [Tax Save calculator](/calculators/business/tax-save) to model the job b
       "How to handle Madison County's current combined rate and keep taxable repairs separate from true capital-improvement work.",
     category: "Business & Legal",
     date: "May 2026",
+    lastVerified: "2026-03-17",
     relatedToolLinks: [
       { href: "/calculators/business/tax-save", label: "Tax Save Calculator" },
       { href: "/calculators/business/profit-margin", label: "Profit Margin" },
@@ -163,7 +172,7 @@ Use our [Tax Save calculator](/calculators/business/tax-save) to compare the tax
     slug: "nys-retainage-laws",
     title: "NYS Retainage Rules: What Local GCs Should Read First",
     description:
-      "A tighter summary of public-work retainage limits, private-contract risk, and the cash-flow questions Mohawk Valley contractors should answer before signing.",
+      "A tighter summary of public-work retainage limits, private-contract risk, and the cash-flow questions tri-county contractors should answer before signing.",
     category: "Business & Legal",
     date: "March 2025",
     relatedToolLinks: [
@@ -237,9 +246,9 @@ Use AI as the fast drafting assistant. Keep field judgment and final responsibil
   },
   {
     slug: "insulation-r-values",
-    title: "Insulation R-Values for Mohawk Valley Winters",
+    title: "Insulation R-Values for Tri-County Winters",
     description:
-      "What Zone 6 insulation targets mean for attics, walls, rim joists, and the spray-foam-versus-fiber decision in the Mohawk Valley.",
+      "What Zone 6 insulation targets mean for attics, walls, rim joists, and the spray-foam-versus-fiber decision across the tri-county service area.",
     category: "Insulation",
     date: "March 2025",
     relatedToolLinks: [
@@ -269,7 +278,7 @@ Use our [R-Value Tracker](/calculators/insulation/r-value-tracker) to build the 
   },
   {
     slug: "all-electric-2026",
-    title: "All-Electric 2026: What Mohawk Valley Contractors Should Verify Now",
+    title: "All-Electric 2026: What Tri-County Contractors Should Verify Now",
     description:
       "A practical read on the current code pause, load-calculation issues, and the electrical scope questions that still matter on all-electric and electric-ready jobs.",
     category: "Energy",
@@ -336,7 +345,7 @@ Use our [footing volume calculator](/calculators/concrete/footing) once the fina
   },
   {
     slug: "snow-loads",
-    title: "Snow Loads in the Mohawk Valley: Check the Design Load Before You Frame",
+    title: "Snow Loads in the Tri-County Region: Check the Design Load Before You Frame",
     description:
       "Local snow design values can run much higher than generic homeowner assumptions, so get the real number before you size rafters or trusses.",
     category: "Roofing",
@@ -349,7 +358,7 @@ Use our [footing volume calculator](/calculators/concrete/footing) once the fina
     content: `
 ## Do not guess at local snow loads
 
-Recent Oneida County public construction drawings show local ground snow loads in the 60 to 70 psf range on real projects. That is a good reminder that generic online rules of thumb can be far too low for Mohawk Valley work.
+Recent Oneida County public construction drawings show local ground snow loads in the 60 to 70 psf range on real projects. That is a good reminder that generic online rules of thumb can be far too low for tri-county work.
 
 ## What that changes
 

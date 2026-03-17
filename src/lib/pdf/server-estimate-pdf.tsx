@@ -1,7 +1,6 @@
 "use server";
 /* eslint-disable jsx-a11y/alt-text */
 
-import { Buffer } from "node:buffer";
 import {
   Document,
   Font,
@@ -24,6 +23,7 @@ export type EstimatePdfPayload = {
   estimateName: string;
   jobName: string;
   calculatorLabel: string;
+  countyLabel?: string | null;
   generatedAt: string;
   brandName: string;
   contractorEmail?: string | null;
@@ -193,6 +193,11 @@ function EstimateDocument(payload: EstimatePdfPayload) {
           {payload.jobName || payload.estimateName}
         </Text>
         <View style={styles.chipRow}>
+          {payload.countyLabel ? (
+            <View style={styles.chip}>
+              <Text>County: {payload.countyLabel}</Text>
+            </View>
+          ) : null}
           {payload.contractorEmail ? (
             <View style={styles.chip}>
               <Text>{payload.contractorEmail}</Text>
@@ -252,86 +257,10 @@ function EstimateDocument(payload: EstimatePdfPayload) {
   );
 }
 
-type PdfRenderOutput =
-  | Uint8Array
-  | NodeJS.ReadableStream
-  | ReadableStream<Uint8Array>;
-
-function isWebReadableStream(
-  value: PdfRenderOutput,
-): value is ReadableStream<Uint8Array> {
-  return typeof value === "object" && "getReader" in value;
-}
-
-function isNodeReadableStream(
-  value: PdfRenderOutput,
-): value is NodeJS.ReadableStream {
-  return typeof value === "object" && "on" in value;
-}
-
-async function readWebStream(stream: ReadableStream<Uint8Array>) {
-  const reader = stream.getReader();
-  const chunks: Uint8Array[] = [];
-  let totalLength = 0;
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    if (!value) continue;
-    chunks.push(value);
-    totalLength += value.byteLength;
-  }
-
-  const merged = new Uint8Array(totalLength);
-  let offset = 0;
-
-  for (const chunk of chunks) {
-    merged.set(chunk, offset);
-    offset += chunk.byteLength;
-  }
-
-  return merged;
-}
-
-async function readNodeStream(stream: NodeJS.ReadableStream) {
-  return new Promise<Uint8Array>((resolve, reject) => {
-    const chunks: Buffer[] = [];
-
-    stream.on("data", (chunk: Buffer | Uint8Array | string) => {
-      if (typeof chunk === "string") {
-        chunks.push(Buffer.from(chunk));
-        return;
-      }
-
-      chunks.push(Buffer.from(chunk));
-    });
-
-    stream.on("end", () => {
-      const merged = Buffer.concat(chunks);
-      resolve(
-        new Uint8Array(merged.buffer, merged.byteOffset, merged.byteLength),
-      );
-    });
-    stream.on("error", reject);
-  });
-}
-
 export async function renderEstimatePdfBytes(payload: EstimatePdfPayload) {
-  const output = (await renderToBuffer(
+  const output = await renderToBuffer(
     <EstimateDocument {...payload} />,
-  )) as PdfRenderOutput;
+  );
 
-  if (output instanceof Uint8Array) {
-    return new Uint8Array(output.buffer, output.byteOffset, output.byteLength);
-  }
-
-  if (isWebReadableStream(output)) {
-    return readWebStream(output);
-  }
-
-  if (isNodeReadableStream(output)) {
-    return readNodeStream(output);
-  }
-
-  throw new TypeError("Unsupported PDF render output type.");
+  return new Uint8Array(output.buffer, output.byteOffset, output.byteLength);
 }

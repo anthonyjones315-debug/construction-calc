@@ -4,6 +4,10 @@ import Link from "next/link";
 import { useActionState } from "react";
 import { routes } from "@routes";
 import {
+  PASSWORD_MIN_LENGTH,
+  PASSWORD_REQUIREMENTS,
+} from "@/lib/security/password-policy";
+import {
   registerUserAction,
   type RegisterActionState,
 } from "@/app/register/actions";
@@ -91,10 +95,15 @@ export default function RegisterPage() {
                 name="password"
                 type="password"
                 autoComplete="new-password"
-                minLength={8}
+                minLength={PASSWORD_MIN_LENGTH}
                 required
                 className="mt-1 w-full rounded-lg border border-slate-500 bg-[--color-surface] px-3 py-2 text-sm text-[--color-ink] outline-none ring-0 transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
               />
+              <ul className="mt-2 space-y-1 text-xs text-[--color-ink-mid]">
+                {PASSWORD_REQUIREMENTS.map((requirement) => (
+                  <li key={requirement}>{requirement}</li>
+                ))}
+              </ul>
             </div>
 
             {state.message && (

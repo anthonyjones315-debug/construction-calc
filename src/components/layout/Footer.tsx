@@ -6,7 +6,6 @@ import {
   BUSINESS_CITY_STATE,
   BUSINESS_EMAIL,
   BUSINESS_NAME,
-  BUSINESS_PHONE_DISPLAY,
 } from "@/lib/business-identity";
 
 const COPYRIGHT_YEAR = 2026;
@@ -54,8 +53,8 @@ const buildCommandCenterLink = (slug?: string) =>
 export function Footer() {
   return (
     <footer className="border-t border-slate-800 bg-slate-950 text-sm text-slate-300">
-      <div className="max-w-7xl mx-auto px-4 py-10">
-        <div className="mb-8 grid grid-cols-2 gap-8 md:grid-cols-5">
+      <div className="max-w-7xl mx-auto px-4 py-8 lg:py-6">
+        <div className="mb-6 grid grid-cols-2 gap-8 md:grid-cols-5 lg:mb-4 lg:gap-6">
           {/* Brand */}
           <div className="col-span-2 sm:col-span-1">
             <div className="mb-3 flex items-center gap-2 text-lg font-display font-black uppercase text-white">
@@ -64,17 +63,12 @@ export function Footer() {
             </div>
             <p className="text-xs leading-relaxed text-slate-400">
               Contractor-grade construction calculators for working crews and estimators.
-              Based in Floyd, NY and serving the Mohawk Valley.
+              Built for contractors across Oneida, Madison, and Herkimer counties.
             </p>
             <div className="mt-2 space-y-1 text-xs leading-relaxed text-slate-300">
               <p>{BUSINESS_NAME} · {BUSINESS_CITY_STATE}</p>
-              <p>
-                <a href={`tel:${BUSINESS_PHONE_DISPLAY}`} className="hover:text-white transition-colors">
-                  {BUSINESS_PHONE_DISPLAY}
-                </a>
-              </p>
             </div>
-            <div className="mt-4 inline-flex flex-col rounded-md border border-[--color-orange-brand]/60 bg-[--color-orange-brand]/10 px-3 py-2 text-white">
+            <div className="mt-3 inline-flex flex-col rounded-md border border-[--color-orange-brand]/60 bg-[--color-orange-brand]/10 px-3 py-2 text-white">
               <span className="font-display text-[11px] font-black uppercase tracking-[0.14em]">
                 Built for the Field
               </span>
@@ -165,9 +159,9 @@ export function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="flex flex-col items-center justify-between gap-3 border-t border-slate-800 pt-6 lg:flex-row lg:items-start">
+        <div className="flex flex-col items-center justify-between gap-3 border-t border-slate-800 pt-5 lg:pt-4 lg:flex-row lg:items-start">
           <p className="text-xs text-slate-400">
-            © {COPYRIGHT_YEAR} Pro Construction Calc. All rights reserved.
+            © {COPYRIGHT_YEAR} {BUSINESS_NAME}. All rights reserved.
           </p>
           <p className="max-w-xl text-center text-xs text-slate-500 lg:text-left">
             Calculator outputs are for estimating purposes only. Verify

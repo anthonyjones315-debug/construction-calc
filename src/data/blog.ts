@@ -125,7 +125,7 @@ Use our [pitch and slope calculator](/calculators/roofing/pitch-slope) to conver
     content: `
 ## Start with the climate zone
 
-Energy Star and DOE guidance group insulation targets by climate zone, not by state name alone. In warmer zones, the attic recommendation can start around R-30 to R-49. In colder zones, attic targets commonly move into the R-49 to R-60 range, with stronger wall and floor requirements to match.
+Energy Star and DOE guidance group insulation targets by climate zone, not by state name alone. In warmer zones, the attic recommendation can start around R-30 to R-49. In colder zones, attic targets commonly move into the R-49 to R-60 range, with stronger wall and floor requirements to match ([ENERGY STAR recommended home insulation R-values](https://www.energystar.gov/saveathome/seal_insulate/identify-problems-you-want-fix/diy-checks-inspections/insulation-r-values), as of March 17, 2026; for example, the current chart shows attic guidance ranging from R-30 in Zone 1 up to R-60 in Zones 4 through 8, depending on existing insulation levels).
 
 ## What changes as the climate gets colder
 

@@ -7,13 +7,12 @@ import {
   BUSINESS_CITY_STATE,
   BUSINESS_EMAIL,
   BUSINESS_NAME,
-  BUSINESS_PHONE_DISPLAY,
 } from "@/lib/business-identity";
 
 export const metadata: Metadata = getPageMetadata({
   title: "Contact | Pro Construction Calc",
   description:
-    "Contact Pro Construction Calc in Floyd, NY. Call 315-371-6348 or send feedback about calculators, estimates, and product support.",
+    "Contact Pro Construction Calc for calculator support, estimate workflow help, and product feedback across the Tri-County New York service area.",
   path: "/contact",
 });
 
@@ -29,7 +28,7 @@ export default function ContactPage() {
           <p className="mb-8 text-sm text-white/60">
             Send a bug report, question, or feature request. We read everything.
           </p>
-          <div className="mb-6 grid gap-3 sm:grid-cols-3">
+          <div className="mb-6 grid gap-3 sm:grid-cols-2">
             <div className="rounded-2xl border border-white/10 bg-[#1A1A1C] p-4">
               <p className="text-[11px] font-black uppercase tracking-[0.14em] text-orange-400">
                 Business
@@ -37,17 +36,6 @@ export default function ContactPage() {
               <p className="mt-2 text-sm font-semibold text-white">
                 {BUSINESS_NAME}
               </p>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-[#1A1A1C] p-4">
-              <p className="text-[11px] font-black uppercase tracking-[0.14em] text-orange-400">
-                Phone
-              </p>
-              <a
-                href={`tel:${BUSINESS_PHONE_DISPLAY}`}
-                className="mt-2 block text-sm font-semibold text-white transition hover:text-orange-300"
-              >
-                {BUSINESS_PHONE_DISPLAY}
-              </a>
             </div>
             <div className="rounded-2xl border border-white/10 bg-[#1A1A1C] p-4">
               <p className="text-[11px] font-black uppercase tracking-[0.14em] text-orange-400">

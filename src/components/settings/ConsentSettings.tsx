@@ -15,10 +15,10 @@ export function ConsentSettings() {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    const hydrateId = window.requestAnimationFrame(() => {
+    const hydrateId = window.setTimeout(() => {
       setChoice(readCookieConsent());
       setHydrated(true);
-    });
+    }, 0);
 
     function handleConsentChange(event: Event) {
       const detail = (event as CustomEvent<CookieConsentChoice>).detail;
@@ -35,7 +35,7 @@ export function ConsentSettings() {
     window.addEventListener("storage", handleStorage);
 
     return () => {
-      window.cancelAnimationFrame(hydrateId);
+      window.clearTimeout(hydrateId);
       window.removeEventListener(
         COOKIE_CONSENT_CHANGED_EVENT,
         handleConsentChange,

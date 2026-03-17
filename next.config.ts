@@ -56,6 +56,7 @@ const nextConfig: NextConfig = {
       "'wasm-unsafe-eval'",
       "https://va.vercel-scripts.com",
       "https://cdn.vercel-insights.com",
+      "https://vercel.live",
       "https://browser.sentry-cdn.com",
       "https://js.sentry-cdn.com",
       "https://*.googletagmanager.com",
@@ -66,6 +67,8 @@ const nextConfig: NextConfig = {
       "https://*.google-analytics.com",
       // PostHog loader (served from us-assets.i.posthog.com via rewrites)
       "https://us-assets.i.posthog.com",
+      // Termly CMP loader
+      "https://app.termly.io",
       // Crisp chat widget script
       "https://client.crisp.chat",
     ].join(" ");
@@ -91,6 +94,8 @@ const nextConfig: NextConfig = {
       "https://us-assets.i.posthog.com",
       "https://vitals.vercel-insights.com",
       "https://va.vercel-scripts.com",
+      "https://vercel.live",
+      "https://app.termly.io",
       "https://*.supabase.co",
       // Crisp chat WebSocket / API
       "https://client.relay.crisp.chat",
@@ -106,7 +111,7 @@ const nextConfig: NextConfig = {
       scriptSrc,
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://client.crisp.chat",
       "font-src 'self' data: https://fonts.gstatic.com https://client.crisp.chat",
-      "img-src 'self' data: blob: https://images.unsplash.com https://www.googletagmanager.com https://*.google-analytics.com https://*.googlesyndication.com https://*.doubleclick.net https://*.supabase.co https://*.googleusercontent.com https://lh3.googleusercontent.com http://googleusercontent.com https://*.adtrafficquality.google https://ep1.adtrafficquality.google https://client.crisp.chat https://image.crisp.chat https://proconstructioncalc.com",
+      "img-src 'self' data: blob: https://images.unsplash.com https://www.googletagmanager.com https://*.google-analytics.com https://*.googlesyndication.com https://*.doubleclick.net https://*.supabase.co https://*.googleusercontent.com https://lh3.googleusercontent.com http://googleusercontent.com https://*.adtrafficquality.google https://ep1.adtrafficquality.google https://client.crisp.chat https://image.crisp.chat https://proconstructioncalc.com https://app.termly.io",
       // Sentry ingest + Vercel + Google Analytics + ads + Supabase Auth (required for password reset / auth recovery)
       connectSrc,
       "media-src 'none'",

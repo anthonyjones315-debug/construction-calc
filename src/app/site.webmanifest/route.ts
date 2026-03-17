@@ -1,0 +1,48 @@
+import { NextResponse } from "next/server";
+
+export function GET() {
+  return NextResponse.json(
+    {
+      name: "Pro Construction Calc",
+      short_name: "Pro Calc",
+      description:
+        "Free construction calculators for concrete, framing, roofing, insulation, and flooring.",
+      start_url: "/",
+      display: "standalone",
+      background_color: "#020617",
+      theme_color: "#020617",
+      orientation: "portrait-primary",
+      icons: [
+        {
+          src: "/icon",
+          sizes: "192x192",
+          type: "image/png",
+          purpose: "any",
+        },
+        {
+          src: "/icon",
+          sizes: "192x192",
+          type: "image/png",
+          purpose: "maskable",
+        },
+        {
+          src: "/icon-512",
+          sizes: "512x512",
+          type: "image/png",
+          purpose: "any",
+        },
+        {
+          src: "/icon-512",
+          sizes: "512x512",
+          type: "image/png",
+          purpose: "maskable",
+        },
+      ],
+    },
+    {
+      headers: {
+        "Content-Type": "application/manifest+json",
+      },
+    },
+  );
+}

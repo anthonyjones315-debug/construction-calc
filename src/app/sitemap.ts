@@ -83,25 +83,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.9,
   }));
 
-  const fieldNotesPages: MetadataRoute.Sitemap = FIELD_NOTES.flatMap((note) => {
-    const fieldNotesEntry = {
+  const fieldNotesPages: MetadataRoute.Sitemap = FIELD_NOTES.map((note) => ({
       url: `${BASE}/field-notes/${note.slug}`,
       lastModified: now,
       changeFrequency: "monthly" as const,
       priority: 0.7,
-    };
-    return [fieldNotesEntry];
-  });
+    }));
 
-  const blogPages: MetadataRoute.Sitemap = BLOG_POSTS.flatMap((post) => {
-    const blogEntry = {
+  const blogPages: MetadataRoute.Sitemap = BLOG_POSTS.map((post) => ({
       url: `${BASE}/blog/${post.slug}`,
       lastModified: now,
       changeFrequency: "monthly" as const,
       priority: 0.7,
-    };
-    return [blogEntry];
-  });
+    }));
 
   return [...staticPages, ...calculatorPages, ...fieldNotesPages, ...blogPages];
 }

@@ -12,7 +12,15 @@ type MockUserRow = {
 
 type EqResult = Promise<{ data?: unknown; error: { code?: string; message: string } | null }>;
 
-function createMockSupabaseClient(initialUsers: MockUserRow[]) {
+type MockClientOptions = {
+  missingPublicUsersTable?: boolean;
+  disableCurrentUserEmailConflict?: boolean;
+};
+
+function createMockSupabaseClient(
+  initialUsers: MockUserRow[],
+  options: MockClientOptions = {},
+) {
   const state = {
     users: [...initialUsers],
     emailLookups: 0,
@@ -41,6 +49,15 @@ function createMockSupabaseClient(initialUsers: MockUserRow[]) {
         return this;
       },
       maybeSingle: async () => {
+        if (options.missingPublicUsersTable) {
+          return {
+            data: null,
+            error: {
+              message: `Could not find the table 'public.users' in the schema cache`,
+            },
+          };
+        }
+
         if (filterColumn === "id" && filterValue) {
           return { data: findUserById(filterValue), error: null };
         }
@@ -65,6 +82,7 @@ function createMockSupabaseClient(initialUsers: MockUserRow[]) {
             }
 
             if (
+              !options.disableCurrentUserEmailConflict &&
               value === "current-user" &&
               payload.email === "sam@example.com" &&
               !state.currentUserEmailUpdateFailed
@@ -89,6 +107,14 @@ function createMockSupabaseClient(initialUsers: MockUserRow[]) {
         };
       },
       upsert(payload: MockUserRow | Partial<MockUserRow>) {
+        if (options.missingPublicUsersTable) {
+          return Promise.resolve({
+            error: {
+              message: `Could not find the table 'public.users' in the schema cache`,
+            },
+          });
+        }
+
         const id = typeof payload.id === "string" ? payload.id : null;
         if (!id) {
           return Promise.resolve({ error: null });
@@ -137,6 +163,25 @@ function createMockSupabaseClient(initialUsers: MockUserRow[]) {
   return {
     state,
     client: {
+      rpc(fn: string, args: Record<string, unknown>) {
+        if (fn !== "move_user_references") {
+          throw new Error(`Unexpected rpc call: ${fn}`);
+        }
+
+        if (
+          args.from_user_id &&
+          typeof args.from_user_id === "string" &&
+          args.to_user_id &&
+          typeof args.to_user_id === "string"
+        ) {
+          return Promise.resolve({ data: null, error: null });
+        }
+
+        return Promise.resolve({
+          data: null,
+          error: { message: "Invalid rpc arguments." },
+        });
+      },
       schema(schemaName: string) {
         if (schemaName !== "public") {
           throw new Error(`Unexpected schema: ${schemaName}`);
@@ -208,5 +253,104 @@ describe("ensurePublicUserRecord", () => {
       name: "Sam Builder",
       image: "legacy.png",
     });
+  });
+
+  it("creates a new public user record when no existing rows are present", async () => {
+    const { client, state } = createMockSupabaseClient([]);
+
+    const userId = await ensurePublicUserRecord(client as never, {
+      id: "new-user",
+      name: "Nina Builder",
+      email: "nina@example.com",
+      image: "nina.png",
+    });
+
+    expect(userId).toBe("new-user");
+    expect(state.users).toEqual([
+      {
+        id: "new-user",
+        name: "Nina Builder",
+        email: "nina@example.com",
+        image: "nina.png",
+        emailVerified: null,
+        pro_mode_enabled: null,
+      },
+    ]);
+  });
+
+  it("updates an existing public user without an email conflict", async () => {
+    const { client, state } = createMockSupabaseClient(
+      [
+        {
+          id: "current-user",
+          name: "Old Name",
+          email: "old@example.com",
+          image: "old.png",
+        },
+      ],
+      { disableCurrentUserEmailConflict: true },
+    );
+
+    const userId = await ensurePublicUserRecord(client as never, {
+      id: "current-user",
+      name: "Updated Name",
+      email: "updated@example.com",
+      image: "updated.png",
+    });
+
+    expect(userId).toBe("current-user");
+    expect(state.users).toEqual([
+      {
+        id: "current-user",
+        name: "Updated Name",
+        email: "updated@example.com",
+        image: "updated.png",
+      },
+    ]);
+  });
+
+  it("returns the user id without throwing when public.users is missing", async () => {
+    const { client, state } = createMockSupabaseClient([], {
+      missingPublicUsersTable: true,
+    });
+
+    const userId = await ensurePublicUserRecord(client as never, {
+      id: "missing-table-user",
+      name: "Fallback User",
+      email: "fallback@example.com",
+      image: null,
+    });
+
+    expect(userId).toBe("missing-table-user");
+    expect(state.users).toEqual([]);
+  });
+
+  it("handles a user with no email without triggering conflict logic", async () => {
+    const { client, state } = createMockSupabaseClient([
+      {
+        id: "current-user",
+        name: "No Email Yet",
+        email: "old@example.com",
+        image: "old.png",
+      },
+    ]);
+
+    const userId = await ensurePublicUserRecord(client as never, {
+      id: "current-user",
+      name: "No Email Yet",
+      email: undefined,
+      image: null,
+    });
+
+    expect(userId).toBe("current-user");
+    expect(state.emailLookups).toBe(0);
+    expect(state.users).toEqual([
+      {
+        id: "current-user",
+        name: "No Email Yet",
+        email: null,
+        image: "old.png",
+      },
+    ]);
   });
 });

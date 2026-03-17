@@ -1,6 +1,6 @@
-# Pro Construction Calc — The Estimating Cockpit for Oneida County
+# Pro Construction Calc
 
-Professional construction estimating for contractors in the Mohawk Valley. Trade calculators, regional Field Notes, and offline-ready PWA built for jobsites in Rome, Utica, Marcy, and Floyd.
+Professional construction estimating for contractors across Oneida, Madison, and Herkimer counties. Trade calculators, Field Notes, saved estimates, and client-ready PDFs built for real field workflows.
 
 ---
 
@@ -11,7 +11,7 @@ Professional construction estimating for contractors in the Mohawk Valley. Trade
 - **Styling:** Tailwind CSS
 - **Monitoring:** Sentry (error boundaries + release tracking)
 - **Email / CRM:** Resend
-- **PWA:** Serwist (offline support)
+- **PWA:** App Router manifest + custom service worker
 
 ---
 
@@ -23,19 +23,19 @@ Professional-grade estimation for **Concrete**, **Framing**, **Roofing**, and mo
 
 ### Field Notes
 
-Native regional expertise hub. Oneida County Freeze-Lines (Rome vs. Utica), NYS Retainage Laws, and insulation R-value guides. No external click-aways; content lives on-site.
+Native contractor guidance hub with on-site articles for regional tax, estimating, and field planning topics. Content lives in-app and stays tied to the calculator workflow.
 
-### Offline Mode
+### Field Access
 
-PWA verified for jobsites in Rome/Utica dead zones. `/offline` is precached; core flows remain usable when connectivity drops.
+Mobile install prompts are available for field use, and the app currently prioritizes loading the latest live version by clearing stale service workers on launch.
 
 ### Sentry Audit
 
 Full-context error reporting for field failures. Calculator inputs and trade context are attached to errors so issues can be reproduced and fixed quickly.
 
-### Local Authority
+### Regional Coverage
 
-Built for **Marcy**, **Floyd**, **Utica**, and the wider Oneida County area. Frost depth, retainage, and material assumptions are aligned with local practice and code.
+Built around **Oneida**, **Madison**, and **Herkimer** county workflows, including county tax defaults, estimate PDFs, and operator-friendly handoff guides.
 
 ---
 

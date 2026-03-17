@@ -86,10 +86,16 @@ export async function POST(request: NextRequest) {
   try {
     const session = await auth();
     const branding = await resolvePdfBranding(payload);
+    const selectedCounty =
+      typeof payload.inputs?.selected_county === "string" &&
+      payload.inputs.selected_county.trim()
+        ? payload.inputs.selected_county.trim()
+        : null;
     const pdfBytes = await renderEstimatePdfBytes({
       estimateName: payload.name,
       jobName: payload.metadata.jobName ?? payload.name,
       calculatorLabel: payload.metadata.calculatorLabel,
+      countyLabel: selectedCounty,
       generatedAt: payload.metadata.generatedAt,
       brandName: branding.brandName,
       contractorEmail: branding.contractorEmail,
@@ -127,20 +133,14 @@ export async function POST(request: NextRequest) {
       await posthog.shutdown();
     }
 
-    const pdfBody = new Uint8Array(pdfBytes.byteLength);
-    pdfBody.set(pdfBytes);
-
-    return new NextResponse(
-      new Blob([pdfBody], { type: "application/pdf" }),
-      {
+    return new NextResponse(pdfBytes as BodyInit, {
       status: 200,
       headers: {
         "Content-Type": "application/pdf",
         "Content-Disposition": `attachment; filename="${sanitizeFilename(payload.name, "estimate")}.pdf"`,
         "Cache-Control": "no-store",
       },
-      },
-    );
+    });
   } catch (error) {
     const selectedCounty =
       typeof payload.inputs?.selected_county === "string"

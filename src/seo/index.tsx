@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import {
   BUSINESS_AREAS_SERVED,
   BUSINESS_COUNTRY,
+  BUSINESS_EMAIL,
   BUSINESS_NAME,
   BUSINESS_PHONE_E164,
   BUSINESS_REGION,
   BUSINESS_SITE_URL,
   BUSINESS_STATE,
+  BUSINESS_WHATSAPP_URL,
   GOOGLE_BUSINESS_PROFILE_ID,
   GOOGLE_BUSINESS_PROFILE_URL,
 } from "@/lib/business-identity";
@@ -309,11 +311,11 @@ export function getLocalBusinessSchema(
       value: GOOGLE_BUSINESS_PROFILE_ID,
     },
     url: BUSINESS_SITE_URL,
+    email: BUSINESS_EMAIL,
     sameAs: [GOOGLE_BUSINESS_PROFILE_URL],
-    telephone: BUSINESS_PHONE_E164,
     address: {
       "@type": "PostalAddress",
-      addressLocality: "Floyd",
+      addressLocality: "Rome",
       addressRegion: BUSINESS_STATE,
       addressCountry: BUSINESS_COUNTRY,
     },
@@ -322,6 +324,17 @@ export function getLocalBusinessSchema(
       "@type": "AdministrativeArea",
       name: BUSINESS_REGION,
     },
+    contactPoint: [
+      {
+        "@type": "ContactPoint",
+        contactType: "customer support",
+        email: BUSINESS_EMAIL,
+        areaServed: ["Oneida County, NY", "Madison County, NY", "Herkimer County, NY"],
+        availableLanguage: "en",
+        ...(BUSINESS_PHONE_E164 ? { telephone: BUSINESS_PHONE_E164 } : {}),
+        ...(BUSINESS_WHATSAPP_URL ? { url: BUSINESS_WHATSAPP_URL } : {}),
+      },
+    ],
     hasMap: GOOGLE_BUSINESS_PROFILE_URL,
     ...(mappedReviews.length > 0 ? { review: mappedReviews } : {}),
   };
@@ -429,13 +442,13 @@ export function getFieldNotesArticleSchema(article: {
     "@type": "Article",
     headline: article.title,
     description: article.description,
-    url: `https://proconstructioncalc.com/field-notes/${article.slug}`,
+    url: `${BUSINESS_SITE_URL}/field-notes/${article.slug}`,
     datePublished: article.date,
-    author: { "@type": "Organization", name: "Pro Construction Calc" },
+    author: { "@type": "Organization", name: BUSINESS_NAME },
     publisher: {
       "@type": "Organization",
-      name: "Pro Construction Calc",
-      url: "https://proconstructioncalc.com",
+      name: BUSINESS_NAME,
+      url: BUSINESS_SITE_URL,
     },
   };
 }

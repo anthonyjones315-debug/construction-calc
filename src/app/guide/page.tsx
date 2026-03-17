@@ -17,7 +17,7 @@ import {
 export const metadata: Metadata = getPageMetadata({
   title: "User Guide | Pro Construction Calc",
   description:
-    "Fast start guide for Pro Construction Calc—pick the right tool, enter inputs, read results, and share estimates.",
+    "Fast start guide for Pro Construction Calc with calculators, saved estimates, PDF exports, and tri-county tax-aware workflows.",
   path: "/guide",
 });
 
@@ -162,12 +162,12 @@ export default function GuidePage() {
 
               <div className="content-card p-4 sm:p-5">
                 <div className="inline-flex items-center gap-2 rounded-full border border-[--color-orange-brand]/30 bg-[--color-orange-brand]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[--color-orange-brand]">
-                  2026 Compliance
+                  Operator checks
                 </div>
                 <ul className="mt-3 space-y-2 text-sm text-[--color-ink-mid]">
-                  <li>The 2025 NYS code update took effect on December 31, 2025. The fossil-fuel equipment prohibitions are currently suspended by court order, so verify the live rule set before you lock equipment selections.</li>
-                  <li>Town of Marcy Unified Development Code applies to local jobs; verify zoning and site plan requirements before permitting.</li>
-                  <li>Use Tax Save calculator with ST-124 toggle for capital improvements to stay sales-tax compliant.</li>
+                  <li>Use Tax Save with the correct county and ST-124 setting before you export a client-facing estimate.</li>
+                  <li>Saved estimates, invoice PDFs, and the financial dashboard reuse the same math so you can audit one workflow against another.</li>
+                  <li>Mobile users should reopen the live app when they need the newest release, because stale service workers are cleared on launch.</li>
                 </ul>
               </div>
 

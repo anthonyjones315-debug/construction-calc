@@ -59,20 +59,23 @@ const jetBrainsMono = JetBrains_Mono({
   variable: "--font-mono",
 });
 
+const brandedSiteTitle = `${BUSINESS_NAME} — Construction Estimating & Cost Calculators`;
+
 export const metadata: Metadata = {
   metadataBase: new URL(BUSINESS_SITE_URL),
-  title: "Pro Construction Calc — Construction Estimating & Cost Calculators",
+  title: brandedSiteTitle,
   description:
-    "Professional construction estimating calculators for contractors in Floyd, NY and across the Mohawk Valley, including trade-specific quantity math, cost planning, and client-ready estimate exports.",
+    "Professional construction estimating calculators for contractors across Oneida, Madison, and Herkimer counties, including trade-specific quantity math, cost planning, and client-ready estimate exports.",
   keywords: [
     "construction calculator",
     "concrete calculator",
     "framing calculator",
     "roofing calculator",
     "insulation calculator",
-    "Floyd NY",
-    "Mohawk Valley",
-    "Rome NY",
+    "Oneida County NY",
+    "Madison County NY",
+    "Herkimer County NY",
+    "Tri-County New York",
     "Central New York",
     "contractor estimating",
   ],
@@ -84,9 +87,9 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: BUSINESS_SITE_URL,
     siteName: BUSINESS_NAME,
-    title: "Pro Construction Calc — Construction Estimating & Cost Calculators",
+    title: brandedSiteTitle,
     description:
-      `Professional construction estimating calculators for contractors in Floyd, NY and across the ${BUSINESS_REGION}.`,
+      `Professional construction estimating calculators for contractors across ${BUSINESS_REGION}.`,
     images: [
       {
         url: "/og-image.png",
@@ -98,9 +101,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Pro Construction Calc — Construction Estimating & Cost Calculators",
+    title: brandedSiteTitle,
     description:
-      `Professional construction estimating calculators for contractors in Floyd, NY and across the ${BUSINESS_REGION}.`,
+      `Professional construction estimating calculators for contractors across ${BUSINESS_REGION}.`,
   },
   robots: { index: true, follow: true },
   verification: {
@@ -120,7 +123,6 @@ export default function RootLayout({
     <html lang="en" className="bg-slate-950 text-slate-200 overflow-x-hidden">
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <link rel="manifest" href="/site.webmanifest" />
         {/*
           Critical CSS vars injected inline so Slate & Orange theme colors
           are available before the external stylesheet or any font loads.

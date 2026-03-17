@@ -63,6 +63,6 @@ export default auth(function middleware(req) {
 
 export const config = {
   matcher: [
-    "/((?!api/auth|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|site.webmanifest|sw.js|.*\\..*).*)",
+    "/((?!api/auth|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|manifest.webmanifest|sw.js|.*\\..*).*)",
   ],
 };

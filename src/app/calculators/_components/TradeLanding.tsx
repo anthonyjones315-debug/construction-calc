@@ -160,7 +160,7 @@ export function TradeLanding({ page }: TradeLandingProps) {
   );
 
   return (
-    <main className="command-theme min-h-screen bg-[--color-bg] text-white">
+    <main className="command-theme flex min-h-0 flex-1 flex-col overflow-y-auto bg-[--color-bg] text-white lg:overflow-hidden">
       <JsonLD schema={schema} />
 
       <header className="sticky top-10 z-30 border-b border-white/10 bg-[--color-bg]/85 backdrop-blur-md">
@@ -201,7 +201,7 @@ export function TradeLanding({ page }: TradeLandingProps) {
         </div>
       </header>
 
-      <section className="mx-auto w-full max-w-6xl px-4 pt-4 pb-6 lg:pt-6">
+      <section className="mx-auto w-full max-w-6xl px-4 pt-4 pb-6 lg:pt-4 lg:pb-5">
         <div className="flex items-center gap-4 rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_15%_20%,rgba(247,148,29,0.14),transparent_50%),linear-gradient(120deg,#0d1020,#0b1226)] px-4 py-4 shadow-[0_18px_40px_rgba(0,0,0,0.32)] sm:gap-6 sm:px-6">
           <Glyph className="h-16 w-16 shrink-0 sm:h-20 sm:w-20" />
           <div className="min-w-0 flex-1 space-y-1.5">

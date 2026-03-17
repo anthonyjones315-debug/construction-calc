@@ -188,7 +188,22 @@ export default async function OnboardingPage({
     const serviceDb = createServerClient();
     const publicDb = serviceDb.schema("public");
 
-    await ensurePublicUser(serviceDb, session);
+    try {
+      await ensurePublicUser(serviceDb, session);
+    } catch (error) {
+      console.error("[onboarding] Failed to ensure public user", {
+        userId,
+        error,
+      });
+
+      redirect(
+        buildOnboardingErrorRedirectUrl({
+          targetPath,
+          code: "create_business_failed",
+          details: "We could not finish setting up your account. Please try again.",
+        }),
+      );
+    }
 
     const { data: currentMembership, error: currentMembershipError } =
       await publicDb

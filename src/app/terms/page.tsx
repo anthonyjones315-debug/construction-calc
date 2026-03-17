@@ -3,6 +3,7 @@ import { Footer } from "@/components/layout/Footer";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { getPageMetadata } from "@/seo";
+import { BUSINESS_EMAIL } from "@/lib/business-identity";
 
 const EFFECTIVE_DATE = "March 13, 2026";
 
@@ -206,10 +207,10 @@ export default function TermsPage() {
               <p>
                 For questions about these Terms, contact us at{" "}
                 <a
-                  href="mailto:amj111394@gmail.com"
+                  href={`mailto:${BUSINESS_EMAIL}`}
                   className="text-[--color-orange-brand] hover:underline"
                 >
-                  amj111394@gmail.com
+                  {BUSINESS_EMAIL}
                 </a>
                 .
               </p>

@@ -90,21 +90,13 @@ async function moveUserReferences(
   fromUserId: string,
   toUserId: string,
 ) {
-  const updates = [
-    db.from("saved_estimates").update({ user_id: toUserId }).eq("user_id", fromUserId),
-    db.from("business_profiles").update({ user_id: toUserId }).eq("user_id", fromUserId),
-    db.from("user_materials").update({ user_id: toUserId }).eq("user_id", fromUserId),
-    db.from("businesses").update({ owner_id: toUserId }).eq("owner_id", fromUserId),
-    db.from("memberships").update({ user_id: toUserId }).eq("user_id", fromUserId),
-    db.from("organizations").update({ owner_user_id: toUserId }).eq("owner_user_id", fromUserId),
-    db.from("leads").update({ created_by_user_id: toUserId }).eq("created_by_user_id", fromUserId),
-  ];
+  const { error } = await db.rpc("move_user_references", {
+    from_user_id: fromUserId,
+    to_user_id: toUserId,
+  });
 
-  const results = await Promise.all(updates);
-  const failed = results.find((result) => result.error);
-
-  if (failed?.error) {
-    throw new Error(`Failed to move user references: ${failed.error.message}`);
+  if (error) {
+    throw new Error(`Failed to move user references: ${error.message}`);
   }
 }
 

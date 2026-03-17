@@ -153,14 +153,14 @@ export function Header() {
             <LayoutDashboard className="mr-1 h-3.5 w-3.5" aria-hidden />
             Command
           </Link>
-          {/* Cart quick access */}
+          {/* Cart quick access: always visible so batch estimate workflows stay one tap away. */}
           <Link
             href={routes.cart}
-            className="hidden items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white transition hover:border-orange-400/60 hover:text-orange-200 sm:inline-flex"
+            className="inline-flex min-h-8 items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white transition hover:border-orange-400/60 hover:text-orange-200 sm:px-3"
             aria-label={`Open cart (${cartCount} item${cartCount === 1 ? "" : "s"})`}
           >
             <ShoppingCart className="h-4 w-4" aria-hidden />
-            <span>Cart</span>
+            <span className="hidden sm:inline">Cart</span>
             <span className="rounded-full bg-orange-500 px-2 py-[2px] text-[10px] font-black text-white">
               {cartCount}
             </span>
