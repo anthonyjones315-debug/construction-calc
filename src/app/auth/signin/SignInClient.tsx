@@ -32,6 +32,11 @@ type SignInClientProps = {
   errorCode: string | null;
 };
 
+type SentryFeedbackWidget = {
+  appendToDom: () => void;
+  removeFromDom: () => void;
+};
+
 export default function SignInClient({
   callbackUrl,
   errorCode,
@@ -57,7 +62,14 @@ export default function SignInClient({
 
   // Mount Sentry User Feedback widget (bottom-right "Report a bug" trigger)
   useEffect(() => {
-    const feedbackApi = (Sentry as any).getFeedback?.();
+    const feedbackApi = Sentry.getFeedback?.() as
+      | {
+          createWidget?: (options?: {
+            triggerLabel?: string;
+            colorScheme?: "light" | "dark" | "system";
+          }) => SentryFeedbackWidget;
+        }
+      | undefined;
     const widget = feedbackApi?.createWidget?.({
       triggerLabel: "Report a bug",
       colorScheme: "system",

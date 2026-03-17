@@ -70,6 +70,11 @@ type NavItem = {
   description?: string;
 };
 
+type SentryFeedbackWidget = {
+  appendToDom: () => void;
+  removeFromDom: () => void;
+};
+
 const primaryNavItems: NavItem[] = [
   {
     label: "Home",
@@ -288,7 +293,14 @@ export default function CommandCenterClient({
 
   // Mount Sentry User Feedback widget (bottom-right "Report a bug" trigger)
   useEffect(() => {
-    const feedbackApi = (Sentry as any).getFeedback?.();
+    const feedbackApi = Sentry.getFeedback?.() as
+      | {
+          createWidget?: (options?: {
+            triggerLabel?: string;
+            colorScheme?: "light" | "dark" | "system";
+          }) => SentryFeedbackWidget;
+        }
+      | undefined;
     const widget = feedbackApi?.createWidget?.({
       triggerLabel: "Report a bug",
       colorScheme: "system",

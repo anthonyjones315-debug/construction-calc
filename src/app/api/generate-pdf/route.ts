@@ -312,11 +312,6 @@ export async function POST(request: NextRequest) {
   try {
     const session = await auth();
     const branding = await resolvePdfBranding(payload);
-    const selectedCounty =
-      typeof payload.inputs?.selected_county === "string" &&
-      payload.inputs.selected_county.trim()
-        ? payload.inputs.selected_county.trim()
-        : null;
     const browserlessToken = process.env.BROWSERLESS_API_TOKEN;
     if (!browserlessToken) {
       return NextResponse.json(

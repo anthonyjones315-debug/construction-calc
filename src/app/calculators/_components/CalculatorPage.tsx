@@ -1984,6 +1984,16 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     capitalImprovement,
     taxCounty,
     taxRegion,
+    roofOverhangInches,
+    roofPitchPreset,
+    roofPitchRiseCustom,
+    roofSquaresInput,
+    roofingInputMode,
+    staggeredStudWall,
+    wallStudCustomHeightFeet,
+    wallStudCustomSpacingInches,
+    wallStudHeightMode,
+    wallStudSpacingMode,
   ]);
 
   const displayResults: CalculatorResultsBundle = useMemo(() => {

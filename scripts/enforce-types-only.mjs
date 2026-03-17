@@ -5,6 +5,7 @@ const rootDir = process.cwd();
 
 const blockedExtensions = new Set([".js", ".jsx", ".cjs", ".mjs"]);
 const ignoredDirectories = new Set([
+  ".claude",
   ".git",
   ".github",
   ".next",

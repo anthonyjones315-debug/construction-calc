@@ -31,6 +31,6 @@ export function trackEvent(action: string, category: string, label?: string, val
 declare global {
   interface Window {
     gtag: (...args: unknown[]) => void
-    dataLayer: unknown[]
+    dataLayer?: unknown[]
   }
 }
