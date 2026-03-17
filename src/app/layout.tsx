@@ -11,6 +11,18 @@ import { CrispChat } from "@/components/support/CrispChat";
 import { CSPostHogProvider } from "@/components/providers/PostHogProvider";
 import { PostHogPageView } from "@/components/providers/PostHogPageView";
 import { Providers } from "@app/providers";
+import TermlyCMP from "@/components/TermlyCMP";
+
+const TERMELY_WEBSITE_UUID =
+  process.env.NEXT_PUBLIC_TERMELY_WEBSITE_UUID ??
+  process.env.TERMELY_WEBSITE_UUID ??
+  "";
+const TERMELY_MASTER_CONSENTS_ORIGIN =
+  process.env.NEXT_PUBLIC_TERMELY_MASTER_ORIGIN ??
+  process.env.TERMELY_MASTER_ORIGIN;
+const TERMELY_AUTO_BLOCK =
+  process.env.NEXT_PUBLIC_TERMELY_AUTO_BLOCK === "true" ||
+  process.env.TERMELY_AUTO_BLOCK === "true";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -142,6 +154,13 @@ export default function RootLayout({
               <Suspense fallback={null}>
                 <ScrollToTop />
               </Suspense>
+              {TERMELY_WEBSITE_UUID && (
+                <TermlyCMP
+                  websiteUUID={TERMELY_WEBSITE_UUID}
+                  autoBlock={TERMELY_AUTO_BLOCK}
+                  masterConsentsOrigin={TERMELY_MASTER_CONSENTS_ORIGIN}
+                />
+              )}
               {children}
             </Providers>
           </CSPostHogProvider>
