@@ -31,7 +31,8 @@ const LIVE_REFRESH_MS = 15000;
 const USD_CURRENCY = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
-  maximumFractionDigits: 0,
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
 });
 
 type SavedContentProps = {
