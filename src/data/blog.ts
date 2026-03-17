@@ -10,150 +10,144 @@ export interface BlogPost {
 export const BLOG_POSTS: BlogPost[] = [
   {
     slug: 'how-to-calculate-concrete-for-a-slab',
-    title: 'How to Calculate Concrete for a Slab (The Right Way)',
-    description: 'Most DIYers underorder concrete and end up making a second trip to the supply yard. Here\'s how to nail your estimate the first time.',
+    title: 'How to Calculate Concrete for a Slab',
+    description: 'A clean way to size slab volume, add waste, and decide when bags stop making sense.',
     category: 'Concrete',
     date: 'March 1, 2025',
     content: `
-## Why Concrete Estimates Go Wrong
+## Start with the volume
 
-The most common mistake is forgetting two things: the thickness is in inches, not feet — and you always need to order extra. Concrete can't be returned once mixed, but running short mid-pour is a disaster.
+The core formula is simple:
 
-## The Formula
+Cubic yards = length x width x (thickness in inches / 12) / 27
 
-Volume (cubic yards) = Length × Width × (Thickness ÷ 12) ÷ 27
+If the slab is 10 feet by 10 feet and 4 inches thick, the base volume is 1.23 cubic yards before waste.
 
-A 10×10 slab at 4" thick = 10 × 10 × (4/12) ÷ 27 = **1.23 cubic yards**
+## Add waste before you order
 
-Always add **10% waste** for a standard slab. For footings or steps, add 15%.
+Most slab pours need a little cushion for grade variation, uneven forms, and cleanup. For a straightforward slab, a 10 percent waste factor is a practical starting point. Footings, steps, and awkward pours usually need a bit more.
 
-## Bags vs. Ready-Mix
+## Bags or ready-mix
 
-- **Under 1 cubic yard**: use bags. An 80lb bag yields about 0.6 cubic feet.
-- **Over 1 yard**: call the ready-mix plant. Typical minimum delivery is 1 yard.
+Bagged concrete works best for patches, small pads, and jobs where access matters more than speed. Quikrete lists an 80-pound bag at about 0.6 cubic feet of yield, so bag counts climb quickly once the pour gets larger.
 
-## Pro Tips
+When you are getting close to a full yard, call the ready-mix supplier and confirm minimums, short-load charges, and the mix design the job requires. Those details vary by plant, so it is better to verify than rely on a rule of thumb.
 
-- Order ready-mix in 0.5 yard increments — that's how most plants price it
-- Ask for **3,000 PSI mix** for standard slabs, **4,000 PSI** for driveways
-- Fiber-reinforced mix reduces crack risk without needing wire mesh
-- In cold weather, add air-entrainment admixture and cover with insulated blankets
+## Field checklist
 
-Our [concrete calculator](/  ) handles all of this automatically — just plug in your dimensions.
+- Pull thickness from the plans, not memory.
+- Confirm whether the slab needs air entrainment or another specific mix requirement.
+- Order enough material to finish the pour in one shot.
+
+Use our [slab calculator](/calculators/concrete/slab) to turn those dimensions into a clean material number.
     `,
   },
   {
     slug: 'stud-spacing-16-vs-24-inch',
-    title: '16" vs 24" Stud Spacing: Which Should You Use?',
-    description: 'The answer depends on your load, your sheathing, and your local code. Here\'s the breakdown contractors actually use.',
+    title: '16" vs 24" Stud Spacing: When Each One Makes Sense',
+    description: 'Stud spacing is a structural choice first and a lumber-saving choice second. Here is the practical way to think about it.',
     category: 'Framing',
     date: 'February 15, 2025',
     content: `
-## The Short Answer
+## Start with the wall, not the spacing
 
-- **16" OC**: Use for load-bearing walls, walls over 8 feet tall, and any wall getting tile or heavy stone finish
-- **24" OC**: Fine for non-load-bearing partition walls, garage walls, and where you want to cut material cost
+Stud spacing depends on the whole assembly: load path, wall height, openings, sheathing, drywall feel, finish materials, and the code or engineering behind the job. That is why there is no single answer that fits every wall.
 
-## Why It Matters for Your Material Count
+## Why 16-inch spacing is the safe default
 
-Going from 16" to 24" OC on a 20-foot wall drops your stud count from 16 to 11 — that's 5 fewer studs per wall. On a full house addition, this adds up fast.
+Sixteen inches on center is still the conservative choice for most exterior and load-bearing walls. It gives you a stiffer wall, simpler backing for finishes, and fewer surprises when cabinets, tile, or heavy trim get added later.
 
-## Code Considerations
+## Where 24-inch spacing can work
 
-Most jurisdictions follow IRC Table R602.3. Key rules:
+Twenty-four inches on center is usually a value-engineering move. It can work where the plans, sheathing package, and local code all allow it, but it is not something to pick in isolation just to save studs.
 
-- 2×4 at 16" OC: max 10-foot wall height for load-bearing
-- 2×4 at 24" OC: max 8-foot for load-bearing (some codes restrict this entirely)
-- 2×6 at 24" OC: allowed in many energy codes for exterior walls (gives room for R-19 batt)
+## What it does to your count
 
-## Sheathing Note
+On a 20-foot wall, moving from 16-inch spacing to 24-inch spacing drops the base count from about 16 studs to about 11 before corners, openings, and layout details. The savings are real, but so are the tradeoffs.
 
-If you're using OSB or plywood sheathing, 24" OC requires **7/16" OSB minimum**. At 16" OC you can use thinner panels, but 7/16" is standard either way.
+## Practical takeaway
 
-## Our Recommendation
+Treat 16-inch spacing as the default unless the plans or engineer clearly support something else. If you want to frame at 24 inches on center, check the full wall system first: stud size, height, bracing, sheathing, drywall, and finish loads.
 
-Default to **16" OC** for any exterior wall or anything structural. Save 24" OC for interior partitions where you want to reduce cost and the wall is under 8 feet tall.
-
-Use our [framing calculator](/) to compare stud counts side by side.
+Use our [wall studs calculator](/calculators/framing/wall-studs) to compare the count before you order lumber.
     `,
   },
   {
     slug: 'understanding-roof-pitch',
-    title: 'Roof Pitch Explained: From Rise/Run to Slope Multiplier',
-    description: 'What 4/12 actually means, how to measure pitch on an existing roof, and why the slope multiplier matters for material estimates.',
+    title: 'Roof Pitch Explained: Rise, Run, and Material Area',
+    description: 'A simple breakdown of what roof pitch means and why it changes your real roofing area.',
     category: 'Roofing',
     date: 'January 28, 2025',
     content: `
-## What Does "4/12 Pitch" Mean?
+## What 4/12 pitch means
 
-Roof pitch is expressed as rise over run. **4/12 means the roof rises 4 inches for every 12 inches of horizontal run.** That's a fairly common residential pitch — walkable, good drainage, not too steep.
+Roof pitch is rise over run. A 4/12 roof rises 4 inches for every 12 inches of horizontal run. It is a common residential slope because it sheds water well without feeling especially steep.
 
-## The Pitch Categories
+## A quick pitch guide
 
-| Pitch | Description | Walkable? |
-|-------|-------------|-----------|
-| 2/12–3/12 | Low slope | Easy |
-| 4/12–6/12 | Standard | Yes |
-| 7/12–9/12 | Steep | Careful |
-| 10/12+ | Very steep | Harness required |
+- 2/12 to 3/12 is low slope.
+- 4/12 to 6/12 is a common residential range.
+- 7/12 and up starts to feel steep fast.
 
-## The Slope Multiplier
+## Why the multiplier matters
 
-Here's what most homeowners miss: **a pitched roof covers more area than the flat footprint.** You can't just multiply length × width and call it your roofing area.
+The roof surface is larger than the flat footprint below it. That is why pitch changes the real shingle area.
 
-The slope multiplier = √(1 + (pitch/12)²)
+The slope multiplier is:
 
-- 4/12 pitch → multiplier = **1.054** (5.4% more material than flat area)
-- 8/12 pitch → multiplier = **1.202** (20% more)
-- 12/12 pitch → multiplier = **1.414** (41% more — a 45° roof)
+sqrt(1 + (pitch / 12)^2)
 
-## How to Measure Existing Pitch
+Some common examples:
 
-You need an 18" level and a tape measure:
-1. Hold the level horizontal against the roof
-2. Measure 12" in from one end horizontally
-3. Measure the vertical distance at that 12" mark — that's your rise
+- 4/12 pitch -> multiplier 1.054
+- 8/12 pitch -> multiplier 1.202
+- 12/12 pitch -> multiplier 1.414
 
-Our [roof pitch calculator](/) does this math instantly, including rafter length.
+If the footprint is 1,000 square feet and the multiplier is 1.202, the sloped surface is about 1,202 square feet before waste.
+
+## Measuring an existing roof
+
+1. Hold a level so it stays horizontal.
+2. Measure 12 inches along the level.
+3. Measure the vertical rise at that 12-inch mark.
+
+That rise number is the pitch.
+
+Use our [pitch and slope calculator](/calculators/roofing/pitch-slope) to convert pitch into area and rafter-friendly numbers.
     `,
   },
   {
     slug: 'choosing-insulation-r-value-by-climate',
     title: 'Choosing the Right R-Value for Your Climate Zone',
-    description: 'R-30 in Florida is overkill. R-19 in Minnesota is not enough. Here\'s the DOE recommendation by zone, plus what it means for material costs.',
+    description: 'Use the climate zone first, then choose the assembly that gets you there without creating air-sealing problems.',
     category: 'Insulation',
     date: 'January 10, 2025',
     content: `
-## DOE Climate Zone R-Value Recommendations
+## Start with the climate zone
 
-| Zone | States (Examples) | Attic | Walls | Crawlspace |
-|------|-------------------|-------|-------|-----------|
-| 1–2 | FL, HI, TX south | R-30 | R-13 | R-13 |
-| 3 | GA, AL, AZ | R-38 | R-13–15 | R-19 |
-| 4 | VA, MO, NM | R-49 | R-13–21 | R-25 |
-| 5 | OH, PA, CO | R-49 | R-15–21 | R-25 |
-| 6–7 | MN, WI, MT | R-60 | R-21+ | R-25–30 |
+Energy Star and DOE guidance group insulation targets by climate zone, not by state name alone. In warmer zones, the attic recommendation can start around R-30 to R-49. In colder zones, attic targets commonly move into the R-49 to R-60 range, with stronger wall and floor requirements to match.
 
-## Wall Insulation: 2×4 vs 2×6 Framing
+## What changes as the climate gets colder
 
-- **2×4 framing** gives you 3.5" of cavity depth → max R-15 with batt
-- **2×6 framing** gives you 5.5" → up to R-21 with batt, or R-23 with mineral wool
+- Zones 1 and 2 usually start with lighter attic and wall targets.
+- Zones 3 and 4 step up attic and floor insulation.
+- Zones 5 through 8 typically call for the highest attic values and stronger wall assemblies.
 
-In climate zones 5+, 2×6 framing for exterior walls is worth the extra cost.
+Your local code and the exact assembly still control the final requirement, but climate zone is the right starting point.
 
-## Spray Foam vs. Batt: When to Upgrade
+## 2x4 walls vs 2x6 walls
 
-Batt insulation is cheaper but requires an air barrier. Spray foam **is** the air barrier — it seals gaps, rim joists, and penetrations that batt misses.
+A 2x4 wall gives you about 3.5 inches of cavity depth, which usually caps out around batt R-15. A 2x6 wall gives you about 5.5 inches of depth and more room for higher-R batts or mineral wool.
 
-In crawlspaces and rim joist areas, closed-cell spray foam at 2" (R-13) outperforms R-19 batt in a leaky space.
+## Do not ignore air sealing
 
-## Cost Rule of Thumb
+Installed R-value is only part of the story. A leakier assembly can underperform even if the nominal R-value looks good on paper. That is why contractors often pair fiber with careful air sealing, or use spray foam where depth is limited and leakage is hard to control.
 
-- Fiberglass batt: **$0.75–1.25/sq ft installed**
-- Closed-cell spray foam: **$1.50–3.00/bd ft**
-- Blown cellulose (attic): **$1.00–2.00/sq ft**
+## Cost comes second
 
-Use our [insulation calculator](/) to get your exact bag or board-foot count.
+Material pricing changes quickly, so compare the full assembly instead of chasing a single dollars-per-inch number. The right question is whether the assembly hits the code target, controls air leakage, and fits the framing you already have.
+
+Use our [R-Value Tracker](/calculators/insulation/r-value-tracker) to size the assembly before you price it.
     `,
   },
 ]

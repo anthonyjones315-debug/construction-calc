@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { PostHogProvider as PHProvider } from "posthog-js/react";
 import posthog from "posthog-js";
 import { ReactNode, useEffect } from "react";
@@ -10,15 +11,30 @@ type Props = {
 
 let posthogInitialized = false;
 
+function isPostHogLoaded() {
+  return Boolean((posthog as typeof posthog & { __loaded?: boolean }).__loaded);
+}
+
 export function CSPostHogProvider({ children }: Props) {
+  const pathname = usePathname();
   const token =
     process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN ?? process.env.NEXT_PUBLIC_POSTHOG_KEY;
   const host = process.env.NEXT_PUBLIC_POSTHOG_HOST || "/ingest";
+  const isHomePage = pathname === "/";
 
   useEffect(() => {
     if (!token) return;
     if (typeof window === "undefined") return;
-    if (posthogInitialized || (window as unknown as { __PH_INIT?: boolean }).__PH_INIT) return;
+    if (isHomePage) return;
+    if (
+      posthogInitialized ||
+      isPostHogLoaded() ||
+      (window as unknown as { __PH_INIT?: boolean }).__PH_INIT
+    ) {
+      posthogInitialized = true;
+      (window as unknown as { __PH_INIT?: boolean }).__PH_INIT = true;
+      return;
+    }
 
     posthog.init(token, {
       api_host: host,
@@ -31,8 +47,8 @@ export function CSPostHogProvider({ children }: Props) {
     });
     posthogInitialized = true;
     (window as unknown as { __PH_INIT?: boolean }).__PH_INIT = true;
-  }, [host, token]);
+  }, [host, isHomePage, token]);
 
-  if (!token) return <>{children}</>;
+  if (!token || isHomePage) return <>{children}</>;
   return <PHProvider client={posthog}>{children}</PHProvider>;
 }

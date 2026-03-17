@@ -3,17 +3,17 @@ import Link from "next/link";
 import { BookOpenCheck, ShieldCheck, FileText, Receipt, HardHat } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { JsonLD } from "@/seo";
+import { JsonLD, getPageMetadata } from "@/seo";
 import { FINANCIAL_TERMS } from "@/data/financial-terms";
 import { NYS_COUNTY_TAX_RATES } from "@/data/nys-tax-rates";
 import { routes } from "@routes";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = getPageMetadata({
   title: "Financial Terms Database & Tax Defaults | Pro Construction Calc",
   description:
     "Central glossary of financial and tax terminology used across all calculators, including NYS capital improvement handling and Oneida County's 8.75% rate.",
-  alternates: { canonical: "https://proconstructioncalc.com/financial-terms" },
-};
+  path: "/financial-terms",
+});
 
 const ONEIDA_RATE = NYS_COUNTY_TAX_RATES.find((c) => c.county === "Oneida")?.combinedRate ?? 8.75;
 
@@ -105,11 +105,11 @@ export default function FinancialTermsPage() {
                     <p className="text-[11px] font-black uppercase tracking-[0.14em] text-orange-400">
                       Compliance
                     </p>
-                    <p className="text-sm text-white/75">NYS all-electric mandate (on hold) + Marcy UDC</p>
+                    <p className="text-sm text-white/75">2025 NYS code update + Marcy UDC</p>
                   </div>
                 </div>
                 <ul className="mt-3 space-y-2 text-sm text-white/75">
-                  <li>All-electric new building mandate was slated for <strong>January 1, 2026</strong> but is currently on hold; check NYS/local code for current dates.</li>
+                  <li>The 2025 NYS code update took effect on <strong>December 31, 2025</strong>. The fossil-fuel equipment prohibitions are currently suspended by court order, so verify the current rule set before you lock equipment selections.</li>
                   <li>Town of Marcy UDC: check zoning, site plan triggers, lighting, and stormwater before bidding.</li>
                   <li>Tax Save calculator separates capital improvements (ST-124) from repairs with clear PDF language.</li>
                 </ul>

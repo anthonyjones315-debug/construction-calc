@@ -1,164 +1,25 @@
 import type { Metadata } from "next";
+import type { Route } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import type { ReactNode } from "react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { JsonLD, getFieldNotesArticleSchema } from "@/seo";
+import { JsonLD, getFieldNotesArticleSchema, getPageMetadata } from "@/seo";
 import {
   getFieldNoteBySlug,
   FIELD_NOTES,
-  type FieldNote,
 } from "../data";
 import { ArrowLeft, Calculator } from "lucide-react";
-import type { Route } from "next";
 import { routes } from "@routes";
+import { ArticleMarkdown } from "@/components/content/ArticleMarkdown";
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
 
-function renderInline(text: string): ReactNode[] {
-  const nodes: ReactNode[] = [];
-  // Support **bold** and [text](/path) or [text](https://...) for internal links
-  const pattern = /(\*\*[^*]+\*\*|\[[^\]]+\]\((?:https?:\/\/[^)]+|\/[^)]*)\))/g;
-  let lastIndex = 0;
-  let key = 0;
-
-  for (const match of text.matchAll(pattern)) {
-    const token = match[0];
-    const start = match.index ?? 0;
-
-    if (start > lastIndex) {
-      nodes.push(text.slice(lastIndex, start));
-    }
-
-    if (token.startsWith("**") && token.endsWith("**")) {
-      nodes.push(
-        <strong key={`strong-${key++}`}>{token.slice(2, -2)}</strong>
-      );
-    } else {
-      const labelEnd = token.indexOf("]");
-      const linkText = token.slice(1, labelEnd);
-      const href = token.slice(token.indexOf("(") + 1, -1);
-      const isInternal = href.startsWith("/");
-      if (isInternal) {
-        nodes.push(
-          <Link
-            key={`link-${key++}`}
-            href={href as Route}
-            className="font-medium text-[--color-orange-brand] hover:underline"
-          >
-            {linkText}
-          </Link>
-        );
-      } else {
-        nodes.push(
-          <a
-            key={`link-${key++}`}
-            href={href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-medium text-[--color-orange-brand] hover:underline"
-          >
-            {linkText}
-          </a>
-        );
-      }
-    }
-
-    lastIndex = start + token.length;
-  }
-
-  if (lastIndex < text.length) {
-    nodes.push(text.slice(lastIndex));
-  }
-
-  return nodes;
-}
-
-function ArticleContent({ note }: { note: FieldNote }) {
-  const sections = note.content.trim().split(/\n\n+/);
-
-  return (
-    <>
-      {sections.map((section, i) => {
-        if (section.startsWith("## ")) {
-          return (
-            <h2 key={i} className="font-display text-2xl font-bold text-[--color-ink] mt-8 mb-3">
-              {section.replace("## ", "")}
-            </h2>
-          );
-        }
-        if (section.startsWith("### ")) {
-          return (
-            <h3 key={i} className="font-display text-lg font-bold text-[--color-ink] mt-6 mb-2">
-              {section.replace("### ", "")}
-            </h3>
-          );
-        }
-        if (section.startsWith("- ")) {
-          return (
-            <ul key={i} className="list-disc pl-6 my-4 space-y-1 text-[--color-ink-mid] leading-relaxed">
-              {section
-                .split("\n")
-                .filter((l) => l.startsWith("- "))
-                .map((line, j) => (
-                  <li key={j}>{renderInline(line.replace("- ", ""))}</li>
-                ))}
-            </ul>
-          );
-        }
-        if (section.includes("|")) {
-          const rows = section.split("\n").filter((r) => r.includes("|"));
-          return (
-            <div key={i} className="overflow-x-auto my-4">
-              <table className="w-full overflow-hidden rounded-xl border border-[--color-border] text-sm">
-                <tbody>
-                  {rows
-                    .filter((r) => !r.match(/^\|[-\s|]+\|$/))
-                    .map((row, j) => {
-                      const cells = row.split("|").filter((c) => c.trim());
-                      return (
-                        <tr
-                          key={j}
-                          className={
-                            j === 0
-                              ? "bg-[--color-surface-alt] font-semibold"
-                              : "border-t border-[--color-border]"
-                          }
-                        >
-                          {cells.map((cell, k) => (
-                            <td
-                              key={k}
-                              className="px-3 py-2 text-[--color-ink-mid]"
-                            >
-                              {cell.trim()}
-                            </td>
-                          ))}
-                        </tr>
-                      );
-                    })}
-                </tbody>
-              </table>
-            </div>
-          );
-        }
-        return (
-          <p key={i} className="text-[--color-ink-mid] leading-relaxed my-3">
-            {renderInline(section)}
-          </p>
-        );
-      })}
-    </>
-  );
-}
-
 export async function generateStaticParams() {
   return FIELD_NOTES.map((n) => ({ slug: n.slug }));
 }
-
-const SITE_URL = "https://proconstructioncalc.com";
 
 export async function generateMetadata({
   params,
@@ -166,21 +27,12 @@ export async function generateMetadata({
   const { slug } = await params;
   const note = getFieldNoteBySlug(slug);
   if (!note) return {};
-  const canonicalUrl = `${SITE_URL}/field-notes/${slug}`;
-  return {
+  return getPageMetadata({
     title: `${note.title} | Pro Construction Calc`,
     description: note.description,
-    alternates: {
-      canonical: canonicalUrl,
-    },
-    openGraph: {
-      title: `${note.title} | Pro Construction Calc`,
-      description: note.description,
-      url: canonicalUrl,
-      images: [{ url: "/og-image.png", width: 1200, height: 630 }],
-      type: "article",
-    },
-  };
+    path: `/field-notes/${slug}`,
+    type: "article",
+  });
 }
 
 export default async function FieldNoteArticlePage({ params }: Props) {
@@ -221,19 +73,9 @@ export default async function FieldNoteArticlePage({ params }: Props) {
               </p>
 
               <article
-                className="mt-10 rounded-2xl border border-white/10 bg-[var(--color-surface)] p-6 shadow-[0_10px_30px_rgba(0,0,0,0.12)] sm:p-8
-                  prose prose-slate max-w-none
-                  prose-headings:font-display prose-headings:font-bold prose-headings:text-[--color-ink]
-                  prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-3
-                  prose-h3:text-lg prose-h3:mt-6 prose-h3:mb-2
-                  prose-p:text-[--color-ink-mid] prose-p:leading-relaxed
-                  prose-li:text-[--color-ink-mid]
-                  prose-strong:text-[--color-ink] prose-strong:font-semibold
-                  prose-a:text-[--color-orange-brand] prose-a:no-underline hover:prose-a:underline
-                  prose-table:text-sm prose-th:bg-[--color-surface-alt] prose-th:font-semibold
-                  prose-hr:border-[--color-border]"
+                className="mt-10 rounded-2xl border border-white/10 bg-[var(--color-surface)] p-6 shadow-[0_10px_30px_rgba(0,0,0,0.12)] sm:p-8"
               >
-                <ArticleContent note={note} />
+                <ArticleMarkdown content={note.content} />
                 {/* Pro Tip lead hook — every article */}
                 <div className="mt-10 rounded-2xl border border-[--color-orange-brand]/25 bg-[--color-orange-soft]/40 p-5">
                   <p className="text-xs font-bold uppercase tracking-[0.12em] text-[--color-orange-brand]">

@@ -12,6 +12,7 @@ export function PostHogPageView() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (!pathname || !posthog) return;
+    if (pathname === "/") return;
 
     let url = window.origin + pathname;
     const search = searchParams.toString();
@@ -27,4 +28,3 @@ export function PostHogPageView() {
 
   return null;
 }
-

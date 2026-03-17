@@ -2,22 +2,23 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { JsonLD, getFAQSchema } from "@/seo";
+import { JsonLD, getFAQSchema, getPageMetadata } from "@/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = getPageMetadata({
   title: "FAQ | Pro Construction Calc",
   description:
     "Frequently asked questions about Pro Construction Calc construction calculators.",
-};
+  path: "/faq",
+});
 
 const FAQ_ITEMS = [
   {
     q: "Are these construction calculators free?",
-    a: "Yes. All calculators on Pro Construction Calc are completely free to use. No account required for basic use. Create a free account to unlock PDF export and saved estimates.",
+    a: "Yes. The calculators are free to use, and you do not need an account for the core tools. Create a free account if you want saved estimates and workspace features.",
   },
   {
     q: "How accurate are the estimates?",
-    a: "Our calculators use standard construction formulas based on industry practices and material yields. Results are estimates for planning purposes — actual quantities may vary based on site conditions, material dimensions, installation patterns, and local code requirements. Always verify with your contractor or supplier before purchasing.",
+    a: "Our calculators use standard construction formulas based on common field practice and material yields. Results are planning numbers, not permit-set guarantees, so always verify against the plans, supplier data, site conditions, and local code before ordering.",
   },
   {
     q: "What is a waste factor and should I use it?",
@@ -25,11 +26,11 @@ const FAQ_ITEMS = [
   },
   {
     q: "What does the AI Optimizer do?",
-    a: "The AI Optimizer analyzes your calculator results and provides specific cost-saving tips, Good/Better/Best material tier recommendations, waste reduction strategies, and buying tips. It uses Claude AI (Anthropic) and is free to use.",
+    a: "The AI Optimizer reviews your calculator results and returns short, practical suggestions on waste, material choices, staging, and common misses to double-check. It runs on Anthropic and is meant as a planning assistant, not a final code or engineering decision.",
   },
   {
     q: "How does AI help with real jobs, not just theory?",
-    a: "Our AI tools are tuned for working contractors. After you run a calculator, the AI Optimizer can suggest alternate mixes, spacing, or staging to cut waste, translate quantities into supplier-ready order notes, and highlight regional issues from our Field Notes (frost depth, snow loads, insulation targets) that might affect your scope.",
+    a: "Our AI tools are aimed at working contractors. After you run a calculator, the AI Optimizer can help turn the result into cleaner supplier notes, scope language, staging reminders, and a shortlist of things worth verifying before you buy or bid.",
   },
   {
     q: "Can AI draft a scope of work or proposal language?",
@@ -37,7 +38,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "Does the AI understand Oneida County and Mohawk Valley conditions?",
-    a: "AI answers are grounded in our own regional Field Notes on frost depth, snow loads, insulation targets, all‑electric rules, and permit timelines. It is still guidance, not a stamped engineering design or code ruling, so always confirm critical values with your building department or engineer.",
+    a: "It can work with the local context you give it and with the guidance we publish in Field Notes, but it is still guidance, not a stamped engineering design or code ruling. Confirm critical values with the plans, building department, or engineer before you commit.",
   },
   {
     q: "Is my project data used to train public AI models?",
@@ -45,7 +46,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "How do I export a PDF estimate?",
-    a: "Use Export PDF for a quick download, or sign in with Google to save estimates to your account before downloading. Every PDF should be treated as a planning estimate and verified before ordering materials or starting work.",
+    a: "Use Export PDF for a quick download. If you sign in, you can also save estimates to your account and come back to them later. Every PDF should still be treated as a planning estimate and verified before ordering materials or starting work.",
   },
   {
     q: "Can I save estimates for later?",
@@ -61,7 +62,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "What wire gauge do I need for a 20-amp circuit?",
-    a: "12 AWG copper wire is the NEC minimum for a 20-amp circuit at standard residential voltages. Our wire gauge calculator factors in voltage drop for long runs — for distances over 75 feet, you may want to upsize to 10 AWG.",
+    a: "12 AWG copper is the usual NEC minimum for a 20-amp branch circuit. On longer runs, voltage drop can justify upsizing, so 10 AWG is a common next step when the distance grows or the load is sensitive.",
   },
   {
     q: "Is my data private?",
@@ -89,13 +90,13 @@ export default function FAQPage() {
             </div>
           </div>
 
-          <div className="content-card mb-8 flex items-center justify-center bg-[--color-surface]">
+          <div className="content-card mb-8 overflow-hidden">
             <Image
               src="/images/safety-estimate.svg"
               alt="Hard hat and checklist representing practical estimating guidance"
-              width={1200}
-              height={700}
-              className="w-full max-w-2xl h-48 object-contain"
+              width={1600}
+              height={460}
+              className="h-48 w-full object-cover sm:h-52"
             />
           </div>
 

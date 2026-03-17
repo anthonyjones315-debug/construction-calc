@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { calculateNysSalesTax } from "@/services/taxEngine";
 import {
   assertNoBusinessIdOverride,
@@ -43,7 +44,7 @@ describe("tenant scoping", () => {
       from() {
         return mockBuilder;
       },
-    } as any;
+    } as unknown as Pick<SupabaseClient, "from">;
 
     tenantScopedSelect(mockDb, "saved_estimates", "*", ctx);
 
@@ -68,7 +69,7 @@ describe("tenant scoping", () => {
           },
         };
       },
-    } as any;
+    } as unknown as Pick<SupabaseClient, "from">;
 
     tenantScopedSelect(mockDb, "saved_estimates", "id", ctx);
 
@@ -116,5 +117,33 @@ describe("Oneida County tax and ST-124 handling", () => {
     expect(result.rateApplied).toBe(0);
     expect(result.requiresST124).toBe(true);
     expect(result.notes.join(" ")).toMatch(/ST-124/i);
+  });
+
+  it("applies 8.25% Herkimer County rate for repairs", () => {
+    const result = calculateNysSalesTax({
+      county: "Herkimer",
+      taxableAmount: 1000,
+      projectType: "repair-maintenance",
+    });
+
+    expect(result.rateApplied).toBeCloseTo(8.25, 2);
+    expect(result.statePortion).toBeCloseTo(40, 2);
+    expect(result.localPortion).toBeCloseTo(42.5, 2);
+    expect(result.taxDue).toBeCloseTo(82.5, 2);
+    expect(result.notes.join(" ")).toMatch(/8.25%/);
+  });
+
+  it("applies 8.00% Madison County rate for repairs", () => {
+    const result = calculateNysSalesTax({
+      county: "Madison",
+      taxableAmount: 1000,
+      projectType: "repair-maintenance",
+    });
+
+    expect(result.rateApplied).toBeCloseTo(8.0, 2);
+    expect(result.statePortion).toBeCloseTo(40, 2);
+    expect(result.localPortion).toBeCloseTo(40, 2);
+    expect(result.taxDue).toBeCloseTo(80, 2);
+    expect(result.notes.join(" ")).toMatch(/8.00%/);
   });
 });

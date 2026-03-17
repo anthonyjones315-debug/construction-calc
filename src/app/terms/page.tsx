@@ -2,14 +2,16 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import Image from "next/image";
 import type { Metadata } from "next";
+import { getPageMetadata } from "@/seo";
 
 const EFFECTIVE_DATE = "March 13, 2026";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = getPageMetadata({
   title: "Terms of Service — Pro Construction Calc",
   description:
     "Terms of service for Pro Construction Calc construction calculators.",
-};
+  path: "/terms",
+});
 
 export default function TermsPage() {
   return (
@@ -31,9 +33,9 @@ export default function TermsPage() {
             <Image
               src="/images/safety-estimate.svg"
               alt="Construction checklist visual reinforcing estimate verification"
-              width={1200}
-              height={700}
-              className="w-full h-44 object-cover"
+              width={1600}
+              height={460}
+              className="h-48 w-full object-cover sm:h-52"
             />
           </div>
 

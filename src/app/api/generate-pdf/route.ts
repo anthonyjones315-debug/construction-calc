@@ -7,7 +7,7 @@ import {
   getTenantScopeId,
 } from "@/lib/supabase/business";
 import { finalizeEstimateSchema } from "@/lib/estimates/finalize";
-import { renderEstimatePdfBuffer } from "@/lib/pdf/server-estimate-pdf";
+import { renderEstimatePdfBytes } from "@/lib/pdf/server-estimate-pdf";
 import { sanitizeFilename } from "@/utils/sanitize-filename";
 import { getPostHogClient } from "@/lib/posthog-server";
 import * as Sentry from "@sentry/nextjs";
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
   try {
     const session = await auth();
     const branding = await resolvePdfBranding(payload);
-    const buffer = await renderEstimatePdfBuffer({
+    const pdfBytes = await renderEstimatePdfBytes({
       estimateName: payload.name,
       jobName: payload.metadata.jobName ?? payload.name,
       calculatorLabel: payload.metadata.calculatorLabel,
@@ -127,14 +127,20 @@ export async function POST(request: NextRequest) {
       await posthog.shutdown();
     }
 
-    return new NextResponse(new Uint8Array(buffer), {
+    const pdfBody = new Uint8Array(pdfBytes.byteLength);
+    pdfBody.set(pdfBytes);
+
+    return new NextResponse(
+      new Blob([pdfBody], { type: "application/pdf" }),
+      {
       status: 200,
       headers: {
         "Content-Type": "application/pdf",
         "Content-Disposition": `attachment; filename="${sanitizeFilename(payload.name, "estimate")}.pdf"`,
         "Cache-Control": "no-store",
       },
-    });
+      },
+    );
   } catch (error) {
     const selectedCounty =
       typeof payload.inputs?.selected_county === "string"

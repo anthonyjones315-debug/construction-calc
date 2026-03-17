@@ -20,6 +20,13 @@ import { sanitizeFilename } from "@/utils/sanitize-filename";
 import { useContractorProfile } from "@/components/pdf/useContractorProfile";
 import { useHaptic } from "@/hooks/useHaptic";
 import { supabase } from "@/lib/supabase/client";
+import {
+  centsToDollars,
+  multiplyDollars,
+  normalizeDollars,
+  toCents,
+  sumDollars,
+} from "@/utils/money";
 
 // ─── Local types ────────────────────────────────────────────────────────────
 
@@ -89,7 +96,8 @@ function getEstimateControlNumber(estimate: SafeEstimateDTO): string {
 const USD = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
-  maximumFractionDigits: 0,
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
 });
 
 function todayIso(): string {
@@ -105,7 +113,7 @@ function toNum(s: string): number {
   return isFinite(n) ? n : 0;
 }
 function toFixed2(s: string): number {
-  return Number(toNum(s).toFixed(2));
+  return normalizeDollars(toNum(s));
 }
 
 function generateShareCode(): string {
@@ -364,7 +372,9 @@ export function EstimateDetail({ estimate }: Props) {
       calculator_id: estimate.calculatorId,
       client_name: draft.clientName || null,
       job_site_address: draft.jobSiteAddress || null,
-      total_cost: draft.totalCost.trim() ? Number(draft.totalCost) : null,
+      total_cost: draft.totalCost.trim()
+        ? normalizeDollars(Number(draft.totalCost))
+        : null,
       results: estimate.results.map((result) => ({
         label: result.label,
         value: result.value,
@@ -424,19 +434,22 @@ export function EstimateDetail({ estimate }: Props) {
       const totalCost =
         parsedTotal === null || !Number.isFinite(parsedTotal)
           ? null
-          : parsedTotal;
+          : normalizeDollars(parsedTotal);
 
       const budgetItems = draft.budgetRows.map((row) => {
         const actual = row.actualCost.trim() ? Number(row.actualCost) : null;
+        const pricePerUnit = normalizeDollars(row.pricePerUnit);
         return {
           id: row.id,
           name: row.name,
           category: row.category,
           quantity: row.quantity,
-          pricePerUnit: row.pricePerUnit,
-          estimated_cost: Number((row.quantity * row.pricePerUnit).toFixed(2)),
+          pricePerUnit,
+          estimated_cost: multiplyDollars(pricePerUnit, row.quantity),
           actual_cost:
-            actual !== null && Number.isFinite(actual) ? actual : null,
+            actual !== null && Number.isFinite(actual)
+              ? normalizeDollars(actual)
+              : null,
           cost_type: row.category.toLowerCase().includes("labor")
             ? "labor"
             : "material",
@@ -666,23 +679,28 @@ export function EstimateDetail({ estimate }: Props) {
         import("@react-pdf/renderer"),
         import("@/components/pdf/InvoicePDF"),
       ]);
-      const contractTotal = toNum(draft.totalCost);
-      const billedToDate = Number(
-        draft.invoices.reduce((s, inv) => s + toNum(inv.amount), 0).toFixed(2),
+      const contractTotal = normalizeDollars(toNum(draft.totalCost));
+      const billedToDate = sumDollars(
+        draft.invoices.map((inv) => toNum(inv.amount)),
       );
-      const remaining = Math.max(0, contractTotal - billedToDate);
+      const remaining = centsToDollars(
+        Math.max(0, toCents(contractTotal) - toCents(billedToDate)),
+      );
       const invoiceAmount = toFixed2(invoice.amount);
 
       const lineItems =
         draft.budgetRows.length > 0
           ? draft.budgetRows
               .filter((r) => r.quantity > 0 && r.pricePerUnit > 0)
-              .map((r) => ({
-                serviceItem: r.name,
-                quantity: r.quantity,
-                unitCost: r.pricePerUnit,
-                total: Number((r.quantity * r.pricePerUnit).toFixed(2)),
-              }))
+              .map((r) => {
+                const unitCost = normalizeDollars(r.pricePerUnit);
+                return {
+                  serviceItem: r.name,
+                  quantity: r.quantity,
+                  unitCost,
+                  total: multiplyDollars(unitCost, r.quantity),
+                };
+              })
           : [
               {
                 serviceItem: draft.name || estimate.name,
@@ -769,12 +787,11 @@ export function EstimateDetail({ estimate }: Props) {
 
   // ── Derived ───────────────────────────────────────────────────────────────
 
-  const totalBilled = draft.invoices.reduce(
-    (s, inv) => s + toNum(inv.amount),
-    0,
+  const totalBilled = sumDollars(draft.invoices.map((inv) => toNum(inv.amount)));
+  const contractTotal = normalizeDollars(toNum(draft.totalCost));
+  const remaining = centsToDollars(
+    Math.max(0, toCents(contractTotal) - toCents(totalBilled)),
   );
-  const contractTotal = toNum(draft.totalCost);
-  const remaining = Math.max(0, contractTotal - totalBilled);
   const signLinkPath = shareCode ? `/estimate/sign/${shareCode}` : null;
 
   // ── Render ────────────────────────────────────────────────────────────────
@@ -899,7 +916,7 @@ export function EstimateDetail({ estimate }: Props) {
           </h2>
           <div className="space-y-2">
             {draft.budgetRows.map((row, i) => {
-              const estimated = row.quantity * row.pricePerUnit;
+              const estimated = multiplyDollars(row.pricePerUnit, row.quantity);
               return (
                 <div
                   key={row.id}

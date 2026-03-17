@@ -1,5 +1,7 @@
 "use server";
+/* eslint-disable jsx-a11y/alt-text */
 
+import { Buffer } from "node:buffer";
 import {
   Document,
   Font,
@@ -8,7 +10,7 @@ import {
   StyleSheet,
   Text,
   View,
-  pdf,
+  renderToBuffer,
 } from "@react-pdf/renderer";
 
 type SignatureBlock = {
@@ -156,7 +158,7 @@ function EstimateDocument(payload: EstimatePdfPayload) {
         <View style={styles.header}>
           <View style={styles.brand}>
             {payload.logoUrl ? (
-              <Image src={payload.logoUrl} style={styles.logo} alt="Company logo" />
+              <Image src={payload.logoUrl} style={styles.logo} />
             ) : (
               <View
                 style={{
@@ -238,7 +240,6 @@ function EstimateDocument(payload: EstimatePdfPayload) {
               <Image
                 style={{ width: 180, height: 60, objectFit: "contain" }}
                 src={payload.signature.signatureDataUrl}
-                alt="Signature"
               />
             ) : null}
             <Text>Signer: {payload.signature.signerName ?? "N/A"}</Text>
@@ -251,8 +252,86 @@ function EstimateDocument(payload: EstimatePdfPayload) {
   );
 }
 
-export async function renderEstimatePdfBuffer(payload: EstimatePdfPayload) {
-  const instance = pdf(<EstimateDocument {...payload} />);
-  const buffer = await instance.toBuffer();
-  return buffer;
+type PdfRenderOutput =
+  | Uint8Array
+  | NodeJS.ReadableStream
+  | ReadableStream<Uint8Array>;
+
+function isWebReadableStream(
+  value: PdfRenderOutput,
+): value is ReadableStream<Uint8Array> {
+  return typeof value === "object" && "getReader" in value;
+}
+
+function isNodeReadableStream(
+  value: PdfRenderOutput,
+): value is NodeJS.ReadableStream {
+  return typeof value === "object" && "on" in value;
+}
+
+async function readWebStream(stream: ReadableStream<Uint8Array>) {
+  const reader = stream.getReader();
+  const chunks: Uint8Array[] = [];
+  let totalLength = 0;
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    if (!value) continue;
+    chunks.push(value);
+    totalLength += value.byteLength;
+  }
+
+  const merged = new Uint8Array(totalLength);
+  let offset = 0;
+
+  for (const chunk of chunks) {
+    merged.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+
+  return merged;
+}
+
+async function readNodeStream(stream: NodeJS.ReadableStream) {
+  return new Promise<Uint8Array>((resolve, reject) => {
+    const chunks: Buffer[] = [];
+
+    stream.on("data", (chunk: Buffer | Uint8Array | string) => {
+      if (typeof chunk === "string") {
+        chunks.push(Buffer.from(chunk));
+        return;
+      }
+
+      chunks.push(Buffer.from(chunk));
+    });
+
+    stream.on("end", () => {
+      const merged = Buffer.concat(chunks);
+      resolve(
+        new Uint8Array(merged.buffer, merged.byteOffset, merged.byteLength),
+      );
+    });
+    stream.on("error", reject);
+  });
+}
+
+export async function renderEstimatePdfBytes(payload: EstimatePdfPayload) {
+  const output = (await renderToBuffer(
+    <EstimateDocument {...payload} />,
+  )) as PdfRenderOutput;
+
+  if (output instanceof Uint8Array) {
+    return new Uint8Array(output.buffer, output.byteOffset, output.byteLength);
+  }
+
+  if (isWebReadableStream(output)) {
+    return readWebStream(output);
+  }
+
+  if (isNodeReadableStream(output)) {
+    return readNodeStream(output);
+  }
+
+  throw new TypeError("Unsupported PDF render output type.");
 }

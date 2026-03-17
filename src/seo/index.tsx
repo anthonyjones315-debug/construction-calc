@@ -1,4 +1,15 @@
 import type { Metadata } from "next";
+import {
+  BUSINESS_AREAS_SERVED,
+  BUSINESS_COUNTRY,
+  BUSINESS_NAME,
+  BUSINESS_PHONE_E164,
+  BUSINESS_REGION,
+  BUSINESS_SITE_URL,
+  BUSINESS_STATE,
+  GOOGLE_BUSINESS_PROFILE_ID,
+  GOOGLE_BUSINESS_PROFILE_URL,
+} from "@/lib/business-identity";
 
 // ─── Per-page metadata ────────────────────────────────────────────────────────
 
@@ -7,6 +18,32 @@ interface SEOConfig {
   description: string;
   canonical?: string;
 }
+
+type PageMetadataOptions = {
+  title: string;
+  description: string;
+  path?: string;
+  canonical?: string;
+  keywords?: Metadata["keywords"];
+  type?: "website" | "article";
+};
+
+export type VerifiedBusinessReview = {
+  authorName: string;
+  ratingValue: number;
+  reviewBody: string;
+  datePublished: string;
+  url?: string;
+};
+
+export const VERIFIED_BUSINESS_REVIEWS: VerifiedBusinessReview[] = [];
+
+const DEFAULT_OG_IMAGE = {
+  url: "/og-image.png",
+  width: 1200,
+  height: 630,
+  alt: `${BUSINESS_NAME} preview image`,
+} as const;
 
 const SEO_MAP: Record<string, SEOConfig> = {
   concrete: {
@@ -106,18 +143,85 @@ const SEO_MAP: Record<string, SEOConfig> = {
   },
 };
 
-export function getSEOMetadata(page: string): Metadata {
-  const config = SEO_MAP[page] ?? SEO_MAP.home;
+function withBrandTitle(title: string) {
+  return title.includes(BUSINESS_NAME) ? title : `${title} | ${BUSINESS_NAME}`;
+}
+
+function toAbsoluteUrl(pathOrUrl?: string) {
+  if (!pathOrUrl || pathOrUrl === "/") {
+    return BUSINESS_SITE_URL;
+  }
+
+  if (pathOrUrl.startsWith("http://") || pathOrUrl.startsWith("https://")) {
+    return pathOrUrl;
+  }
+
+  const normalizedPath = pathOrUrl.startsWith("/")
+    ? pathOrUrl
+    : `/${pathOrUrl}`;
+
+  return `${BUSINESS_SITE_URL}${normalizedPath}`;
+}
+
+export function getPageMetadata({
+  title,
+  description,
+  path,
+  canonical,
+  keywords,
+  type = "website",
+}: PageMetadataOptions): Metadata {
+  const brandedTitle = withBrandTitle(title);
+  const canonicalUrl = toAbsoluteUrl(canonical ?? path);
+
   return {
-    title: config.title,
-    description: config.description,
+    title: brandedTitle,
+    description,
+    ...(keywords ? { keywords } : {}),
     alternates: {
-      canonical: config.canonical ?? "https://proconstructioncalc.com",
+      canonical: canonicalUrl,
     },
     openGraph: {
-      title: config.title,
-      description: config.description,
-      images: [{ url: "/og-image.png", width: 1200, height: 630 }],
+      type,
+      locale: "en_US",
+      url: canonicalUrl,
+      siteName: BUSINESS_NAME,
+      title: brandedTitle,
+      description,
+      images: [DEFAULT_OG_IMAGE],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: brandedTitle,
+      description,
+      images: [DEFAULT_OG_IMAGE.url],
+    },
+  };
+}
+
+export function getSEOMetadata(page: string): Metadata {
+  const config = SEO_MAP[page] ?? SEO_MAP.home;
+  return getPageMetadata({
+    title: config.title,
+    description: config.description,
+    canonical: config.canonical ?? BUSINESS_SITE_URL,
+  });
+}
+
+export function getNoIndexMetadata(
+  title: string,
+  description: string,
+): Metadata {
+  return {
+    title: withBrandTitle(title),
+    description,
+    robots: {
+      index: false,
+      follow: false,
+      googleBot: {
+        index: false,
+        follow: false,
+      },
     },
   };
 }
@@ -128,22 +232,18 @@ export function getWebSiteSchema() {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "Pro Construction Calc",
-    url: "https://proconstructioncalc.com",
+    name: BUSINESS_NAME,
+    url: BUSINESS_SITE_URL,
     description:
       "The Industrial-Grade Bidding Engine for NY Contractors. Trade-specific math, NYS tax compliance, and instant client dispatch.",
     audience: {
       "@type": "Audience",
       audienceType: "Contractors",
     },
-    areaServed: [
-      { "@type": "City", name: "Rome, NY" },
-      { "@type": "AdministrativeArea", name: "Central New York" },
-    ],
+    areaServed: BUSINESS_AREAS_SERVED,
     potentialAction: {
       "@type": "SearchAction",
-      target:
-        "https://proconstructioncalc.com/calculators?c={search_term_string}",
+      target: `${BUSINESS_SITE_URL}/calculators?c={search_term_string}`,
       "query-input": "required name=search_term_string",
     },
   };
@@ -153,8 +253,8 @@ export function getWebAppSchema() {
   return {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    name: "Pro Construction Calc",
-    url: "https://proconstructioncalc.com",
+    name: BUSINESS_NAME,
+    url: BUSINESS_SITE_URL,
     description:
       "The Industrial-Grade Bidding Engine for NY Contractors. Trade-specific math, NYS tax compliance, and instant client dispatch.",
     applicationCategory: "BusinessApplication",
@@ -164,22 +264,106 @@ export function getWebAppSchema() {
       "@type": "Audience",
       audienceType: "Contractors",
     },
-    areaServed: [
-      { "@type": "City", name: "Rome, NY" },
-      { "@type": "AdministrativeArea", name: "Central New York" },
-    ],
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.9",
-      ratingCount: "37",
+    areaServed: BUSINESS_AREAS_SERVED,
+    creator: {
+      "@type": "Organization",
+      name: BUSINESS_NAME,
+      url: BUSINESS_SITE_URL,
+    },
+  };
+}
+
+export function getLocalBusinessSchema(
+  reviews: VerifiedBusinessReview[] = VERIFIED_BUSINESS_REVIEWS,
+) {
+  const mappedReviews = reviews.map((review) => ({
+    "@type": "Review",
+    author: {
+      "@type": "Person",
+      name: review.authorName,
+    },
+    itemReviewed: {
+      "@id": GOOGLE_BUSINESS_PROFILE_URL,
+      "@type": "ProfessionalService",
+      name: BUSINESS_NAME,
+    },
+    reviewBody: review.reviewBody,
+    reviewRating: {
+      "@type": "Rating",
+      ratingValue: String(review.ratingValue),
       bestRating: "5",
       worstRating: "1",
     },
-    creator: {
-      "@type": "Organization",
-      name: "Pro Construction Calc",
-      url: "https://proconstructioncalc.com",
+    datePublished: review.datePublished,
+    ...(review.url ? { url: review.url } : {}),
+  }));
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "@id": GOOGLE_BUSINESS_PROFILE_URL,
+    name: BUSINESS_NAME,
+    identifier: {
+      "@type": "PropertyValue",
+      propertyID: "Google Business Profile CID",
+      value: GOOGLE_BUSINESS_PROFILE_ID,
     },
+    url: BUSINESS_SITE_URL,
+    sameAs: [GOOGLE_BUSINESS_PROFILE_URL],
+    telephone: BUSINESS_PHONE_E164,
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Floyd",
+      addressRegion: BUSINESS_STATE,
+      addressCountry: BUSINESS_COUNTRY,
+    },
+    areaServed: BUSINESS_AREAS_SERVED,
+    serviceArea: {
+      "@type": "AdministrativeArea",
+      name: BUSINESS_REGION,
+    },
+    hasMap: GOOGLE_BUSINESS_PROFILE_URL,
+    ...(mappedReviews.length > 0 ? { review: mappedReviews } : {}),
+  };
+}
+
+export function getVerifiedReviewSchema(
+  reviews: VerifiedBusinessReview[] = VERIFIED_BUSINESS_REVIEWS,
+) {
+  if (reviews.length === 0) {
+    return null;
+  }
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "@id": `${BUSINESS_SITE_URL}/#verified-reviews`,
+    name: BUSINESS_NAME,
+    itemListElement: reviews.map((review, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      item: {
+        "@type": "Review",
+        itemReviewed: {
+          "@id": GOOGLE_BUSINESS_PROFILE_URL,
+          "@type": "ProfessionalService",
+          name: BUSINESS_NAME,
+        },
+        author: {
+          "@type": "Person",
+          name: review.authorName,
+        },
+        reviewBody: review.reviewBody,
+        reviewRating: {
+          "@type": "Rating",
+          ratingValue: String(review.ratingValue),
+          bestRating: "5",
+          worstRating: "1",
+        },
+        datePublished: review.datePublished,
+        ...(review.url ? { url: review.url } : {}),
+      },
+    })),
   };
 }
 
@@ -197,13 +381,6 @@ export function getCalculatorSchema(
     applicationCategory: "UtilitiesApplication",
     operatingSystem: "Web",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.9",
-      ratingCount: "37",
-      bestRating: "5",
-      worstRating: "1",
-    },
   };
 }
 
@@ -230,7 +407,7 @@ export function getBlogPostSchema(post: {
     "@type": "Article",
     headline: post.title,
     description: post.description,
-    url: `https://proconstructioncalc.com/field-notes/${post.slug}`,
+    url: `https://proconstructioncalc.com/blog/${post.slug}`,
     datePublished: post.date,
     author: { "@type": "Organization", name: "Pro Construction Calc" },
     publisher: {

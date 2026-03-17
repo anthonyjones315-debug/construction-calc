@@ -24,6 +24,7 @@ import {
 import { isUnauthorizedError } from "@/lib/errors/unauthorized";
 import { sendEstimateSignatureEmail } from "@/lib/email/estimates";
 import { getPostHogClient } from "@/lib/posthog-server";
+import { normalizeDollars } from "@/utils/money";
 
 function getClientEmail(input: Record<string, unknown> | undefined) {
   const candidate = input?.client_email;
@@ -104,7 +105,10 @@ export async function POST(request: NextRequest) {
         budget_items: null,
         client_name: payload.client_name ?? null,
         job_site_address: payload.job_site_address ?? null,
-        total_cost: payload.total_cost ?? null,
+        total_cost:
+          payload.total_cost !== null && payload.total_cost !== undefined
+            ? normalizeDollars(payload.total_cost)
+            : null,
         status: "PENDING",
         share_code: shareCode,
       };
@@ -171,7 +175,10 @@ export async function POST(request: NextRequest) {
         estimate_id: savedId,
         calculator_id: payload.calculator_id,
         trade: payload.calculator_id.split("/")[1] ?? "unknown",
-        primary_total: payload.total_cost ?? null,
+        primary_total:
+          payload.total_cost !== null && payload.total_cost !== undefined
+            ? normalizeDollars(payload.total_cost)
+            : null,
         has_client: Boolean(payload.client_name),
         client_emailed: Boolean(clientEmail),
       },

@@ -11,11 +11,19 @@ import {
   normalizeEstimateStatus,
   type EstimateStatus,
 } from "@/lib/estimates/status";
+import {
+  centsToDollars,
+  multiplyDollars,
+  normalizeDollars,
+  sumCents,
+  toCents,
+} from "@/utils/money";
 
 const USD_CURRENCY = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
-  maximumFractionDigits: 0,
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
 });
 
 export interface SavedEstimate {
@@ -125,7 +133,7 @@ function getBudgetItemCost(item: unknown): number {
 
   if (quantity <= 0 || unitCost <= 0) return 0;
 
-  return quantity * unitCost;
+  return multiplyDollars(unitCost, quantity);
 }
 
 function getBudgetItemBucket(item: unknown): CostBucket | null {
@@ -235,16 +243,20 @@ function getEstimateAndActualCost(item: unknown): {
 
   const inferredEstimated =
     estimatedUnit !== null && estimatedQuantity > 0
-      ? estimatedQuantity * estimatedUnit
+      ? multiplyDollars(estimatedUnit, estimatedQuantity)
       : null;
   const inferredActual =
     actualUnit !== null && actualQuantity !== null && actualQuantity > 0
-      ? actualQuantity * actualUnit
+      ? multiplyDollars(actualUnit, actualQuantity)
       : null;
 
   return {
-    estimated: explicitEstimated ?? inferredEstimated,
-    actual: explicitActual ?? inferredActual,
+    estimated:
+      explicitEstimated !== null
+        ? normalizeDollars(explicitEstimated)
+        : inferredEstimated,
+    actual:
+      explicitActual !== null ? normalizeDollars(explicitActual) : inferredActual,
   };
 }
 
@@ -258,10 +270,10 @@ function getVarianceAlerts(estimate: SavedEstimate): VarianceAlert[] {
 
   const totalsByBucket: Record<
     CostBucket,
-    { estimated: number; actual: number; hasActual: boolean }
+    { estimatedCents: number; actualCents: number; hasActual: boolean }
   > = {
-    material: { estimated: 0, actual: 0, hasActual: false },
-    labor: { estimated: 0, actual: 0, hasActual: false },
+    material: { estimatedCents: 0, actualCents: 0, hasActual: false },
+    labor: { estimatedCents: 0, actualCents: 0, hasActual: false },
   };
 
   for (const item of estimate.budget_items) {
@@ -273,11 +285,11 @@ function getVarianceAlerts(estimate: SavedEstimate): VarianceAlert[] {
     const { estimated, actual } = getEstimateAndActualCost(item);
 
     if (estimated !== null && estimated > 0) {
-      totalsByBucket[bucket].estimated += estimated;
+      totalsByBucket[bucket].estimatedCents += toCents(estimated);
     }
 
     if (actual !== null && actual > 0) {
-      totalsByBucket[bucket].actual += actual;
+      totalsByBucket[bucket].actualCents += toCents(actual);
       totalsByBucket[bucket].hasActual = true;
     }
   }
@@ -289,21 +301,23 @@ function getVarianceAlerts(estimate: SavedEstimate): VarianceAlert[] {
       const totals = totalsByBucket[bucket];
       return (
         totals.hasActual &&
-        totals.estimated > 0 &&
-        totals.actual > totals.estimated
+        totals.estimatedCents > 0 &&
+        totals.actualCents > totals.estimatedCents
       );
     })
     .map((bucket) => {
       const totals = totalsByBucket[bucket];
-      const delta = totals.actual - totals.estimated;
+      const estimated = centsToDollars(totals.estimatedCents);
+      const actual = centsToDollars(totals.actualCents);
+      const delta = centsToDollars(totals.actualCents - totals.estimatedCents);
       return {
         projectId: estimate.id,
         projectName: estimate.name,
         bucket,
-        estimated: totals.estimated,
-        actual: totals.actual,
+        estimated,
+        actual,
         delta,
-        deltaPercent: (delta / totals.estimated) * 100,
+        deltaPercent: estimated > 0 ? (delta / estimated) * 100 : 0,
         updatedAt,
       };
     });
@@ -320,7 +334,7 @@ function getTrackedProjectCost(estimate: SavedEstimate): {
     return { cost: null, basis: null };
   }
 
-  let total = 0;
+  let totalCents = 0;
   let usedActualCount = 0;
   let usedEstimatedCount = 0;
 
@@ -328,20 +342,20 @@ function getTrackedProjectCost(estimate: SavedEstimate): {
     const { estimated, actual } = getEstimateAndActualCost(item);
 
     if (actual !== null && actual > 0) {
-      total += actual;
+      totalCents += toCents(actual);
       usedActualCount += 1;
       continue;
     }
 
     if (estimated !== null && estimated > 0) {
-      total += estimated;
+      totalCents += toCents(estimated);
       usedEstimatedCount += 1;
       continue;
     }
 
     const fallback = getBudgetItemCost(item);
     if (fallback > 0) {
-      total += fallback;
+      totalCents += toCents(fallback);
       usedEstimatedCount += 1;
     }
   }
@@ -355,16 +369,21 @@ function getTrackedProjectCost(estimate: SavedEstimate): {
           ? "estimated"
           : null;
 
-  return { cost: total > 0 ? total : null, basis };
+  return {
+    cost: totalCents > 0 ? centsToDollars(totalCents) : null,
+    basis,
+  };
 }
 
 export function getProjectProfitMargin(estimate: SavedEstimate): number | null {
-  const revenue = toFiniteNumber(estimate.total_cost);
+  const revenue = normalizeDollars(toFiniteNumber(estimate.total_cost));
   const trackedCost = getTrackedProjectCost(estimate).cost;
+  const revenueCents = toCents(revenue);
+  const trackedCostCents = trackedCost === null ? null : toCents(trackedCost);
 
-  if (revenue <= 0 || trackedCost === null) return null;
+  if (revenueCents <= 0 || trackedCostCents === null) return null;
 
-  return ((revenue - trackedCost) / revenue) * 100;
+  return ((revenueCents - trackedCostCents) / revenueCents) * 100;
 }
 
 export function formatStatus(status: EstimateStatus): string {
@@ -374,7 +393,7 @@ export function formatStatus(status: EstimateStatus): string {
 function computeFinancialDashboard(estimates: SavedEstimate[]) {
   const projectMargins = estimates
     .map<ProjectMargin>((estimate) => {
-      const revenue = toFiniteNumber(estimate.total_cost);
+      const revenue = normalizeDollars(toFiniteNumber(estimate.total_cost));
       const trackedProjectCost = getTrackedProjectCost(estimate);
       const margin = getProjectProfitMargin(estimate);
 
@@ -407,18 +426,22 @@ function computeFinancialDashboard(estimates: SavedEstimate[]) {
     );
   });
 
-  const billedAmount = billedProjects.reduce((sum, project) => {
-    return sum + project.revenue;
-  }, 0);
-  const unbilledAmount = unbilledProjects.reduce((sum, project) => {
-    return sum + project.revenue;
-  }, 0);
-  const marginRevenueTotal = marginProjects.reduce((sum, project) => {
-    return sum + project.revenue;
-  }, 0);
-  const marginGrossProfitTotal = marginProjects.reduce((sum, project) => {
-    return sum + (project.revenue - (project.projectCost ?? 0));
-  }, 0);
+  const billedAmount = centsToDollars(
+    sumCents(billedProjects.map((project) => toCents(project.revenue))),
+  );
+  const unbilledAmount = centsToDollars(
+    sumCents(unbilledProjects.map((project) => toCents(project.revenue))),
+  );
+  const marginRevenueTotal = centsToDollars(
+    sumCents(marginProjects.map((project) => toCents(project.revenue))),
+  );
+  const marginGrossProfitTotal = centsToDollars(
+    sumCents(
+      marginProjects.map((project) =>
+        toCents(project.revenue) - toCents(project.projectCost ?? 0),
+      ),
+    ),
+  );
 
   const portfolioMargin =
     marginRevenueTotal > 0

@@ -1,7 +1,13 @@
 import Link from "next/link";
 import { HardHat } from "lucide-react";
 import { CookiePreferencesButton } from "@/components/layout/CookiePreferencesButton";
-import { routes } from "@routes";
+import { getFieldNotesRoute, routes } from "@routes";
+import {
+  BUSINESS_CITY_STATE,
+  BUSINESS_EMAIL,
+  BUSINESS_NAME,
+  BUSINESS_PHONE_DISPLAY,
+} from "@/lib/business-identity";
 
 const COPYRIGHT_YEAR = 2026;
 const footerCalculatorLinks = [
@@ -26,6 +32,16 @@ const footerLegalLinks = [
   { label: "Privacy Policy", href: routes.privacy },
   { label: "Terms of Service", href: routes.terms },
 ];
+const footerCountyGuideLinks = [
+  {
+    label: "Madison County Tax (8.00%)",
+    href: getFieldNotesRoute("madison-county-sales-tax-2026"),
+  },
+  {
+    label: "Herkimer County Tax (8.25%)",
+    href: getFieldNotesRoute("herkimer-county-sales-tax-2026"),
+  },
+];
 
 const buildCommandCenterLink = (slug?: string) =>
   slug
@@ -39,20 +55,25 @@ export function Footer() {
   return (
     <footer className="border-t border-slate-800 bg-slate-950 text-sm text-slate-300">
       <div className="max-w-7xl mx-auto px-4 py-10">
-        <div className="mb-8 grid grid-cols-2 gap-8 md:grid-cols-4">
+        <div className="mb-8 grid grid-cols-2 gap-8 md:grid-cols-5">
           {/* Brand */}
           <div className="col-span-2 sm:col-span-1">
             <div className="mb-3 flex items-center gap-2 text-lg font-display font-black uppercase text-white">
               <HardHat className="w-5 h-5 text-orange-500" aria-hidden />
-              Pro Construction Calc
+              {BUSINESS_NAME}
             </div>
             <p className="text-xs leading-relaxed text-slate-400">
               Contractor-grade construction calculators for working crews and estimators.
-              Based in Central New York.
+              Based in Floyd, NY and serving the Mohawk Valley.
             </p>
-            <p className="mt-2 text-xs leading-relaxed text-slate-300">
-              Pro Construction Calc · Rome, NY, USA
-            </p>
+            <div className="mt-2 space-y-1 text-xs leading-relaxed text-slate-300">
+              <p>{BUSINESS_NAME} · {BUSINESS_CITY_STATE}</p>
+              <p>
+                <a href={`tel:${BUSINESS_PHONE_DISPLAY}`} className="hover:text-white transition-colors">
+                  {BUSINESS_PHONE_DISPLAY}
+                </a>
+              </p>
+            </div>
             <div className="mt-4 inline-flex flex-col rounded-md border border-[--color-orange-brand]/60 bg-[--color-orange-brand]/10 px-3 py-2 text-white">
               <span className="font-display text-[11px] font-black uppercase tracking-[0.14em]">
                 Built for the Field
@@ -109,11 +130,28 @@ export function Footer() {
                 P
               </div>
                 <span className="text-xs font-black uppercase tracking-widest text-slate-300">
-                Pro Construction Calc
+                {BUSINESS_NAME}
               </span>
             </div>
             <div className="space-y-2">
               {footerLegalLinks.map(({ label, href }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className="block hover:text-orange-500 transition-colors text-slate-300"
+                >
+                  {label}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <p className="mb-3 text-xs font-black uppercase tracking-widest text-slate-400">
+              County Guides
+            </p>
+            <div className="space-y-2">
+              {footerCountyGuideLinks.map(({ label, href }) => (
                 <Link
                   key={href}
                   href={href}
@@ -150,7 +188,7 @@ export function Footer() {
               Terms
             </Link>
             <a
-              href="mailto:amj111394@gmail.com"
+              href={`mailto:${BUSINESS_EMAIL}`}
               className="hover:text-white transition-colors"
             >
               Contact Us

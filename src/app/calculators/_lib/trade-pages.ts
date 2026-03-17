@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getPageMetadata } from "@/seo";
 
 const SITE_URL = "https://proconstructioncalc.com";
 const LOCAL_MARKET_LABEL = "Mohawk Valley, including Rome and Utica, NY";
@@ -1098,7 +1099,6 @@ export function getTradePageByPath(path: string): TradePageDefinition | undefine
 }
 
 export function getTradePageMetadata(page: TradePageDefinition): Metadata {
-  const canonicalUrl = `${SITE_URL}${page.canonicalPath}`;
   const localDescription = `${page.description} Serving Oneida County, NY and the Mohawk Valley contractor market.`;
   const mergedKeywords = Array.from(
     new Set([
@@ -1111,20 +1111,15 @@ export function getTradePageMetadata(page: TradePageDefinition): Metadata {
   );
 
   return {
-    title: `${page.title} | Pro Construction Calc`,
-    description: localDescription,
-    keywords: mergedKeywords,
-    alternates: { canonical: canonicalUrl },
+    ...getPageMetadata({
+      title: `${page.title} | Pro Construction Calc`,
+      description: localDescription,
+      path: page.canonicalPath,
+      keywords: mergedKeywords,
+    }),
     other: {
       "geo.region": "US-NY",
       "geo.placename": "Oneida County, NY",
-    },
-    openGraph: {
-      title: page.title,
-      description: localDescription,
-      url: canonicalUrl,
-      images: [{ url: "/og-image.png", width: 1200, height: 630 }],
-      type: "website",
     },
   };
 }

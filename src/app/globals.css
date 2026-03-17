@@ -9,9 +9,9 @@
   --font-display: "Oswald", "Arial Narrow", ui-sans-serif, sans-serif;
 
   /* Brand */
-  --color-orange-brand: #f7941d;
-  --color-orange-dark: #d06a18;
-  --color-orange-deep: #c15a2c;
+  --color-orange-brand: #b85a10;
+  --color-orange-dark: #ad4f0d;
+  --color-orange-deep: #a34412;
   --color-orange-soft: rgba(247, 148, 29, 0.12);
   --color-orange-muted: #f9a15a;
 
@@ -256,8 +256,8 @@
   }
 
   .command-theme {
-    --color-orange-brand: #ea580c;
-    --color-orange-dark: #c2410c;
+    --color-orange-brand: #c2410c;
+    --color-orange-dark: #9a3412;
     --color-orange-muted: #fb923c;
     --color-ink: #f1f5f9;
     --color-ink-mid: #cbd5e1;

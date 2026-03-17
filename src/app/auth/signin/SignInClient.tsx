@@ -102,7 +102,6 @@ export default function SignInClient({
     }
 
     const activeSession = await getSession();
-    console.log("Auth State:", activeSession?.user ?? null);
 
     if (activeSession?.user?.id) {
       posthog.identify(activeSession.user.id, {

@@ -6,8 +6,14 @@ import { auth } from "@/lib/auth/config";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { createServerClient } from "@/lib/supabase/server";
+import { getNoIndexMetadata } from "@/seo";
 import { routes } from "@routes";
 import CommandCenterClient from "./CommandCenterClient";
+
+export const metadata = getNoIndexMetadata(
+  "Command Center | Pro Construction Calc",
+  "Private team workspace for Pro Construction Calc.",
+);
 
 type TeamMember = {
   membershipId: string;

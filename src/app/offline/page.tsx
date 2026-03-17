@@ -1,5 +1,11 @@
 import Link from "next/link";
 import { WifiOff, Calculator } from "lucide-react";
+import { getNoIndexMetadata } from "@/seo";
+
+export const metadata = getNoIndexMetadata(
+  "Offline | Pro Construction Calc",
+  "Offline fallback page for Pro Construction Calc.",
+);
 
 export default function OfflinePage() {
   return (

@@ -16,6 +16,7 @@ import {
   getFinancialDashboardTag,
   getSavedEstimatesTag,
 } from "@/lib/cache-tags";
+import { normalizeDollars } from "@/utils/money";
 
 const VALID_BID_STATUSES = ["Draft", "Sent", "Approved", "Lost"] as const;
 
@@ -162,7 +163,7 @@ export async function updateBidDetailsAction(
       input.totalCost === null
         ? null
         : Number.isFinite(input.totalCost)
-          ? input.totalCost
+          ? normalizeDollars(input.totalCost)
           : null;
   }
 

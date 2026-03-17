@@ -3,6 +3,7 @@ import NextAuth from "next-auth";
 import { createClient } from "@supabase/supabase-js";
 import Google from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { ensurePublicUserRecord } from "@/lib/supabase/ensurePublicUser";
 
 function isValidHttpUrl(s: string): boolean {
   try {
@@ -270,18 +271,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 .select("id")
                 .eq("email", user.email)
                 .maybeSingle();
-              if (existing?.id) {
-                token.sub = existing.id;
-              } else {
-                const newId = crypto.randomUUID();
-                await adminDb.from("users").insert({
-                  id: newId,
-                  email: user.email,
-                  name: user.name ?? null,
-                  image: (user as { image?: string | null }).image ?? null,
-                });
-                token.sub = newId;
-              }
+              const nextUserId = existing?.id ?? crypto.randomUUID();
+              token.sub = await ensurePublicUserRecord(adminDb, {
+                id: nextUserId,
+                email: user.email,
+                name: user.name ?? null,
+                image: (user as { image?: string | null }).image ?? null,
+              });
             } catch {
               // DB lookup failed — keep the Google-provided ID as fallback.
               // ensurePublicUser on the command center page handles reconciliation.

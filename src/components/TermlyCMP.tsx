@@ -5,6 +5,14 @@ import { usePathname, useSearchParams } from "next/navigation";
 
 const SCRIPT_SRC_BASE = "https://app.termly.io";
 
+declare global {
+  interface Window {
+    Termly?: {
+      initialize?: () => void;
+    };
+  }
+}
+
 type TermlyCMPProps = {
   websiteUUID: string;
   autoBlock?: boolean;

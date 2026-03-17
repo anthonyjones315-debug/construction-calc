@@ -7,7 +7,6 @@ import type { LucideIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import * as Sentry from "@sentry/nextjs";
 import posthog from "posthog-js";
-import { round } from "mathjs";
 import {
   getCalculatorAuditRef,
   setCalculatorAuditSnapshot,
@@ -57,6 +56,7 @@ import {
   EmailEstimateModal,
   type EstimatePayload,
 } from "@/components/ui/EmailEstimateModal";
+import { ManualErrorReportButton } from "@/components/support/ManualErrorReportButton";
 import { JsonLD } from "@/seo";
 import {
   getTradePageSchema,
@@ -76,10 +76,12 @@ import { ProResult } from "@/components/ui/ProResult";
 import { useProMode } from "@/hooks/useProMode";
 import { triggerHaptic } from "@/hooks/useHaptic";
 import { sanitizeFilename } from "@/utils/sanitize-filename";
+import { centsToDollars, toCents } from "@/utils/money";
 import { useContractorProfile } from "@/components/pdf/useContractorProfile";
 import { getConcreteInputLabelsFromCopy } from "@/data/construction-terms";
 import { useStore } from "@/lib/store";
 import { recordVisit } from "@/lib/recommendations/activity";
+import { getUserFacingErrorDetails } from "@/lib/errors/user-facing";
 
 type TradeModule = {
   label: string;
@@ -117,6 +119,22 @@ type VolumeInputMode = "dimensions" | "total-cu-yd" | "total-cu-ft";
 type WallInputMode = "lineal-feet" | "total-studs";
 type TrimInputMode = "dimensions" | "total-lf";
 type FlooringBoxMode = "20" | "24" | "30" | "custom";
+
+function toBasisPoints(percent: number) {
+  return Number((percent * 100).toFixed(0));
+}
+
+function scaleCentsByBasisPoints(cents: number, basisPoints: number) {
+  return Number(((cents * basisPoints) / 10_000).toFixed(0));
+}
+
+function divideCentsByBasisPoints(cents: number, basisPoints: number) {
+  if (!Number.isFinite(cents) || !Number.isFinite(basisPoints) || basisPoints <= 0) {
+    return 0;
+  }
+
+  return Number(((cents * 10_000) / basisPoints).toFixed(0));
+}
 
 function getFramingMaterialFromPath(path: string): FramingMaterialKind {
   const p = path.toLowerCase();
@@ -1009,7 +1027,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     ) => (pieces * thicknessInches * widthInches * lengthFeet) / 12;
 
     if (page.category === "business" || page.category === "management") {
-      const currency = (value: number) => value.toFixed(2);
+      const currency = (cents: number) => centsToDollars(cents).toFixed(2);
 
       if (
         page.canonicalPath.includes("profit-margin") ||
@@ -1018,33 +1036,44 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         const directCost = clampValue(baseMeasurement, 0, 100000000);
         const overheadPct = clampValue(widthSpan, 0, 100);
         const targetMarginPct = clampValue(depthThickness, 0, 95);
-        const overheadDollars = directCost * (overheadPct / 100);
-        const breakEvenPrice = directCost + overheadDollars;
-        const sellPrice =
+        const directCostCents = toCents(directCost);
+        const overheadBasisPoints = toBasisPoints(overheadPct);
+        const targetMarginBasisPoints = toBasisPoints(targetMarginPct);
+        const overheadCents = scaleCentsByBasisPoints(
+          directCostCents,
+          overheadBasisPoints,
+        );
+        const breakEvenPriceCents = directCostCents + overheadCents;
+        const sellPriceCents =
           targetMarginPct >= 95
-            ? breakEvenPrice
-            : breakEvenPrice / (1 - targetMarginPct / 100);
-        const grossProfit = sellPrice - breakEvenPrice;
+            ? breakEvenPriceCents
+            : divideCentsByBasisPoints(
+                breakEvenPriceCents,
+                10_000 - targetMarginBasisPoints,
+              );
+        const grossProfitCents = sellPriceCents - breakEvenPriceCents;
         const grossMarginPct =
-          sellPrice === 0 ? 0 : (grossProfit / sellPrice) * 100;
+          sellPriceCents === 0 ? 0 : (grossProfitCents / sellPriceCents) * 100;
         const markupPct =
-          directCost === 0 ? 0 : ((sellPrice - directCost) / directCost) * 100;
+          directCostCents === 0
+            ? 0
+            : ((sellPriceCents - directCostCents) / directCostCents) * 100;
 
         return {
           primary: {
             label: "Bid / Selling Price",
-            value: currency(sellPrice),
+            value: currency(sellPriceCents),
             unit: "$",
           },
           secondary: [
             {
               label: "Break-even Price",
-              value: currency(breakEvenPrice),
+              value: currency(breakEvenPriceCents),
               unit: "$",
             },
             {
               label: "Gross Profit",
-              value: currency(grossProfit),
+              value: currency(grossProfitCents),
               unit: "$",
             },
             {
@@ -1059,7 +1088,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             },
           ],
           materialList: [
-            `Break-even covers $${currency(overheadDollars)} overhead at ${overheadPct.toFixed(1)}%.`,
+            `Break-even covers $${currency(overheadCents)} overhead at ${overheadPct.toFixed(1)}%.`,
             `Bid price targets ${targetMarginPct.toFixed(1)}% gross margin (${markupPct.toFixed(1)}% markup).`,
           ],
         };
@@ -1072,38 +1101,51 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         const baseWage = clampValue(baseMeasurement, 0, 1000000);
         const burdenPct = clampValue(widthSpan, 0, 200);
         const overheadPct = clampValue(depthThickness, 0, 200);
-        const burdenedRate = baseWage * (1 + burdenPct / 100);
-        const loadedRate = baseWage * (1 + (burdenPct + overheadPct) / 100);
+        const baseWageCents = toCents(baseWage);
+        const burdenBasisPoints = toBasisPoints(burdenPct);
+        const overheadBasisPoints = toBasisPoints(overheadPct);
+        const burdenedRateCents = scaleCentsByBasisPoints(
+          baseWageCents,
+          10_000 + burdenBasisPoints,
+        );
+        const loadedRateCents = scaleCentsByBasisPoints(
+          baseWageCents,
+          10_000 + burdenBasisPoints + overheadBasisPoints,
+        );
         const profitTargetPct = 15;
-        const billableRate = loadedRate / (1 - profitTargetPct / 100);
-        const profitPerHour = billableRate - loadedRate;
+        const profitTargetBasisPoints = toBasisPoints(profitTargetPct);
+        const billableRateCents = divideCentsByBasisPoints(
+          loadedRateCents,
+          10_000 - profitTargetBasisPoints,
+        );
+        const profitPerHourCents = billableRateCents - loadedRateCents;
 
         return {
           primary: {
             label: "Billable Rate (target 15% profit)",
-            value: currency(billableRate),
+            value: currency(billableRateCents),
             unit: "$/hr",
           },
           secondary: [
             {
               label: "Loaded Cost Rate",
-              value: currency(loadedRate),
+              value: currency(loadedRateCents),
               unit: "$/hr",
             },
             {
               label: "Burdened Labor Rate",
-              value: currency(burdenedRate),
+              value: currency(burdenedRateCents),
               unit: "$/hr",
             },
             {
               label: "Profit per Hour",
-              value: currency(profitPerHour),
+              value: currency(profitPerHourCents),
               unit: "$/hr",
             },
           ],
           materialList: [
             `Loaded labor includes ${burdenPct.toFixed(1)}% burden and ${overheadPct.toFixed(1)}% overhead.`,
-            `Charge ~$${currency(billableRate)} per hour to hold ~${profitTargetPct}% profit after overhead.`,
+            `Charge ~$${currency(billableRateCents)} per hour to hold ~${profitTargetPct}% profit after overhead.`,
           ],
         };
       }
@@ -1115,25 +1157,32 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         const costPerLead = clampValue(baseMeasurement, 0, 100000000);
         const closeRatePct = clampValue(widthSpan, 0.01, 100);
         const avgJobValue = clampValue(depthThickness, 0, 1_000_000_000);
-        const closeRate = closeRatePct / 100;
-        const customerAcquisitionCost =
-          closeRate === 0 ? 0 : costPerLead / closeRate;
-        const revenuePerLead = avgJobValue * closeRate;
-        const paybackMultiple =
-          customerAcquisitionCost === 0
+        const costPerLeadCents = toCents(costPerLead);
+        const avgJobValueCents = toCents(avgJobValue);
+        const closeRateBasisPoints = toBasisPoints(closeRatePct);
+        const customerAcquisitionCostCents =
+          closeRateBasisPoints === 0
             ? 0
-            : avgJobValue / customerAcquisitionCost;
+            : divideCentsByBasisPoints(costPerLeadCents, closeRateBasisPoints);
+        const revenuePerLeadCents = scaleCentsByBasisPoints(
+          avgJobValueCents,
+          closeRateBasisPoints,
+        );
+        const paybackMultiple =
+          customerAcquisitionCostCents === 0
+            ? 0
+            : avgJobValueCents / customerAcquisitionCostCents;
 
         return {
           primary: {
             label: "Customer Acquisition Cost (CAC)",
-            value: currency(customerAcquisitionCost),
+            value: currency(customerAcquisitionCostCents),
             unit: "$",
           },
           secondary: [
             {
               label: "Revenue per Lead",
-              value: currency(revenuePerLead),
+              value: currency(revenuePerLeadCents),
               unit: "$",
             },
             {
@@ -1148,8 +1197,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             },
           ],
           materialList: [
-            `CAC assumes ${closeRatePct.toFixed(1)}% close rate on $${currency(costPerLead)} CPL.`,
-            `Avg job value $${currency(avgJobValue)} yields ${paybackMultiple.toFixed(2)}x payback.`,
+            `CAC assumes ${closeRatePct.toFixed(1)}% close rate on $${currency(costPerLeadCents)} CPL.`,
+            `Avg job value $${currency(avgJobValueCents)} yields ${paybackMultiple.toFixed(2)}x payback.`,
           ],
         };
       }
@@ -1158,42 +1207,50 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         const grossRevenue = clampValue(baseMeasurement, 0, 1_000_000_000);
         const taxRatePct = clampValue(widthSpan, 0, 100);
         const deductionsValue = clampValue(depthThickness, 0, 1_000_000_000);
-        const taxableIncome = Math.max(0, grossRevenue - deductionsValue);
+        const grossRevenueCents = toCents(grossRevenue);
+        const deductionsCents = toCents(deductionsValue);
+        const taxableIncomeCents = Math.max(
+          0,
+          grossRevenueCents - deductionsCents,
+        );
         const rateSourceCounty =
           taxRegion === "NYS" ? taxCounty : "Custom / Other";
         const taxResult = calculateNysSalesTax({
           county: rateSourceCounty,
-          taxableAmount: taxableIncome,
+          taxableAmount: centsToDollars(taxableIncomeCents),
           projectType: capitalImprovement
             ? "capital-improvement"
             : "repair-maintenance",
           customCombinedRate: taxRegion === "NYS" ? undefined : taxRatePct,
         });
         const rateApplied = taxResult.rateApplied || taxRatePct;
-        const taxOwed = taxResult.taxDue;
-        const netIncome = grossRevenue - taxOwed;
+        const rateAppliedBasisPoints = toBasisPoints(rateApplied);
+        const taxOwedCents = toCents(taxResult.taxDue);
+        const netIncomeCents = Math.max(0, grossRevenueCents - taxOwedCents);
         const effectiveTaxRate =
-          grossRevenue === 0 ? 0 : (taxOwed / grossRevenue) * 100;
-        const taxSavings = capitalImprovement
+          grossRevenueCents === 0 ? 0 : (taxOwedCents / grossRevenueCents) * 100;
+        const taxSavingsCents = capitalImprovement
           ? 0
-          : round(taxableIncome * (rateApplied / 100), 2) -
-            round((taxableIncome - deductionsValue) * (rateApplied / 100), 2);
+          : scaleCentsByBasisPoints(
+              grossRevenueCents - taxableIncomeCents,
+              rateAppliedBasisPoints,
+            );
 
         return {
           primary: {
             label: "Projected Tax",
-            value: currency(taxOwed),
+            value: currency(taxOwedCents),
             unit: "$",
           },
           secondary: [
             {
               label: "Taxable Income",
-              value: currency(taxableIncome),
+              value: currency(taxableIncomeCents),
               unit: "$",
             },
             {
               label: "Net Income After Tax",
-              value: currency(netIncome),
+              value: currency(netIncomeCents),
               unit: "$",
             },
             {
@@ -1223,18 +1280,18 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                 ]),
             {
               label: "Tax Savings From Deductions",
-              value: currency(taxSavings),
+              value: currency(taxSavingsCents),
               unit: "$",
             },
           ],
           materialList: [
             capitalImprovement
               ? "Capital Improvement: collect NYS Form ST-124; do not charge sales tax on labor."
-              : `${rateApplied.toFixed(2)}% blended tax on $${currency(taxableIncome)} taxable income.`,
+              : `${rateApplied.toFixed(2)}% blended tax on $${currency(taxableIncomeCents)} taxable income.`,
             capitalImprovement
               ? "Pay sales tax on materials at purchase; retain ST-124 for audit trail."
-              : `State: $${currency(taxResult.statePortion)} · Local: $${currency(taxResult.localPortion)}`,
-            `Deductions reduce tax by $${currency(taxSavings)}.`,
+              : `State: $${currency(toCents(taxResult.statePortion))} · Local: $${currency(toCents(taxResult.localPortion))}`,
+            `Deductions reduce tax by $${currency(taxSavingsCents)}.`,
             ...taxResult.notes,
           ],
         };
@@ -2216,31 +2273,54 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   return (
     <Sentry.ErrorBoundary
       fallback={({ error, resetError }) => {
-        const message = error instanceof Error ? error.message : String(error);
+        const errorDigest =
+          typeof error === "object" &&
+          error !== null &&
+          "digest" in error &&
+          typeof (error as { digest?: unknown }).digest === "string"
+            ? (error as { digest: string }).digest
+            : undefined;
+        const reportableError =
+          error instanceof Error
+            ? Object.assign(error, { digest: errorDigest })
+            : Object.assign(new Error(String(error)), { digest: errorDigest });
+        const userFacing = getUserFacingErrorDetails(reportableError, {
+          title: "Calculator error",
+          message:
+            "We couldn't finish that calculator run. Your inputs are still here, so try again or send us a report if it keeps happening.",
+        });
         return (
           <main
             id="main-content"
             className="command-theme bg-[--color-bg] text-white min-h-[40vh] flex items-center justify-center p-6"
           >
             <div className="rounded-2xl border border-white/20 bg-black/25 p-6 max-w-lg text-center">
-              <h2 className="text-lg font-bold text-white">Calculator error</h2>
+              <h2 className="text-lg font-bold text-white">
+                {userFacing.title}
+              </h2>
               <p className="mt-2 text-sm text-[--color-nav-text]/90">
-                Something went wrong. The exact inputs have been reported so we
-                can fix it.
+                {userFacing.message}
               </p>
-              <p
-                className="mt-2 text-xs text-[--color-nav-text]/60 font-mono truncate"
-                title={message}
-              >
-                {message}
-              </p>
-              <button
-                type="button"
-                onClick={resetError}
-                className="mt-4 rounded-xl border border-[--color-orange-brand]/50 bg-[--color-orange-brand]/20 px-4 py-2 text-sm font-bold uppercase tracking-wide text-[--color-orange-brand]"
-              >
-                Try again
-              </button>
+              {reportableError.digest ? (
+                <p className="mt-2 text-xs text-[--color-nav-text]/60">
+                  Reference: {reportableError.digest}
+                </p>
+              ) : null}
+              <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={resetError}
+                  className="rounded-xl border border-[--color-orange-brand]/50 bg-[--color-orange-brand]/20 px-4 py-2 text-sm font-bold uppercase tracking-wide text-[--color-orange-brand]"
+                >
+                  Try again
+                </button>
+                <ManualErrorReportButton
+                  error={reportableError}
+                  eventId={null}
+                  source="calculator-sentry-boundary"
+                  className="rounded-xl border border-white/20 px-4 py-2 text-sm font-bold uppercase tracking-wide text-white"
+                />
+              </div>
             </div>
           </main>
         );

@@ -1,15 +1,55 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Send, Loader2 } from "lucide-react";
+import { getUserFacingErrorDetails } from "@/lib/errors/user-facing";
 
-export function ContactForm() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [subject, setSubject] = useState("");
-  const [message, setMessage] = useState("");
+type ContactFormProps = {
+  initialName?: string;
+  initialEmail?: string;
+  initialSubject?: string;
+  initialMessage?: string;
+  submitLabel?: string;
+  successMessage?: string;
+  mode?: "general" | "error-report";
+  reportContext?: {
+    reportType?: "general" | "error";
+    source?: string;
+    pageUrl?: string;
+    eventId?: string;
+    digest?: string;
+    technicalMessage?: string;
+    userFacingMessage?: string;
+    userAgent?: string;
+    browserTime?: string;
+  };
+};
+
+export function ContactForm({
+  initialName = "",
+  initialEmail = "",
+  initialSubject = "",
+  initialMessage = "",
+  submitLabel = "Send",
+  successMessage = "Thanks for reaching out. We'll get back to you soon.",
+  mode = "general",
+  reportContext,
+}: ContactFormProps = {}) {
+  const [name, setName] = useState(initialName);
+  const [email, setEmail] = useState(initialEmail);
+  const [subject, setSubject] = useState(initialSubject);
+  const [message, setMessage] = useState(initialMessage);
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    setName(initialName);
+    setEmail(initialEmail);
+    setSubject(initialSubject);
+    setMessage(initialMessage);
+    setStatus("idle");
+    setErrorMessage(null);
+  }, [initialEmail, initialMessage, initialName, initialSubject]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -27,6 +67,17 @@ export function ContactForm() {
           email: trimmedEmail,
           subject: subject.trim() || undefined,
           message: message.trim(),
+          reportType:
+            reportContext?.reportType ??
+            (mode === "error-report" ? "error" : "general"),
+          source: reportContext?.source,
+          pageUrl: reportContext?.pageUrl,
+          eventId: reportContext?.eventId,
+          digest: reportContext?.digest,
+          technicalMessage: reportContext?.technicalMessage,
+          userFacingMessage: reportContext?.userFacingMessage,
+          userAgent: reportContext?.userAgent,
+          browserTime: reportContext?.browserTime,
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -41,7 +92,13 @@ export function ContactForm() {
       setMessage("");
     } catch (err) {
       setStatus("error");
-      setErrorMessage(err instanceof Error ? err.message : "Failed to send.");
+      setErrorMessage(
+        getUserFacingErrorDetails(err, {
+          title: "Message did not send",
+          message:
+            "We couldn't deliver your message from the app right now. Try again, or email us directly if you need a faster reply.",
+        }).message,
+      );
     }
   }
 
@@ -52,7 +109,7 @@ export function ContactForm() {
   if (status === "sent") {
     return (
       <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-4 text-sm text-emerald-200">
-        Thanks for reaching out. We&apos;ll get back to you soon.
+        {successMessage}
       </div>
     );
   }
@@ -118,7 +175,7 @@ export function ContactForm() {
           ) : (
             <Send className="h-4 w-4" aria-hidden />
           )}
-          {status === "sending" ? "Sending…" : "Send"}
+          {status === "sending" ? "Sending…" : submitLabel}
         </button>
       </div>
     </form>

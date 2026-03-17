@@ -2,16 +2,15 @@ import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ArrowRight, HardHat, ShieldCheck, FileText } from "lucide-react";
-import { JsonLD, getWebAppSchema, getWebSiteSchema } from "@/seo";
-import type { Metadata } from "next";
+import { JsonLD, getPageMetadata, getWebAppSchema, getWebSiteSchema } from "@/seo";
 import { routes } from "@routes";
 
-export const metadata: Metadata = {
+export const metadata = getPageMetadata({
   title: "Pro Construction Calc | Contractor-Grade Estimating for the Field",
   description:
     "Contractor-grade estimating for Mohawk Valley builders. Trade-specific calculators, NYS-aware tax math, and tools that match how crews actually work in the field.",
-  alternates: { canonical: "https://proconstructioncalc.com" },
-};
+  path: "/",
+});
 
 export default function HomePage() {
   return (

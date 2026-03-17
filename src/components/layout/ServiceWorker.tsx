@@ -3,8 +3,8 @@
 import { useEffect } from "react";
 
 /**
- * Registers the static service worker at /sw.js (file lives in public/sw.js).
- * Do not use /public/sw.js — Next/Vercel serve public assets at the root.
+ * Cleans up stale service worker registrations while /sw.js is served by the
+ * app route handler at src/app/sw.js/route.ts.
  */
 export function ServiceWorker() {
   useEffect(() => {

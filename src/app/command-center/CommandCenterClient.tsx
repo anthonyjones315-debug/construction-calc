@@ -294,7 +294,6 @@ export default function CommandCenterClient({
 
       const nextCode = payload.business?.joinCode ?? activeJoinCode;
       setActiveJoinCode(nextCode);
-      setJoinCodeLabel(nextCode);
 
       if (Array.isArray(payload.members)) {
         setMembers(

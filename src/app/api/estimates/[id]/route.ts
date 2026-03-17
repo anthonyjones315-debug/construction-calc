@@ -16,6 +16,7 @@ import {
   getSavedEstimatesTag,
 } from "@/lib/cache-tags";
 import { isEstimateStatus, type EstimateStatus } from "@/lib/estimates/status";
+import { normalizeDollars } from "@/utils/money";
 
 async function loadEstimateScope(
   db: ReturnType<typeof createServerClient>,
@@ -153,7 +154,7 @@ export async function PATCH(
         body.total_cost === null
           ? null
           : Number.isFinite(body.total_cost)
-            ? body.total_cost
+            ? normalizeDollars(body.total_cost)
             : null;
     }
     if (body.client_name !== undefined) {

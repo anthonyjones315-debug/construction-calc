@@ -1,51 +1,16 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import type { ReactNode } from "react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { JsonLD, getBlogPostSchema } from "@/seo";
+import { JsonLD, getBlogPostSchema, getPageMetadata } from "@/seo";
 import { BLOG_POSTS } from "@/data/blog";
 import { ArrowLeft } from "lucide-react";
 import { getBlogPostRoute, routes } from "@routes";
+import { ArticleMarkdown } from "@/components/content/ArticleMarkdown";
 
 interface Props {
   params: Promise<{ slug: string }>;
-}
-
-function renderInline(text: string): ReactNode[] {
-  const nodes: ReactNode[] = [];
-  const pattern = /(\*\*[^*]+\*\*|\[[^\]]+\]\(\/\))/g;
-  let lastIndex = 0;
-  let key = 0;
-
-  for (const match of text.matchAll(pattern)) {
-    const token = match[0];
-    const start = match.index ?? 0;
-
-    if (start > lastIndex) {
-      nodes.push(text.slice(lastIndex, start));
-    }
-
-    if (token.startsWith("**") && token.endsWith("**")) {
-      nodes.push(<strong key={`strong-${key++}`}>{token.slice(2, -2)}</strong>);
-    } else {
-      const linkText = token.slice(1, token.indexOf("]"));
-      nodes.push(
-        <Link key={`link-${key++}`} href="/" scroll={true}>
-          {linkText}
-        </Link>,
-      );
-    }
-
-    lastIndex = start + token.length;
-  }
-
-  if (lastIndex < text.length) {
-    nodes.push(text.slice(lastIndex));
-  }
-
-  return nodes;
 }
 
 export async function generateStaticParams() {
@@ -56,22 +21,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = BLOG_POSTS.find((p) => p.slug === slug);
   if (!post) return {};
-  return {
+  return getPageMetadata({
     title: `${post.title} | Pro Construction Calc`,
     description: post.description,
-    alternates: {
-      canonical: `https://proconstructioncalc.com${getBlogPostRoute(slug)}`,
-    },
-  };
+    path: getBlogPostRoute(slug),
+    type: "article",
+  });
 }
 
 export default async function BlogPost({ params }: Props) {
   const { slug } = await params;
   const post = BLOG_POSTS.find((p) => p.slug === slug);
   if (!post) notFound();
-
-  // Convert markdown-ish content to paragraphs for rendering
-  const sections = post.content.trim().split(/\n\n+/);
 
   return (
     <div className="page-shell flex min-h-screen flex-col">
@@ -80,12 +41,12 @@ export default async function BlogPost({ params }: Props) {
       <main id="main-content" className="flex-1">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
           <Link
-            href={routes.fieldNotes}
+            href={routes.blog}
             scroll={true}
             className="inline-flex items-center gap-1.5 text-sm text-[--color-ink-dim] hover:text-[--color-ink] mb-8 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to Field Notes
+            Back to Blog
           </Link>
 
           <div className="mb-4 flex items-center gap-2">
@@ -102,74 +63,8 @@ export default async function BlogPost({ params }: Props) {
             {post.description}
           </p>
 
-          <article
-            className="content-card p-8 prose prose-slate max-w-none
-              prose-headings:font-display prose-headings:font-bold prose-headings:text-[--color-ink]
-              prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-3
-              prose-h3:text-lg prose-h3:mt-6 prose-h3:mb-2
-              prose-p:text-[--color-ink-mid] prose-p:leading-relaxed
-              prose-li:text-[--color-ink-mid]
-              prose-strong:text-[--color-ink] prose-strong:font-semibold
-              prose-a:text-[--color-orange-brand] prose-a:no-underline hover:prose-a:underline
-              prose-table:text-sm prose-th:bg-[--color-surface-alt] prose-th:font-semibold
-              prose-hr:border-[--color-border]"
-          >
-            {sections.map((section, i) => {
-              if (section.startsWith("## ")) {
-                return <h2 key={i}>{section.replace("## ", "")}</h2>;
-              }
-              if (section.startsWith("### ")) {
-                return <h3 key={i}>{section.replace("### ", "")}</h3>;
-              }
-              if (section.startsWith("- ")) {
-                return (
-                  <ul key={i}>
-                    {section
-                      .split("\n")
-                      .filter((l) => l.startsWith("- "))
-                      .map((line, j) => (
-                        <li key={j}>{renderInline(line.replace("- ", ""))}</li>
-                      ))}
-                  </ul>
-                );
-              }
-              if (section.includes("|")) {
-                // Table
-                const rows = section.split("\n").filter((r) => r.includes("|"));
-                return (
-                  <div key={i} className="overflow-x-auto my-4">
-                    <table className="w-full overflow-hidden rounded-xl border border-[--color-border] text-sm">
-                      <tbody>
-                        {rows
-                          .filter((r) => !r.match(/^\|[-\s|]+\|$/))
-                          .map((row, j) => {
-                            const cells = row
-                              .split("|")
-                              .filter((c) => c.trim());
-                            return (
-                              <tr
-                                key={j}
-                                className={
-                                  j === 0
-                                    ? "bg-[--color-surface-alt] font-semibold"
-                                    : "trim-border border-t"
-                                }
-                              >
-                                {cells.map((cell, k) => (
-                                  <td key={k} className="px-3 py-2">
-                                    {cell.trim()}
-                                  </td>
-                                ))}
-                              </tr>
-                            );
-                          })}
-                      </tbody>
-                    </table>
-                  </div>
-                );
-              }
-              return <p key={i}>{renderInline(section)}</p>;
-            })}
+          <article className="content-card p-8">
+            <ArticleMarkdown content={post.content} />
           </article>
 
           <div className="mt-12 rounded-2xl border border-[--color-orange-brand]/20 bg-[--color-orange-soft] p-6">

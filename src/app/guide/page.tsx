@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { JsonLD } from "@/seo";
+import { JsonLD, getPageMetadata } from "@/seo";
 import { routes } from "@routes";
 import {
   Compass,
@@ -14,12 +14,12 @@ import {
   ArrowRightCircle,
 } from "lucide-react";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = getPageMetadata({
   title: "User Guide | Pro Construction Calc",
   description:
     "Fast start guide for Pro Construction Calc—pick the right tool, enter inputs, read results, and share estimates.",
-  alternates: { canonical: "https://proconstructioncalc.com/guide" },
-};
+  path: "/guide",
+});
 
 const HOW_TO_STEPS = [
   {
@@ -165,7 +165,7 @@ export default function GuidePage() {
                   2026 Compliance
                 </div>
                 <ul className="mt-3 space-y-2 text-sm text-[--color-ink-mid]">
-                  <li>All-electric new building mandate was slated for January 1, 2026 but is currently on hold (NYS Climate Act)—still plan electric service in bids where all-electric or electric-ready applies.</li>
+                  <li>The 2025 NYS code update took effect on December 31, 2025. The fossil-fuel equipment prohibitions are currently suspended by court order, so verify the live rule set before you lock equipment selections.</li>
                   <li>Town of Marcy Unified Development Code applies to local jobs; verify zoning and site plan requirements before permitting.</li>
                   <li>Use Tax Save calculator with ST-124 toggle for capital improvements to stay sales-tax compliant.</li>
                 </ul>

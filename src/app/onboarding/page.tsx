@@ -2,7 +2,14 @@ import type { Route } from "next";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth/config";
 import { createServerClient } from "@/lib/supabase/server";
+import { ensurePublicUser } from "@/lib/supabase/ensurePublicUser";
+import { getNoIndexMetadata } from "@/seo";
 import { routes } from "@routes";
+
+export const metadata = getNoIndexMetadata(
+  "Onboarding | Pro Construction Calc",
+  "Private onboarding flow for new Pro Construction Calc accounts.",
+);
 
 function getFirstValue(
   value: string | string[] | undefined,
@@ -126,7 +133,6 @@ export default async function OnboardingPage({
   const { session, userId } = await resolveUserId();
 
   if (!session?.user) {
-    console.log("Server Session:", session);
     const next = encodeURIComponent("/onboarding");
     redirect(`${routes.auth.signIn}?next=${next}&callbackUrl=${next}`);
   }
@@ -181,6 +187,8 @@ export default async function OnboardingPage({
 
     const serviceDb = createServerClient();
     const publicDb = serviceDb.schema("public");
+
+    await ensurePublicUser(serviceDb, session);
 
     const { data: currentMembership, error: currentMembershipError } =
       await publicDb
