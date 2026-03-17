@@ -120,6 +120,10 @@ export default function ForgotPasswordPage() {
                 Enter your email and we&apos;ll send a secure password reset
                 link.
               </p>
+              <p className="mt-2 text-xs leading-relaxed text-white/45">
+                Your replacement password will still need to meet the full
+                security requirements before it can be saved.
+              </p>
             </div>
 
             {success ? (

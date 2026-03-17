@@ -39,6 +39,7 @@ export function PWAInstallBanner() {
 
   useEffect(() => {
     let handler: ((e: Event) => void) | null = null;
+    let mediaQueryHandler: (() => void) | null = null;
     let frame: number | null = null;
     let mql: MediaQueryList | null = null;
 
@@ -77,7 +78,7 @@ export function PWAInstallBanner() {
       // Keep banner state in sync if the user installs the app while the page is open.
       if ("matchMedia" in window) {
         mql = window.matchMedia("(display-mode: standalone)");
-        const handleChange = () => {
+        mediaQueryHandler = () => {
           const nowStandalone =
             mql?.matches ||
             (("standalone" in window.navigator &&
@@ -89,7 +90,7 @@ export function PWAInstallBanner() {
             setVisible(false);
           }
         };
-        mql.addEventListener("change", handleChange);
+        mql.addEventListener("change", mediaQueryHandler);
       }
     };
 
@@ -98,9 +99,9 @@ export function PWAInstallBanner() {
     return () => {
       if (typeof frame === "number") cancelAnimationFrame(frame);
       if (handler) window.removeEventListener("beforeinstallprompt", handler);
-      if (mql) {
+      if (mql && mediaQueryHandler) {
         try {
-          mql.removeEventListener("change", () => {});
+          mql.removeEventListener("change", mediaQueryHandler);
         } catch {
           // Older Safari may not support removeEventListener on MediaQueryList; ignore.
         }
@@ -127,9 +128,9 @@ export function PWAInstallBanner() {
     <div
       role="banner"
       aria-label="Install Pro Construction Calc"
-      className="fixed inset-x-0 z-40 border-b border-orange-700/60 bg-orange-600 shadow-[0_4px_16px_rgba(0,0,0,0.4)] top-[env(safe-area-inset-top,0px)] sm:top-10 md:top-12"
+      className="fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom,0px)+0.5rem)] z-40 px-3 sm:bottom-auto sm:top-[calc(env(safe-area-inset-top,0px)+2.5rem)] sm:px-4 md:top-[calc(env(safe-area-inset-top,0px)+3rem)]"
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-2.5">
+      <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 rounded-2xl border border-orange-700/60 bg-orange-600 px-4 py-3 shadow-[0_12px_28px_rgba(0,0,0,0.4)] sm:max-w-7xl sm:rounded-2xl">
         {isIOS ? (
           <>
             <p className="flex min-w-0 items-center gap-2 text-sm font-semibold text-white">
@@ -160,7 +161,7 @@ export function PWAInstallBanner() {
           <>
             <p className="flex min-w-0 items-center gap-2 text-sm font-semibold text-white">
               <span aria-hidden>👷</span>
-              <span className="truncate">
+              <span className="min-w-0 text-left sm:truncate">
                 Add Pro Construction Calc to your home screen for instant field
                 use.
               </span>

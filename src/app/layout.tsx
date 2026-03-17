@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Oswald, Inter, JetBrains_Mono } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
-import { CookieConsentBanner } from "@/components/layout/CookieConsentBanner";
 import { OptionalTracking } from "@/components/layout/OptionalTracking";
 import { ServiceWorker } from "@/components/layout/ServiceWorker";
 import { ScrollToTop } from "@/components/layout/ScrollToTop";
@@ -18,7 +17,6 @@ import {
   BUSINESS_REGION,
   BUSINESS_SITE_URL,
 } from "@/lib/business-identity";
-import { GoogleAnalytics } from "@next/third-parties/google";
 
 const TERMELY_WEBSITE_UUID =
   process.env.NEXT_PUBLIC_TERMELY_WEBSITE_UUID ??
@@ -30,6 +28,9 @@ const TERMELY_MASTER_CONSENTS_ORIGIN =
 const TERMELY_AUTO_BLOCK =
   process.env.NEXT_PUBLIC_TERMELY_AUTO_BLOCK === "true" ||
   process.env.TERMELY_AUTO_BLOCK === "true";
+const SHOULD_LINK_MANIFEST =
+  process.env.VERCEL_ENV === "production" ||
+  process.env.NODE_ENV !== "production";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -120,6 +121,9 @@ export default function RootLayout({
     <html lang="en" className="bg-slate-950 text-slate-200">
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        {SHOULD_LINK_MANIFEST ? (
+          <link rel="manifest" href="/app.webmanifest" />
+        ) : null}
         {/*
           Critical CSS vars injected inline so Slate & Orange theme colors
           are available before the external stylesheet or any font loads.
@@ -175,14 +179,12 @@ export default function RootLayout({
             </Providers>
           </CSPostHogProvider>
         </Suspense>
-        <CookieConsentBanner />
         <ServiceWorker />
         <OptionalTracking />
         <PWAInstallBanner />
         <Suspense fallback={null}>
           <CrispChat />
         </Suspense>
-        <GoogleAnalytics gaId="G-X2G03GC8GL" />
       </body>
     </html>
   );

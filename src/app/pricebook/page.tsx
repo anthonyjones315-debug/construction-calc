@@ -488,9 +488,9 @@ function PriceBookContent() {
 
 export default function PriceBookPage() {
   return (
-    <div className="page-shell flex min-h-screen flex-col bg-[--color-bg]">
+    <div className="page-shell flex min-h-dvh flex-col bg-[--color-bg]">
       <Header />
-      <main id="main-content" className="flex-1">
+      <main id="main-content" className="min-h-0 flex-1 overflow-y-auto">
         <PriceBookContent />
       </main>
       <Footer />

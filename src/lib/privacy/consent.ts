@@ -1,133 +1,98 @@
-export const COOKIE_CONSENT_STORAGE_KEY = "bcp-cookie-consent-v1";
-export const COOKIE_CONSENT_SESSION_STORAGE_KEY =
-  "bcp-cookie-consent-session-v1";
-export const COOKIE_CONSENT_COOKIE_NAME = "bcp_cookie_consent";
-export const COOKIE_PREFERENCES_OPEN_EVENT = "bcp:open-cookie-preferences";
 export const COOKIE_CONSENT_CHANGED_EVENT = "bcp:cookie-consent-changed";
 
 export type CookieConsentChoice = "accepted" | "rejected";
+export type TermlyConsentCategory =
+  | "essential"
+  | "performance"
+  | "analytics"
+  | "advertising"
+  | "social_networking"
+  | "unclassified";
+export type TermlyConsentState = Partial<Record<TermlyConsentCategory, boolean>>;
 
-let inMemoryCookieConsent: CookieConsentChoice | null = null;
-
-function canUseStorage(storage: Storage): boolean {
-  try {
-    const key = "bcp-cookie-consent-storage-check";
-    storage.setItem(key, "1");
-    storage.removeItem(key);
-    return true;
-  } catch {
-    return false;
+declare global {
+  interface Window {
+    Termly?: {
+      getConsentState?: () => TermlyConsentState | null | undefined;
+      on?: (
+        event: "initialized" | "consent",
+        callback: (data?: unknown) => void,
+      ) => void;
+      initialize?: () => void;
+    };
   }
 }
 
-function parseCookieValue(cookieName: string): string | null {
-  if (typeof document === "undefined") return null;
+const OPTIONAL_CATEGORIES: TermlyConsentCategory[] = [
+  "performance",
+  "analytics",
+  "advertising",
+  "social_networking",
+];
 
-  try {
-    const encodedName = `${cookieName}=`;
-    const match = document.cookie
-      .split(";")
-      .map((part) => part.trim())
-      .find((part) => part.startsWith(encodedName));
+let inMemoryConsentState: TermlyConsentState | null = null;
 
-    return match ? decodeURIComponent(match.slice(encodedName.length)) : null;
-  } catch {
-    return null;
+function sanitizeConsentState(
+  value: TermlyConsentState | null | undefined,
+): TermlyConsentState | null {
+  if (!value || typeof value !== "object") return null;
+
+  const categories: TermlyConsentCategory[] = [
+    "essential",
+    "performance",
+    "analytics",
+    "advertising",
+    "social_networking",
+    "unclassified",
+  ];
+
+  const nextState: TermlyConsentState = {};
+
+  for (const category of categories) {
+    if (typeof value[category] === "boolean") {
+      nextState[category] = value[category];
+    }
   }
+
+  return Object.keys(nextState).length > 0 ? nextState : null;
 }
 
-function readLocalStorageConsent(): CookieConsentChoice | null {
-  if (typeof window === "undefined") return null;
+export function readConsentState(): TermlyConsentState | null {
+  if (typeof window === "undefined") return inMemoryConsentState;
 
-  if (!canUseStorage(window.localStorage)) {
-    return null;
+  const termlyState = sanitizeConsentState(
+    window.Termly?.getConsentState?.(),
+  );
+  if (termlyState) {
+    inMemoryConsentState = termlyState;
+    return termlyState;
   }
 
-  try {
-    const stored = window.localStorage.getItem(COOKIE_CONSENT_STORAGE_KEY);
-    return stored === "accepted" || stored === "rejected" ? stored : null;
-  } catch {
-    return null;
-  }
+  return inMemoryConsentState;
 }
 
-function readSessionStorageConsent(): CookieConsentChoice | null {
-  if (typeof window === "undefined") return null;
-
-  if (!canUseStorage(window.sessionStorage)) {
-    return null;
-  }
-
-  try {
-    const stored = window.sessionStorage.getItem(
-      COOKIE_CONSENT_SESSION_STORAGE_KEY,
-    );
-    return stored === "accepted" || stored === "rejected" ? stored : null;
-  } catch {
-    return null;
-  }
+export function hasConsentFor(category: TermlyConsentCategory): boolean {
+  const state = readConsentState();
+  return state?.[category] === true;
 }
 
 export function readCookieConsent(): CookieConsentChoice | null {
-  const hasLocalStorage =
-    typeof window !== "undefined" && canUseStorage(window.localStorage);
-
-  const stored = readLocalStorageConsent();
-  if (stored) {
-    inMemoryCookieConsent = stored;
-    return stored;
-  }
-
-  if (!hasLocalStorage) {
-    const sessionStored = readSessionStorageConsent();
-    if (sessionStored) {
-      inMemoryCookieConsent = sessionStored;
-      return sessionStored;
-    }
-  }
-
-  const cookieValue = parseCookieValue(COOKIE_CONSENT_COOKIE_NAME);
-  if (cookieValue === "accepted" || cookieValue === "rejected") {
-    inMemoryCookieConsent = cookieValue;
-    return cookieValue;
-  }
-
-  return inMemoryCookieConsent;
+  const state = readConsentState();
+  if (!state) return null;
+  return OPTIONAL_CATEGORIES.some((category) => state[category] === true)
+    ? "accepted"
+    : "rejected";
 }
 
-export function writeCookieConsent(choice: CookieConsentChoice) {
+export function notifyConsentChanged(state?: TermlyConsentState | null) {
   if (typeof window === "undefined") return;
-
-  inMemoryCookieConsent = choice;
-
-  const hasLocalStorage = canUseStorage(window.localStorage);
-
-  try {
-    if (hasLocalStorage) {
-      window.localStorage.setItem(COOKIE_CONSENT_STORAGE_KEY, choice);
-    }
-  } catch {
-    // Storage can be blocked by privacy settings. Keep the in-memory choice.
+  const nextState = sanitizeConsentState(state ?? readConsentState());
+  if (nextState) {
+    inMemoryConsentState = nextState;
   }
-
-  if (!hasLocalStorage) {
-    try {
-      window.sessionStorage.setItem(COOKIE_CONSENT_SESSION_STORAGE_KEY, choice);
-    } catch {
-      // Session storage may also be blocked.
-    }
-  }
-
-  if (typeof document !== "undefined") {
-    try {
-      const secure = window.location.protocol === "https:" ? "; Secure" : "";
-      document.cookie = `${COOKIE_CONSENT_COOKIE_NAME}=${encodeURIComponent(choice)}; Max-Age=31536000; Path=/; SameSite=Lax${secure}`;
-    } catch {
-      // Some browsers block cookie writes until consent is granted.
-    }
-  }
-
   window.dispatchEvent(
-    new CustomEvent(COOKIE_CONSENT_CHANGED_EVENT, { detail: choice }),
+    new CustomEvent(COOKIE_CONSENT_CHANGED_EVENT, {
+      detail: readCookieConsent(),
+    }),
   );
 }

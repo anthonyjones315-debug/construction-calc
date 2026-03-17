@@ -40,7 +40,7 @@ function buildFormData() {
   const formData = new FormData();
   formData.set("fullName", "Sam Builder");
   formData.set("email", "sam@example.com");
-  formData.set("password", "supersecret123");
+  formData.set("password", "SuperSecret123!");
   return formData;
 }
 

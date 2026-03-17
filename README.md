@@ -27,7 +27,11 @@ Native contractor guidance hub with on-site articles for regional tax, estimatin
 
 ### Field Access
 
-Mobile install prompts are available for field use, and the app currently prioritizes loading the latest live version by clearing stale service workers on launch.
+Mobile install prompts are available for field use, and the app now uses a custom service worker to support a more app-like PWA experience with offline fallback, install shortcuts, and update-aware field access.
+
+### Account Security
+
+Email/password accounts can enable email 2FA with a 6-digit code flow. Codes are delivered through Resend using a lightweight branded HTML template and expire after 5 minutes.
 
 ### Sentry Audit
 

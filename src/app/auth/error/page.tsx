@@ -2,10 +2,13 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useEffect, useMemo } from "react";
 import { HardHat } from "lucide-react";
 import { routes } from "@routes";
 import { useSession } from "next-auth/react";
+import * as Sentry from "@sentry/nextjs";
+import { ManualErrorReportButton } from "@/components/support/ManualErrorReportButton";
+import { BUSINESS_EMAIL } from "@/lib/business-identity";
 
 type AuthErrorContentModel = {
   title: string;
@@ -94,6 +97,29 @@ function AuthErrorContent() {
     errorMessages.Default.recoverySteps;
   const primaryActionLabel =
     errorMessages[errorCode]?.primaryActionLabel ?? "Try Sign In Again";
+  const fallbackReference = `auth-${rawErrorCode.toLowerCase()}`;
+  const supportError = useMemo(
+    () =>
+      Object.assign(
+        new Error(`${title}: ${description}`),
+        { digest: fallbackReference },
+      ),
+    [description, fallbackReference, title],
+  );
+
+  useEffect(() => {
+    Sentry.captureMessage("Auth error page shown", {
+      level: "warning",
+      tags: {
+        area: "auth",
+        error_code: rawErrorCode,
+      },
+      extra: {
+        href:
+          typeof window !== "undefined" ? window.location.href : undefined,
+      },
+    });
+  }, [rawErrorCode]);
 
   return (
     <main
@@ -154,6 +180,7 @@ function AuthErrorContent() {
           <div className="space-y-3">
             <Link
               href={routes.auth.signIn}
+              prefetch={false}
               className="block w-full rounded-lg bg-[--color-orange-brand] px-4 py-2.5 text-sm font-black text-white transition hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-slate-950"
             >
               {primaryActionLabel}
@@ -167,6 +194,20 @@ function AuthErrorContent() {
             >
               Back to Command Center
             </button>
+            <ManualErrorReportButton
+              error={supportError}
+              source="auth-error-page"
+              buttonLabel="Send backup report"
+              className="w-full"
+            />
+            <a
+              href={`mailto:${BUSINESS_EMAIL}?subject=${encodeURIComponent(
+                `Auth error: ${rawErrorCode}`,
+              )}`}
+              className="block w-full rounded-lg border border-slate-800 bg-transparent px-4 py-2.5 text-sm font-medium text-slate-400 transition hover:bg-slate-800/50 hover:text-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2 focus:ring-offset-slate-950"
+            >
+              Contact Us
+            </a>
           </div>
         </section>
 

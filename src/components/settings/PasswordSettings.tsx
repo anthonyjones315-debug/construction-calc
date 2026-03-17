@@ -6,9 +6,10 @@ import { Loader2, LockKeyhole, Trash2 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import {
   PASSWORD_MIN_LENGTH,
-  PASSWORD_REQUIREMENTS,
+  isPasswordPolicySatisfied,
   getPasswordPolicyError,
 } from "@/lib/security/password-policy";
+import { PasswordRequirements } from "@/components/auth/PasswordRequirements";
 
 async function parseJsonSafe(
   response: Response,
@@ -26,6 +27,10 @@ async function parseJsonSafe(
 export function PasswordSettings() {
   const { data: session } = useSession();
   const [authProviders, setAuthProviders] = useState<string[]>([]);
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState<boolean | null>(null);
+  const [twoFactorSaving, setTwoFactorSaving] = useState(false);
+  const [twoFactorError, setTwoFactorError] = useState("");
+  const [twoFactorSuccess, setTwoFactorSuccess] = useState("");
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: "",
     newPassword: "",
@@ -60,8 +65,44 @@ export function PasswordSettings() {
     })();
   }, [session?.user?.id]);
 
+  useEffect(() => {
+    if (!session?.user?.id) return;
+
+    (async () => {
+      try {
+        const response = await fetch("/api/user-preferences", {
+          cache: "no-store",
+        });
+        const payload = await parseJsonSafe(response);
+        if (!response.ok) return;
+        const preferences =
+          payload.preferences && typeof payload.preferences === "object"
+            ? (payload.preferences as { twoFactorEnabled?: unknown })
+            : null;
+        setTwoFactorEnabled(
+          typeof preferences?.twoFactorEnabled === "boolean"
+            ? preferences.twoFactorEnabled
+            : null,
+        );
+      } catch {
+        setTwoFactorEnabled(null);
+      }
+    })();
+  }, [session?.user?.id]);
+
   const hasCredentialsProvider = authProviders.includes("credentials");
   const hasGoogleProvider = authProviders.includes("google");
+  const passwordsMatch =
+    passwordForm.confirmPassword.length > 0 &&
+    passwordForm.newPassword === passwordForm.confirmPassword;
+  const isPasswordValid = isPasswordPolicySatisfied(passwordForm.newPassword);
+  const canSubmitPasswordChange =
+    passwordForm.currentPassword.trim().length > 0 &&
+    passwordForm.newPassword.length > 0 &&
+    passwordForm.confirmPassword.length > 0 &&
+    isPasswordValid &&
+    passwordsMatch &&
+    !passwordSaving;
 
   async function handlePasswordChange(e: React.FormEvent) {
     e.preventDefault();
@@ -108,6 +149,44 @@ export function PasswordSettings() {
     }
   }
 
+  async function handleTwoFactorToggle(next: boolean) {
+    setTwoFactorError("");
+    setTwoFactorSuccess("");
+    setTwoFactorSaving(true);
+
+    try {
+      const response = await fetch("/api/user-preferences", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ twoFactorEnabled: next }),
+      });
+      const payload = await parseJsonSafe(response);
+
+      if (!response.ok) {
+        throw new Error(
+          typeof payload.error === "string"
+            ? payload.error
+            : "Unable to update two-factor authentication.",
+        );
+      }
+
+      setTwoFactorEnabled(next);
+      setTwoFactorSuccess(
+        next
+          ? "Email 2FA enabled. Future email sign-ins will require a 6-digit security code."
+          : "Email 2FA disabled.",
+      );
+    } catch (error) {
+      setTwoFactorError(
+        error instanceof Error
+          ? error.message
+          : "Unable to update two-factor authentication.",
+      );
+    } finally {
+      setTwoFactorSaving(false);
+    }
+  }
+
   if (!session) return null;
 
   return (
@@ -131,102 +210,138 @@ export function PasswordSettings() {
       )}
 
       {hasCredentialsProvider && (
-        <form onSubmit={handlePasswordChange} className="space-y-4">
-          <div>
-            <label className="mb-1 block text-sm font-medium text-[--color-ink-mid]">
-              Current Password
-            </label>
-            <input
-              type="password"
-              autoComplete="current-password"
-              value={passwordForm.currentPassword}
-              onChange={(e) =>
-                setPasswordForm((current) => ({
-                  ...current,
-                  currentPassword: e.target.value,
-                }))
-              }
-              required
-              className="w-full rounded-xl border border-slate-500 bg-[--color-surface-alt] px-4 py-2.5 text-sm text-[--color-ink] focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
-            />
-          </div>
+        <div className="space-y-6">
+          <div className="rounded-xl border border-[--color-border] bg-[--color-surface-alt] px-4 py-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm font-semibold text-[--color-ink]">
+                  Email security code (2FA)
+                </p>
+                <p className="mt-1 text-sm text-[--color-ink-dim]">
+                  After entering your password, we will email a 6-digit code that expires in 5 minutes.
+                </p>
+              </div>
+              <button
+                type="button"
+                disabled={twoFactorSaving}
+                onClick={() => handleTwoFactorToggle(!(twoFactorEnabled === true))}
+                className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[--color-nav-bg] px-4 text-sm font-bold text-white transition hover:opacity-95 disabled:opacity-70"
+              >
+                {twoFactorSaving
+                  ? "Saving..."
+                  : twoFactorEnabled
+                    ? "Disable 2FA"
+                    : "Enable 2FA"}
+              </button>
+            </div>
 
-          <div>
-            <label className="mb-1 block text-sm font-medium text-[--color-ink-mid]">
-              New Password
-            </label>
-            <input
-              type="password"
-              autoComplete="new-password"
-              minLength={PASSWORD_MIN_LENGTH}
-              value={passwordForm.newPassword}
-              onChange={(e) =>
-                setPasswordForm((current) => ({
-                  ...current,
-                  newPassword: e.target.value,
-                }))
-              }
-              required
-              className="w-full rounded-xl border border-slate-500 bg-[--color-surface-alt] px-4 py-2.5 text-sm text-[--color-ink] focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
-            />
-          </div>
-
-          <div>
-            <label className="mb-1 block text-sm font-medium text-[--color-ink-mid]">
-              Confirm New Password
-            </label>
-            <input
-              type="password"
-              autoComplete="new-password"
-              minLength={PASSWORD_MIN_LENGTH}
-              value={passwordForm.confirmPassword}
-              onChange={(e) =>
-                setPasswordForm((current) => ({
-                  ...current,
-                  confirmPassword: e.target.value,
-                }))
-              }
-              required
-              className="w-full rounded-xl border border-slate-500 bg-[--color-surface-alt] px-4 py-2.5 text-sm text-[--color-ink] focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
-            />
-          </div>
-
-          <div className="rounded-xl border border-[--color-border] bg-[--color-surface-alt] px-4 py-3">
-            <p className="mb-2 text-xs font-bold uppercase tracking-widest text-[--color-ink-dim]">
-              Password Requirements
-            </p>
-            <ul className="space-y-1 text-xs text-[--color-ink-dim]">
-              {PASSWORD_REQUIREMENTS.map((requirement) => (
-                <li key={requirement}>{requirement}</li>
-              ))}
-            </ul>
-          </div>
-
-          {passwordError && (
-            <p className="rounded-lg border border-red-500/25 bg-red-500/8 px-4 py-2 text-sm text-red-600">
-              {passwordError}
-            </p>
-          )}
-
-      {passwordSuccess && (
-        <p className="rounded-lg border border-emerald-500/25 bg-emerald-500/8 px-4 py-2 text-sm text-emerald-700">
-          {passwordSuccess}
-        </p>
-      )}
-
-          <button
-            type="submit"
-            disabled={passwordSaving}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[--color-nav-bg] py-3 font-bold text-white transition-all hover:opacity-95 disabled:opacity-70"
-          >
-            {passwordSaving ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <LockKeyhole className="h-4 w-4" />
+            {twoFactorError && (
+              <p className="mt-3 rounded-lg border border-red-500/25 bg-red-500/8 px-4 py-2 text-sm text-red-600">
+                {twoFactorError}
+              </p>
             )}
-            {passwordSaving ? "Updating Password..." : "Update Password"}
-          </button>
-        </form>
+            {twoFactorSuccess && (
+              <p className="mt-3 rounded-lg border border-emerald-500/25 bg-emerald-500/8 px-4 py-2 text-sm text-emerald-700">
+                {twoFactorSuccess}
+              </p>
+            )}
+          </div>
+
+          <form onSubmit={handlePasswordChange} className="space-y-4">
+            <div>
+              <label className="mb-1 block text-sm font-medium text-[--color-ink-mid]">
+                Current Password
+              </label>
+              <input
+                type="password"
+                autoComplete="current-password"
+                value={passwordForm.currentPassword}
+                onChange={(e) =>
+                  setPasswordForm((current) => ({
+                    ...current,
+                    currentPassword: e.target.value,
+                  }))
+                }
+                required
+                className="w-full rounded-xl border border-slate-500 bg-[--color-surface-alt] px-4 py-2.5 text-sm text-[--color-ink] focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-[--color-ink-mid]">
+                New Password
+              </label>
+              <input
+                type="password"
+                autoComplete="new-password"
+                minLength={PASSWORD_MIN_LENGTH}
+                value={passwordForm.newPassword}
+                onChange={(e) =>
+                  setPasswordForm((current) => ({
+                    ...current,
+                    newPassword: e.target.value,
+                  }))
+                }
+                required
+                aria-describedby="settings-password-requirements"
+                className="w-full rounded-xl border border-slate-500 bg-[--color-surface-alt] px-4 py-2.5 text-sm text-[--color-ink] focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-[--color-ink-mid]">
+                Confirm New Password
+              </label>
+              <input
+                type="password"
+                autoComplete="new-password"
+                minLength={PASSWORD_MIN_LENGTH}
+                value={passwordForm.confirmPassword}
+                onChange={(e) =>
+                  setPasswordForm((current) => ({
+                    ...current,
+                    confirmPassword: e.target.value,
+                  }))
+                }
+                required
+                className="w-full rounded-xl border border-slate-500 bg-[--color-surface-alt] px-4 py-2.5 text-sm text-[--color-ink] focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              />
+            </div>
+
+            <div id="settings-password-requirements">
+              <PasswordRequirements
+                password={passwordForm.newPassword}
+                confirmPassword={passwordForm.confirmPassword}
+                showMatchRule
+              />
+            </div>
+
+            {passwordError && (
+              <p className="rounded-lg border border-red-500/25 bg-red-500/8 px-4 py-2 text-sm text-red-600">
+                {passwordError}
+              </p>
+            )}
+
+            {passwordSuccess && (
+              <p className="rounded-lg border border-emerald-500/25 bg-emerald-500/8 px-4 py-2 text-sm text-emerald-700">
+                {passwordSuccess}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              disabled={!canSubmitPasswordChange}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[--color-nav-bg] py-3 font-bold text-white transition-all hover:opacity-95 disabled:opacity-70"
+            >
+              {passwordSaving ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <LockKeyhole className="h-4 w-4" />
+              )}
+              {passwordSaving ? "Updating Password..." : "Update Password"}
+            </button>
+          </form>
+        </div>
       )}
 
       <div className="mt-10 border-t border-[--color-border]/60 pt-6">

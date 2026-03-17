@@ -106,9 +106,9 @@ export default async function SavedEstimateDetailPage({ params }: Props) {
   const invoices = parseInvoices(estimate.inputs, estimate.id);
 
   return (
-    <div className="flex min-h-screen flex-col bg-[--color-bg]">
+    <div className="flex min-h-dvh flex-col bg-[--color-bg]">
       <Header />
-      <main id="main-content" className="flex-1">
+      <main id="main-content" className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
           <div className="mb-6 flex items-start justify-between gap-4">
             <div>

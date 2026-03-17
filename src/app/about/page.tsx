@@ -75,9 +75,9 @@ const workflowSteps = [
 
 export default function AboutPage() {
   return (
-    <div className="command-theme page-shell flex min-h-screen flex-col bg-[--color-bg] text-[--color-ink]">
+    <div className="command-theme page-shell flex min-h-dvh flex-col bg-[--color-bg] text-[--color-ink]">
       <Header />
-      <main id="main-content" className="flex-1">
+      <main id="main-content" className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
           <section className="dark-feature-panel relative overflow-hidden px-6 py-7 text-white sm:px-8 sm:py-8">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(249,115,22,0.16),transparent_34%),linear-gradient(135deg,rgba(15,23,42,0.96),rgba(2,6,23,0.98))]" />
@@ -120,6 +120,7 @@ export default function AboutPage() {
                   </Link>
                   <Link
                     href={routes.commandCenter}
+                    prefetch={false}
                     className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/12 bg-white/5 px-4 py-3 text-sm font-semibold uppercase tracking-[0.08em] text-[--color-nav-text] transition-all duration-200 hover:border-[--color-orange-brand]/45 hover:text-white active:scale-[0.98]"
                   >
                     Command Center

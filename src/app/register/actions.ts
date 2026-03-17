@@ -5,6 +5,7 @@ import { createServerClient } from "@/lib/supabase/server";
 import { getPostHogClient } from "@/lib/posthog-server";
 import { sendWelcomeEmail } from "@/lib/email/welcome";
 import { ensurePublicUserRecord } from "@/lib/supabase/ensurePublicUser";
+import { routes } from "@routes";
 import {
   getPasswordPolicyError,
   PASSWORD_MAX_LENGTH,
@@ -14,6 +15,7 @@ import {
 export type RegisterActionState = {
   status: "idle" | "success" | "error";
   message?: string;
+  redirectTo?: string;
 };
 
 type SupabaseErrorLike = {
@@ -263,5 +265,8 @@ export async function registerUserAction(
     message: welcomeEmailSent
       ? "Account created. Check your inbox for a welcome email, then sign in."
       : "Account created. You can now sign in.",
+    redirectTo: `${routes.auth.signIn}?registered=1&welcome=1&callbackUrl=${encodeURIComponent(
+      routes.commandCenter,
+    )}`,
   };
 }

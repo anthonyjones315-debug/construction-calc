@@ -16,9 +16,9 @@ export const metadata: Metadata = getPageMetadata({
 
 export default function TermsPage() {
   return (
-    <div className="page-shell flex min-h-screen flex-col">
+    <div className="page-shell flex min-h-dvh flex-col">
       <Header />
-      <main id="main-content" className="flex-1">
+      <main id="main-content" className="min-h-0 flex-1 overflow-y-auto">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
           <div className="dark-feature-panel mb-8 p-6 text-white">
             <p className="section-kicker">Rules of use</p>

@@ -3,14 +3,14 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { CheckCircle2, HardHat } from "lucide-react";
+import { HardHat } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import {
   PASSWORD_MIN_LENGTH,
-  PASSWORD_REQUIREMENTS,
-  getPasswordPolicyChecks,
+  isPasswordPolicySatisfied,
   getPasswordPolicyError,
 } from "@/lib/security/password-policy";
+import { PasswordRequirements } from "@/components/auth/PasswordRequirements";
 import { routes } from "@routes";
 
 const REDIRECT_DELAY_MS = 2000;
@@ -22,7 +22,16 @@ export default function ResetPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showToast, setShowToast] = useState(false);
-  const passwordChecks = getPasswordPolicyChecks(password);
+  const passwordsMatch =
+    confirmPassword.length > 0 && password === confirmPassword;
+  const isPasswordValid = isPasswordPolicySatisfied(password);
+  const canSubmit =
+    !isLoading &&
+    !showToast &&
+    password.length > 0 &&
+    confirmPassword.length > 0 &&
+    isPasswordValid &&
+    passwordsMatch;
 
   useEffect(() => {
     if (!showToast) return;
@@ -135,10 +144,14 @@ export default function ResetPasswordPage() {
               type="password"
               autoComplete="new-password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setError(null);
+              }}
               required
               minLength={PASSWORD_MIN_LENGTH}
               placeholder={`At least ${PASSWORD_MIN_LENGTH} characters`}
+              aria-describedby="reset-password-requirements"
               className="w-full rounded-lg border border-slate-500 bg-slate-900 px-3.5 py-2.5 text-sm text-white placeholder-white/40 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500 transition"
             />
           </div>
@@ -156,7 +169,10 @@ export default function ResetPasswordPage() {
               type="password"
               autoComplete="new-password"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={(e) => {
+                setConfirmPassword(e.target.value);
+                setError(null);
+              }}
               required
               minLength={PASSWORD_MIN_LENGTH}
               placeholder="Re-enter your new password"
@@ -164,43 +180,18 @@ export default function ResetPasswordPage() {
             />
           </div>
 
-          <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4">
-            <p className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-orange-400">
-              Password Requirements
-            </p>
-            <ul className="space-y-2 text-xs text-white/70">
-              {PASSWORD_REQUIREMENTS.map((requirement) => {
-                const isSatisfied =
-                  requirement === `Use ${PASSWORD_MIN_LENGTH}-72 characters`
-                    ? passwordChecks.length
-                    : requirement === "Include at least one uppercase letter"
-                      ? passwordChecks.uppercase
-                      : requirement === "Include at least one lowercase letter"
-                        ? passwordChecks.lowercase
-                        : requirement === "Include at least one number"
-                          ? passwordChecks.number
-                          : requirement === "Include at least one special character"
-                            ? passwordChecks.special
-                            : passwordChecks.noSpaces;
-
-                return (
-                  <li key={requirement} className="flex items-center gap-2">
-                    <CheckCircle2
-                      className={`h-4 w-4 shrink-0 ${
-                        isSatisfied ? "text-emerald-400" : "text-slate-600"
-                      }`}
-                      aria-hidden
-                    />
-                    <span>{requirement}</span>
-                  </li>
-                );
-              })}
-            </ul>
+          <div id="reset-password-requirements">
+            <PasswordRequirements
+              password={password}
+              confirmPassword={confirmPassword}
+              showMatchRule
+              className="bg-slate-950/70"
+            />
           </div>
 
           <button
             type="submit"
-            disabled={isLoading || showToast}
+            disabled={!canSubmit}
             className="w-full rounded-lg bg-[--color-orange-brand] px-4 py-3 text-sm font-black text-white transition hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:cursor-wait disabled:opacity-60"
           >
             {isLoading ? "Updating…" : "UPDATE & SIGN IN"}

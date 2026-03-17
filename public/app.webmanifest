@@ -1,0 +1,58 @@
+{
+  "name": "Pro Construction Calc",
+  "short_name": "Pro Calc",
+  "description": "Free construction calculators for concrete, framing, roofing, insulation, and flooring.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#020617",
+  "orientation": "portrait-primary",
+  "shortcuts": [
+    {
+      "name": "Command Center",
+      "short_name": "Dashboard",
+      "description": "Open your contractor workspace.",
+      "url": "/command-center"
+    },
+    {
+      "name": "Calculator Library",
+      "short_name": "Calculators",
+      "description": "Jump into field math fast.",
+      "url": "/calculators"
+    },
+    {
+      "name": "Saved Estimates",
+      "short_name": "Saved",
+      "description": "Open saved proposals and drafts.",
+      "url": "/saved"
+    }
+  ],
+  "icons": [
+    {
+      "src": "/icon",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-512",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

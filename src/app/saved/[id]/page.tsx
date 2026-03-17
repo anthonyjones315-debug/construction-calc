@@ -15,9 +15,9 @@ export default async function EstimateDetailPage({ params }: Props) {
   if (!estimate) notFound();
 
   return (
-    <div className="flex flex-col min-h-screen bg-[--color-bg]">
+    <div className="flex min-h-dvh flex-col bg-[--color-bg]">
       <Header />
-      <main id="main-content" className="flex-1">
+      <main id="main-content" className="min-h-0 flex-1 overflow-y-auto">
         <EstimateDetail estimate={estimate} />
       </main>
       <Footer />

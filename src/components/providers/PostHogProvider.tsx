@@ -6,8 +6,7 @@ import posthog from "posthog-js";
 import { ReactNode, useEffect, useState } from "react";
 import {
   COOKIE_CONSENT_CHANGED_EVENT,
-  readCookieConsent,
-  type CookieConsentChoice,
+  hasConsentFor,
 } from "@/lib/privacy/consent";
 
 type Props = {
@@ -27,8 +26,8 @@ type PostHogWindowFlags = {
 
 export function CSPostHogProvider({ children }: Props) {
   const pathname = usePathname();
-  const [consent, setConsent] = useState<CookieConsentChoice | null>(() =>
-    readCookieConsent(),
+  const [canTrack, setCanTrack] = useState<boolean>(() =>
+    hasConsentFor("analytics"),
   );
   const token =
     process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN ?? process.env.NEXT_PUBLIC_POSTHOG_KEY;
@@ -36,12 +35,10 @@ export function CSPostHogProvider({ children }: Props) {
   // don't trip CSP on direct PostHog asset/config/event calls.
   const host = "/ingest";
   const isHomePage = pathname === "/";
-  const canTrack = consent === "accepted";
 
   useEffect(() => {
-    function handleConsentChange(event: Event) {
-      const detail = (event as CustomEvent<CookieConsentChoice>).detail;
-      setConsent(detail ?? readCookieConsent());
+    function handleConsentChange() {
+      setCanTrack(hasConsentFor("analytics"));
     }
 
     window.addEventListener(COOKIE_CONSENT_CHANGED_EVENT, handleConsentChange);

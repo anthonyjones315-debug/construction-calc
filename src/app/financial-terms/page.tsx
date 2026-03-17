@@ -36,9 +36,12 @@ export default function FinancialTermsPage() {
   };
 
   return (
-    <div className="page-shell flex min-h-screen flex-col bg-[#0F0F10] text-white">
+    <div className="page-shell flex min-h-dvh flex-col bg-[#0F0F10] text-white">
       <Header />
-      <main id="main-content" className="flex-1 bg-[#0F0F10]">
+      <main
+        id="main-content"
+        className="min-h-0 flex-1 overflow-y-auto bg-[#0F0F10]"
+      >
         <JsonLD schema={schema} />
         <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
           <div className="mb-6 flex items-center gap-3 rounded-2xl border border-white/10 bg-[#16171C] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">

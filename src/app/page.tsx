@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { ArrowRight, HardHat, ShieldCheck, FileText } from "lucide-react";
+import { ArrowRight, HardHat, ShieldCheck, FileText, MapPin, ClipboardCheck, Clock3 } from "lucide-react";
 import { JsonLD, getPageMetadata, getWebAppSchema, getWebSiteSchema } from "@/seo";
 import { HomeTaxDefaults } from "@/app/HomeTaxDefaults";
 import { routes } from "@routes";
@@ -14,18 +14,57 @@ export const metadata = getPageMetadata({
 });
 
 export default function HomePage() {
+  const localMarketHighlights = [
+    {
+      icon: MapPin,
+      title: "Tri-county fit",
+      description:
+        "Built around the jobs local crews actually quote in Oneida, Herkimer, and Madison County.",
+    },
+    {
+      icon: ClipboardCheck,
+      title: "NYS-aware paperwork",
+      description:
+        "Estimate math, saved workflows, and guidance that line up better with tax and handoff reality.",
+    },
+    {
+      icon: Clock3,
+      title: "Faster field flow",
+      description:
+        "Open calculators fast, batch cart items, and get back to the truck or customer without dashboard clutter.",
+    },
+  ];
+
+  const localFastLinks = [
+    {
+      href: routes.fieldNotes,
+      title: "Field Notes",
+      description: "Local tax, frost-depth, and estimating guidance for tri-county work.",
+    },
+    {
+      href: routes.financialTerms,
+      title: "Tax Defaults",
+      description: "Quick-reference Oneida, Madison, and Herkimer county sales-tax context.",
+    },
+    {
+      href: routes.guide,
+      title: "Operator Guide",
+      description: "The shortest path from calculator run to client-ready estimate.",
+    },
+  ];
+
   return (
-    <div className="page-shell flex min-h-dvh flex-col bg-slate-950 lg:grid lg:grid-rows-[auto_1fr_auto]">
+    <div className="page-shell flex min-h-dvh flex-col overflow-hidden bg-slate-950 lg:grid lg:grid-rows-[auto_1fr_auto]">
       <JsonLD schema={getWebSiteSchema()} />
       <JsonLD schema={getWebAppSchema()} />
       <Header />
       <main
         id="main-content"
-        className="min-h-0 flex-1 overflow-hidden px-4 py-4 sm:px-6 sm:py-6 lg:px-5 lg:py-3"
+        className="viewport-main px-3 py-3 sm:px-4 sm:py-4 lg:px-4 lg:py-3"
       >
         <section className="mx-auto h-full min-h-0 w-full max-w-6xl">
-          <div className="grid h-full min-h-0 gap-4 xl:grid-cols-[1.4fr_0.95fr]">
-            <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 px-6 py-6 text-slate-100 transition-colors sm:px-8 sm:py-7 lg:px-7 lg:py-6">
+          <div className="grid h-full min-h-0 gap-3 xl:grid-cols-[1.35fr_0.92fr]">
+            <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 px-4 py-4 text-slate-100 transition-colors sm:px-5 sm:py-5 lg:px-5 lg:py-4">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="section-kicker">
                   Industrial-grade estimating
@@ -34,44 +73,49 @@ export default function HomePage() {
                   Built for contractors
                 </span>
               </div>
-              <h1 className="mt-3 max-w-2xl text-4xl font-display font-bold leading-none sm:text-5xl lg:text-4xl xl:text-5xl">
+              <h1 className="mt-2.5 max-w-2xl text-[clamp(2rem,4vw,3.4rem)] font-display font-bold leading-none">
                 Pro Construction Calc
                 <span className="mt-2 block text-orange-600">
                   Industrial-grade estimating for New York contractors.
                 </span>
               </h1>
-              <p className="mt-3 max-w-xl text-sm leading-relaxed text-slate-400 sm:text-base lg:mt-2.5">
+              <p className="mt-2.5 max-w-xl text-[13px] leading-relaxed text-slate-400 sm:text-sm">
                 Trade calculators, saved estimates, price book control, and PDF
                 workflows shaped for field use instead of generic dashboards.
+                Designed for quick quoting around Utica, Rome, Herkimer, Oneida,
+                and Madison County jobs.
               </p>
-              <div className="mt-5 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap lg:mt-4">
+              <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
                 <Link
                   href={`${routes.commandCenter}?mode=draft`}
-                  className="btn-tactile inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[--color-orange-brand] px-4 py-3 text-sm font-black text-white transition-all duration-200 hover:bg-orange-700 active:scale-[0.98] sm:w-auto"
+                  prefetch={false}
+                  className="btn-tactile inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-xl bg-[--color-orange-brand] px-3 py-2.5 text-xs font-black text-white transition-all duration-200 hover:bg-orange-700 active:scale-[0.98]"
                 >
                   Start New Estimate <ArrowRight className="h-4 w-4" aria-hidden />
                 </Link>
                 <Link
                   href={routes.calculators}
-                  className="btn-tactile inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-slate-600 px-4 py-3 text-sm font-semibold text-slate-200 transition-all duration-200 hover:border-slate-500 hover:text-white active:scale-[0.98] sm:w-auto"
+                  className="btn-tactile inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-xl border border-slate-600 px-3 py-2.5 text-xs font-semibold text-slate-200 transition-all duration-200 hover:border-slate-500 hover:text-white active:scale-[0.98]"
                 >
                   Open Calculators
                 </Link>
                 <Link
                   href={routes.saved}
-                  className="btn-tactile inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-slate-600 px-4 py-3 text-sm font-semibold text-slate-200 transition-all duration-200 hover:border-slate-500 hover:text-white active:scale-[0.98] sm:w-auto"
+                  prefetch={false}
+                  className="btn-tactile inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-xl border border-slate-600 px-3 py-2.5 text-xs font-semibold text-slate-200 transition-all duration-200 hover:border-slate-500 hover:text-white active:scale-[0.98]"
                 >
                   Saved Estimates
                 </Link>
                 <Link
                   href={routes.pricebook}
-                  className="btn-tactile inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-slate-600 px-4 py-3 text-sm font-semibold text-slate-200 transition-all duration-200 hover:border-slate-500 hover:text-white active:scale-[0.98] sm:w-auto"
+                  prefetch={false}
+                  className="btn-tactile inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-xl border border-slate-600 px-3 py-2.5 text-xs font-semibold text-slate-200 transition-all duration-200 hover:border-slate-500 hover:text-white active:scale-[0.98]"
                 >
                   Price Book
                 </Link>
               </div>
 
-              <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:mt-5 xl:grid-cols-3">
+              <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
                 {[
                   {
                     icon: HardHat,
@@ -91,15 +135,15 @@ export default function HomePage() {
                 ].map(({ icon: Icon, label, desc }) => (
                   <div
                     key={label}
-                    className="rounded-2xl border border-slate-800 bg-slate-900 px-4 py-3 lg:px-3.5 lg:py-2.5"
+                    className="rounded-2xl border border-slate-800 bg-slate-900 px-3 py-2.5"
                   >
                     <div className="flex items-center gap-2 text-orange-600">
                       <Icon className="h-4 w-4" aria-hidden />
-                      <p className="text-xs font-bold uppercase tracking-[0.15em] text-orange-600">
+                      <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-orange-600">
                         {label}
                       </p>
                     </div>
-                    <p className="mt-1.5 text-xs leading-relaxed text-slate-400">
+                    <p className="mt-1 text-[11px] leading-relaxed text-slate-400">
                       {desc}
                     </p>
                   </div>
@@ -107,12 +151,31 @@ export default function HomePage() {
               </div>
 
               <HomeTaxDefaults />
+
+              <div className="mt-3 grid gap-2 sm:grid-cols-3">
+                {localMarketHighlights.map(({ icon: Icon, title, description }) => (
+                  <div
+                    key={title}
+                    className="rounded-2xl border border-slate-800 bg-slate-950/55 px-3 py-3"
+                  >
+                    <div className="flex items-center gap-2 text-orange-500">
+                      <Icon className="h-4 w-4" aria-hidden />
+                      <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-white">
+                        {title}
+                      </p>
+                    </div>
+                    <p className="mt-1.5 text-[11px] leading-relaxed text-slate-400">
+                      {description}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <div className="flex min-h-0 flex-col gap-4 xl:pt-1">
-              <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 text-slate-100 transition-colors lg:p-4">
+            <div className="flex min-h-0 flex-col gap-3 xl:pt-0.5">
+              <div className="rounded-2xl border border-slate-800 bg-slate-900 p-4 text-slate-100 transition-colors">
                 <p className="section-kicker">Explore next</p>
-                <div className="mt-3 space-y-3 lg:space-y-2.5">
+                <div className="mt-2.5 space-y-2">
                   {[
                     {
                       href: routes.blog,
@@ -133,12 +196,13 @@ export default function HomePage() {
                     <Link
                       key={item.title}
                       href={item.href}
-                      className="block min-h-11 rounded-2xl border border-slate-800 bg-slate-800/80 px-4 py-3 transition-all duration-200 hover:border-orange-500/50 hover:bg-slate-800 lg:px-3.5 lg:py-2.5"
+                      prefetch={false}
+                      className="block min-h-10 rounded-2xl border border-slate-800 bg-slate-800/80 px-3 py-2.5 transition-all duration-200 hover:border-orange-500/50 hover:bg-slate-800"
                     >
-                      <p className="font-display text-base font-semibold uppercase tracking-wide text-white">
+                      <p className="font-display text-sm font-semibold uppercase tracking-wide text-white">
                         {item.title}
                       </p>
-                      <p className="mt-1 text-xs leading-relaxed text-slate-400">
+                      <p className="mt-0.5 text-[11px] leading-relaxed text-slate-400">
                         {item.desc}
                       </p>
                     </Link>
@@ -146,9 +210,9 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 transition-colors lg:p-4">
+              <div className="rounded-2xl border border-slate-800 bg-slate-900 p-4 transition-colors">
                 <p className="section-kicker">Why it lands</p>
-                <div className="mt-3 grid gap-2.5 md:grid-cols-3">
+                <div className="mt-2.5 grid gap-2 md:grid-cols-3">
                   {[
                     "Fast field-first workflows",
                     "Orange actions with clear contrast",
@@ -156,10 +220,31 @@ export default function HomePage() {
                   ].map((item) => (
                     <div
                       key={item}
-                      className="rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-3 text-sm font-medium text-slate-400 lg:px-3.5 lg:py-2.5 lg:text-[13px]"
+                      className="rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-2.5 text-xs font-medium text-slate-400"
                     >
                       {item}
                     </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-slate-800 bg-slate-900 p-4 transition-colors">
+                <p className="section-kicker">Local contractor shortcuts</p>
+                <div className="mt-2.5 space-y-2">
+                  {localFastLinks.map((item) => (
+                    <Link
+                      key={item.title}
+                      href={item.href}
+                      prefetch={false}
+                      className="block rounded-2xl border border-slate-800 bg-slate-950/55 px-3 py-3 transition-all duration-200 hover:border-orange-500/50 hover:bg-slate-950"
+                    >
+                      <p className="text-sm font-display font-semibold uppercase tracking-wide text-white">
+                        {item.title}
+                      </p>
+                      <p className="mt-1 text-[11px] leading-relaxed text-slate-400">
+                        {item.description}
+                      </p>
+                    </Link>
                   ))}
                 </div>
               </div>

@@ -1,18 +1,66 @@
-const SERVICE_WORKER_SOURCE = `const CACHE_NAME = "pro-construction-calc-v1";
+const SERVICE_WORKER_SOURCE = `const CACHE_NAME = "pro-construction-calc-v2";
+const OFFLINE_URL = "/offline";
+const PRECACHE_URLS = [
+  OFFLINE_URL,
+  "/",
+  "/calculators",
+  "/guide",
+  "/app.webmanifest",
+  "/icon",
+  "/icon-512",
+];
 
-self.addEventListener("install", () => {
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_URLS)).catch(() => {}),
+  );
   self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
-  event.waitUntil(self.clients.claim());
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(
+        keys
+          .filter((key) => key !== CACHE_NAME)
+          .map((key) => caches.delete(key)),
+      ),
+    ).then(() => self.clients.claim()),
+  );
 });
 
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
 
+  const requestUrl = new URL(event.request.url);
+  const sameOrigin = requestUrl.origin === self.location.origin;
+  const isNavigation = event.request.mode === "navigate";
+
   event.respondWith(
-    fetch(event.request).catch(() => caches.match(event.request)),
+    fetch(event.request)
+      .then((response) => {
+        if (
+          sameOrigin &&
+          response.ok &&
+          !isNavigation &&
+          !requestUrl.pathname.startsWith("/api/")
+        ) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy)).catch(() => {});
+        }
+
+        return response;
+      })
+      .catch(async () => {
+        if (isNavigation) {
+          return (
+            (await caches.match(event.request)) ||
+            (await caches.match(OFFLINE_URL))
+          );
+        }
+
+        return (await caches.match(event.request)) || (await caches.match(OFFLINE_URL));
+      }),
   );
 });
 `;

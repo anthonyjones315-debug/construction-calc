@@ -165,7 +165,7 @@ const nextConfig: NextConfig = {
       {
         key: "Access-Control-Allow-Headers",
         value:
-          "RSC, Next-Router-Prefetch, Next-Router-State-Tree, Content-Type, Authorization",
+          "RSC, Next-Router-Prefetch, Next-Router-State-Tree, Next-Router-Segment-Prefetch, next-router-segment-prefetch, Next-Url, next-url, Content-Type, Authorization",
       },
     ];
 

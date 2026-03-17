@@ -1,19 +1,27 @@
 "use client";
 
 import { useEffect } from "react";
+import { routes } from "@routes";
 
 /**
- * Cleans up stale service worker registrations while /sw.js is served by the
- * app route handler at src/app/sw.js/route.ts.
+ * Registers the app service worker so installed users keep a reliable field
+ * workflow when signal drops on-site.
  */
 export function ServiceWorker() {
   useEffect(() => {
-    // Temporarily disable service worker registration to avoid 404 noise.
-    if (typeof navigator !== "undefined" && navigator.serviceWorker?.getRegistrations) {
-      navigator.serviceWorker.getRegistrations().then((regs) => {
-        regs.forEach((reg) => reg.unregister().catch(() => {}));
-      });
+    if (
+      typeof window === "undefined" ||
+      !("serviceWorker" in navigator)
+    ) {
+      return;
     }
+
+    navigator.serviceWorker
+      .register(routes.api.serviceWorker)
+      .then((registration) => {
+        registration.update().catch(() => {});
+      })
+      .catch(() => {});
   }, []);
 
   return null;

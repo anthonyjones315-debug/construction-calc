@@ -41,10 +41,10 @@ export default async function FieldNoteArticlePage({ params }: Props) {
   if (!note) notFound();
 
   return (
-    <div className="page-shell flex min-h-screen flex-col bg-[var(--color-bg)]">
+    <div className="page-shell flex min-h-dvh flex-col bg-[var(--color-bg)]">
       <Header />
       <JsonLD schema={getFieldNotesArticleSchema(note)} />
-      <main id="main-content" className="flex-1">
+      <main id="main-content" className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
           <Link
             href={routes.fieldNotes}
