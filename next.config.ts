@@ -65,6 +65,8 @@ const nextConfig: NextConfig = {
       "https://adservice.google.com",
       "https://*.adtrafficquality.google",
       "https://*.google-analytics.com",
+      // Google Identity / OAuth (defensive allow-listing)
+      "https://accounts.google.com",
       // PostHog loader (served from us-assets.i.posthog.com via rewrites)
       "https://us-assets.i.posthog.com",
       // Termly CMP loader
@@ -87,6 +89,10 @@ const nextConfig: NextConfig = {
       "https://*.adtrafficquality.google",
       "https://ep1.adtrafficquality.google",
       "https://*.google.com",
+      // Google Identity / OAuth + APIs used during login
+      "https://accounts.google.com",
+      "https://oauth2.googleapis.com",
+      "https://www.googleapis.com",
       "https://*.sentry.io",
       "https://o4511044273766400.ingest.us.sentry.io",
       // PostHog API + assets (proxied via /ingest*)
@@ -96,6 +102,8 @@ const nextConfig: NextConfig = {
       "https://va.vercel-scripts.com",
       "https://vercel.live",
       "https://app.termly.io",
+      "https://us.consent.api.termly.io",
+      "https://proconstructioncalc.com",
       "https://*.supabase.co",
       // Crisp chat WebSocket / API
       "https://client.relay.crisp.chat",
@@ -117,7 +125,7 @@ const nextConfig: NextConfig = {
       "media-src 'none'",
       "object-src 'none'",
       "worker-src 'self' blob:",
-      "frame-src 'self' https://googleads.g.doubleclick.net https://*.googlesyndication.com https://*.google.com https://*.adtrafficquality.google",
+      "frame-src 'self' https://googleads.g.doubleclick.net https://*.googlesyndication.com https://*.google.com https://accounts.google.com https://*.adtrafficquality.google",
       // frame-ancestors mirrors X-Frame-Options: DENY for CSP-aware browsers
       "frame-ancestors 'none'",
       "base-uri 'self'",

@@ -7,6 +7,7 @@ import type { LucideIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import * as Sentry from "@sentry/nextjs";
 import posthog from "posthog-js";
+import { RoofingGlyph } from "./TradeGlyphs";
 import {
   getCalculatorAuditRef,
   setCalculatorAuditSnapshot,
@@ -58,6 +59,7 @@ import {
 } from "@/components/ui/EmailEstimateModal";
 import { ManualErrorReportButton } from "@/components/support/ManualErrorReportButton";
 import { JsonLD } from "@/seo";
+import { ArticleMarkdown } from "@/components/content/ArticleMarkdown";
 import {
   getTradePageSchema,
   type TradePageDefinition,
@@ -139,6 +141,18 @@ type VolumeInputMode = "dimensions" | "total-cu-yd" | "total-cu-ft";
 type WallInputMode = "lineal-feet" | "total-studs";
 type TrimInputMode = "dimensions" | "total-lf";
 type FlooringBoxMode = "20" | "24" | "30" | "custom";
+type WallStudSpacingMode = "16" | "24" | "custom";
+type WallStudHeightMode = "8-precut" | "9-precut" | "10" | "12" | "custom";
+type RoofingPitchPreset =
+  | "flat"
+  | "3"
+  | "4"
+  | "6"
+  | "8"
+  | "10"
+  | "12"
+  | "custom";
+type RoofingInputMode = "dimensions" | "direct-squares";
 
 function getFramingMaterialFromPath(path: string): FramingMaterialKind {
   const p = path.toLowerCase();
@@ -751,6 +765,21 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     useState<VolumeInputMode>("dimensions");
   const [wallInputMode, setWallInputMode] =
     useState<WallInputMode>("lineal-feet");
+  const [wallStudSpacingMode, setWallStudSpacingMode] =
+    useState<WallStudSpacingMode>("16");
+  const [wallStudCustomSpacingInches, setWallStudCustomSpacingInches] =
+    useState(16);
+  const [wallStudHeightMode, setWallStudHeightMode] =
+    useState<WallStudHeightMode>("8-precut");
+  const [wallStudCustomHeightFeet, setWallStudCustomHeightFeet] = useState(8);
+  const [staggeredStudWall, setStaggeredStudWall] = useState(false);
+  const [roofingInputMode, setRoofingInputMode] =
+    useState<RoofingInputMode>("dimensions");
+  const [roofSquaresInput, setRoofSquaresInput] = useState(20);
+  const [roofOverhangInches, setRoofOverhangInches] = useState(12);
+  const [roofPitchPreset, setRoofPitchPreset] =
+    useState<RoofingPitchPreset>("6");
+  const [roofPitchRiseCustom, setRoofPitchRiseCustom] = useState(6);
   const [totalSquareFeetInput, setTotalSquareFeetInput] = useState(100);
   const [totalCubicYardsInput, setTotalCubicYardsInput] = useState(1);
   const [totalCubicFeetInput, setTotalCubicFeetInput] = useState(27);
@@ -766,6 +795,9 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   const [finalizeError, setFinalizeError] = useState<string | null>(null);
   const [finalizeSuccess, setFinalizeSuccess] = useState<string | null>(null);
   const [createdSignUrl, setCreatedSignUrl] = useState<string | null>(null);
+  const [aiOptimizeBusy, setAiOptimizeBusy] = useState(false);
+  const [aiOptimizeError, setAiOptimizeError] = useState<string | null>(null);
+  const [aiOptimizeContent, setAiOptimizeContent] = useState<string | null>(null);
   const [estimateName, setEstimateName] = useState(
     `${displayTitle(page.title)} Estimate`,
   );
@@ -808,6 +840,16 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     setAreaInputMode("dimensions");
     setVolumeInputMode("dimensions");
     setWallInputMode("lineal-feet");
+    setWallStudSpacingMode("16");
+    setWallStudCustomSpacingInches(16);
+    setWallStudHeightMode("8-precut");
+    setWallStudCustomHeightFeet(8);
+    setStaggeredStudWall(false);
+    setRoofingInputMode("dimensions");
+    setRoofSquaresInput(20);
+    setRoofOverhangInches(12);
+    setRoofPitchPreset("6");
+    setRoofPitchRiseCustom(6);
     setTrimInputMode("dimensions");
     setOpeningDeductionSqFt(0);
     setFlooringBoxMode("custom");
@@ -1016,9 +1058,29 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       page.canonicalPath.includes("trim") ||
       page.canonicalPath.includes("baseboard");
     const isDrywallCalculator = page.canonicalPath.includes("drywall");
-    const spacingOcInches = clampValue(widthSpan, 8, 48);
+    const isWallFramingCalculator =
+      page.category === "framing" &&
+      activeFramingMaterial === "wall-studs" &&
+      page.canonicalPath.includes("/framing/wall");
+    const wallSpacingOcInches =
+      wallStudSpacingMode === "custom"
+        ? clampValue(wallStudCustomSpacingInches, 8, 48)
+        : Number(wallStudSpacingMode);
+    const spacingOcInches = isWallFramingCalculator
+      ? wallSpacingOcInches
+      : clampValue(widthSpan, 8, 48);
     const runFeet = clampValue(baseMeasurement, 1, 10000);
-    const framingLengthFeet = clampValue(depthThickness, 1, 10000);
+    const wallStudLengthFeet = (() => {
+      if (!isWallFramingCalculator) return null;
+      if (wallStudHeightMode === "8-precut") return 92.625 / 12;
+      if (wallStudHeightMode === "9-precut") return 104.625 / 12;
+      if (wallStudHeightMode === "10") return 10;
+      if (wallStudHeightMode === "12") return 12;
+      return clampValue(wallStudCustomHeightFeet, 1, 20);
+    })();
+    const framingLengthFeet = isWallFramingCalculator
+      ? (wallStudLengthFeet ?? 8)
+      : clampValue(depthThickness, 1, 10000);
     const nominalLength = Math.max(8, Math.ceil(framingLengthFeet));
     const wallStudTargetCount = Math.max(
       2,
@@ -1563,12 +1625,25 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         };
       }
 
-      const totalStuds = isWallStudTotalMode
-        ? wallStudTargetCount
-        : Math.max(8, Math.ceil(runFeet / spacingFeet) + 1);
+    const derivedStuds = Math.max(2, Math.ceil(runFeet / spacingFeet) + 1);
+    const totalStuds = isWallStudTotalMode
+      ? wallStudTargetCount
+      : isWallFramingCalculator && staggeredStudWall
+        ? Math.max(4, derivedStuds * 2)
+        : Math.max(8, derivedStuds);
 
       if (page.canonicalPath.includes("/framing/wall")) {
-        const totalPlateLf = runFeet * 3;
+        const totalPlateLf = runFeet * (staggeredStudWall ? 6 : 3);
+        const studStockLabel = (() => {
+          if (!isWallFramingCalculator) {
+            return `${framingLengthFeet.toFixed(2)}'`;
+          }
+          if (wallStudHeightMode === "8-precut") return `8' precut (92 5/8")`;
+          if (wallStudHeightMode === "9-precut") return `9' precut (104 5/8")`;
+          if (wallStudHeightMode === "10") return "10'";
+          if (wallStudHeightMode === "12") return "12'";
+          return `${clampValue(wallStudCustomHeightFeet, 1, 20).toFixed(2)}' (custom)`;
+        })();
         return {
           primary: {
             label: "Total Studs",
@@ -1593,8 +1668,10 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             },
           ],
           materialList: [
-            `Order ${totalStuds} Wall Studs @ ${framingLengthFeet.toFixed(2)}'`,
-            `Order ${totalPlateLf.toFixed(1)} LF Top and Bottom Plates`,
+            `Order ${totalStuds} - 2x4x${studStockLabel} studs`,
+            staggeredStudWall
+              ? `Order ${totalPlateLf.toFixed(1)} LF plates (double top + double sole for staggered wall)`
+              : `Order ${totalPlateLf.toFixed(1)} LF plates (double top + single sole)`,
           ],
         };
       }
@@ -1759,43 +1836,112 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         };
       }
 
-      const baseRoofArea =
-        supportsAreaToggle && !isAreaTotalMode
-          ? dimensionsAreaSquareFeet
-          : supportsAreaToggle && isAreaTotalMode
-            ? clampValue(totalSquareFeetInput, 1, 100000000)
-            : adjustedAreaSquareFeet / wasteMultiplier;
-      const pitchRisePerTwelve = clampValue(depthThickness, 0, 24);
-      const pitchMultiplier = Math.sqrt(
-        1 + (pitchRisePerTwelve / 12) * (pitchRisePerTwelve / 12),
-      );
+      const isRoofingShinglesCalculator =
+        page.canonicalPath === "/calculators/roofing/shingles";
+
+      const pitchRisePerTwelve =
+        isRoofingShinglesCalculator && roofPitchPreset !== "custom"
+          ? roofPitchPreset === "flat"
+            ? 0
+            : Number(roofPitchPreset)
+          : clampValue(
+              isRoofingShinglesCalculator ? roofPitchRiseCustom : depthThickness,
+              0,
+              24,
+            );
+
+      const pitchMultiplier =
+        pitchRisePerTwelve <= 0
+          ? 1
+          : Math.sqrt(1 + (pitchRisePerTwelve / 12) * (pitchRisePerTwelve / 12));
+
+      const baseRoofArea = (() => {
+        if (!isRoofingShinglesCalculator) {
+          return supportsAreaToggle && !isAreaTotalMode
+            ? dimensionsAreaSquareFeet
+            : supportsAreaToggle && isAreaTotalMode
+              ? clampValue(totalSquareFeetInput, 1, 100000000)
+              : adjustedAreaSquareFeet / wasteMultiplier;
+        }
+
+        if (roofingInputMode === "direct-squares") {
+          return clampValue(roofSquaresInput, 0.01, 1000000) * 100;
+        }
+
+        const lengthFt = clampValue(baseMeasurement, 1, 10000);
+        const widthFt = clampValue(widthSpan, 1, 10000);
+        const overhangFt = clampValue(roofOverhangInches, 0, 48) / 12;
+        const adjustedLength = lengthFt + overhangFt * 2;
+        const adjustedWidth = widthFt + overhangFt * 2;
+        return adjustedLength * adjustedWidth;
+      })();
+
       const pitchedArea = baseRoofArea * pitchMultiplier;
       const effectiveRoofArea = pitchedArea * wasteMultiplier;
       const squares = effectiveRoofArea / 100;
       const bundles = Math.ceil(squares * 3);
-      const rollsUnderlayment = Math.max(1, Math.ceil(effectiveRoofArea / 400));
+
+      const starterRidgeBundles = (() => {
+        if (!isRoofingShinglesCalculator) return null;
+
+        const overhangFt = clampValue(roofOverhangInches, 0, 48) / 12;
+        const perimeterFt =
+          roofingInputMode === "dimensions"
+            ? (clampValue(baseMeasurement, 1, 10000) + overhangFt * 2) * 2 +
+              (clampValue(widthSpan, 1, 10000) + overhangFt * 2) * 2
+            : Math.sqrt(baseRoofArea) * 4;
+
+        return Math.max(1, Math.ceil((perimeterFt * 1.1) / 100));
+      })();
+
+      const rollsUnderlayment = Math.max(1, Math.ceil(effectiveRoofArea / 1000));
+      const nails = Math.max(1, Math.ceil(squares * 320));
       return {
         primary: {
-          label: "Total Squares",
-          value: squares.toFixed(2),
-          unit: "sq",
+          label: isRoofingShinglesCalculator ? "Order Bundles" : "Total Squares",
+          value: isRoofingShinglesCalculator ? bundles.toString() : squares.toFixed(2),
+          unit: isRoofingShinglesCalculator ? "bundles" : "sq",
         },
         secondary: [
           {
-            label: "Total Bundles",
-            value: bundles.toString(),
-            unit: "bundles",
+            label: "Order Squares",
+            value: squares.toFixed(2),
+            unit: "sq",
           },
           {
-            label: "Rolls of Underlayment",
+            label: "Synthetic Underlayment",
             value: rollsUnderlayment.toString(),
             unit: "rolls",
           },
+          ...(starterRidgeBundles
+            ? [
+                {
+                  label: "Starter & Ridge (est.)",
+                  value: starterRidgeBundles.toString(),
+                  unit: "bundles",
+                },
+              ]
+            : []),
+          ...(isRoofingShinglesCalculator
+            ? [
+                {
+                  label: "Nails",
+                  value: nails.toLocaleString(),
+                  unit: "nails",
+                },
+              ]
+            : []),
         ],
         materialList: [
-          `Order ${squares.toFixed(2)} Roofing Squares (pitched & waste-adjusted)`,
           `Order ${bundles} Shingle Bundles`,
+          `Order ${squares.toFixed(2)} Roofing Squares (pitched & waste-adjusted)`,
+          ...(starterRidgeBundles
+            ? [`Order ${starterRidgeBundles} Starter & Ridge bundles (est.)`]
+            : []),
           `Order ${rollsUnderlayment} Rolls Synthetic Underlayment`,
+          ...(isRoofingShinglesCalculator
+            ? [`Allow ~${nails.toLocaleString()} nails (≈320 nails/square @ 4 nails/shingle).`]
+            : []),
         ],
       };
     }
@@ -1852,6 +1998,68 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       materialList: calculatorResults.materialList,
     };
   }, [calculatorResults, canShowPricing]);
+
+  async function runAiOptimizer() {
+    if (aiOptimizeBusy) return;
+    setAiOptimizeBusy(true);
+    setAiOptimizeError(null);
+    setAiOptimizeContent(null);
+
+    try {
+      const lines: string[] = [];
+      lines.push(
+        `${displayResults.primary.label}: ${displayResults.primary.value}${
+          displayResults.primary.unit ? ` ${displayResults.primary.unit}` : ""
+        }`,
+      );
+
+      if (displayResults.secondary?.length) {
+        lines.push("");
+        lines.push("Secondary:");
+        displayResults.secondary.forEach((row) => {
+          lines.push(
+            `- ${row.label}: ${row.value}${row.unit ? ` ${row.unit}` : ""}`,
+          );
+        });
+      }
+
+      if (displayResults.materialList?.length) {
+        lines.push("");
+        lines.push("Material List:");
+        displayResults.materialList.forEach((item) => lines.push(`- ${item}`));
+      }
+
+      const response = await fetch(routes.api.aiOptimize, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          calculatorId: page.key ?? page.canonicalPath,
+          results: lines.join("\n"),
+        }),
+      });
+
+      const payload = (await response.json().catch(() => ({}))) as
+        | { content?: string; error?: string }
+        | undefined;
+
+      if (!response.ok) {
+        throw new Error(payload?.error ?? "AI optimizer failed.");
+      }
+
+      const content = typeof payload?.content === "string" ? payload.content : "";
+      if (!content.trim()) {
+        throw new Error("AI optimizer returned an empty response.");
+      }
+
+      setAiOptimizeContent(content);
+    } catch (error) {
+      setAiOptimizeError(
+        error instanceof Error ? error.message : "AI optimizer failed.",
+      );
+    } finally {
+      setAiOptimizeBusy(false);
+    }
+  }
 
   // Debounced haptic — fires 300 ms after inputs settle so the user feels a
   // physical "click" when the live calculation stabilises on a new result.
@@ -2447,7 +2655,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     >
       <main
         id="main-content"
-        className="command-theme flex min-h-0 flex-1 flex-col overflow-y-auto bg-[--color-bg] text-white lg:overflow-hidden"
+        className="command-theme flex min-h-0 flex-1 flex-col overflow-hidden bg-[--color-bg] text-white"
       >
         {closeModal && (
           <div className="sticky top-0 z-40 flex h-12 items-center justify-between border-b border-slate-800 bg-slate-900/95 px-3 backdrop-blur-sm">
@@ -2813,17 +3021,21 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                     <div
                       className={`rounded-full bg-orange-600/15 p-4 mb-3 flex items-center justify-center ${iconPulse ? "animate-pulse" : ""}`}
                     >
-                      {(() => {
-                        const IconComponent = getCategoryIcon(page);
-                        return (
-                          <IconComponent
-                            size={52}
-                            strokeWidth={1.5}
-                            className="text-orange-600"
-                            aria-hidden
-                          />
-                        );
-                      })()}
+                      {page.category === "roofing" ? (
+                        <RoofingGlyph className="h-[52px] w-[52px]" />
+                      ) : (
+                        (() => {
+                          const IconComponent = getCategoryIcon(page);
+                          return (
+                            <IconComponent
+                              size={52}
+                              strokeWidth={1.5}
+                              className="text-orange-600"
+                              aria-hidden
+                            />
+                          );
+                        })()
+                      )}
                     </div>
                   </div>
                   <h2 className="text-sm font-black uppercase tracking-[0.12em] text-white">
@@ -2865,6 +3077,9 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                       (isBusinessTaxSave
                         ? "$"
                         : inferUnitFromLabel(labels.third));
+                    const isRoofingShinglesCalculator =
+                      page.category === "roofing" &&
+                      page.canonicalPath === "/calculators/roofing/shingles";
                     return (
                       <div className="mt-2 space-y-2">
                         {showFramingMaterialSelector && (
@@ -2891,7 +3106,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                         )}
                         <div className="space-y-1">
                           <div className="min-h-[24px] space-y-1">
-                            {supportsAreaToggle && (
+                            {supportsAreaToggle && !isRoofingShinglesCalculator && (
                               <UnitToggle
                                 label="Area"
                                 value={areaInputMode}
@@ -2978,7 +3193,132 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                         </div>
 
                         <div className="grid gap-3">
-                          {isConcreteTotalVolumeMode ? (
+                          {isRoofingShinglesCalculator ? (
+                            <>
+                              <UnitToggle
+                                label="Roof Input"
+                                value={roofingInputMode}
+                                options={[
+                                  { value: "dimensions", label: "Input Dimensions" },
+                                  { value: "direct-squares", label: "Direct Squares" },
+                                ]}
+                                onChange={setRoofingInputMode}
+                              />
+
+                              {roofingInputMode === "direct-squares" ? (
+                                <ProInput
+                                  label="Squares"
+                                  subLabel="Enter total roofing squares directly (1 sq = 100 sq ft)."
+                                  type="number"
+                                  min={0.01}
+                                  max={1000000}
+                                  value={String(roofSquaresInput)}
+                                  onChange={(next: string) =>
+                                    parseAndSet(
+                                      next,
+                                      setRoofSquaresInput,
+                                      0.01,
+                                      1000000,
+                                    )
+                                  }
+                                  unitSuffix="sq"
+                                />
+                              ) : (
+                                <>
+                                  <ProInput
+                                    label="Roof Length"
+                                    subLabel="Footprint length (before overhang)."
+                                    type="number"
+                                    min={1}
+                                    max={10000}
+                                    value={String(baseMeasurement)}
+                                    onChange={(next: string) =>
+                                      parseAndSet(
+                                        next,
+                                        setBaseMeasurement,
+                                        1,
+                                        10000,
+                                      )
+                                    }
+                                    unitSuffix="ft"
+                                  />
+                                  <ProInput
+                                    label="Roof Width"
+                                    subLabel="Footprint width (before overhang)."
+                                    type="number"
+                                    min={1}
+                                    max={10000}
+                                    value={String(widthSpan)}
+                                    onChange={(next: string) =>
+                                      parseAndSet(next, setWidthSpan, 1, 10000)
+                                    }
+                                    unitSuffix="ft"
+                                  />
+                                  <ProInput
+                                    label="Overhang / Eave"
+                                    subLabel="Adds to both sides of length and width."
+                                    type="number"
+                                    min={0}
+                                    max={48}
+                                    value={String(roofOverhangInches)}
+                                    onChange={(next: string) =>
+                                      parseAndSet(
+                                        next,
+                                        setRoofOverhangInches,
+                                        0,
+                                        48,
+                                      )
+                                    }
+                                    unitSuffix="in"
+                                  />
+                                </>
+                              )}
+
+                              <UnitToggle
+                                label="Pitch (rise / 12)"
+                                value={roofPitchPreset}
+                                options={[
+                                  { value: "flat", label: "Flat" },
+                                  { value: "3", label: "3/12" },
+                                  { value: "4", label: "4/12" },
+                                  { value: "6", label: "6/12" },
+                                  { value: "8", label: "8/12" },
+                                  { value: "10", label: "10/12" },
+                                  { value: "12", label: "12/12" },
+                                  { value: "custom", label: "Custom" },
+                                ]}
+                                onChange={(nextPreset: RoofingPitchPreset) => {
+                                  setRoofPitchPreset(nextPreset);
+                                  if (nextPreset !== "custom") {
+                                    const nextRise =
+                                      nextPreset === "flat"
+                                        ? 0
+                                        : Number(nextPreset);
+                                    setRoofPitchRiseCustom(nextRise);
+                                  }
+                                }}
+                              />
+                              {roofPitchPreset === "custom" ? (
+                                <ProInput
+                                  label='Custom Rise (per 12")'
+                                  subLabel="Enter the rise for every 12 inches of run."
+                                  type="number"
+                                  min={0}
+                                  max={24}
+                                  value={String(roofPitchRiseCustom)}
+                                  onChange={(next: string) =>
+                                    parseAndSet(
+                                      next,
+                                      setRoofPitchRiseCustom,
+                                      0,
+                                      24,
+                                    )
+                                  }
+                                  unitSuffix="in"
+                                />
+                              ) : null}
+                            </>
+                          ) : isConcreteTotalVolumeMode ? (
                             <ProInput
                               label={
                                 volumeInputMode === "total-cu-yd"
@@ -3117,6 +3457,134 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                 }
                               />
                             </>
+                          ) : supportsWallStudToggle &&
+                            activeFramingMaterial === "wall-studs" &&
+                            page.canonicalPath.includes("/framing/wall") &&
+                            !isWallStudTotalMode ? (
+                            <>
+                              <ProInput
+                                label={labels.first}
+                                subLabel={getInlineSubLabel(labels.first)}
+                                type="number"
+                                min={1}
+                                max={10000}
+                                value={String(baseMeasurement)}
+                                onChange={(next) =>
+                                  parseAndSet(
+                                    next,
+                                    setBaseMeasurement,
+                                    1,
+                                    10000,
+                                  )
+                                }
+                                unitSuffix="ft"
+                              />
+
+                              <div className="space-y-2 rounded-2xl border border-slate-800 bg-slate-950/35 p-3">
+                                <UnitToggle
+                                  label="Stud Spacing (OC)"
+                                  value={wallStudSpacingMode}
+                                  options={[
+                                    { value: "16", label: `16" OC` },
+                                    { value: "24", label: `24" OC` },
+                                    { value: "custom", label: "Custom" },
+                                  ]}
+                                  onChange={(nextMode) => {
+                                    setWallStudSpacingMode(nextMode);
+                                    if (nextMode === "16") {
+                                      setWallStudCustomSpacingInches(16);
+                                    } else if (nextMode === "24") {
+                                      setWallStudCustomSpacingInches(24);
+                                    }
+                                  }}
+                                />
+                                {wallStudSpacingMode === "custom" ? (
+                                  <ProInput
+                                    label='Custom OC Spacing (in)'
+                                    subLabel='Typical values are 12", 16", or 24" on-center.'
+                                    type="number"
+                                    min={8}
+                                    max={48}
+                                    value={String(wallStudCustomSpacingInches)}
+                                    onChange={(next) =>
+                                      parseAndSet(
+                                        next,
+                                        setWallStudCustomSpacingInches,
+                                        8,
+                                        48,
+                                      )
+                                    }
+                                    unitSuffix="in"
+                                  />
+                                ) : null}
+
+                                <UnitToggle
+                                  label="Stud Height"
+                                  value={wallStudHeightMode}
+                                  options={[
+                                    { value: "8-precut", label: "8' (precut)" },
+                                    { value: "9-precut", label: "9' (precut)" },
+                                    { value: "10", label: "10'" },
+                                    { value: "12", label: "12'" },
+                                    { value: "custom", label: "Custom" },
+                                  ]}
+                                  onChange={(nextMode) => {
+                                    setWallStudHeightMode(nextMode);
+                                    if (nextMode === "8-precut") {
+                                      setWallStudCustomHeightFeet(92.625 / 12);
+                                    } else if (nextMode === "9-precut") {
+                                      setWallStudCustomHeightFeet(104.625 / 12);
+                                    } else if (nextMode === "10") {
+                                      setWallStudCustomHeightFeet(10);
+                                    } else if (nextMode === "12") {
+                                      setWallStudCustomHeightFeet(12);
+                                    }
+                                  }}
+                                />
+                                {wallStudHeightMode === "custom" ? (
+                                  <ProInput
+                                    label="Custom Stud Height"
+                                    subLabel="Custom heights are capped at 20' for job-site realism."
+                                    type="number"
+                                    min={1}
+                                    max={20}
+                                    value={String(wallStudCustomHeightFeet)}
+                                    onChange={(next) =>
+                                      parseAndSet(
+                                        next,
+                                        setWallStudCustomHeightFeet,
+                                        1,
+                                        20,
+                                      )
+                                    }
+                                    unitSuffix="ft"
+                                  />
+                                ) : null}
+
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setStaggeredStudWall((current) => !current)
+                                  }
+                                  className={`inline-flex w-full items-center justify-between gap-3 rounded-xl border px-3 py-2 text-left text-sm font-semibold transition ${
+                                    staggeredStudWall
+                                      ? "border-orange-500/60 bg-orange-500/15 text-orange-200"
+                                      : "border-slate-700 bg-slate-900 text-slate-200 hover:border-slate-500"
+                                  }`}
+                                  aria-pressed={staggeredStudWall}
+                                >
+                                  <span>Staggered Stud Wall</span>
+                                  <span className="text-xs font-black uppercase tracking-[0.14em]">
+                                    {staggeredStudWall ? "On" : "Off"}
+                                  </span>
+                                </button>
+                                <p className="text-[11px] leading-snug text-slate-400">
+                                  Staggered mode doubles stud rows and plate
+                                  footage. Stud height only changes the order
+                                  list, not the stud count math.
+                                </p>
+                              </div>
+                            </>
                           ) : isWallStudTotalMode ? (
                             <>
                               <ProInput
@@ -3152,23 +3620,82 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                   )
                                 }
                               />
-                              <ProInput
-                                label={labels.third}
-                                subLabel={getInlineSubLabel(labels.third)}
-                                type="number"
-                                min={thirdInputMin}
-                                max={thirdInputMax}
-                                value={String(depthThickness)}
-                                onChange={(next) =>
-                                  parseAndSet(
-                                    next,
-                                    setDepthThickness,
-                                    thirdInputMin,
-                                    thirdInputMax,
-                                  )
-                                }
-                                unitSuffix="ft"
-                              />
+                              {supportsWallStudToggle &&
+                              activeFramingMaterial === "wall-studs" &&
+                              page.canonicalPath.includes("/framing/wall") ? (
+                                <div className="space-y-2 rounded-2xl border border-slate-800 bg-slate-950/35 p-3">
+                                  <UnitToggle
+                                    label="Stud Height"
+                                    value={wallStudHeightMode}
+                                    options={[
+                                      {
+                                        value: "8-precut",
+                                        label: "8' (precut)",
+                                      },
+                                      {
+                                        value: "9-precut",
+                                        label: "9' (precut)",
+                                      },
+                                      { value: "10", label: "10'" },
+                                      { value: "12", label: "12'" },
+                                      { value: "custom", label: "Custom" },
+                                    ]}
+                                    onChange={(nextMode) => {
+                                      setWallStudHeightMode(nextMode);
+                                      if (nextMode === "8-precut") {
+                                        setWallStudCustomHeightFeet(
+                                          92.625 / 12,
+                                        );
+                                      } else if (nextMode === "9-precut") {
+                                        setWallStudCustomHeightFeet(
+                                          104.625 / 12,
+                                        );
+                                      } else if (nextMode === "10") {
+                                        setWallStudCustomHeightFeet(10);
+                                      } else if (nextMode === "12") {
+                                        setWallStudCustomHeightFeet(12);
+                                      }
+                                    }}
+                                  />
+                                  {wallStudHeightMode === "custom" ? (
+                                    <ProInput
+                                      label="Custom Stud Height"
+                                      subLabel="Custom heights are capped at 20' for job-site realism."
+                                      type="number"
+                                      min={1}
+                                      max={20}
+                                      value={String(wallStudCustomHeightFeet)}
+                                      onChange={(next) =>
+                                        parseAndSet(
+                                          next,
+                                          setWallStudCustomHeightFeet,
+                                          1,
+                                          20,
+                                        )
+                                      }
+                                      unitSuffix="ft"
+                                    />
+                                  ) : null}
+                                </div>
+                              ) : (
+                                <ProInput
+                                  label={labels.third}
+                                  subLabel={getInlineSubLabel(labels.third)}
+                                  type="number"
+                                  min={thirdInputMin}
+                                  max={thirdInputMax}
+                                  value={String(depthThickness)}
+                                  onChange={(next) =>
+                                    parseAndSet(
+                                      next,
+                                      setDepthThickness,
+                                      thirdInputMin,
+                                      thirdInputMax,
+                                    )
+                                  }
+                                  unitSuffix="ft"
+                                />
+                              )}
                             </>
                           ) : (
                             <>
@@ -3336,12 +3863,26 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                       </div>
                       <button
                         type="button"
+                        onClick={runAiOptimizer}
+                        disabled={aiOptimizeBusy}
                         className="min-h-9 rounded-lg border border-white/20 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.12em] text-[--color-nav-text] transition-all duration-200 hover:border-[--color-orange-brand]/45 hover:text-white active:scale-[0.98]"
                       >
-                        Optimize
+                        {aiOptimizeBusy ? "Optimizing…" : "Optimize"}
                       </button>
                     </div>
                   </section>
+
+                  {aiOptimizeError || aiOptimizeContent ? (
+                    <section className="mt-2 rounded-xl border border-slate-800 bg-slate-900/50 p-3 transition-colors">
+                      {aiOptimizeError ? (
+                        <p className="text-sm text-red-200">{aiOptimizeError}</p>
+                      ) : aiOptimizeContent ? (
+                        <div className="text-sm">
+                          <ArticleMarkdown content={aiOptimizeContent} />
+                        </div>
+                      ) : null}
+                    </section>
+                  ) : null}
 
                   {terminologyTerms.length ? (
                     <section className="mt-2 rounded-xl border border-slate-800 bg-slate-900/50 p-3 transition-colors">

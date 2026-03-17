@@ -4,6 +4,7 @@ import { Footer } from "@/components/layout/Footer";
 import { ArrowRight, HardHat, ShieldCheck, FileText } from "lucide-react";
 import { JsonLD, getPageMetadata, getWebAppSchema, getWebSiteSchema } from "@/seo";
 import { NYS_COUNTY_TAX_RATES } from "@/data/nys-tax-rates";
+import { useStore } from "@/lib/store";
 import { routes } from "@routes";
 
 const TRI_COUNTY_TAX_RATES = ["Oneida", "Madison", "Herkimer"]
@@ -24,14 +25,21 @@ export const metadata = getPageMetadata({
 });
 
 export default function HomePage() {
+  const taxRate = useStore((s) => s.taxRate);
+  const setTaxRate = useStore((s) => s.setTaxRate);
+
+  function handleTriCountySelect(rate: number) {
+    setTaxRate(rate);
+  }
+
   return (
-    <div className="page-shell flex min-h-screen flex-col bg-slate-950 lg:grid lg:min-h-dvh lg:grid-rows-[auto_1fr_auto]">
+    <div className="page-shell flex min-h-dvh flex-col bg-slate-950 lg:grid lg:grid-rows-[auto_1fr_auto]">
       <JsonLD schema={getWebSiteSchema()} />
       <JsonLD schema={getWebAppSchema()} />
       <Header />
       <main
         id="main-content"
-        className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6 lg:overflow-hidden lg:px-5 lg:py-3"
+        className="min-h-0 flex-1 overflow-hidden px-4 py-4 sm:px-6 sm:py-6 lg:px-5 lg:py-3"
       >
         <section className="mx-auto h-full min-h-0 w-full max-w-6xl">
           <div className="grid h-full min-h-0 gap-4 xl:grid-cols-[1.4fr_0.95fr]">
@@ -59,7 +67,7 @@ export default function HomePage() {
                   href={`${routes.commandCenter}?mode=draft`}
                   className="btn-tactile inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[--color-orange-brand] px-4 py-3 text-sm font-black text-white transition-all duration-200 hover:bg-orange-700 active:scale-[0.98] sm:w-auto"
                 >
-                  Begin Estimate <ArrowRight className="h-4 w-4" aria-hidden />
+                  Start New Estimate <ArrowRight className="h-4 w-4" aria-hidden />
                 </Link>
                 <Link
                   href={routes.calculators}
@@ -123,34 +131,52 @@ export default function HomePage() {
                       Tri-County Tax Defaults
                     </p>
                     <p className="mt-1 text-sm text-slate-200">
-                      Every estimate leaving the app should be tagged
-                      Oneida, Madison, Herkimer, None, or Custom.
+                      Configure default regional tax rates for automatic application to new estimates and invoices.
                     </p>
                   </div>
                   <Link
                     href={routes.guide}
                     className="inline-flex min-h-10 items-center justify-center rounded-xl border border-orange-300/40 bg-slate-950/35 px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white transition hover:border-orange-300/70"
                   >
-                    Open How-To
+                    Tax Compliance Guide
                   </Link>
                 </div>
                 <div className="mt-3 grid gap-2 sm:grid-cols-3">
-                  {TRI_COUNTY_TAX_RATES.map((entry) => (
-                    <div
-                      key={entry.county}
-                      className="rounded-xl border border-white/10 bg-slate-950/45 px-3 py-3"
-                    >
-                      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-300">
-                        {entry.county}
-                      </p>
-                      <p className="mt-1 text-xl font-black text-white">
-                        {entry.combinedRate.toFixed(2)}%
-                      </p>
-                      <p className="mt-1 text-xs text-slate-400">
-                        Combined NYS + local sales tax
-                      </p>
-                    </div>
-                  ))}
+                  {TRI_COUNTY_TAX_RATES.map((entry) => {
+                    const isActive =
+                      Math.abs(entry.combinedRate - taxRate) < 0.0001;
+                    return (
+                      <button
+                        key={entry.county}
+                        type="button"
+                        onClick={() =>
+                          handleTriCountySelect(entry.combinedRate)
+                        }
+                        className={`flex flex-col items-start rounded-xl border px-3 py-3 text-left transition ${
+                          isActive
+                            ? "border-orange-400/70 bg-slate-950"
+                            : "border-white/10 bg-slate-950/45 hover:border-orange-300/50 hover:bg-slate-900"
+                        }`}
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-300">
+                            {entry.county}
+                          </p>
+                          {isActive && (
+                            <span className="rounded-full bg-orange-500/15 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.16em] text-orange-300">
+                              Default
+                            </span>
+                          )}
+                        </div>
+                        <p className="mt-1 text-xl font-black text-white">
+                          {entry.combinedRate.toFixed(2)}%
+                        </p>
+                        <p className="mt-1 text-xs text-slate-500">
+                          Combined NYS + local sales tax
+                        </p>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>

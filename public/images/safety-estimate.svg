@@ -50,8 +50,8 @@
   <text x="110" y="252" fill="#9AA4B1" font-family="Arial, sans-serif" font-size="28">site conditions before the truck rolls or material gets cut.</text>
 
   <g>
-    <rect x="110" y="288" width="354" height="42" rx="21" fill="#171F2F" stroke="#44526A" stroke-width="2" />
-    <text x="136" y="316" fill="#F5EBDD" font-family="Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="2.4">ESTIMATE SMART. VERIFY ON SITE.</text>
+    <rect x="110" y="288" width="430" height="42" rx="21" fill="#171F2F" stroke="#44526A" stroke-width="2" />
+    <text x="136" y="316" fill="#F5EBDD" font-family="Arial, sans-serif" font-size="17" font-weight="700" letter-spacing="1.6">ESTIMATE SMART. VERIFY ON SITE.</text>
   </g>
 
   <g>

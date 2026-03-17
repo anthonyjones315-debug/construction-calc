@@ -160,7 +160,7 @@ export function TradeLanding({ page }: TradeLandingProps) {
   );
 
   return (
-    <main className="command-theme flex min-h-0 flex-1 flex-col overflow-y-auto bg-[--color-bg] text-white lg:overflow-hidden">
+    <main className="command-theme flex min-h-0 flex-1 flex-col overflow-hidden bg-[--color-bg] text-white">
       <JsonLD schema={schema} />
 
       <header className="sticky top-10 z-30 border-b border-white/10 bg-[--color-bg]/85 backdrop-blur-md">

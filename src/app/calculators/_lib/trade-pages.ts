@@ -396,7 +396,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
       "Calculate stud counts, plate lengths, and framing quantities for residential and light commercial wall layouts.",
     heroKicker: "Framing / Wall",
     proTip:
-      "Verify on-center spacing and opening schedule together; separate checks catch most framing quantity misses.",
+      "For energy framing, 24\" OC and staggered stud layouts can reduce thermal bridging—verify spacing, opening schedule, and plate plan together before ordering.",
     localFocus:
       "Practical for framing jobs in the Rome/Utica market where additions and retrofits change stud spacing assumptions.",
     canonicalPath: "/calculators/framing/wall",
@@ -485,7 +485,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
       "Estimate roofing squares, bundle count, and overage for asphalt shingle jobs.",
     heroKicker: "Roofing / Shingles",
     proTip:
-      "Add extra bundles for starter and hip/ridge zones before the first delivery to avoid same-day reruns.",
+      "For high-wind zones (like the Mohawk Valley), remember to factor 6 nails per shingle and use drip edge on all rakes and eaves.",
     localFocus:
       "Configured for Rome and Utica roof replacement conditions with storm-season scheduling pressure.",
     canonicalPath: "/calculators/roofing/shingles",
@@ -705,7 +705,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
       "Calculate wall stud quantities and framing stock assumptions for quick rough framing takeoffs.",
     heroKicker: "Framing / Wall Studs",
     proTip:
-      "Adjust counts for all rough openings before ordering so header and cripple material is captured.",
+      "24\" OC and staggered stud options can reduce thermal bridging, but openings and plate layout still drive your real counts—confirm the opening schedule before ordering.",
     localFocus:
       "Built for Rome and Utica framing crews dealing with remodel openings and mixed stud spacing.",
     canonicalPath: "/calculators/framing/wall-studs",

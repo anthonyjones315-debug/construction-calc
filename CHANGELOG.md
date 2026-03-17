@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [1.1.2] - 2026-03-16
+
+### Added
+
+- No-scroll layout shell using `100dvh` and `overflow-hidden` across home, calculators, command center, saved estimates, and guides for stable mobile viewport behavior.
+- Sentry Feedback + Session Replay on Login and Command Center pages with a "Report a bug" trigger.
+- AI Material Optimizer endpoint and UI, plus Browserless-powered PDF generation with contractor-first, white-label estimate templates.
+
+### Changed
+
+- Wall Framing and Roofing calculators to use job-site terminology, staggered stud / advanced framing modes, OC presets, and roofing bundle/underlayment/nail breakdowns.
+- Glossary and guide surfaces to match the command-theme brand system and updated Tri-County tax defaults with Oneida-focused defaults.
+- CSP configuration and Termly loader behavior to reduce console noise while allowing consent API calls and Google identity flows.
+
+---
+
 ## [1.1.1] - 2026-03-16
 
 ### Added

@@ -18,6 +18,7 @@ import {
   BUSINESS_REGION,
   BUSINESS_SITE_URL,
 } from "@/lib/business-identity";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 const TERMELY_WEBSITE_UUID =
   process.env.NEXT_PUBLIC_TERMELY_WEBSITE_UUID ??
@@ -79,17 +80,14 @@ export const metadata: Metadata = {
     "Central New York",
     "contractor estimating",
   ],
-  authors: [
-    { name: BUSINESS_NAME, url: BUSINESS_SITE_URL },
-  ],
+  authors: [{ name: BUSINESS_NAME, url: BUSINESS_SITE_URL }],
   openGraph: {
     type: "website",
     locale: "en_US",
     url: BUSINESS_SITE_URL,
     siteName: BUSINESS_NAME,
     title: brandedSiteTitle,
-    description:
-      `Professional construction estimating calculators for contractors across ${BUSINESS_REGION}.`,
+    description: `Professional construction estimating calculators for contractors across ${BUSINESS_REGION}.`,
     images: [
       {
         url: "/og-image.png",
@@ -102,8 +100,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: brandedSiteTitle,
-    description:
-      `Professional construction estimating calculators for contractors across ${BUSINESS_REGION}.`,
+    description: `Professional construction estimating calculators for contractors across ${BUSINESS_REGION}.`,
   },
   robots: { index: true, follow: true },
   verification: {
@@ -120,7 +117,7 @@ export default function RootLayout({
   const verifiedReviewSchema = getVerifiedReviewSchema();
 
   return (
-    <html lang="en" className="bg-slate-950 text-slate-200 overflow-x-hidden">
+    <html lang="en" className="bg-slate-950 text-slate-200">
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         {/*
@@ -149,9 +146,9 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`command-theme ${inter.variable} ${oswald.variable} ${jetBrainsMono.variable}`}
+        className={`command-theme ${inter.variable} ${oswald.variable} ${jetBrainsMono.variable} min-h-dvh flex flex-col`}
       >
-        <a href="#main-content" className="skip-link" tabIndex={1}>
+        <a href="#main-content" className="skip-link" tabIndex={0}>
           Skip to main content
         </a>
         <Suspense fallback={null}>
@@ -160,7 +157,9 @@ export default function RootLayout({
               <PostHogPageView />
             </Suspense>
             <JsonLD schema={localBusinessSchema} />
-            {verifiedReviewSchema ? <JsonLD schema={verifiedReviewSchema} /> : null}
+            {verifiedReviewSchema ? (
+              <JsonLD schema={verifiedReviewSchema} />
+            ) : null}
             <Providers>
               <Suspense fallback={null}>
                 <ScrollToTop />
@@ -183,6 +182,7 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <CrispChat />
         </Suspense>
+        <GoogleAnalytics gaId="G-X2G03GC8GL" />
       </body>
     </html>
   );
