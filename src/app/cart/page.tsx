@@ -20,9 +20,9 @@ export default function CartPage() {
   }
 
   return (
-    <div className="command-theme page-shell flex min-h-screen flex-col bg-[--color-bg] text-white">
+    <div className="command-theme page-shell flex min-h-dvh flex-col bg-[--color-bg] text-white">
       <Header />
-      <main id="main-content" className="flex-1">
+      <main id="main-content" className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
           <div className="mb-6">
             <p className="section-kicker">Estimate cart</p>

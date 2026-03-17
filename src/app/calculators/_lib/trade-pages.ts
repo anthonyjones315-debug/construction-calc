@@ -64,7 +64,10 @@ const categoryLinks: Record<TradePageDefinition["category"], RelatedLink[]> = {
       label: "Rafter Length Calculator",
     },
     { href: "/calculators/framing/headers", label: "Header Sizing Estimator" },
-    { href: "/calculators/framing/deck-joists", label: "Deck Joists Calculator" },
+    {
+      href: "/calculators/framing/deck-joists",
+      label: "Deck Joists Calculator",
+    },
     { href: "/calculators/decking", label: "Decking Material Calculator" },
   ],
   roofing: [
@@ -104,7 +107,10 @@ const categoryLinks: Record<TradePageDefinition["category"], RelatedLink[]> = {
       href: "/calculators/insulation/drywall-sheets",
       label: "Drywall Sheets Calculator",
     },
-    { href: "/calculators/insulation/duct-sizing", label: "Duct Sizing Calculator" },
+    {
+      href: "/calculators/insulation/duct-sizing",
+      label: "Duct Sizing Calculator",
+    },
   ],
   finish: [
     { href: "/calculators/finish/trim", label: "Trim & Baseboard Calculator" },
@@ -129,14 +135,32 @@ const categoryLinks: Record<TradePageDefinition["category"], RelatedLink[]> = {
     },
   ],
   interior: [
-    { href: "/calculators/interior/trim-baseboard", label: "Trim & Baseboard Calculator" },
-    { href: "/calculators/interior/flooring-waste", label: "Flooring Waste Calculator" },
-    { href: "/calculators/interior/stair-stringers", label: "Stair Stringers Calculator" },
-    { href: "/calculators/interior/paint-gal", label: "Paint Gallons Calculator" },
+    {
+      href: "/calculators/interior/trim-baseboard",
+      label: "Trim & Baseboard Calculator",
+    },
+    {
+      href: "/calculators/interior/flooring-waste",
+      label: "Flooring Waste Calculator",
+    },
+    {
+      href: "/calculators/interior/stair-stringers",
+      label: "Stair Stringers Calculator",
+    },
+    {
+      href: "/calculators/interior/paint-gal",
+      label: "Paint Gallons Calculator",
+    },
   ],
   business: [
-    { href: "/calculators/business/profit-margin", label: "Profit Margin Calculator" },
-    { href: "/calculators/business/labor-rate", label: "Labor Rate Calculator" },
+    {
+      href: "/calculators/business/profit-margin",
+      label: "Profit Margin Calculator",
+    },
+    {
+      href: "/calculators/business/labor-rate",
+      label: "Labor Rate Calculator",
+    },
     { href: "/calculators/business/lead-estimator", label: "Lead Estimator" },
     { href: "/calculators/business/tax-save", label: "Tax Save Calculator" },
   ],
@@ -396,7 +420,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
       "Calculate stud counts, plate lengths, and framing quantities for residential and light commercial wall layouts.",
     heroKicker: "Framing / Wall",
     proTip:
-      "For energy framing, 24\" OC and staggered stud layouts can reduce thermal bridging—verify spacing, opening schedule, and plate plan together before ordering.",
+      'For energy framing, 24" OC and staggered stud layouts can reduce thermal bridging—verify spacing, opening schedule, and plate plan together before ordering.',
     localFocus:
       "Practical for framing jobs in the Rome/Utica market where additions and retrofits change stud spacing assumptions.",
     canonicalPath: "/calculators/framing/wall",
@@ -434,7 +458,11 @@ export const tradePages: Record<string, TradePageDefinition> = {
     localFocus:
       "Built for tri-county framing crews handling floor layouts in remodel and new construction scopes.",
     canonicalPath: "/calculators/framing/floor",
-    keywords: ["floor joists calculator", "joist spacing", "floor framing takeoff"],
+    keywords: [
+      "floor joists calculator",
+      "joist spacing",
+      "floor framing takeoff",
+    ],
     relatedLinks: categoryLinks.framing,
     altText: "Industrial floor joists framing calculator icon",
   },
@@ -451,7 +479,11 @@ export const tradePages: Record<string, TradePageDefinition> = {
     localFocus:
       "Designed for Upstate framing conditions where roof load requirements drive tighter rafter planning.",
     canonicalPath: "/calculators/framing/roof",
-    keywords: ["roof rafters calculator", "rafter spacing", "roof framing takeoff"],
+    keywords: [
+      "roof rafters calculator",
+      "rafter spacing",
+      "roof framing takeoff",
+    ],
     relatedLinks: categoryLinks.framing,
     altText: "Industrial roof rafters framing calculator icon",
   },
@@ -702,14 +734,19 @@ export const tradePages: Record<string, TradePageDefinition> = {
     category: "framing",
     title: "Wall Studs Calculator",
     description:
-      "Calculate wall stud quantities and framing stock assumptions for quick rough framing takeoffs.",
+      "Calculate wall stud quantities with support for standard and staggered layouts, using precise integer math for accurate material counts.",
     heroKicker: "Framing / Wall Studs",
     proTip:
-      "24\" OC and staggered stud options can reduce thermal bridging, but openings and plate layout still drive your real counts—confirm the opening schedule before ordering.",
+      "For staggered stud walls, total count is (Wall Length / OC Spacing + 1) × 2, plus end studs. Verify opening schedule before ordering.",
     localFocus:
-      "Built for Rome and Utica framing crews dealing with remodel openings and mixed stud spacing.",
+      "Built for Rome and Utica framing crews balancing energy code requirements with practical field layouts. Supports both standard and staggered stud configurations.",
     canonicalPath: "/calculators/framing/wall-studs",
-    keywords: ["wall studs calculator", "stud spacing", "framing takeoff"],
+    keywords: [
+      "wall studs calculator",
+      "stud spacing",
+      "framing takeoff",
+      "staggered stud wall",
+    ],
     relatedLinks: categoryLinks.framing,
     altText: "Professional wall studs calculator icon",
   },
@@ -760,7 +797,11 @@ export const tradePages: Record<string, TradePageDefinition> = {
     localFocus:
       "Built for regional deck builds where weather exposure and stock length availability impact material planning.",
     canonicalPath: "/calculators/decking",
-    keywords: ["decking calculator", "deck joists and boards", "deck material list"],
+    keywords: [
+      "decking calculator",
+      "deck joists and boards",
+      "deck material list",
+    ],
     relatedLinks: categoryLinks.framing,
     altText: "Industrial decking material calculator icon",
   },
@@ -777,7 +818,11 @@ export const tradePages: Record<string, TradePageDefinition> = {
     localFocus:
       "Designed for Rome and Utica reroof jobs where weather windows are tight and return trips are costly.",
     canonicalPath: "/calculators/roofing/shingle-bundles",
-    keywords: ["shingle bundles calculator", "roof bundles", "asphalt roof estimate"],
+    keywords: [
+      "shingle bundles calculator",
+      "roof bundles",
+      "asphalt roof estimate",
+    ],
     relatedLinks: categoryLinks.roofing,
     altText: "Industrial shingle bundles calculator icon",
   },
@@ -811,7 +856,11 @@ export const tradePages: Record<string, TradePageDefinition> = {
     localFocus:
       "Built for tri-county exteriors where weatherproofing details and layout waste are high impact.",
     canonicalPath: "/calculators/roofing/siding-squares",
-    keywords: ["siding squares calculator", "siding estimate", "exterior takeoff"],
+    keywords: [
+      "siding squares calculator",
+      "siding estimate",
+      "exterior takeoff",
+    ],
     relatedLinks: categoryLinks.roofing,
     altText: "Industrial siding squares calculator icon",
   },
@@ -828,7 +877,11 @@ export const tradePages: Record<string, TradePageDefinition> = {
     localFocus:
       "Optimized for tri-county winter envelope planning where missed R-value targets cause callbacks.",
     canonicalPath: "/calculators/insulation/r-value-tracker",
-    keywords: ["r-value tracker", "insulation calculator", "NY frost line insulation"],
+    keywords: [
+      "r-value tracker",
+      "insulation calculator",
+      "NY frost line insulation",
+    ],
     relatedLinks: categoryLinks.insulation,
     altText: "Industrial R-value tracker calculator icon",
   },
@@ -879,7 +932,11 @@ export const tradePages: Record<string, TradePageDefinition> = {
     localFocus:
       "Useful for local interior crews handling older homes with uneven corners and transitions.",
     canonicalPath: "/calculators/interior/trim-baseboard",
-    keywords: ["trim baseboard calculator", "interior trim takeoff", "finish carpentry"],
+    keywords: [
+      "trim baseboard calculator",
+      "interior trim takeoff",
+      "finish carpentry",
+    ],
     relatedLinks: categoryLinks.interior,
     altText: "Industrial trim and baseboard calculator icon",
   },
@@ -947,7 +1004,11 @@ export const tradePages: Record<string, TradePageDefinition> = {
     localFocus:
       "Useful for tri-county bids where pricing pressure is high and margin discipline is critical.",
     canonicalPath: "/calculators/business/profit-margin",
-    keywords: ["profit margin calculator", "contractor margin", "bid profitability"],
+    keywords: [
+      "profit margin calculator",
+      "contractor margin",
+      "bid profitability",
+    ],
     relatedLinks: categoryLinks.business,
     altText: "Industrial profit margin calculator icon",
   },
@@ -981,7 +1042,11 @@ export const tradePages: Record<string, TradePageDefinition> = {
     localFocus:
       "Designed for tri-county contractors where seasonal demand changes lead quality.",
     canonicalPath: "/calculators/business/lead-estimator",
-    keywords: ["lead estimator", "contractor lead cost", "marketing roi contractor"],
+    keywords: [
+      "lead estimator",
+      "contractor lead cost",
+      "marketing roi contractor",
+    ],
     relatedLinks: categoryLinks.business,
     altText: "Industrial lead estimator icon",
   },
@@ -998,7 +1063,11 @@ export const tradePages: Record<string, TradePageDefinition> = {
     localFocus:
       "Built for local contractor operations in the Rome/Utica area with seasonal revenue shifts.",
     canonicalPath: "/calculators/business/tax-save",
-    keywords: ["tax save calculator", "contractor tax estimator", "net margin planning"],
+    keywords: [
+      "tax save calculator",
+      "contractor tax estimator",
+      "net margin planning",
+    ],
     relatedLinks: categoryLinks.business,
     altText: "Industrial tax save calculator icon",
   },
@@ -1094,7 +1163,9 @@ export function getTradeCalculators(
   });
 }
 
-export function getTradePageByPath(path: string): TradePageDefinition | undefined {
+export function getTradePageByPath(
+  path: string,
+): TradePageDefinition | undefined {
   return Object.values(tradePages).find((p) => p.canonicalPath === path);
 }
 

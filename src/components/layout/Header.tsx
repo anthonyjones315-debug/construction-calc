@@ -31,6 +31,8 @@ export function Header() {
   const online = useOnlineStatus();
   const isCommandCenterActive =
     pathname === "/command-center" || pathname === "/dashboard";
+  const commandCenterHref = session ? routes.commandCenter : routes.auth.signIn;
+  const brandHref = session ? routes.commandCenter : routes.home;
 
   const userDisplayName =
     session?.user?.name?.trim() || session?.user?.email?.trim() || "Pro User";
@@ -106,29 +108,31 @@ export function Header() {
   }, [mobileNavOpen]);
 
   return (
-    <header ref={headerRef} className="sticky top-0 z-50 border-b border-slate-800 bg-slate-950 text-slate-100 shadow-[0_10px_30px_rgba(0,0,0,0.22)]">
-      <div className="mx-auto flex h-10 max-w-7xl items-center justify-between gap-1 px-3 sm:gap-3 sm:px-4">
+    <header ref={headerRef} className="sticky top-0 z-50 border-b border-slate-800 bg-slate-950 text-slate-100 shadow-[0_10px_24px_rgba(0,0,0,0.2)]">
+      <div className="mx-auto flex h-[--shell-header-h] max-w-7xl items-center justify-between gap-1 px-2.5 sm:gap-2 sm:px-3">
         {/* Logo — P brand: always to Command Center dashboard */}
         <Link
-          href={routes.commandCenter}
-          className="flex shrink-0 items-center gap-1.5 text-sm font-display font-black tracking-wide text-white transition-colors hover:text-orange-500 sm:text-lg"
+          href={brandHref}
+          prefetch={false}
+          className="flex shrink-0 items-center gap-1 text-xs font-display font-black tracking-wide text-white transition-colors hover:text-orange-500 sm:text-base"
           aria-label="Pro Construction Calc - Command Center"
         >
-          <HardHat className="h-5 w-5 text-orange-500" aria-hidden />
+          <HardHat className="h-4 w-4 text-orange-500 sm:h-[18px] sm:w-[18px]" aria-hidden />
           <span className="hidden sm:block">Pro Construction Calc</span>
           <span className="sm:hidden">PC</span>
         </Link>
 
         {/* Desktop nav */}
         <nav
-          className="hidden items-center gap-3 text-sm text-slate-300 md:flex"
+          className="hidden items-center gap-2 text-sm text-slate-300 md:flex"
           aria-label="Main navigation"
         >
           {primaryNavigation.map(({ href, label }) => (
             <Link
               key={href}
               href={href}
-              className="flex min-h-8 items-center rounded-lg px-2.5 py-1 text-xs transition-colors hover:text-white"
+              prefetch={false}
+              className="flex min-h-7 items-center rounded-lg px-2 py-1 text-[11px] transition-colors hover:text-white"
             >
               {label}
             </Link>
@@ -139,26 +143,28 @@ export function Header() {
         <div className="flex items-center gap-1.5 sm:gap-2">
           {/* Mobile-friendly quick jump into Command Center */}
           <Link
-            href={routes.commandCenter}
-            className={`inline-flex h-8 min-w-[92px] items-center justify-center rounded-full border px-2 text-[10px] font-black uppercase tracking-[0.16em] ${
+            href={commandCenterHref}
+            prefetch={false}
+            className={`inline-flex h-7 min-w-[84px] items-center justify-center rounded-full border px-2 text-[9px] font-black uppercase tracking-[0.16em] ${
               isCommandCenterActive
                 ? "border-orange-500 bg-orange-600/20 text-orange-300"
                 : "border-slate-700 bg-slate-900/70 text-slate-200 hover:border-orange-500 hover:text-orange-300"
             } hidden xs:inline-flex sm:hidden`}
               aria-label="Open Command Center dashboard"
           >
-            <LayoutDashboard className="mr-1 h-3.5 w-3.5" aria-hidden />
+            <LayoutDashboard className="mr-1 h-3 w-3" aria-hidden />
             Command
           </Link>
           {/* Cart quick access: always visible so batch estimate workflows stay one tap away. */}
           <Link
             href={routes.cart}
-            className="inline-flex min-h-8 items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white transition hover:border-orange-400/60 hover:text-orange-200 sm:px-3"
-            aria-label={`Open cart (${cartCount} item${cartCount === 1 ? "" : "s"})`}
+            prefetch={false}
+            className="inline-flex min-h-7 items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.14em] text-white transition hover:border-orange-400/60 hover:text-orange-200 sm:px-2.5"
+            aria-label={`Cart ${cartCount} item${cartCount === 1 ? "" : "s"}`}
           >
-            <ShoppingCart className="h-4 w-4" aria-hidden />
+            <ShoppingCart className="h-3.5 w-3.5" aria-hidden />
             <span className="hidden sm:inline">Cart</span>
-            <span className="rounded-full bg-orange-500 px-2 py-[2px] text-[10px] font-black text-white">
+            <span className="rounded-full bg-orange-500 px-1.5 py-[2px] text-[9px] font-black text-white">
               {cartCount}
             </span>
           </Link>
@@ -174,9 +180,9 @@ export function Header() {
           </span>
           {/* Auth area */}
           {!isMounted ? (
-            <div className="h-8 w-8 rounded-full bg-slate-800 animate-pulse" />
+            <div className="h-7 w-7 rounded-full bg-slate-800 animate-pulse" />
           ) : status === "loading" ? (
-            <div className="w-8 h-8 rounded-full bg-slate-700 animate-pulse" />
+            <div className="h-7 w-7 rounded-full bg-slate-700 animate-pulse" />
           ) : session ? (
             <div className="relative" ref={menuRef}>
               <button
@@ -191,15 +197,15 @@ export function Header() {
                   <img
                     src={session.user.image}
                     alt={`${session.user?.name ?? "User"} profile picture`}
-                    className="h-8 w-8 rounded-full border border-slate-700 object-cover"
+                    className="h-7 w-7 rounded-full border border-slate-700 object-cover"
                     referrerPolicy="no-referrer"
                   />
                 ) : (
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[--color-orange-brand] text-[11px] font-display font-black tracking-wide text-white">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[--color-orange-brand] text-[10px] font-display font-black tracking-wide text-white">
                     {userInitials}
                   </div>
                 )}
-                <ChevronDown className="h-3 w-3" aria-hidden />
+                <ChevronDown className="h-2.5 w-2.5" aria-hidden />
               </button>
 
               {menuOpen && (
@@ -220,6 +226,7 @@ export function Header() {
                   </div>
                   <Link
                     href={routes.settings}
+                    prefetch={false}
                     role="menuitem"
                     className="flex items-center gap-2 px-4 py-2 text-sm text-slate-200 transition-colors hover:bg-slate-800 hover:text-orange-500"
                     onClick={() => setMenuOpen(false)}
@@ -231,6 +238,7 @@ export function Header() {
                   </Link>
                   <Link
                     href={routes.commandCenter}
+                    prefetch={false}
                     role="menuitem"
                     className="flex items-center gap-2 px-4 py-2 text-sm text-slate-200 transition-colors hover:bg-slate-800 hover:text-orange-500"
                     onClick={() => setMenuOpen(false)}
@@ -242,6 +250,7 @@ export function Header() {
                   </Link>
                   <Link
                     href={routes.saved}
+                    prefetch={false}
                     role="menuitem"
                     className="flex items-center gap-2 px-4 py-2 text-sm text-slate-200 transition-colors hover:bg-slate-800 hover:text-orange-500"
                     onClick={() => setMenuOpen(false)}
@@ -268,7 +277,8 @@ export function Header() {
           ) : (
             <Link
               href={routes.auth.signIn}
-              className="btn-tactile flex min-h-8 items-center rounded-lg bg-orange-600 px-3 text-xs font-black uppercase text-white transition-all duration-200 hover:bg-orange-700 active:scale-[0.98]"
+              prefetch={false}
+              className="btn-tactile flex min-h-7 items-center rounded-lg bg-orange-700 px-2.5 text-[11px] font-black uppercase text-white transition-all duration-200 hover:bg-orange-800 active:scale-[0.98]"
               aria-label="Sign in to your Estimating Cockpit"
             >
               Sign In
@@ -277,7 +287,7 @@ export function Header() {
 
           {/* Mobile hamburger */}
           <button
-            className="btn-tactile flex h-9 min-h-9 w-9 items-center justify-center rounded-lg text-slate-300 transition-all duration-200 hover:bg-slate-800 hover:text-white active:scale-[0.98] md:hidden"
+            className="btn-tactile flex h-8 min-h-8 w-8 items-center justify-center rounded-lg text-slate-300 transition-all duration-200 hover:bg-slate-800 hover:text-white active:scale-[0.98] md:hidden"
             onClick={() => setMobileNavOpen((o) => !o)}
             aria-expanded={mobileNavOpen}
             aria-controls="mobile-navigation"
@@ -302,6 +312,7 @@ export function Header() {
           {session && (
             <Link
               href={routes.commandCenter}
+              prefetch={false}
               onClick={() => setMobileNavOpen(false)}
               className={`flex min-h-9 items-center gap-2 rounded-lg px-4 py-1.5 text-sm transition-colors hover:bg-slate-800 hover:text-orange-500 ${
                 isCommandCenterActive
@@ -322,6 +333,7 @@ export function Header() {
             <Link
               key={href}
               href={href}
+              prefetch={false}
               onClick={() => setMobileNavOpen(false)}
               className="flex min-h-9 items-center rounded-lg px-4 py-1.5 text-sm text-slate-200 transition-colors hover:bg-slate-800 hover:text-orange-500"
             >
@@ -330,6 +342,7 @@ export function Header() {
           ))}
           <Link
             href={routes.cart}
+            prefetch={false}
             onClick={() => setMobileNavOpen(false)}
             className="flex min-h-9 items-center rounded-lg px-4 py-1.5 text-sm text-slate-200 transition-colors hover:bg-slate-800 hover:text-orange-500"
           >

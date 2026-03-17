@@ -1,6 +1,6 @@
 export default function CommandCenterLoading() {
   return (
-    <div className="command-theme flex min-h-screen flex-col bg-[#0F0F10]">
+    <div className="command-theme page-shell flex min-h-dvh flex-col bg-[#0F0F10]">
       {/* Header skeleton */}
       <div className="sticky top-0 z-50 h-14 border-b border-slate-800 bg-slate-950" aria-hidden="true">
         <div className="mx-auto flex h-14 max-w-screen-xl items-center justify-between px-4">
@@ -14,11 +14,12 @@ export default function CommandCenterLoading() {
 
       <main
         id="main-content"
-        className="mx-auto w-full max-w-screen-xl flex-1 bg-[#0F0F10] px-4 py-6"
+        className="viewport-main"
         aria-busy="true"
         aria-label="Loading Command Center…"
       >
-        <div className="w-full overflow-hidden rounded-none border border-slate-800 bg-slate-950 sm:rounded-[30px]">
+        <div className="viewport-frame">
+        <div className="h-full w-full overflow-hidden rounded-none border border-slate-800 bg-slate-950 sm:rounded-[30px]">
           <div className="grid min-h-[720px] lg:grid-cols-[240px,1fr]">
 
             {/* Sidebar skeleton */}
@@ -89,6 +90,7 @@ export default function CommandCenterLoading() {
               </div>
             </section>
           </div>
+        </div>
         </div>
       </main>
     </div>

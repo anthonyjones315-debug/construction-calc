@@ -4005,6 +4005,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
           >
             <Link
               href={routes.commandCenter}
+              prefetch={false}
               className="inline-flex min-h-9 items-center gap-1.5 px-3 text-xs font-semibold uppercase tracking-widest text-[--color-nav-text] transition-all duration-200 active:scale-[0.98]"
             >
               <HardHat className="h-3.5 w-3.5" aria-hidden />

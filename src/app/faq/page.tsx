@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { JsonLD, getFAQSchema, getPageMetadata } from "@/seo";
@@ -72,47 +71,37 @@ const FAQ_ITEMS = [
 
 export default function FAQPage() {
   return (
-    <div className="command-theme page-shell flex min-h-screen flex-col">
+    <div className="command-theme page-shell flex min-h-dvh flex-col">
       <Header />
       <JsonLD schema={getFAQSchema(FAQ_ITEMS)} />
-      <main id="main-content" className="flex-1">
-        <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
-          <div className="dark-feature-panel mb-8 p-6 text-white">
+      <main id="main-content" className="viewport-main">
+        <div className="viewport-frame max-w-6xl">
+          <div className="dark-feature-panel p-4 text-white">
             <p className="section-kicker">Field answers</p>
-            <h1 className="mt-2 text-3xl font-display font-bold">
+            <h1 className="mt-1.5 text-2xl font-display font-bold">
               Frequently Asked Questions
             </h1>
-            <p className="mt-2 text-[--color-nav-text]/70">
+            <p className="mt-1.5 text-sm text-[--color-nav-text]/70">
               Everything you need to know about Pro Construction Calc.
             </p>
-            <div className="trim-nav-border mt-4 inline-flex rounded-full border bg-white/6 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[--color-nav-text]">
+            <div className="trim-nav-border mt-3 inline-flex rounded-full border bg-white/6 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-[--color-nav-text]">
               Practical answers for real jobs
             </div>
           </div>
 
-          <div className="content-card mb-8 overflow-hidden">
-            <Image
-              src="/images/safety-estimate.svg"
-              alt="Hard hat and checklist representing practical estimating guidance"
-              width={1600}
-              height={460}
-              className="h-48 w-full object-cover sm:h-52"
-            />
-          </div>
-
-          <div className="space-y-4">
+          <div className="grid min-h-0 gap-3 md:grid-cols-2">
             {FAQ_ITEMS.map((item) => (
               <details
                 key={item.q}
                 className="group content-card overflow-hidden"
               >
-                <summary className="flex items-center justify-between px-6 py-4 cursor-pointer list-none font-semibold text-[--color-ink] hover:text-[--color-orange-brand] transition-colors select-none">
+                <summary className="flex items-center justify-between px-4 py-3 cursor-pointer list-none text-sm font-semibold text-[--color-ink] hover:text-[--color-orange-brand] transition-colors select-none">
                   {item.q}
-                  <span className="text-[--color-ink-dim] group-open:rotate-45 transition-transform text-xl leading-none ml-4 shrink-0">
+                  <span className="ml-3 shrink-0 text-lg leading-none text-[--color-ink-dim] transition-transform group-open:rotate-45">
                     +
                   </span>
                 </summary>
-                <div className="trim-border-strong border-t px-6 pb-5 pt-4 text-sm leading-relaxed text-[--color-ink-mid]">
+                <div className="trim-border-strong border-t px-4 pb-4 pt-3 text-[13px] leading-relaxed text-[--color-ink-mid]">
                   {item.a}
                 </div>
               </details>

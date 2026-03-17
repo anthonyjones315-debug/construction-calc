@@ -217,12 +217,12 @@ export function CalculatorsDirectoryClient() {
               {showRecommended ? (
                 <div>
                   {suggested.length > 0 && (
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-300">
                       Suggested for you
                     </p>
                   )}
                   {suggested.length === 0 && (
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-300">
                       Recommended starting points
                     </p>
                   )}
@@ -231,6 +231,7 @@ export function CalculatorsDirectoryClient() {
                       <Link
                         key={page.key}
                         href={page.href as Route}
+                        prefetch={false}
                         className="group rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-2 text-left text-xs text-slate-300 transition-colors hover:border-[--color-orange-brand]/60 hover:bg-slate-900"
                       >
                         <p className="font-semibold text-slate-100 group-hover:text-[--color-orange-brand]">
@@ -249,7 +250,7 @@ export function CalculatorsDirectoryClient() {
                 </p>
               ) : (
                 <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-300">
                     Matching calculators
                   </p>
                   <ul className="mt-2 space-y-1.5">
@@ -257,6 +258,7 @@ export function CalculatorsDirectoryClient() {
                       <li key={page.key}>
                         <Link
                           href={page.href as Route}
+                          prefetch={false}
                           className="group flex flex-col rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-2 text-xs text-slate-300 transition-colors hover:border-[--color-orange-brand]/60 hover:bg-slate-900"
                         >
                           <div className="flex items-center justify-between gap-2">
@@ -295,6 +297,7 @@ export function CalculatorsDirectoryClient() {
                 >
                   <Link
                     href={href as Route}
+                    prefetch={false}
                     className="flex items-center gap-2.5 text-[--color-orange-brand]"
                   >
                     <Icon
@@ -315,6 +318,7 @@ export function CalculatorsDirectoryClient() {
                       <li key={link.href}>
                         <Link
                           href={link.href as Route}
+                          prefetch={false}
                           className="text-xs text-[--color-nav-text]/85 transition-colors duration-300 hover:text-[--color-orange-brand]"
                         >
                           {link.label}
@@ -325,6 +329,7 @@ export function CalculatorsDirectoryClient() {
                       <li>
                         <Link
                           href={href as Route}
+                          prefetch={false}
                           className="text-[10px] font-semibold uppercase tracking-wider text-[--color-orange-brand]/90 hover:text-[--color-orange-brand]"
                         >
                           +{links.length - 4} more
@@ -334,9 +339,10 @@ export function CalculatorsDirectoryClient() {
                   </ul>
                   <Link
                     href={href as Route}
+                    prefetch={false}
                     className="mt-4 inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-[0.12em] text-[--color-orange-brand] opacity-90 transition-opacity group-hover:opacity-100"
                   >
-                    Open module
+                    Open {label}
                     <span aria-hidden>→</span>
                   </Link>
                 </div>

@@ -2,6 +2,11 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
+import {
+  notifyConsentChanged,
+  readConsentState,
+  type TermlyConsentState,
+} from "@/lib/privacy/consent";
 
 const SCRIPT_SRC_BASE = "https://app.termly.io";
 
@@ -9,6 +14,11 @@ declare global {
   interface Window {
     Termly?: {
       initialize?: () => void;
+      on?: (
+        event: "initialized" | "consent",
+        callback: (data?: unknown) => void,
+      ) => void;
+      getConsentState?: () => TermlyConsentState | null | undefined;
     };
   }
 }
@@ -67,6 +77,19 @@ export default function TermlyCMP({
     return () => {
       isScriptAdded.current = false;
     };
+  }, [scriptSrc]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!window.Termly?.on) return;
+
+    const syncConsent = () => {
+      notifyConsentChanged(readConsentState());
+    };
+
+    window.Termly.on("initialized", syncConsent);
+    window.Termly.on("consent", syncConsent);
+    syncConsent();
   }, [scriptSrc]);
 
   const pathname = usePathname();

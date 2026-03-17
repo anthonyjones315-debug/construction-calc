@@ -7,6 +7,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { createServerClient } from "@/lib/supabase/server";
 import { getNoIndexMetadata } from "@/seo";
+import { WelcomeGuidePopup } from "@/components/ui/WelcomeGuidePopup";
 import { routes } from "@routes";
 import CommandCenterClient from "./CommandCenterClient";
 
@@ -399,8 +400,11 @@ export default async function CommandCenterPage({
   const { session, userId } = await resolveUserId();
 
   if (!session?.user) {
-    const next = encodeURIComponent(routes.commandCenter);
-    redirect(`${routes.auth.signIn}?next=${next}&callbackUrl=${next}` as Route);
+    const params = new URLSearchParams({
+      next: routes.commandCenter,
+      callbackUrl: routes.commandCenter,
+    });
+    redirect(`${routes.auth.signIn}?${params.toString()}` as Route);
   }
 
   const params = await searchParams;
@@ -438,10 +442,11 @@ export default async function CommandCenterPage({
   }
 
   return (
-    <div className="min-h-dvh overflow-hidden grid grid-rows-[auto_1fr_auto] bg-slate-950 text-slate-100">
+    <div className="page-shell min-h-dvh grid grid-rows-[auto_1fr_auto] bg-slate-950 text-slate-100">
+      <WelcomeGuidePopup />
       <Header />
-      <main className="row-start-2 overflow-hidden">
-        <div className="h-full overflow-hidden px-4 py-6 sm:px-6">
+      <main id="main-content" className="row-start-2 viewport-main">
+        <div className="viewport-frame">
           {mainContent}
         </div>
       </main>

@@ -10,6 +10,8 @@ export const PASSWORD_REQUIREMENTS = [
   "Do not use spaces",
 ] as const;
 
+export type PasswordPolicyChecks = ReturnType<typeof getPasswordPolicyChecks>;
+
 export function getPasswordPolicyChecks(password: string) {
   return {
     length:
@@ -21,6 +23,10 @@ export function getPasswordPolicyChecks(password: string) {
     special: /[^A-Za-z0-9]/.test(password),
     noSpaces: !/\s/.test(password),
   };
+}
+
+export function isPasswordPolicySatisfied(password: string): boolean {
+  return getPasswordPolicyError(password) === null;
 }
 
 export function getPasswordPolicyError(password: string): string | null {

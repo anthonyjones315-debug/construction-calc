@@ -24,10 +24,25 @@ create table if not exists public.users (
   email           text unique,
   "emailVerified" timestamptz,
   image           text,
-  pro_mode_enabled boolean
+  pro_mode_enabled boolean,
+  two_factor_enabled boolean not null default false
 );
 
 revoke all on public.users from anon, authenticated;
+
+-- ─── Email 2FA Tokens ─────────────────────────────────────────
+create table if not exists two_factor_tokens (
+  id         uuid primary key default uuid_generate_v4(),
+  email      text not null,
+  token      text not null,
+  expires    timestamptz not null
+);
+
+revoke all on two_factor_tokens from anon;
+revoke all on two_factor_tokens from authenticated;
+
+create index if not exists two_factor_tokens_email_idx on two_factor_tokens(email);
+create index if not exists two_factor_tokens_expires_idx on two_factor_tokens(expires);
 
 -- ─── Saved Estimates (with CRM fields) ────────────────────────
 create table if not exists saved_estimates (

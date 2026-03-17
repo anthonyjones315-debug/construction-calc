@@ -1,9 +1,24 @@
 import { z } from "zod";
 import NextAuth from "next-auth";
+import { CredentialsSignin } from "next-auth";
+import * as Sentry from "@sentry/nextjs";
 import { createClient } from "@supabase/supabase-js";
 import Google from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { createServerClient } from "@/lib/supabase/server";
 import { ensurePublicUserRecord } from "@/lib/supabase/ensurePublicUser";
+import { issueTwoFactorCode, consumeTwoFactorToken } from "@/lib/tokens";
+import {
+  clearTwoFactorVerifyFailures,
+  getTwoFactorRateLimitKey,
+  getTwoFactorResendCooldownSeconds,
+  getTwoFactorVerifyLockoutSeconds,
+  markTwoFactorResend,
+  recordTwoFactorVerifyFailure,
+} from "@/lib/auth/two-factor-rate-limit";
+import {
+  PASSWORD_MAX_LENGTH,
+} from "@/lib/security/password-policy";
 
 function isValidHttpUrl(s: string): boolean {
   try {
@@ -26,10 +41,14 @@ const authSiteUrlFromDefaults =
   (process.env.VERCEL_ENV === "production" ? CANONICAL_SITE_URL : undefined);
 const trustHost = process.env.AUTH_TRUST_HOST !== "false";
 const authRedirectProxyEnv = process.env.AUTH_REDIRECT_PROXY_URL;
+const defaultRedirectProxyUrl =
+  process.env.VERCEL === "1" && process.env.VERCEL_ENV !== "development"
+    ? `${CANONICAL_SITE_URL}/api/auth`
+    : undefined;
 const redirectProxyUrl =
   authRedirectProxyEnv && isValidHttpUrl(authRedirectProxyEnv)
     ? authRedirectProxyEnv
-    : undefined;
+    : defaultRedirectProxyUrl;
 const googleClientId =
   process.env.GOOGLE_CLIENT_ID ?? process.env.AUTH_GOOGLE_ID ?? "";
 const googleClientSecret =
@@ -38,11 +57,29 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
 
 const credentialsSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8),
+  password: z.string().min(1).max(PASSWORD_MAX_LENGTH),
+  code: z
+    .string()
+    .trim()
+    .regex(/^\d{6}$/)
+    .optional()
+    .or(z.literal("")),
 });
 const useSecureCookies =
   process.env.AUTH_FORCE_SECURE_COOKIES === "true" ||
   process.env.NODE_ENV === "production";
+
+class TwoFactorRequiredError extends CredentialsSignin {
+  code = "TWO_FACTOR_REQUIRED";
+}
+
+class TwoFactorInvalidError extends CredentialsSignin {
+  code = "TWO_FACTOR_INVALID";
+}
+
+class TwoFactorRateLimitedError extends CredentialsSignin {
+  code = "TWO_FACTOR_RATE_LIMITED";
+}
 
 function reportAuthConfigIssues() {
   const issues: string[] = [];
@@ -117,6 +154,15 @@ function createSupabaseAuthClient() {
       persistSession: false,
     },
   });
+}
+
+function getClientIpAddress(request: Request) {
+  const forwardedFor = request.headers.get("x-forwarded-for");
+  if (forwardedFor) {
+    return forwardedFor.split(",")[0]?.trim() ?? null;
+  }
+
+  return request.headers.get("x-real-ip");
 }
 
 function toSameOriginRedirect(url: string, baseUrl: string): string {
@@ -215,8 +261,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
+        code: { label: "Security code", type: "text" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, request) {
         const parsed = credentialsSchema.safeParse(credentials ?? {});
         if (!parsed.success) return null;
 
@@ -234,6 +281,50 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return null;
         }
 
+        const db = createServerClient();
+        const { data: authUser, error: authUserError } = await db
+          .from("users")
+          .select("two_factor_enabled")
+          .eq("id", data.user.id)
+          .maybeSingle<{ two_factor_enabled?: boolean | null }>();
+
+        if (authUserError) {
+          throw new Error(authUserError.message);
+        }
+
+        const twoFactorEnabled = authUser?.two_factor_enabled === true;
+        const code = parsed.data.code?.trim() ?? "";
+
+        if (twoFactorEnabled) {
+          const ipAddress = getClientIpAddress(request);
+          const rateLimitKey = getTwoFactorRateLimitKey(parsed.data.email, ipAddress);
+
+          if (!code) {
+            const resendCooldownSeconds =
+              getTwoFactorResendCooldownSeconds(rateLimitKey);
+
+            if (resendCooldownSeconds === 0) {
+              await issueTwoFactorCode(parsed.data.email);
+              markTwoFactorResend(rateLimitKey);
+            }
+
+            throw new TwoFactorRequiredError();
+          }
+
+          const lockoutSeconds = getTwoFactorVerifyLockoutSeconds(rateLimitKey);
+          if (lockoutSeconds > 0) {
+            throw new TwoFactorRateLimitedError();
+          }
+
+          const isValidCode = await consumeTwoFactorToken(parsed.data.email, code);
+          if (!isValidCode) {
+            recordTwoFactorVerifyFailure(rateLimitKey);
+            throw new TwoFactorInvalidError();
+          }
+
+          clearTwoFactorVerifyFailures(rateLimitKey);
+        }
+
         return {
           id: data.user.id,
           email: data.user.email || parsed.data.email,
@@ -243,12 +334,33 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               : typeof data.user.user_metadata?.full_name === "string"
                 ? data.user.user_metadata.full_name
                 : data.user.email,
+          twoFactorEnabled,
+          twoFactorVerified: !twoFactorEnabled || Boolean(code),
         };
       },
     }),
   ],
 
   callbacks: {
+    async signIn({ user, account, credentials }) {
+      if (account?.provider !== "credentials") {
+        return true;
+      }
+
+      const requiresTwoFactor = (user as Record<string, unknown>)?.twoFactorEnabled === true;
+      const twoFactorVerified =
+        (user as Record<string, unknown>)?.twoFactorVerified === true;
+      const submittedCode =
+        typeof (credentials as Record<string, unknown> | undefined)?.code === "string"
+          ? (credentials as Record<string, unknown>).code
+          : "";
+
+      if (requiresTwoFactor && (!submittedCode || !twoFactorVerified)) {
+        return false;
+      }
+
+      return true;
+    },
     async jwt({ token, user, account }) {
       const mutableToken = token as typeof token & Record<string, unknown>;
 
@@ -367,6 +479,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         // Log the root cause which contains the actual DB/adapter error
         (error as { cause?: unknown })?.cause ?? "",
       );
+      Sentry.captureException(error, {
+        tags: {
+          area: "auth",
+          source: "nextauth-logger",
+        },
+        extra: {
+          cause: (error as { cause?: unknown })?.cause ?? null,
+          redirectProxyUrl: redirectProxyUrl ?? null,
+          authSiteUrl: authSiteUrlFromDefaults ?? null,
+          vercelEnv: process.env.VERCEL_ENV ?? null,
+        },
+      });
     },
     warn(code) {
       console.warn("[auth][logger][warn]", code);

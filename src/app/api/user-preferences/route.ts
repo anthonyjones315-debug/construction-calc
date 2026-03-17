@@ -5,8 +5,16 @@ import { auth } from "@/lib/auth/config";
 import { createServerClient } from "@/lib/supabase/server";
 
 const updatePreferencesSchema = z.object({
-  proModeEnabled: z.boolean(),
-});
+  proModeEnabled: z.boolean().optional(),
+  twoFactorEnabled: z.boolean().optional(),
+}).refine(
+  (value) =>
+    typeof value.proModeEnabled === "boolean" ||
+    typeof value.twoFactorEnabled === "boolean",
+  {
+    message: "At least one preference must be provided.",
+  },
+);
 
 async function resolveUserId() {
   const session = await auth();
@@ -47,7 +55,7 @@ export async function GET() {
     const db = createServerClient();
     const { data, error } = await db
       .from("users")
-      .select("pro_mode_enabled")
+      .select("pro_mode_enabled, two_factor_enabled")
       .eq("id", userId)
       .maybeSingle();
 
@@ -55,15 +63,19 @@ export async function GET() {
       // Gracefully handle environments where the column has not been migrated yet.
       if (
         error.code === "42703" ||
-        error.message?.toLowerCase().includes("pro_mode_enabled")
+        error.message?.toLowerCase().includes("pro_mode_enabled") ||
+        error.message?.toLowerCase().includes("two_factor_enabled")
       ) {
-        Sentry.captureMessage("pro_mode_enabled column missing; returning null preference", {
+        Sentry.captureMessage("user preference column missing; returning null preference", {
           level: "info",
           contexts: { supabase: { code: error.code, message: error.message } },
         });
         return NextResponse.json({
-          preferences: { proModeEnabled: null },
-          note: "pro_mode_enabled column not available in this environment.",
+          preferences: {
+            proModeEnabled: null,
+            twoFactorEnabled: null,
+          },
+          note: "Preference column not available in this environment.",
         });
       }
       throw new Error(error.message);
@@ -74,6 +86,10 @@ export async function GET() {
         proModeEnabled:
           typeof data?.pro_mode_enabled === "boolean"
             ? data.pro_mode_enabled
+            : null,
+        twoFactorEnabled:
+          typeof data?.two_factor_enabled === "boolean"
+            ? data.two_factor_enabled
             : null,
       },
     });
@@ -109,25 +125,39 @@ export async function PUT(request: NextRequest) {
     }
 
     const db = createServerClient();
+    const updates: Record<string, boolean> = {};
+
+    if (typeof parsed.data.proModeEnabled === "boolean") {
+      updates.pro_mode_enabled = parsed.data.proModeEnabled;
+    }
+
+    if (typeof parsed.data.twoFactorEnabled === "boolean") {
+      updates.two_factor_enabled = parsed.data.twoFactorEnabled;
+    }
+
     const { error } = await db
       .from("users")
-      .update({ pro_mode_enabled: parsed.data.proModeEnabled })
+      .update(updates)
       .eq("id", userId);
 
     if (error) {
       if (
         error.code === "42703" ||
-        error.message?.toLowerCase().includes("pro_mode_enabled")
+        error.message?.toLowerCase().includes("pro_mode_enabled") ||
+        error.message?.toLowerCase().includes("two_factor_enabled")
       ) {
-        Sentry.captureMessage("pro_mode_enabled column missing; update skipped", {
+        Sentry.captureMessage("user preference column missing; update skipped", {
           level: "info",
           contexts: { supabase: { code: error.code, message: error.message } },
         });
         return NextResponse.json(
           {
             ok: false,
-            preferences: { proModeEnabled: null },
-            note: "pro_mode_enabled column not available in this environment; preference not saved.",
+            preferences: {
+              proModeEnabled: null,
+              twoFactorEnabled: null,
+            },
+            note: "Preference column not available in this environment; preference not saved.",
           },
           { status: 200 },
         );
@@ -137,7 +167,16 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json({
       ok: true,
-      preferences: { proModeEnabled: parsed.data.proModeEnabled },
+      preferences: {
+        proModeEnabled:
+          typeof parsed.data.proModeEnabled === "boolean"
+            ? parsed.data.proModeEnabled
+            : null,
+        twoFactorEnabled:
+          typeof parsed.data.twoFactorEnabled === "boolean"
+            ? parsed.data.twoFactorEnabled
+            : null,
+      },
     });
   } catch (error) {
     Sentry.captureException(error);

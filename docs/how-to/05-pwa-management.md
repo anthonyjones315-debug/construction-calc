@@ -1,34 +1,34 @@
 # 05 PWA Management
 
-Use this guide when you want to make sure a phone or tablet is running the latest live version of the app in the field.
+Use this guide when you want to make sure a phone or tablet is running the latest version of the app in the field without losing the installed PWA experience.
 
 ## Goal
 
-Make the device load the newest version of the app without guessing whether it is stuck on stale cached files.
+Make the device pick up the newest release without guessing whether it is stuck on older cached assets.
 
 ## Important first note
 
 ### Action
 
-Treat the current app as a live-web experience first.
+Treat the current app as an installable PWA with an update-aware service worker.
 
 ### Context
 
-The app currently clears stale service workers on launch. That means the safest way to get the latest version is to reopen the live site instead of assuming an old home-screen install is still current.
+The app now keeps a proper service worker registered for faster repeat loads, install support, and offline fallback. If a device has been sitting on an old tab or old install for a long time, reopening while online is still the fastest way to let the newest release take over.
 
 ### Verification
 
-If the device has been sitting on an old open tab or old install for a long time, plan to fully close it and reopen the app fresh.
+If the device has been idle for a while, fully close it and reopen it with a live internet connection before the crew relies on it.
 
 ## Step 1: Force a fresh open
 
 ### Action
 
-Close the app or browser tab completely, then reopen the live site while connected to the internet.
+Close the app or browser tab completely, then reopen the installed app or live site while connected to the internet.
 
 ### Context
 
-This gives the app a chance to load the current release and clear stale service-worker state.
+This gives the app a chance to load the current release and let the service worker refresh cached files cleanly.
 
 ### Verification
 
@@ -38,11 +38,11 @@ Confirm the app reloads normally and that the newest visible content or workflow
 
 ### Action
 
-If the device is using a home-screen install and the screen looks old or broken, remove the old install and open the live site again in the browser first.
+If the device is using a home-screen install and the screen looks old or broken, first reopen it while online. If it still looks stale, remove the install and open the live site in the browser once before reinstalling.
 
 ### Context
 
-This is the fastest recovery path when a field device feels stuck on yesterday’s version.
+This is the fastest recovery path when a field device feels stuck on yesterday's version or a partially cached release.
 
 ### Verification
 
@@ -56,7 +56,7 @@ Use the install prompt or browser install option only after you confirm the live
 
 ### Context
 
-Installing from a stale session just bakes the confusion back onto the device.
+Installing from a stale browser session just carries old confusion back onto the device.
 
 ### Verification
 
@@ -84,11 +84,11 @@ The app should load without obvious missing styles, blank panels, or old copy th
 
 ### Action
 
-Use this guide to confirm the latest live version, not guaranteed offline persistence.
+Use this guide to confirm the latest release, not to guarantee every route will behave the same offline as it does with a strong connection.
 
 ### Context
 
-The current setup is optimized to avoid stale versions in the field. It is not the same as a fully persistent offline-first install strategy.
+The current setup supports installability and offline fallback, but it is still designed around a live connected workflow for estimates, account actions, and other server-backed features.
 
 ### Verification
 
@@ -98,7 +98,7 @@ If the team needs dependable offline behavior instead of latest-version behavior
 
 You are done when all of the following are true:
 
-- The device reopened the live site while online
+- The device reopened the installed app or live site while online
 - Old stale install behavior was cleared if needed
 - The current version matches another fresh session
 - A real route opens successfully on the device

@@ -3,53 +3,46 @@
 import { useEffect, useState } from "react";
 import {
   COOKIE_CONSENT_CHANGED_EVENT,
-  COOKIE_CONSENT_STORAGE_KEY,
-  readCookieConsent,
-  writeCookieConsent,
-  type CookieConsentChoice,
+  readConsentState,
+  type TermlyConsentState,
 } from "@/lib/privacy/consent";
-import { ShieldCheck, ShieldX } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 
 export function ConsentSettings() {
-  const [choice, setChoice] = useState<CookieConsentChoice | null>(null);
+  const [consentState, setConsentState] = useState<TermlyConsentState | null>(null);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     const hydrateId = window.setTimeout(() => {
-      setChoice(readCookieConsent());
+      setConsentState(readConsentState());
       setHydrated(true);
     }, 0);
 
-    function handleConsentChange(event: Event) {
-      const detail = (event as CustomEvent<CookieConsentChoice>).detail;
-      setChoice(detail ?? readCookieConsent());
-    }
-
-    function handleStorage(event: StorageEvent) {
-      if (event.key === COOKIE_CONSENT_STORAGE_KEY) {
-        setChoice(readCookieConsent());
-      }
+    function handleConsentChange() {
+      setConsentState(readConsentState());
     }
 
     window.addEventListener(COOKIE_CONSENT_CHANGED_EVENT, handleConsentChange);
-    window.addEventListener("storage", handleStorage);
 
     return () => {
       window.clearTimeout(hydrateId);
-      window.removeEventListener(
-        COOKIE_CONSENT_CHANGED_EVENT,
-        handleConsentChange,
-      );
-      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener(COOKIE_CONSENT_CHANGED_EVENT, handleConsentChange);
     };
   }, []);
 
-  function updateConsent(next: CookieConsentChoice) {
-    writeCookieConsent(next);
-    setChoice(next);
-  }
-
   if (!hydrated) return null;
+
+  const categories = [
+    { key: "essential", label: "Essential", enabled: consentState?.essential === true },
+    { key: "performance", label: "Performance", enabled: consentState?.performance === true },
+    { key: "analytics", label: "Analytics", enabled: consentState?.analytics === true },
+    { key: "advertising", label: "Advertising", enabled: consentState?.advertising === true },
+    {
+      key: "social_networking",
+      label: "Social",
+      enabled: consentState?.social_networking === true,
+    },
+  ] as const;
 
   return (
     <section className="content-card mx-auto mt-8 max-w-2xl p-6">
@@ -59,36 +52,36 @@ export function ConsentSettings() {
           Privacy & Consent
         </h2>
         <p className="text-sm text-[--color-ink-dim]">
-          Control optional analytics, ad measurement, and personalization cookies. Core security cookies always stay on.
+          Termly controls cookie preferences for the whole site. Use the preferences center below to update consent in one place.
         </p>
       </div>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-[--color-border] bg-[--color-surface-alt] p-4">
-        <div>
-          <p className="text-sm font-semibold text-[--color-ink]">
-            Optional cookies are {choice === "accepted" ? "enabled" : "disabled"}.
-          </p>
-          <p className="text-xs text-[--color-ink-dim]">
-            You can change this anytime. Changes apply to future page loads.
-          </p>
+      <div className="rounded-xl border border-[--color-border] bg-[--color-surface-alt] p-4">
+        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+          {categories.map((category) => (
+            <div
+              key={category.key}
+              className="rounded-lg border border-[--color-border] px-3 py-2"
+            >
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[--color-ink-dim]">
+                {category.label}
+              </p>
+              <p className="mt-1 text-sm font-semibold text-[--color-ink]">
+                {category.enabled ? "Enabled" : "Disabled"}
+              </p>
+            </div>
+          ))}
         </div>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => updateConsent("rejected")}
-            className="flex items-center gap-1 rounded-lg border border-[--color-border] px-3 py-2 text-sm font-semibold text-[--color-ink] hover:border-[--color-orange-brand]"
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <a
+            href="#"
+            className="termly-display-preferences inline-flex items-center gap-1 rounded-lg bg-[--color-orange-brand] px-3 py-2 text-sm font-semibold text-white hover:bg-[--color-orange-dark]"
           >
-            <ShieldX className="h-4 w-4" aria-hidden />
-            Reject
-          </button>
-          <button
-            type="button"
-            onClick={() => updateConsent("accepted")}
-            className="flex items-center gap-1 rounded-lg bg-[--color-orange-brand] px-3 py-2 text-sm font-semibold text-white hover:bg-[--color-orange-dark]"
-          >
-            <ShieldCheck className="h-4 w-4" aria-hidden />
-            Accept
-          </button>
+            Open Termly Preferences
+          </a>
+          <p className="text-xs text-[--color-ink-dim]">
+            Changes apply through Termly across analytics, ads, and personalization features.
+          </p>
         </div>
       </div>
     </section>

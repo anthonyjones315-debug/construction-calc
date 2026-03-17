@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { routes } from "@routes";
 import {
   PASSWORD_MIN_LENGTH,
-  PASSWORD_REQUIREMENTS,
+  isPasswordPolicySatisfied,
 } from "@/lib/security/password-policy";
+import { PasswordRequirements } from "@/components/auth/PasswordRequirements";
 import {
   registerUserAction,
   type RegisterActionState,
@@ -17,10 +18,25 @@ const initialState: RegisterActionState = {
 };
 
 export default function RegisterPage() {
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [state, formAction, isPending] = useActionState(
     registerUserAction,
     initialState,
   );
+  const isPasswordValid = isPasswordPolicySatisfied(password);
+  const canSubmit =
+    fullName.trim().length > 0 &&
+    email.trim().length > 0 &&
+    isPasswordValid &&
+    !isPending;
+
+  useEffect(() => {
+    if (state.status === "success" && state.redirectTo) {
+      window.location.replace(state.redirectTo);
+    }
+  }, [state.redirectTo, state.status]);
 
   return (
     <main
@@ -61,6 +77,8 @@ export default function RegisterPage() {
                 name="fullName"
                 type="text"
                 autoComplete="name"
+                value={fullName}
+                onChange={(event) => setFullName(event.target.value)}
                 required
                 className="mt-1 w-full rounded-lg border border-slate-500 bg-[--color-surface] px-3 py-2 text-sm text-[--color-ink] outline-none ring-0 transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
               />
@@ -78,6 +96,8 @@ export default function RegisterPage() {
                 name="email"
                 type="email"
                 autoComplete="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
                 required
                 className="mt-1 w-full rounded-lg border border-slate-500 bg-[--color-surface] px-3 py-2 text-sm text-[--color-ink] outline-none ring-0 transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
               />
@@ -95,15 +115,16 @@ export default function RegisterPage() {
                 name="password"
                 type="password"
                 autoComplete="new-password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
                 minLength={PASSWORD_MIN_LENGTH}
                 required
+                aria-describedby="register-password-requirements"
                 className="mt-1 w-full rounded-lg border border-slate-500 bg-[--color-surface] px-3 py-2 text-sm text-[--color-ink] outline-none ring-0 transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
               />
-              <ul className="mt-2 space-y-1 text-xs text-[--color-ink-mid]">
-                {PASSWORD_REQUIREMENTS.map((requirement) => (
-                  <li key={requirement}>{requirement}</li>
-                ))}
-              </ul>
+              <div id="register-password-requirements" className="mt-2">
+                <PasswordRequirements password={password} />
+              </div>
             </div>
 
             {state.message && (
@@ -122,7 +143,7 @@ export default function RegisterPage() {
 
             <button
               type="submit"
-              disabled={isPending}
+              disabled={!canSubmit}
               className="w-full rounded-lg bg-orange-brand px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-[--color-orange-dark] disabled:cursor-wait disabled:bg-[--color-orange-dark]"
             >
               {isPending ? "Creating account…" : "Register"}
