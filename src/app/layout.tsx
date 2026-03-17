@@ -16,7 +16,7 @@ import TermlyCMP from "@/components/TermlyCMP";
 const TERMELY_WEBSITE_UUID =
   process.env.NEXT_PUBLIC_TERMELY_WEBSITE_UUID ??
   process.env.TERMELY_WEBSITE_UUID ??
-  "";
+  "294204b1-a0a3-4f09-925a-30dfd75d3914";
 const TERMELY_MASTER_CONSENTS_ORIGIN =
   process.env.NEXT_PUBLIC_TERMELY_MASTER_ORIGIN ??
   process.env.TERMELY_MASTER_ORIGIN;
