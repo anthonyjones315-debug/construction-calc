@@ -25,6 +25,12 @@ import type { EstimateStatus } from "@/lib/estimates/status";
 import { sanitizeFilename } from "@/utils/sanitize-filename";
 import { useContractorProfile } from "@/components/pdf/useContractorProfile";
 import { useHaptic } from "@/hooks/useHaptic";
+import {
+  toCents,
+  multiplyCents,
+  centsToDollars,
+  sumCents,
+} from "@/utils/money";
 
 const LIVE_REFRESH_MS = 15000;
 
@@ -34,6 +40,10 @@ const USD_CURRENCY = new Intl.NumberFormat("en-US", {
   minimumFractionDigits: 2,
   maximumFractionDigits: 2,
 });
+
+function formatCents(cents: number): string {
+  return USD_CURRENCY.format(centsToDollars(cents));
+}
 
 type SavedContentProps = {
   serverFinancialData: FinancialData;
@@ -866,35 +876,37 @@ export function SavedContent({
           Number.isFinite(row.quantity) && row.quantity > 0 ? row.quantity : 0;
 
         if (row.isCustom) {
-          const unitCost =
+          const unitCostCents = toCents(
             Number.isFinite(row.customUnitCost) && row.customUnitCost !== undefined
               ? Number(row.customUnitCost)
-              : 0;
+              : 0,
+          );
           const name = (row.customName ?? "").trim();
           if (!name) return null;
-          const lineTotal = quantity * unitCost;
+          const lineTotalCents = multiplyCents(unitCostCents, quantity);
           return {
             material: null,
             custom: {
               name,
               unit_type: (row.customUnitType ?? "each").trim() || "each",
-              unit_cost: unitCost,
+              unit_cost: centsToDollars(unitCostCents),
               saveToPriceBook: Boolean(row.saveToPriceBook),
             },
             quantity,
-            lineTotal,
+            lineTotalCents,
           };
         }
 
         const material = materials.find((item) => item.id === row.materialId);
         if (!material) return null;
-        const lineTotal = quantity * Number(material.unit_cost || 0);
+        const unitCostCents = toCents(Number(material.unit_cost || 0));
+        const lineTotalCents = multiplyCents(unitCostCents, quantity);
 
         return {
           material,
           custom: null,
           quantity,
-          lineTotal,
+          lineTotalCents,
         };
       })
       .filter(
@@ -909,13 +921,13 @@ export function SavedContent({
             saveToPriceBook: boolean;
           } | null;
           quantity: number;
-          lineTotal: number;
+          lineTotalCents: number;
         } => Boolean(row),
       );
   }, [builderRows, materials]);
 
-  const priceBookSubtotal = useMemo(() => {
-    return selectedMaterialRows.reduce((sum, row) => sum + row.lineTotal, 0);
+  const priceBookSubtotalCents = useMemo(() => {
+    return sumCents(selectedMaterialRows.map((row) => row.lineTotalCents));
   }, [selectedMaterialRows]);
 
   const fetchEstimates = useCallback(
@@ -1090,7 +1102,7 @@ export function SavedContent({
         }
       }
 
-      const budgetItems = selectedMaterialRows.map(({ material, custom, quantity, lineTotal }) => {
+      const budgetItems = selectedMaterialRows.map(({ material, custom, quantity, lineTotalCents }) => {
         const name = material?.material_name ?? custom?.name ?? "Material";
         const unitType = material?.unit_type ?? custom?.unit_type ?? "each";
         const pricePerUnit = material?.unit_cost ?? custom?.unit_cost ?? 0;
@@ -1102,26 +1114,28 @@ export function SavedContent({
           unit_type: unitType,
           quantity,
           pricePerUnit,
-          line_total: lineTotal,
+          line_total: centsToDollars(lineTotalCents),
           cost_type: "material",
           source: material ? "pricebook" : "custom",
         };
       });
 
-      const attachedTotal = attachedEstimate?.total_cost ?? 0;
-      const combinedTotal = priceBookSubtotal + attachedTotal;
+      const attachedTotalCents = toCents(attachedEstimate?.total_cost ?? 0);
+      const combinedTotalCents = priceBookSubtotalCents + attachedTotalCents;
+      const priceBookSubtotalDisplay = centsToDollars(priceBookSubtotalCents);
+      const combinedTotalDisplay = centsToDollars(combinedTotalCents);
       const calculatorResults = attachedEstimate?.results ?? [];
       const results = [
         ...calculatorResults,
         {
           label: "Price Book Subtotal",
-          value: priceBookSubtotal.toFixed(2),
+          value: priceBookSubtotalDisplay.toFixed(2),
           unit: "$",
-          highlight: priceBookSubtotal > 0,
+          highlight: priceBookSubtotalCents > 0,
         },
         {
           label: "Combined Estimate Total",
-          value: combinedTotal.toFixed(2),
+          value: combinedTotalDisplay.toFixed(2),
           unit: "$",
           highlight: true,
         },
@@ -1137,7 +1151,7 @@ export function SavedContent({
           job_site_address: builderJobSiteAddress.trim() || null,
           budget_items: budgetItems,
           total_cost:
-            combinedTotal > 0 ? Number(combinedTotal.toFixed(2)) : null,
+            combinedTotalCents > 0 ? centsToDollars(combinedTotalCents) : null,
           results,
           inputs: {
             source_channels: sourceChannels,
@@ -1594,7 +1608,7 @@ export function SavedContent({
             <p>
               Price Book Subtotal:{" "}
               <span className="font-semibold text-[--color-ink]">
-                {USD_CURRENCY.format(priceBookSubtotal)}
+                {formatCents(priceBookSubtotalCents)}
               </span>
             </p>
             {attachedEstimate && (

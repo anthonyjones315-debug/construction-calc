@@ -1,4 +1,5 @@
 import { getNysCountyRate, NYS_STATE_SALES_TAX_RATE } from "@/data/nys-tax-rates";
+import { centsToDollars, toCents } from "@/utils/money";
 
 export type ProjectTaxCategory = "capital-improvement" | "repair-maintenance";
 
@@ -24,7 +25,8 @@ export type TaxEngineResult = {
   notes: string[];
 };
 
-const roundToCents = (value: number) => Math.round(value * 100) / 100;
+const toBasisPoints = (ratePercent: number) =>
+  Number((ratePercent * 100).toFixed(0));
 
 /**
  * Calculates NYS sales tax for construction jobs with capital improvement handling.
@@ -36,6 +38,7 @@ const roundToCents = (value: number) => Math.round(value * 100) / 100;
 export function calculateNysSalesTax(input: TaxEngineInput): TaxEngineResult {
   const notes: string[] = [];
   const taxableAmount = Math.max(0, input.taxableAmount);
+  const taxableCents = toCents(taxableAmount);
   const isCapital = input.projectType === "capital-improvement";
 
   const countyRate =
@@ -45,9 +48,22 @@ export function calculateNysSalesTax(input: TaxEngineInput): TaxEngineResult {
   const stateRate = isCapital ? 0 : NYS_STATE_SALES_TAX_RATE;
   const localRate = Math.max(rateApplied - stateRate, 0);
 
-  const statePortion = roundToCents(taxableAmount * (stateRate / 100));
-  const localPortion = roundToCents(taxableAmount * (localRate / 100));
-  const taxDue = isCapital ? 0 : roundToCents(statePortion + localPortion);
+  const stateBasisPoints = isCapital ? 0 : toBasisPoints(stateRate);
+  const localBasisPoints = isCapital
+    ? 0
+    : Math.max(toBasisPoints(localRate), 0);
+
+  const statePortionCents = isCapital
+    ? 0
+    : Number(((taxableCents * stateBasisPoints) / 10_000).toFixed(0));
+  const localPortionCents = isCapital
+    ? 0
+    : Number(((taxableCents * localBasisPoints) / 10_000).toFixed(0));
+  const taxDueCents = isCapital ? 0 : statePortionCents + localPortionCents;
+
+  const statePortion = centsToDollars(statePortionCents);
+  const localPortion = centsToDollars(localPortionCents);
+  const taxDue = centsToDollars(taxDueCents);
 
   if (isCapital) {
     notes.push("Capital Improvement: obtain and retain NYS Form ST-124; do not charge sales tax to the customer.");
