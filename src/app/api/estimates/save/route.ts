@@ -18,6 +18,7 @@ import {
 } from "@/lib/cache-tags";
 import { isUnauthorizedError } from "@/lib/errors/unauthorized";
 import { getPostHogClient } from "@/lib/posthog-server";
+import { normalizeDollars } from "@/utils/money";
 
 const saveEstimateSchema = z
   .object({
@@ -136,7 +137,10 @@ export async function POST(req: NextRequest) {
       budget_items: body.budget_items ?? null,
       client_name: body.client_name ?? null,
       job_site_address: body.job_site_address ?? null,
-      total_cost: body.total_cost ?? null,
+      total_cost:
+        body.total_cost !== null && body.total_cost !== undefined
+          ? normalizeDollars(body.total_cost)
+          : null,
       status: body.status ?? "Draft",
     };
     if (!businessContext.usesLegacyUserScope) {

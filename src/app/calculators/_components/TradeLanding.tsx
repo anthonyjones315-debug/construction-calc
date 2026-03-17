@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef } from "react";
 import type { LucideIcon } from "lucide-react";
@@ -41,7 +42,7 @@ const TILE_ICON_MAP: Record<TradePageDefinition["category"], LucideIcon> = {
   interior: Layout,
 };
 
-function usePrefetch(href: string) {
+function usePrefetch(href: Route) {
   const router = useRouter();
   const ref = useRef<HTMLElement | null>(null);
 
@@ -68,7 +69,8 @@ function usePrefetch(href: string) {
 }
 
 function TradeTile({ calculator }: { calculator: TradePageDefinition }) {
-  const { ref, handlePrefetch } = usePrefetch(calculator.canonicalPath);
+  const calculatorHref = calculator.canonicalPath as Route;
+  const { ref, handlePrefetch } = usePrefetch(calculatorHref);
   const copy = getTileCopy(calculator.key, calculator);
   const Icon =
     TILE_ICON_MAP[calculator.category as TradePageDefinition["category"]] ??
@@ -103,7 +105,7 @@ function TradeTile({ calculator }: { calculator: TradePageDefinition }) {
           </div>
         </div>
         <Link
-          href={calculator.canonicalPath}
+          href={calculatorHref}
           className="inline-flex items-center gap-1 rounded-full border border-[--color-orange-brand]/40 bg-[--color-orange-brand]/15 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-white transition-colors hover:border-[--color-orange-brand] hover:bg-[--color-orange-brand]/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[--color-orange-brand]"
           prefetch={false}
           onMouseEnter={handlePrefetch}
@@ -149,16 +151,16 @@ export function TradeLanding({ page }: TradeLandingProps) {
     ] ?? DefaultGlyph;
 
   const breadcrumbs = useMemo(
-    () => [
-      { label: "Home", href: "/" },
-      { label: "All Calculators", href: "/calculators" },
-      { label: page.title, href: page.canonicalPath },
+    (): Array<{ label: string; href: Route }> => [
+      { label: "Home", href: "/" as Route },
+      { label: "All Calculators", href: "/calculators" as Route },
+      { label: page.title, href: page.canonicalPath as Route },
     ],
     [page.canonicalPath, page.title],
   );
 
   return (
-    <main className="command-theme min-h-screen bg-[--color-bg] text-white">
+    <main className="command-theme flex min-h-0 flex-1 flex-col overflow-y-auto bg-[--color-bg] text-white lg:overflow-hidden">
       <JsonLD schema={schema} />
 
       <header className="sticky top-10 z-30 border-b border-white/10 bg-[--color-bg]/85 backdrop-blur-md">
@@ -190,7 +192,7 @@ export function TradeLanding({ page }: TradeLandingProps) {
           </nav>
 
           <Link
-            href="/calculators"
+            href={"/calculators" as Route}
             className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white transition hover:border-[--color-orange-brand]/50 hover:bg-[--color-orange-brand]/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[--color-orange-brand]"
           >
             <Home className="h-3.5 w-3.5" aria-hidden />
@@ -199,7 +201,7 @@ export function TradeLanding({ page }: TradeLandingProps) {
         </div>
       </header>
 
-      <section className="mx-auto w-full max-w-6xl px-4 pt-4 pb-6 lg:pt-6">
+      <section className="mx-auto w-full max-w-6xl px-4 pt-4 pb-6 lg:pt-4 lg:pb-5">
         <div className="flex items-center gap-4 rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_15%_20%,rgba(247,148,29,0.14),transparent_50%),linear-gradient(120deg,#0d1020,#0b1226)] px-4 py-4 shadow-[0_18px_40px_rgba(0,0,0,0.32)] sm:gap-6 sm:px-6">
           <Glyph className="h-16 w-16 shrink-0 sm:h-20 sm:w-20" />
           <div className="min-w-0 flex-1 space-y-1.5">

@@ -3,8 +3,14 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { HardHat } from "lucide-react";
+import { CheckCircle2, HardHat } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
+import {
+  PASSWORD_MIN_LENGTH,
+  PASSWORD_REQUIREMENTS,
+  getPasswordPolicyChecks,
+  getPasswordPolicyError,
+} from "@/lib/security/password-policy";
 import { routes } from "@routes";
 
 const REDIRECT_DELAY_MS = 2000;
@@ -16,6 +22,7 @@ export default function ResetPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showToast, setShowToast] = useState(false);
+  const passwordChecks = getPasswordPolicyChecks(password);
 
   useEffect(() => {
     if (!showToast) return;
@@ -34,8 +41,9 @@ export default function ResetPasswordPage() {
       return;
     }
 
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters.");
+    const passwordPolicyError = getPasswordPolicyError(password);
+    if (passwordPolicyError) {
+      setError(passwordPolicyError);
       return;
     }
 
@@ -129,8 +137,8 @@ export default function ResetPasswordPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              minLength={8}
-              placeholder="At least 8 characters"
+              minLength={PASSWORD_MIN_LENGTH}
+              placeholder={`At least ${PASSWORD_MIN_LENGTH} characters`}
               className="w-full rounded-lg border border-slate-500 bg-slate-900 px-3.5 py-2.5 text-sm text-white placeholder-white/40 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500 transition"
             />
           </div>
@@ -150,10 +158,44 @@ export default function ResetPasswordPage() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
-              minLength={8}
+              minLength={PASSWORD_MIN_LENGTH}
               placeholder="Re-enter your new password"
               className="w-full rounded-lg border border-slate-500 bg-slate-900 px-3.5 py-2.5 text-sm text-white placeholder-white/40 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500 transition"
             />
+          </div>
+
+          <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4">
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-orange-400">
+              Password Requirements
+            </p>
+            <ul className="space-y-2 text-xs text-white/70">
+              {PASSWORD_REQUIREMENTS.map((requirement) => {
+                const isSatisfied =
+                  requirement === `Use ${PASSWORD_MIN_LENGTH}-72 characters`
+                    ? passwordChecks.length
+                    : requirement === "Include at least one uppercase letter"
+                      ? passwordChecks.uppercase
+                      : requirement === "Include at least one lowercase letter"
+                        ? passwordChecks.lowercase
+                        : requirement === "Include at least one number"
+                          ? passwordChecks.number
+                          : requirement === "Include at least one special character"
+                            ? passwordChecks.special
+                            : passwordChecks.noSpaces;
+
+                return (
+                  <li key={requirement} className="flex items-center gap-2">
+                    <CheckCircle2
+                      className={`h-4 w-4 shrink-0 ${
+                        isSatisfied ? "text-emerald-400" : "text-slate-600"
+                      }`}
+                      aria-hidden
+                    />
+                    <span>{requirement}</span>
+                  </li>
+                );
+              })}
+            </ul>
           </div>
 
           <button
@@ -176,7 +218,7 @@ export default function ResetPasswordPage() {
 
         {/* Footer — matches login */}
         <p className="mt-auto pt-8 text-center text-[10px] font-display uppercase tracking-widest text-slate-400">
-          Designed for the Mohawk Valley · Rome, NY
+          Built for the Tri-County Field
         </p>
       </div>
     </main>

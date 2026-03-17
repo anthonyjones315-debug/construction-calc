@@ -1,5 +1,6 @@
 import { getNysCountyRate, NYS_STATE_SALES_TAX_RATE } from "@/data/nys-tax-rates";
 import { centsToDollars, toCents } from "@/utils/money";
+import { scaleCentsByBasisPoints, toBasisPoints } from "@/utils/rates";
 
 export type ProjectTaxCategory = "capital-improvement" | "repair-maintenance";
 
@@ -24,9 +25,6 @@ export type TaxEngineResult = {
   requiresST124: boolean;
   notes: string[];
 };
-
-const toBasisPoints = (ratePercent: number) =>
-  Number((ratePercent * 100).toFixed(0));
 
 /**
  * Calculates NYS sales tax for construction jobs with capital improvement handling.
@@ -55,10 +53,10 @@ export function calculateNysSalesTax(input: TaxEngineInput): TaxEngineResult {
 
   const statePortionCents = isCapital
     ? 0
-    : Number(((taxableCents * stateBasisPoints) / 10_000).toFixed(0));
+    : scaleCentsByBasisPoints(taxableCents, stateBasisPoints);
   const localPortionCents = isCapital
     ? 0
-    : Number(((taxableCents * localBasisPoints) / 10_000).toFixed(0));
+    : scaleCentsByBasisPoints(taxableCents, localBasisPoints);
   const taxDueCents = isCapital ? 0 : statePortionCents + localPortionCents;
 
   const statePortion = centsToDollars(statePortionCents);

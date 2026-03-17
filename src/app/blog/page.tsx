@@ -3,8 +3,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { JsonLD, getBlogPostSchema } from "@/seo";
+import { JsonLD, getBlogPostSchema, getPageMetadata } from "@/seo";
 import { BLOG_POSTS } from "@/data/blog";
+import { getBlogPostRoute } from "@routes";
 
 const BLOG_CATEGORY_IMAGES: Record<string, { src: string; alt: string }> = {
   Concrete: {
@@ -25,11 +26,12 @@ const BLOG_CATEGORY_IMAGES: Record<string, { src: string; alt: string }> = {
   },
 };
 
-export const metadata: Metadata = {
+export const metadata: Metadata = getPageMetadata({
   title: "Construction Tips & Guides | Pro Construction Calc",
   description:
     "Construction guides, material tips, and how-to articles for contractors and DIYers.",
-};
+  path: "/blog",
+});
 
 export default function BlogPage() {
   return (
@@ -88,7 +90,7 @@ export default function BlogPage() {
                 </div>
                 <h2 className="text-xl font-display font-bold text-[--color-ink] mb-2">
                   <Link
-                    href={`/field-notes/${post.slug}`}
+                    href={getBlogPostRoute(post.slug)}
                     className="hover:text-[--color-orange-brand] transition-colors"
                   >
                     {post.title}
@@ -98,7 +100,7 @@ export default function BlogPage() {
                   {post.description}
                 </p>
                 <Link
-                  href={`/field-notes/${post.slug}`}
+                  href={getBlogPostRoute(post.slug)}
                   className="text-sm font-semibold text-[--color-orange-brand] hover:text-[--color-orange-dark] transition-colors"
                 >
                   Read more →

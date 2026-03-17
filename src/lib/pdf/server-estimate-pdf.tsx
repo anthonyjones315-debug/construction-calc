@@ -1,4 +1,5 @@
 "use server";
+/* eslint-disable jsx-a11y/alt-text */
 
 import {
   Document,
@@ -8,7 +9,7 @@ import {
   StyleSheet,
   Text,
   View,
-  pdf,
+  renderToBuffer,
 } from "@react-pdf/renderer";
 
 type SignatureBlock = {
@@ -22,6 +23,7 @@ export type EstimatePdfPayload = {
   estimateName: string;
   jobName: string;
   calculatorLabel: string;
+  countyLabel?: string | null;
   generatedAt: string;
   brandName: string;
   contractorEmail?: string | null;
@@ -156,7 +158,7 @@ function EstimateDocument(payload: EstimatePdfPayload) {
         <View style={styles.header}>
           <View style={styles.brand}>
             {payload.logoUrl ? (
-              <Image src={payload.logoUrl} style={styles.logo} alt="Company logo" />
+              <Image src={payload.logoUrl} style={styles.logo} />
             ) : (
               <View
                 style={{
@@ -191,6 +193,11 @@ function EstimateDocument(payload: EstimatePdfPayload) {
           {payload.jobName || payload.estimateName}
         </Text>
         <View style={styles.chipRow}>
+          {payload.countyLabel ? (
+            <View style={styles.chip}>
+              <Text>County: {payload.countyLabel}</Text>
+            </View>
+          ) : null}
           {payload.contractorEmail ? (
             <View style={styles.chip}>
               <Text>{payload.contractorEmail}</Text>
@@ -238,7 +245,6 @@ function EstimateDocument(payload: EstimatePdfPayload) {
               <Image
                 style={{ width: 180, height: 60, objectFit: "contain" }}
                 src={payload.signature.signatureDataUrl}
-                alt="Signature"
               />
             ) : null}
             <Text>Signer: {payload.signature.signerName ?? "N/A"}</Text>
@@ -251,8 +257,10 @@ function EstimateDocument(payload: EstimatePdfPayload) {
   );
 }
 
-export async function renderEstimatePdfBuffer(payload: EstimatePdfPayload) {
-  const instance = pdf(<EstimateDocument {...payload} />);
-  const buffer = await instance.toBuffer();
-  return buffer;
+export async function renderEstimatePdfBytes(payload: EstimatePdfPayload) {
+  const output = await renderToBuffer(
+    <EstimateDocument {...payload} />,
+  );
+
+  return new Uint8Array(output.buffer, output.byteOffset, output.byteLength);
 }

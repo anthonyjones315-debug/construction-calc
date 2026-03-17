@@ -4,19 +4,35 @@ import * as Sentry from "@sentry/nextjs";
 import { createClient } from "@supabase/supabase-js";
 import { auth } from "@/lib/auth/config";
 import { createServerClient } from "@/lib/supabase/server";
+import {
+  getPasswordPolicyError,
+  PASSWORD_MAX_LENGTH,
+  PASSWORD_MIN_LENGTH,
+} from "@/lib/security/password-policy";
 
 const changePasswordSchema = z
   .object({
     currentPassword: z.string().min(1, "Current password is required."),
     newPassword: z
       .string()
-      .min(8, "New password must be at least 8 characters.")
-      .max(72, "New password must be 72 characters or fewer."),
+      .min(
+        PASSWORD_MIN_LENGTH,
+        `New password must be at least ${PASSWORD_MIN_LENGTH} characters.`,
+      )
+      .max(
+        PASSWORD_MAX_LENGTH,
+        `New password must be ${PASSWORD_MAX_LENGTH} characters or fewer.`,
+      ),
     confirmPassword: z.string().min(1, "Please confirm your new password."),
   })
   .refine((value) => value.newPassword === value.confirmPassword, {
     message: "New password and confirmation must match.",
     path: ["confirmPassword"],
+  })
+  .refine((value) => !getPasswordPolicyError(value.newPassword), {
+    message:
+      "New password must be 12-72 characters and include uppercase, lowercase, number, and special character with no spaces.",
+    path: ["newPassword"],
   })
   .refine((value) => value.currentPassword !== value.newPassword, {
     message: "New password must be different from your current password.",

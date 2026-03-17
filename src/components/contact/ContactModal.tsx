@@ -8,6 +8,7 @@ interface ContactModalProps {
   onClose: () => void;
   title?: string;
   description?: string;
+  formProps?: React.ComponentProps<typeof ContactForm>;
 }
 
 export function ContactModal({
@@ -15,6 +16,7 @@ export function ContactModal({
   onClose,
   title = "Contact us",
   description = "Send feedback or a question. We'll get back to you via email.",
+  formProps,
 }: ContactModalProps) {
   if (!open) return null;
 
@@ -51,7 +53,7 @@ export function ContactModal({
           <p className="mt-1 text-sm text-slate-400">{description}</p>
 
           <div className="mt-4">
-            <ContactForm />
+            <ContactForm {...formProps} />
           </div>
         </div>
       </div>

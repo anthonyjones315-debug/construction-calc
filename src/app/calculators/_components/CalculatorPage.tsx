@@ -7,7 +7,6 @@ import type { LucideIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import * as Sentry from "@sentry/nextjs";
 import posthog from "posthog-js";
-import { round } from "mathjs";
 import {
   getCalculatorAuditRef,
   setCalculatorAuditSnapshot,
@@ -57,6 +56,7 @@ import {
   EmailEstimateModal,
   type EstimatePayload,
 } from "@/components/ui/EmailEstimateModal";
+import { ManualErrorReportButton } from "@/components/support/ManualErrorReportButton";
 import { JsonLD } from "@/seo";
 import {
   getTradePageSchema,
@@ -76,10 +76,17 @@ import { ProResult } from "@/components/ui/ProResult";
 import { useProMode } from "@/hooks/useProMode";
 import { triggerHaptic } from "@/hooks/useHaptic";
 import { sanitizeFilename } from "@/utils/sanitize-filename";
+import { centsToDollars, toCents } from "@/utils/money";
+import {
+  divideCentsByBasisPoints,
+  scaleCentsByBasisPoints,
+  toBasisPoints,
+} from "@/utils/rates";
 import { useContractorProfile } from "@/components/pdf/useContractorProfile";
 import { getConcreteInputLabelsFromCopy } from "@/data/construction-terms";
 import { useStore } from "@/lib/store";
 import { recordVisit } from "@/lib/recommendations/activity";
+import { getUserFacingErrorDetails } from "@/lib/errors/user-facing";
 
 type TradeModule = {
   label: string;
@@ -104,6 +111,21 @@ type CalculatorResultsBundle = {
   secondary: CalculatorResult[];
   materialList: string[];
 };
+
+type EstimateCountySelection =
+  | "Oneida"
+  | "Madison"
+  | "Herkimer"
+  | "None"
+  | "Custom";
+
+const ESTIMATE_COUNTY_OPTIONS: EstimateCountySelection[] = [
+  "Oneida",
+  "Madison",
+  "Herkimer",
+  "None",
+  "Custom",
+];
 
 type FramingMaterialKind =
   | "wall-studs"
@@ -720,7 +742,9 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   const [widthSpan, setWidthSpan] = useState(10);
   const [depthThickness, setDepthThickness] = useState(4);
   const [wasteFactor, setWasteFactor] = useState(10);
-  const [saveLocked, setSaveLocked] = useState(false);
+  const [saveState, setSaveState] = useState<
+    "idle" | "saving" | "saved" | "downloaded"
+  >("idle");
   const [areaInputMode, setAreaInputMode] =
     useState<AreaInputMode>("dimensions");
   const [volumeInputMode, setVolumeInputMode] =
@@ -749,6 +773,10 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   const [estimateClientEmail, setEstimateClientEmail] = useState("");
   const [estimateJobName, setEstimateJobName] = useState("");
   const [estimateJobAddress, setEstimateJobAddress] = useState("");
+  const [estimateCountySelection, setEstimateCountySelection] = useState<
+    EstimateCountySelection | ""
+  >("");
+  const [estimateCountyCustom, setEstimateCountyCustom] = useState("");
 
   const haptic = useHaptic();
   const hapticTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -802,6 +830,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     setEstimateClientEmail("");
     setEstimateJobName("");
     setEstimateJobAddress("");
+    setEstimateCountySelection("");
+    setEstimateCountyCustom("");
     setFinalizeOpen(false);
     setFinalizeError(null);
     setFinalizeSuccess(null);
@@ -1009,7 +1039,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     ) => (pieces * thicknessInches * widthInches * lengthFeet) / 12;
 
     if (page.category === "business" || page.category === "management") {
-      const currency = (value: number) => value.toFixed(2);
+      const currency = (cents: number) => centsToDollars(cents).toFixed(2);
 
       if (
         page.canonicalPath.includes("profit-margin") ||
@@ -1018,33 +1048,44 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         const directCost = clampValue(baseMeasurement, 0, 100000000);
         const overheadPct = clampValue(widthSpan, 0, 100);
         const targetMarginPct = clampValue(depthThickness, 0, 95);
-        const overheadDollars = directCost * (overheadPct / 100);
-        const breakEvenPrice = directCost + overheadDollars;
-        const sellPrice =
+        const directCostCents = toCents(directCost);
+        const overheadBasisPoints = toBasisPoints(overheadPct);
+        const targetMarginBasisPoints = toBasisPoints(targetMarginPct);
+        const overheadCents = scaleCentsByBasisPoints(
+          directCostCents,
+          overheadBasisPoints,
+        );
+        const breakEvenPriceCents = directCostCents + overheadCents;
+        const sellPriceCents =
           targetMarginPct >= 95
-            ? breakEvenPrice
-            : breakEvenPrice / (1 - targetMarginPct / 100);
-        const grossProfit = sellPrice - breakEvenPrice;
+            ? breakEvenPriceCents
+            : divideCentsByBasisPoints(
+                breakEvenPriceCents,
+                10_000 - targetMarginBasisPoints,
+              );
+        const grossProfitCents = sellPriceCents - breakEvenPriceCents;
         const grossMarginPct =
-          sellPrice === 0 ? 0 : (grossProfit / sellPrice) * 100;
+          sellPriceCents === 0 ? 0 : (grossProfitCents / sellPriceCents) * 100;
         const markupPct =
-          directCost === 0 ? 0 : ((sellPrice - directCost) / directCost) * 100;
+          directCostCents === 0
+            ? 0
+            : ((sellPriceCents - directCostCents) / directCostCents) * 100;
 
         return {
           primary: {
             label: "Bid / Selling Price",
-            value: currency(sellPrice),
+            value: currency(sellPriceCents),
             unit: "$",
           },
           secondary: [
             {
               label: "Break-even Price",
-              value: currency(breakEvenPrice),
+              value: currency(breakEvenPriceCents),
               unit: "$",
             },
             {
               label: "Gross Profit",
-              value: currency(grossProfit),
+              value: currency(grossProfitCents),
               unit: "$",
             },
             {
@@ -1059,7 +1100,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             },
           ],
           materialList: [
-            `Break-even covers $${currency(overheadDollars)} overhead at ${overheadPct.toFixed(1)}%.`,
+            `Break-even covers $${currency(overheadCents)} overhead at ${overheadPct.toFixed(1)}%.`,
             `Bid price targets ${targetMarginPct.toFixed(1)}% gross margin (${markupPct.toFixed(1)}% markup).`,
           ],
         };
@@ -1072,38 +1113,51 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         const baseWage = clampValue(baseMeasurement, 0, 1000000);
         const burdenPct = clampValue(widthSpan, 0, 200);
         const overheadPct = clampValue(depthThickness, 0, 200);
-        const burdenedRate = baseWage * (1 + burdenPct / 100);
-        const loadedRate = baseWage * (1 + (burdenPct + overheadPct) / 100);
+        const baseWageCents = toCents(baseWage);
+        const burdenBasisPoints = toBasisPoints(burdenPct);
+        const overheadBasisPoints = toBasisPoints(overheadPct);
+        const burdenedRateCents = scaleCentsByBasisPoints(
+          baseWageCents,
+          10_000 + burdenBasisPoints,
+        );
+        const loadedRateCents = scaleCentsByBasisPoints(
+          baseWageCents,
+          10_000 + burdenBasisPoints + overheadBasisPoints,
+        );
         const profitTargetPct = 15;
-        const billableRate = loadedRate / (1 - profitTargetPct / 100);
-        const profitPerHour = billableRate - loadedRate;
+        const profitTargetBasisPoints = toBasisPoints(profitTargetPct);
+        const billableRateCents = divideCentsByBasisPoints(
+          loadedRateCents,
+          10_000 - profitTargetBasisPoints,
+        );
+        const profitPerHourCents = billableRateCents - loadedRateCents;
 
         return {
           primary: {
             label: "Billable Rate (target 15% profit)",
-            value: currency(billableRate),
+            value: currency(billableRateCents),
             unit: "$/hr",
           },
           secondary: [
             {
               label: "Loaded Cost Rate",
-              value: currency(loadedRate),
+              value: currency(loadedRateCents),
               unit: "$/hr",
             },
             {
               label: "Burdened Labor Rate",
-              value: currency(burdenedRate),
+              value: currency(burdenedRateCents),
               unit: "$/hr",
             },
             {
               label: "Profit per Hour",
-              value: currency(profitPerHour),
+              value: currency(profitPerHourCents),
               unit: "$/hr",
             },
           ],
           materialList: [
             `Loaded labor includes ${burdenPct.toFixed(1)}% burden and ${overheadPct.toFixed(1)}% overhead.`,
-            `Charge ~$${currency(billableRate)} per hour to hold ~${profitTargetPct}% profit after overhead.`,
+            `Charge ~$${currency(billableRateCents)} per hour to hold ~${profitTargetPct}% profit after overhead.`,
           ],
         };
       }
@@ -1115,25 +1169,32 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         const costPerLead = clampValue(baseMeasurement, 0, 100000000);
         const closeRatePct = clampValue(widthSpan, 0.01, 100);
         const avgJobValue = clampValue(depthThickness, 0, 1_000_000_000);
-        const closeRate = closeRatePct / 100;
-        const customerAcquisitionCost =
-          closeRate === 0 ? 0 : costPerLead / closeRate;
-        const revenuePerLead = avgJobValue * closeRate;
-        const paybackMultiple =
-          customerAcquisitionCost === 0
+        const costPerLeadCents = toCents(costPerLead);
+        const avgJobValueCents = toCents(avgJobValue);
+        const closeRateBasisPoints = toBasisPoints(closeRatePct);
+        const customerAcquisitionCostCents =
+          closeRateBasisPoints === 0
             ? 0
-            : avgJobValue / customerAcquisitionCost;
+            : divideCentsByBasisPoints(costPerLeadCents, closeRateBasisPoints);
+        const revenuePerLeadCents = scaleCentsByBasisPoints(
+          avgJobValueCents,
+          closeRateBasisPoints,
+        );
+        const paybackMultiple =
+          customerAcquisitionCostCents === 0
+            ? 0
+            : avgJobValueCents / customerAcquisitionCostCents;
 
         return {
           primary: {
             label: "Customer Acquisition Cost (CAC)",
-            value: currency(customerAcquisitionCost),
+            value: currency(customerAcquisitionCostCents),
             unit: "$",
           },
           secondary: [
             {
               label: "Revenue per Lead",
-              value: currency(revenuePerLead),
+              value: currency(revenuePerLeadCents),
               unit: "$",
             },
             {
@@ -1148,8 +1209,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             },
           ],
           materialList: [
-            `CAC assumes ${closeRatePct.toFixed(1)}% close rate on $${currency(costPerLead)} CPL.`,
-            `Avg job value $${currency(avgJobValue)} yields ${paybackMultiple.toFixed(2)}x payback.`,
+            `CAC assumes ${closeRatePct.toFixed(1)}% close rate on $${currency(costPerLeadCents)} CPL.`,
+            `Avg job value $${currency(avgJobValueCents)} yields ${paybackMultiple.toFixed(2)}x payback.`,
           ],
         };
       }
@@ -1158,42 +1219,50 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         const grossRevenue = clampValue(baseMeasurement, 0, 1_000_000_000);
         const taxRatePct = clampValue(widthSpan, 0, 100);
         const deductionsValue = clampValue(depthThickness, 0, 1_000_000_000);
-        const taxableIncome = Math.max(0, grossRevenue - deductionsValue);
+        const grossRevenueCents = toCents(grossRevenue);
+        const deductionsCents = toCents(deductionsValue);
+        const taxableIncomeCents = Math.max(
+          0,
+          grossRevenueCents - deductionsCents,
+        );
         const rateSourceCounty =
           taxRegion === "NYS" ? taxCounty : "Custom / Other";
         const taxResult = calculateNysSalesTax({
           county: rateSourceCounty,
-          taxableAmount: taxableIncome,
+          taxableAmount: centsToDollars(taxableIncomeCents),
           projectType: capitalImprovement
             ? "capital-improvement"
             : "repair-maintenance",
           customCombinedRate: taxRegion === "NYS" ? undefined : taxRatePct,
         });
         const rateApplied = taxResult.rateApplied || taxRatePct;
-        const taxOwed = taxResult.taxDue;
-        const netIncome = grossRevenue - taxOwed;
+        const rateAppliedBasisPoints = toBasisPoints(rateApplied);
+        const taxOwedCents = toCents(taxResult.taxDue);
+        const netIncomeCents = Math.max(0, grossRevenueCents - taxOwedCents);
         const effectiveTaxRate =
-          grossRevenue === 0 ? 0 : (taxOwed / grossRevenue) * 100;
-        const taxSavings = capitalImprovement
+          grossRevenueCents === 0 ? 0 : (taxOwedCents / grossRevenueCents) * 100;
+        const taxSavingsCents = capitalImprovement
           ? 0
-          : round(taxableIncome * (rateApplied / 100), 2) -
-            round((taxableIncome - deductionsValue) * (rateApplied / 100), 2);
+          : scaleCentsByBasisPoints(
+              grossRevenueCents - taxableIncomeCents,
+              rateAppliedBasisPoints,
+            );
 
         return {
           primary: {
             label: "Projected Tax",
-            value: currency(taxOwed),
+            value: currency(taxOwedCents),
             unit: "$",
           },
           secondary: [
             {
               label: "Taxable Income",
-              value: currency(taxableIncome),
+              value: currency(taxableIncomeCents),
               unit: "$",
             },
             {
               label: "Net Income After Tax",
-              value: currency(netIncome),
+              value: currency(netIncomeCents),
               unit: "$",
             },
             {
@@ -1212,29 +1281,29 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
               : [
                   {
                     label: "State Portion",
-                    value: currency(taxResult.statePortion),
+                    value: currency(toCents(taxResult.statePortion)),
                     unit: "$",
                   },
                   {
                     label: "Local Portion",
-                    value: currency(taxResult.localPortion),
+                    value: currency(toCents(taxResult.localPortion)),
                     unit: "$",
                   },
                 ]),
             {
               label: "Tax Savings From Deductions",
-              value: currency(taxSavings),
+              value: currency(taxSavingsCents),
               unit: "$",
             },
           ],
           materialList: [
             capitalImprovement
               ? "Capital Improvement: collect NYS Form ST-124; do not charge sales tax on labor."
-              : `${rateApplied.toFixed(2)}% blended tax on $${currency(taxableIncome)} taxable income.`,
+              : `${rateApplied.toFixed(2)}% blended tax on $${currency(taxableIncomeCents)} taxable income.`,
             capitalImprovement
               ? "Pay sales tax on materials at purchase; retain ST-124 for audit trail."
-              : `State: $${currency(taxResult.statePortion)} · Local: $${currency(taxResult.localPortion)}`,
-            `Deductions reduce tax by $${currency(taxSavings)}.`,
+              : `State: $${currency(toCents(taxResult.statePortion))} · Local: $${currency(toCents(taxResult.localPortion))}`,
+            `Deductions reduce tax by $${currency(taxSavingsCents)}.`,
             ...taxResult.notes,
           ],
         };
@@ -1862,12 +1931,67 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     return () => document.removeEventListener("mousedown", handleMouseDown);
   }, [openModuleGroup]);
 
-  function handleSaveEstimate() {
-    if (saveLocked) return;
-    setSaveLocked(true);
-    haptic(10);
-    // 1-second button lock prevents double-tap duplicates
-    setTimeout(() => setSaveLocked(false), 1000);
+  function queueSaveStateReset() {
+    window.setTimeout(() => setSaveState("idle"), 1800);
+  }
+
+  async function handleSaveEstimate() {
+    if (saveState !== "idle") return;
+    if (!ensureEstimateCountySelection()) return;
+
+    setSaveState("saving");
+    setFinalizeError(null);
+    setFinalizeSuccess(null);
+
+    try {
+      if (session?.user?.id) {
+        const response = await fetch("/api/estimates/save", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...finalizePayload,
+            total_cost: null,
+            status: "Draft",
+          }),
+        });
+        const payload = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          throw new Error(payload?.error ?? "Failed to save estimate.");
+        }
+
+        setSaveState("saved");
+        setFinalizeSuccess("Estimate saved to your account.");
+        haptic(10);
+        queueSaveStateReset();
+        return;
+      }
+
+      const deviceExport = {
+        exportedAt: new Date().toISOString(),
+        source: "pro-construction-calc",
+        type: "device-estimate",
+        ...finalizePayload,
+      };
+      const blob = new Blob([JSON.stringify(deviceExport, null, 2)], {
+        type: "application/json",
+      });
+      downloadBlob(
+        blob,
+        `${sanitizeFilename(finalizePayload.name, "estimate")}.json`,
+      );
+      setSaveState("downloaded");
+      setFinalizeSuccess("Estimate downloaded to this device.");
+      haptic(10);
+      queueSaveStateReset();
+    } catch (error) {
+      Sentry.captureException(error);
+      setSaveState("idle");
+      setFinalizeSuccess(null);
+      setFinalizeError(
+        error instanceof Error ? error.message : "Failed to save estimate.",
+      );
+    }
   }
 
   function downloadBlob(blob: Blob, filename: string) {
@@ -1901,7 +2025,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     page.category === "concrete" &&
     !page.proTip.includes("Oneida") &&
     !page.proTip.includes("frost")
-      ? `${page.proTip} For Oneida County, NY slab and footing work, verify frost protection against local depth expectations that can approach 48 inches.`
+      ? `${page.proTip} For tri-county slab and footing work, verify frost protection against the local depth requirements on the job before you finalize the pour.`
       : page.proTip;
 
   function parseAndSet(
@@ -1950,6 +2074,13 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   }
 
   const primaryMaterialOrder = calculatorResults.materialList[0] ?? null;
+  const resolvedEstimateCounty = useMemo(() => {
+    if (!estimateCountySelection) return null;
+    if (estimateCountySelection === "Custom") {
+      return estimateCountyCustom.trim() || null;
+    }
+    return estimateCountySelection;
+  }, [estimateCountyCustom, estimateCountySelection]);
 
   const finalizePayload = useMemo(
     () => ({
@@ -1970,6 +2101,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         calculator_path: page.canonicalPath,
         calculator_label: page.heroKicker,
         client_email: estimateClientEmail.trim() || null,
+        selected_county_mode: estimateCountySelection || null,
+        selected_county: resolvedEstimateCounty,
       },
       metadata: {
         title: page.title,
@@ -1989,6 +2122,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       calculatorResults.secondary,
       estimateClientName,
       estimateClientEmail,
+      estimateCountySelection,
+      resolvedEstimateCounty,
       estimateJobAddress,
       estimateJobName,
       estimateName,
@@ -1997,6 +2132,32 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       page.title,
     ],
   );
+
+  function ensureEstimateCountySelection() {
+    if (!estimateCountySelection) {
+      setFinalizeSuccess(null);
+      setFinalizeError(
+        "Choose Oneida, Madison, Herkimer, None, or Custom before exporting or saving this estimate.",
+      );
+      setFinalizeOpen(true);
+      return null;
+    }
+
+    if (estimateCountySelection === "Custom" && !estimateCountyCustom.trim()) {
+      setFinalizeSuccess(null);
+      setFinalizeError("Enter the custom county or tax market before continuing.");
+      setFinalizeOpen(true);
+      return null;
+    }
+
+    setFinalizeError(null);
+    return resolvedEstimateCounty;
+  }
+
+  function openEmailEstimateModal() {
+    if (!ensureEstimateCountySelection()) return;
+    setCrmModalOpen(true);
+  }
 
   function openFinalizeModal() {
     triggerHaptic([10]);
@@ -2066,6 +2227,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
 
   async function handleDownloadPdf() {
     if (typeof window === "undefined") return;
+    if (!ensureEstimateCountySelection()) return;
     setFinalizeBusy("pdf");
     setFinalizeError(null);
     setFinalizeSuccess(null);
@@ -2133,6 +2295,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       );
       return;
     }
+    if (!ensureEstimateCountySelection()) return;
     if (!estimateClientEmail.trim()) {
       setFinalizeError("Enter the client email before sending for signature.");
       return;
@@ -2194,6 +2357,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     () => ({
       title: page.title,
       calculatorLabel: page.heroKicker,
+      countyLabel: resolvedEstimateCounty,
       fromName: contractorProfile.businessName,
       fromEmail: contractorProfile.businessEmail,
       results: [calculatorResults.primary, ...calculatorResults.secondary].map(
@@ -2207,6 +2371,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     [
       page.title,
       page.heroKicker,
+      resolvedEstimateCounty,
       calculatorResults,
       contractorProfile.businessEmail,
       contractorProfile.businessName,
@@ -2216,31 +2381,54 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   return (
     <Sentry.ErrorBoundary
       fallback={({ error, resetError }) => {
-        const message = error instanceof Error ? error.message : String(error);
+        const errorDigest =
+          typeof error === "object" &&
+          error !== null &&
+          "digest" in error &&
+          typeof (error as { digest?: unknown }).digest === "string"
+            ? (error as { digest: string }).digest
+            : undefined;
+        const reportableError =
+          error instanceof Error
+            ? Object.assign(error, { digest: errorDigest })
+            : Object.assign(new Error(String(error)), { digest: errorDigest });
+        const userFacing = getUserFacingErrorDetails(reportableError, {
+          title: "Calculator error",
+          message:
+            "We couldn't finish that calculator run. Your inputs are still here, so try again or send us a report if it keeps happening.",
+        });
         return (
           <main
             id="main-content"
             className="command-theme bg-[--color-bg] text-white min-h-[40vh] flex items-center justify-center p-6"
           >
             <div className="rounded-2xl border border-white/20 bg-black/25 p-6 max-w-lg text-center">
-              <h2 className="text-lg font-bold text-white">Calculator error</h2>
+              <h2 className="text-lg font-bold text-white">
+                {userFacing.title}
+              </h2>
               <p className="mt-2 text-sm text-[--color-nav-text]/90">
-                Something went wrong. The exact inputs have been reported so we
-                can fix it.
+                {userFacing.message}
               </p>
-              <p
-                className="mt-2 text-xs text-[--color-nav-text]/60 font-mono truncate"
-                title={message}
-              >
-                {message}
-              </p>
-              <button
-                type="button"
-                onClick={resetError}
-                className="mt-4 rounded-xl border border-[--color-orange-brand]/50 bg-[--color-orange-brand]/20 px-4 py-2 text-sm font-bold uppercase tracking-wide text-[--color-orange-brand]"
-              >
-                Try again
-              </button>
+              {reportableError.digest ? (
+                <p className="mt-2 text-xs text-[--color-nav-text]/60">
+                  Reference: {reportableError.digest}
+                </p>
+              ) : null}
+              <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={resetError}
+                  className="rounded-xl border border-[--color-orange-brand]/50 bg-[--color-orange-brand]/20 px-4 py-2 text-sm font-bold uppercase tracking-wide text-[--color-orange-brand]"
+                >
+                  Try again
+                </button>
+                <ManualErrorReportButton
+                  error={reportableError}
+                  eventId={null}
+                  source="calculator-sentry-boundary"
+                  className="rounded-xl border border-white/20 px-4 py-2 text-sm font-bold uppercase tracking-wide text-white"
+                />
+              </div>
             </div>
           </main>
         );
@@ -2259,7 +2447,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     >
       <main
         id="main-content"
-        className="command-theme bg-[--color-bg] text-white flex min-h-screen flex-col"
+        className="command-theme flex min-h-0 flex-1 flex-col overflow-y-auto bg-[--color-bg] text-white lg:overflow-hidden"
       >
         {closeModal && (
           <div className="sticky top-0 z-40 flex h-12 items-center justify-between border-b border-slate-800 bg-slate-900/95 px-3 backdrop-blur-sm">
@@ -2284,7 +2472,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             </button>
           </div>
         )}
-        <section className="mx-auto w-full max-w-6xl px-3 py-4 sm:px-5 sm:py-5 lg:px-7 pb-14">
+        <section className="mx-auto w-full max-w-6xl px-3 py-4 pb-14 sm:px-5 sm:py-5 lg:px-7 lg:py-4 lg:pb-6">
           <JsonLD schema={getTradePageSchema(page)} />
 
           <div className="mb-3 flex items-center justify-between gap-2.5">
@@ -2411,7 +2599,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setCrmModalOpen(true)}
+                    onClick={openEmailEstimateModal}
                     className="inline-flex h-9 min-h-9 items-center gap-2 rounded-xl border-2 border-orange-400/80 bg-transparent px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white transition-all duration-200 hover:border-orange-400 hover:text-white active:scale-[0.98]"
                   >
                     <Mail className="h-3.5 w-3.5" aria-hidden />
@@ -2420,16 +2608,29 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                   <button
                     type="button"
                     onClick={handleSaveEstimate}
-                    disabled={saveLocked}
-                    className={`inline-flex h-9 min-h-9 items-center gap-2 rounded-xl border-2 border-white/80 bg-transparent px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white transition-all duration-200 hover:border-orange-400 hover:text-white active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 ${saveLocked ? "scale-95" : ""}`}
+                    disabled={saveState !== "idle"}
+                    className={`inline-flex h-9 min-h-9 items-center gap-2 rounded-xl border-2 border-white/80 bg-transparent px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white transition-all duration-200 hover:border-orange-400 hover:text-white active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 ${saveState !== "idle" ? "scale-95" : ""}`}
                   >
-                    {saveLocked ? (
+                    {saveState === "saving" ? (
+                      <>
+                        <Save className="h-3.5 w-3.5" aria-hidden />
+                        Saving
+                      </>
+                    ) : saveState === "saved" ? (
                       <>
                         <Check
                           className="h-3.5 w-3.5 text-emerald-400"
                           aria-hidden
                         />
-                        Synced
+                        Saved
+                      </>
+                    ) : saveState === "downloaded" ? (
+                      <>
+                        <Check
+                          className="h-3.5 w-3.5 text-emerald-400"
+                          aria-hidden
+                        />
+                        Downloaded
                       </>
                     ) : (
                       <>
@@ -3388,7 +3589,46 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                     placeholder="Optional"
                   />
                 </label>
+                <label className="text-sm text-slate-300">
+                  County For This Estimate
+                  <select
+                    value={estimateCountySelection}
+                    onChange={(event) =>
+                      setEstimateCountySelection(
+                        event.target.value as EstimateCountySelection | "",
+                      )
+                    }
+                    className="mt-1 h-11 w-full rounded-xl border border-slate-500 bg-slate-900 px-3 text-white outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
+                  >
+                    <option value="">Choose county or tax handling</option>
+                    {ESTIMATE_COUNTY_OPTIONS.map((option) => (
+                      <option key={option} value={option}>
+                        {option === "None"
+                          ? "None (no county selected)"
+                          : option}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                {estimateCountySelection === "Custom" ? (
+                  <label className="text-sm text-slate-300">
+                    Custom County / Tax Market
+                    <input
+                      value={estimateCountyCustom}
+                      onChange={(event) =>
+                        setEstimateCountyCustom(event.target.value)
+                      }
+                      className="mt-1 h-11 w-full rounded-xl border border-slate-500 bg-slate-900 px-3 text-white outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
+                      placeholder="Example: Onondaga or tax exempt"
+                    />
+                  </label>
+                ) : null}
               </div>
+
+              <p className="mt-3 text-xs text-slate-400">
+                Required for any estimate that leaves the calculator: save,
+                PDF, email, or signature.
+              </p>
 
               {primaryMaterialOrder ? (
                 <div className="mt-4 rounded-2xl border border-orange-500/30 bg-orange-500/10 px-4 py-3">
@@ -3498,7 +3738,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                 <button
                   type="button"
                   onClick={() => {
-                    setCrmModalOpen(true);
+                    openEmailEstimateModal();
                   }}
                   disabled={finalizeBusy !== null}
                   className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-900 px-4 text-sm font-semibold text-white transition hover:border-orange-500 disabled:opacity-60"

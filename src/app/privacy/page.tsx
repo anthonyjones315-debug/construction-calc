@@ -3,12 +3,14 @@ import path from "path";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import type { Metadata } from "next";
+import { getPageMetadata } from "@/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = getPageMetadata({
   title: "Privacy Policy — Pro Construction Calc",
   description:
     "Official Privacy Policy for Pro Construction Calc, including data collection, use, and user rights.",
-};
+  path: "/privacy",
+});
 
 const privacyHtmlPath = path.join(
   process.cwd(),

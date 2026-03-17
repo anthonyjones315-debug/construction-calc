@@ -1,0 +1,15 @@
+import type { ReactNode } from "react";
+import { getNoIndexMetadata } from "@/seo";
+
+export const metadata = getNoIndexMetadata(
+  "Register | Pro Construction Calc",
+  "Create an account for Pro Construction Calc.",
+);
+
+export default function RegisterLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  return children;
+}

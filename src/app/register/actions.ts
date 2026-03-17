@@ -3,6 +3,13 @@ import { z } from "zod";
 import * as Sentry from "@sentry/nextjs";
 import { createServerClient } from "@/lib/supabase/server";
 import { getPostHogClient } from "@/lib/posthog-server";
+import { sendWelcomeEmail } from "@/lib/email/welcome";
+import { ensurePublicUserRecord } from "@/lib/supabase/ensurePublicUser";
+import {
+  getPasswordPolicyError,
+  PASSWORD_MAX_LENGTH,
+  PASSWORD_MIN_LENGTH,
+} from "@/lib/security/password-policy";
 
 export type RegisterActionState = {
   status: "idle" | "success" | "error";
@@ -26,8 +33,18 @@ const registerSchema = z.object({
   email: z.string().trim().email("Enter a valid email address."),
   password: z
     .string()
-    .min(8, "Password too short. Use at least 8 characters.")
-    .max(72, "Password must be 72 characters or fewer."),
+    .min(
+      PASSWORD_MIN_LENGTH,
+      `Password must be at least ${PASSWORD_MIN_LENGTH} characters.`,
+    )
+    .max(
+      PASSWORD_MAX_LENGTH,
+      `Password must be ${PASSWORD_MAX_LENGTH} characters or fewer.`,
+    )
+    .refine((value) => !getPasswordPolicyError(value), {
+      message:
+        "Password must be 12-72 characters and include uppercase, lowercase, number, and special character with no spaces.",
+    }),
 });
 
 function getErrorMessage(error: SupabaseErrorLike | null | undefined): string {
@@ -44,8 +61,8 @@ function getErrorMessage(error: SupabaseErrorLike | null | undefined): string {
     return "An account with this email already exists.";
   }
 
-  if (message.includes("password") && message.includes("at least 8")) {
-    return "Password too short. Use at least 8 characters.";
+  if (message.includes("password")) {
+    return "Password must be 12-72 characters and include uppercase, lowercase, number, and special character with no spaces.";
   }
 
   return "We could not create your account right now. Please try again.";
@@ -70,6 +87,9 @@ export async function registerUserAction(
 
   const { fullName, email, password } = parsed.data;
   const db = createServerClient();
+  let welcomeEmailSent = false;
+  let publicUserId: string | null = null;
+  let shouldSeedBusiness = false;
   const { data, error } = await db.auth.admin.createUser({
     email,
     password,
@@ -95,21 +115,23 @@ export async function registerUserAction(
   }
 
   if (data.user?.id) {
-    const { error: publicUserError } = await db.from("users").upsert(
-      {
+    try {
+      publicUserId = await ensurePublicUserRecord(db, {
         id: data.user.id,
         name: fullName,
         email,
         image: null,
-      },
-      { onConflict: "id" },
-    );
-
-    if (publicUserError) {
+      });
+      shouldSeedBusiness = true;
+    } catch (publicUserError) {
+      publicUserId = null;
       console.error("[registerUserAction] failed to upsert public user", {
         userId: data.user.id,
         email,
-        message: publicUserError.message,
+        message:
+          publicUserError instanceof Error
+            ? publicUserError.message
+            : String(publicUserError),
       });
       Sentry.captureException(publicUserError, {
         tags: { step: "upsert-public-user" },
@@ -117,89 +139,120 @@ export async function registerUserAction(
       });
     }
 
-    const { data: seededBusiness, error: businessCreateError } = await db
-      .from("businesses")
-      .insert({
-        owner_id: data.user.id,
-        name: `${fullName} Business`.slice(0, 200),
-      })
-      .select("id")
-      .single();
-
-    if (businessCreateError) {
-      console.error("[registerUserAction] failed to create business", {
-        userId: data.user.id,
-        email,
-        message: businessCreateError.message,
-      });
-      Sentry.captureException(businessCreateError, {
-        tags: { step: "create-business" },
-        extra: { userId: data.user.id },
-      });
-    }
-
-    if (seededBusiness?.id) {
-      const { error: membershipError } = await db.from("memberships").upsert(
+    if (!shouldSeedBusiness || !publicUserId) {
+      console.warn(
+        "[registerUserAction] skipped business seed because public user sync failed",
         {
-          business_id: seededBusiness.id,
-          user_id: data.user.id,
-          role: "owner",
-        },
-        { onConflict: "business_id,user_id" },
-      );
-
-      if (membershipError) {
-        console.error("[registerUserAction] failed to create membership", {
           userId: data.user.id,
-          businessId: seededBusiness.id,
           email,
-          message: membershipError.message,
+        },
+      );
+    } else {
+      const { data: seededBusiness, error: businessCreateError } = await db
+        .from("businesses")
+        .insert({
+          owner_id: publicUserId,
+          name: `${fullName} Business`.slice(0, 200),
+        })
+        .select("id")
+        .single();
+
+      if (businessCreateError) {
+        console.error("[registerUserAction] failed to create business", {
+          userId: data.user.id,
+          email,
+          message: businessCreateError.message,
         });
-        Sentry.captureException(membershipError, {
-          tags: { step: "create-membership" },
-          extra: { userId: data.user.id, businessId: seededBusiness.id },
+        Sentry.captureException(businessCreateError, {
+          tags: { step: "create-business" },
+          extra: { userId: data.user.id },
         });
       }
-    }
 
-    if (seededBusiness?.id) {
-      const { error: businessProfileError } = await db
-        .from("business_profiles")
-        .upsert(
+      if (seededBusiness?.id) {
+        const { error: membershipError } = await db.from("memberships").upsert(
           {
-            user_id: data.user.id,
             business_id: seededBusiness.id,
-            business_email: email,
+            user_id: publicUserId,
+            role: "owner",
           },
-          { onConflict: "business_id" },
+          { onConflict: "business_id,user_id" },
         );
 
-      if (businessProfileError) {
-        console.error(
-          "[registerUserAction] failed to seed business profile email",
-          {
+        if (membershipError) {
+          console.error("[registerUserAction] failed to create membership", {
             userId: data.user.id,
+            businessId: seededBusiness.id,
             email,
-            message: businessProfileError.message,
-          },
-        );
-        Sentry.captureException(businessProfileError, {
-          tags: { step: "seed-business-profile" },
-          extra: { userId: data.user.id, businessId: seededBusiness.id },
-        });
+            message: membershipError.message,
+          });
+          Sentry.captureException(membershipError, {
+            tags: { step: "create-membership" },
+            extra: { userId: data.user.id, businessId: seededBusiness.id },
+          });
+        }
+      }
+
+      if (seededBusiness?.id) {
+        const { error: businessProfileError } = await db
+          .from("business_profiles")
+          .upsert(
+            {
+              user_id: publicUserId,
+              business_id: seededBusiness.id,
+              business_email: email,
+            },
+            { onConflict: "business_id" },
+          );
+
+        if (businessProfileError) {
+          console.error(
+            "[registerUserAction] failed to seed business profile email",
+            {
+              userId: data.user.id,
+              email,
+              message: businessProfileError.message,
+            },
+          );
+          Sentry.captureException(businessProfileError, {
+            tags: { step: "seed-business-profile" },
+            extra: { userId: data.user.id, businessId: seededBusiness.id },
+          });
+        }
       }
     }
   }
 
   if (data.user?.id) {
+    try {
+      await sendWelcomeEmail({
+        to: email,
+        fullName,
+      });
+      welcomeEmailSent = true;
+    } catch (welcomeEmailError) {
+      console.error("[registerUserAction] failed to send welcome email", {
+        userId: data.user.id,
+        email,
+        error:
+          welcomeEmailError instanceof Error
+            ? welcomeEmailError.message
+            : String(welcomeEmailError),
+      });
+      Sentry.captureException(welcomeEmailError, {
+        tags: { step: "send-welcome-email" },
+        extra: { userId: data.user.id, email },
+      });
+    }
+
     const posthog = getPostHogClient();
     posthog.capture({
-      distinctId: data.user.id,
+      distinctId: publicUserId ?? data.user.id,
       event: "user_registered",
       properties: { email },
     });
     posthog.identify({
-      distinctId: data.user.id,
+      distinctId: publicUserId ?? data.user.id,
       properties: { email, name: fullName },
     });
     await posthog.shutdown();
@@ -207,6 +260,8 @@ export async function registerUserAction(
 
   return {
     status: "success",
-    message: "Account created. You can now sign in.",
+    message: welcomeEmailSent
+      ? "Account created. Check your inbox for a welcome email, then sign in."
+      : "Account created. You can now sign in.",
   };
 }

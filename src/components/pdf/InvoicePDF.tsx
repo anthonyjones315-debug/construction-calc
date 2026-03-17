@@ -270,7 +270,7 @@ export function createInvoicePDF(
           <View style={{ width: "55%" }}>
             <Text style={styles.heading}>Invoice</Text>
             <Text style={styles.brandName}>Pro Construction Calc</Text>
-            <Text style={styles.brandRegion}>Mohawk Valley / Rome, NY</Text>
+            <Text style={styles.brandRegion}>Tri-County New York</Text>
           </View>
 
           <View style={[styles.box, { width: "45%" }]}>

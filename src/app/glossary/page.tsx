@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { HardHat, BookOpen, Search, Info } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { JsonLD } from "@/seo";
+import { JsonLD, getPageMetadata } from "@/seo";
 import { FINANCIAL_TERMS } from "@/data/financial-terms";
 import { routes } from "@routes";
 
@@ -37,12 +37,12 @@ const CONSTRUCTION_TERMS = [
   },
 ];
 
-export const metadata: Metadata = {
+export const metadata: Metadata = getPageMetadata({
   title: "Construction & Financial Glossary | Pro Construction Calc",
   description:
     "Common construction and financial terms used across Pro Construction Calc. Clear definitions for bids, takeoffs, and business math.",
-  alternates: { canonical: "https://proconstructioncalc.com/glossary" },
-};
+  path: "/glossary",
+});
 
 export default function GlossaryPage() {
   const schema = {

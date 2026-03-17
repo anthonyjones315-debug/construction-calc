@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import {
+  COOKIE_CONSENT_CHANGED_EVENT,
+  COOKIE_CONSENT_STORAGE_KEY,
   readCookieConsent,
   writeCookieConsent,
   type CookieConsentChoice,
@@ -13,8 +15,33 @@ export function ConsentSettings() {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    setChoice(readCookieConsent());
-    setHydrated(true);
+    const hydrateId = window.setTimeout(() => {
+      setChoice(readCookieConsent());
+      setHydrated(true);
+    }, 0);
+
+    function handleConsentChange(event: Event) {
+      const detail = (event as CustomEvent<CookieConsentChoice>).detail;
+      setChoice(detail ?? readCookieConsent());
+    }
+
+    function handleStorage(event: StorageEvent) {
+      if (event.key === COOKIE_CONSENT_STORAGE_KEY) {
+        setChoice(readCookieConsent());
+      }
+    }
+
+    window.addEventListener(COOKIE_CONSENT_CHANGED_EVENT, handleConsentChange);
+    window.addEventListener("storage", handleStorage);
+
+    return () => {
+      window.clearTimeout(hydrateId);
+      window.removeEventListener(
+        COOKIE_CONSENT_CHANGED_EVENT,
+        handleConsentChange,
+      );
+      window.removeEventListener("storage", handleStorage);
+    };
   }, []);
 
   function updateConsent(next: CookieConsentChoice) {

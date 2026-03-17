@@ -8,6 +8,7 @@ import posthog from "posthog-js";
 export type EstimatePayload = {
   title: string;
   calculatorLabel: string;
+  countyLabel?: string | null;
   controlNumber?: string | null;
   clientName?: string | null;
   jobSiteAddress?: string | null;

@@ -1,3 +1,5 @@
+import { toCents } from "@/utils/money";
+
 export function sanitizeNum(value: unknown, fallback = 0): number {
   if (typeof value === "number") {
     return Number.isFinite(value) ? value : fallback;
@@ -51,6 +53,5 @@ export function validateWaste(value: unknown): number {
 }
 
 export function cents(value: number): number {
-  if (!Number.isFinite(value)) return 0;
-  return Math.round((value + Number.EPSILON) * 100);
+  return toCents(value);
 }

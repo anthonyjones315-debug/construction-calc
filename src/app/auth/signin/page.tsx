@@ -28,7 +28,6 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
   const session = await auth();
 
   if (session?.user?.id) {
-    console.log("Auth State:", session.user);
     redirect(
       (callbackUrl === routes.auth.signIn
         ? routes.commandCenter

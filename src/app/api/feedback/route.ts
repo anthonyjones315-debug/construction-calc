@@ -12,6 +12,15 @@ const feedbackSchema = z.object({
   email: z.string().email(),
   subject: z.string().max(200).optional(),
   message: z.string().min(1).max(10000),
+  reportType: z.enum(["general", "error"]).optional(),
+  source: z.string().max(200).optional(),
+  pageUrl: z.string().max(2000).optional(),
+  eventId: z.string().max(200).optional(),
+  digest: z.string().max(200).optional(),
+  technicalMessage: z.string().max(4000).optional(),
+  userFacingMessage: z.string().max(1200).optional(),
+  userAgent: z.string().max(1200).optional(),
+  browserTime: z.string().max(120).optional(),
 });
 
 function getResend() {
@@ -27,6 +36,11 @@ function escapeHtml(s: string): string {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/\n/g, "<br>");
+}
+
+function normalizeString(value?: string): string | undefined {
+  const normalized = value?.trim();
+  return normalized ? normalized : undefined;
 }
 
 export async function POST(req: NextRequest) {
@@ -54,14 +68,60 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { name, email, subject: rawSubject, message } = parsed.data;
+    const {
+      name,
+      email,
+      subject: rawSubject,
+      message,
+      reportType,
+      source,
+      pageUrl,
+      eventId,
+      digest,
+      technicalMessage,
+      userFacingMessage,
+      userAgent,
+      browserTime,
+    } = parsed.data;
+    const sourceValue = normalizeString(source);
+    const pageUrlValue = normalizeString(pageUrl);
+    const browserTimeValue = normalizeString(browserTime);
+    const eventIdValue = normalizeString(eventId);
+    const digestValue = normalizeString(digest);
+    const technicalMessageValue = normalizeString(technicalMessage);
+    const userFacingMessageValue = normalizeString(userFacingMessage);
+    const userAgentValue = normalizeString(userAgent);
     const subjectLine =
-      rawSubject?.trim() || "Feedback from Pro Construction Calc";
+      normalizeString(rawSubject) || "Feedback from Pro Construction Calc";
     const subject = `${SUBJECT_PREFIX} ${subjectLine}`;
+    const isErrorReport = reportType === "error";
+
+    const contextRows = [
+      sourceValue ? `<p><strong>Source:</strong> ${escapeHtml(sourceValue)}</p>` : "",
+      pageUrlValue ? `<p><strong>Page:</strong> ${escapeHtml(pageUrlValue)}</p>` : "",
+      browserTimeValue
+        ? `<p><strong>Browser Time:</strong> ${escapeHtml(browserTimeValue)}</p>`
+        : "",
+      eventIdValue
+        ? `<p><strong>Sentry Event ID:</strong> ${escapeHtml(eventIdValue)}</p>`
+        : "",
+      digestValue ? `<p><strong>Error Digest:</strong> ${escapeHtml(digestValue)}</p>` : "",
+      userFacingMessageValue
+        ? `<p><strong>User-Facing Summary:</strong> ${escapeHtml(userFacingMessageValue)}</p>`
+        : "",
+      technicalMessageValue
+        ? `<p><strong>Technical Error:</strong> ${escapeHtml(technicalMessageValue)}</p>`
+        : "",
+      userAgentValue ? `<p><strong>User Agent:</strong> ${escapeHtml(userAgentValue)}</p>` : "",
+    ]
+      .filter(Boolean)
+      .join("");
 
     const html = `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="font-family:system-ui,sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#334155">
+  <p><strong>Report Type:</strong> ${isErrorReport ? "Manual error report" : "General feedback"}</p>
   <p><strong>From:</strong> ${escapeHtml(email)}${name ? ` (${escapeHtml(name)})` : ""}</p>
   <p><strong>Subject:</strong> ${escapeHtml(subjectLine)}</p>
+  ${contextRows}
   <hr style="border:none;border-top:1px solid #e2e8f0;margin:16px 0">
   <div>${escapeHtml(message)}</div>
   <p style="margin-top:24px;font-size:12px;color:#94a3b8">Sent via Pro Construction Calc contact/feedback form.</p>
@@ -85,6 +145,20 @@ export async function POST(req: NextRequest) {
         },
         { status: 502 }
       );
+    }
+
+    if (isErrorReport) {
+      Sentry.captureMessage("Manual error report submitted", {
+        level: "warning",
+        extra: {
+          source: sourceValue,
+          pageUrl: pageUrlValue,
+          eventId: eventIdValue,
+          digest: digestValue,
+          hasTechnicalMessage: Boolean(technicalMessageValue),
+          hasUserFacingMessage: Boolean(userFacingMessageValue),
+        },
+      });
     }
 
     return NextResponse.json({ ok: true, id: data?.id });

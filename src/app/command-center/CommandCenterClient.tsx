@@ -5,6 +5,7 @@ import type { Route } from "next";
 import { useEffect, useMemo, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
+  ArrowRight,
   BarChart3,
   Bell,
   BrickWall,
@@ -17,8 +18,10 @@ import {
   MoreHorizontal,
   RefreshCw,
   ShieldCheck,
+  ShoppingCart,
   Settings,
   Thermometer,
+  Trash2,
   Triangle,
   Users,
   X,
@@ -28,6 +31,7 @@ import { routes } from "@routes";
 import { CalculatorPage } from "@/app/calculators/_components/CalculatorPage";
 import { getTradePageByPath } from "@/app/calculators/_lib/trade-pages";
 import { useProMode } from "@/hooks/useProMode";
+import { useStore } from "@/lib/store";
 
 type TeamMember = {
   membershipId: string;
@@ -236,6 +240,9 @@ export default function CommandCenterClient({
   const [toolFilter, setToolFilter] = useState("");
   const [handledDeepLink, setHandledDeepLink] = useState<string | null>(null);
   const { proMode, setProMode, mounted: proModeMounted } = useProMode();
+  const estimateCart = useStore((s) => s.estimateCart);
+  const removeCartItem = useStore((s) => s.removeCartItem);
+  const clearCart = useStore((s) => s.clearCart);
   const searchParams = useSearchParams();
   const toolFromQuery = searchParams.get("tool") ?? initialToolSlug;
 
@@ -265,6 +272,8 @@ export default function CommandCenterClient({
   const toolFromQuerySlug = toolFromQuery?.toLowerCase() ?? "";
   const activeToolHref = typeof activeTool?.href === "string" ? activeTool.href : null;
   const activeTradePage = activeToolHref ? getTradePageByPath(activeToolHref) : undefined;
+  const latestCartItems = estimateCart.slice(-3).reverse();
+  const cartItemCount = estimateCart.length;
 
   useEffect(() => {
     if (!toolFromQuerySlug) return;
@@ -294,7 +303,6 @@ export default function CommandCenterClient({
 
       const nextCode = payload.business?.joinCode ?? activeJoinCode;
       setActiveJoinCode(nextCode);
-      setJoinCodeLabel(nextCode);
 
       if (Array.isArray(payload.members)) {
         setMembers(
@@ -543,6 +551,114 @@ export default function CommandCenterClient({
           </div>
 
           <div className="space-y-5 px-4 py-4 w-full max-w-full sm:px-6 sm:py-6">
+            <section className="overflow-hidden rounded-3xl border border-orange-500/25 bg-[radial-gradient(circle_at_top_left,rgba(249,115,22,0.18),transparent_42%),linear-gradient(135deg,#111827_0%,#0f172a_48%,#020617_100%)] p-5 shadow-[0_24px_60px_rgba(0,0,0,0.28)]">
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                <div className="max-w-2xl">
+                  <p className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-orange-300">
+                    <ShoppingCart className="h-4 w-4" aria-hidden />
+                    Field Cart
+                  </p>
+                  <h2 className="mt-2 text-2xl font-black uppercase tracking-tight text-white sm:text-3xl">
+                    Batch your estimate work without leaving Command Center.
+                  </h2>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-300">
+                    Keep active calculator outputs in one place, review them fast,
+                    and hand off the batch when you are ready.
+                  </p>
+                </div>
+                <div className="grid shrink-0 grid-cols-2 gap-3 lg:min-w-[240px]">
+                  <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
+                      Open Items
+                    </p>
+                    <p className="mt-1 text-3xl font-black text-white">
+                      {cartItemCount}
+                    </p>
+                  </div>
+                  <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
+                      Workflow
+                    </p>
+                    <p className="mt-1 text-sm font-bold text-white">
+                      Cart to saved checkout
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Link
+                  href={routes.cart}
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-orange-500 px-4 text-sm font-black uppercase tracking-[0.08em] text-white transition hover:bg-orange-600"
+                >
+                  Review Cart
+                  <ArrowRight className="h-4 w-4" aria-hidden />
+                </Link>
+                <Link
+                  href={routes.calculators}
+                  className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-white/20 px-4 text-sm font-semibold text-white transition hover:border-orange-400/60 hover:text-orange-200"
+                >
+                  Add More Estimates
+                </Link>
+                <button
+                  type="button"
+                  onClick={clearCart}
+                  disabled={cartItemCount === 0}
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-white/12 bg-white/5 px-4 text-sm font-semibold text-slate-200 transition hover:border-red-400/50 hover:text-red-200 disabled:cursor-not-allowed disabled:opacity-45"
+                >
+                  <Trash2 className="h-4 w-4" aria-hidden />
+                  Clear Cart
+                </button>
+              </div>
+
+              {cartItemCount === 0 ? (
+                <div className="mt-4 rounded-2xl border border-dashed border-white/15 bg-slate-950/35 px-4 py-4 text-sm text-slate-300">
+                  No estimates in the cart yet. Use any calculator&apos;s
+                  <span className="font-semibold text-white"> Add to Cart </span>
+                  action and it will stay visible here at the top of Command Center.
+                </div>
+              ) : (
+                <div className="mt-4 grid gap-3 xl:grid-cols-3">
+                  {latestCartItems.map((item) => (
+                    <article
+                      key={item.id}
+                      className="rounded-2xl border border-white/10 bg-slate-950/40 p-4"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-300">
+                            {item.calculatorLabel}
+                          </p>
+                          <p className="mt-1 truncate text-sm font-bold text-white">
+                            {item.estimateName}
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeCartItem(item.id)}
+                          className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/10 text-slate-300 transition hover:border-red-400/50 hover:text-red-200"
+                          aria-label={`Remove ${item.estimateName} from cart`}
+                        >
+                          <X className="h-4 w-4" aria-hidden />
+                        </button>
+                      </div>
+                      <p className="mt-3 text-sm text-slate-300">
+                        {item.primaryResult.label}:{" "}
+                        <span className="font-mono font-semibold text-white">
+                          {item.primaryResult.value} {item.primaryResult.unit}
+                        </span>
+                      </p>
+                      <p className="mt-2 line-clamp-2 text-xs text-slate-400">
+                        {item.materialList.length > 0
+                          ? item.materialList.join(" • ")
+                          : "Estimate ready for batch checkout."}
+                      </p>
+                    </article>
+                  ))}
+                </div>
+              )}
+            </section>
+
             <div className="flex items-center justify-between gap-3 rounded-2xl border border-slate-700 bg-slate-900 px-4 py-2.5 text-slate-100">
               <div className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-orange-600">
                 <ShieldCheck className="h-4 w-4" aria-hidden />

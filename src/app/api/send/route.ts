@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import { Resend } from "resend";
 import { z } from "zod";
+import { multiplyDollars, normalizeDollars } from "@/utils/money";
 
 const FROM_EMAIL = "system@proconstructioncalc.com";
 
@@ -22,6 +23,7 @@ const resultRowSchema = z.object({
 const estimatePayloadSchema = z.object({
   title: z.string(),
   calculatorLabel: z.string(),
+  countyLabel: z.string().nullable().optional(),
   controlNumber: z.string().nullable().optional(),
   clientName: z.string().nullable().optional(),
   jobSiteAddress: z.string().nullable().optional(),
@@ -63,14 +65,17 @@ function buildEstimateEmailHtml(estimate: z.infer<typeof estimatePayloadSchema>)
     estimate.budgetItems && estimate.budgetItems.length > 0
       ? `<h3 style="color:#0f172a;margin:16px 0 8px">Budget</h3><table style="width:100%;border-collapse:collapse"><thead><tr><th style="text-align:left;padding:8px 12px;background:#f1f5f9">Item</th><th style="text-align:right;padding:8px 12px;background:#f1f5f9">Qty × Price</th><th style="text-align:right;padding:8px 12px;background:#f1f5f9">Total</th></tr></thead><tbody>${estimate.budgetItems
           .map(
-            (b) =>
-              `<tr><td style="padding:8px 12px;border-bottom:1px solid #e2e8f0">${escapeHtml(b.name)}</td><td style="text-align:right;padding:8px 12px;border-bottom:1px solid #e2e8f0">${b.quantity} × $${b.pricePerUnit.toFixed(2)}</td><td style="text-align:right;padding:8px 12px;border-bottom:1px solid #e2e8f0">$${(b.quantity * b.pricePerUnit).toFixed(2)}</td></tr>`
+            (b) => {
+              const pricePerUnit = normalizeDollars(b.pricePerUnit);
+              const lineTotal = multiplyDollars(pricePerUnit, b.quantity);
+              return `<tr><td style="padding:8px 12px;border-bottom:1px solid #e2e8f0">${escapeHtml(b.name)}</td><td style="text-align:right;padding:8px 12px;border-bottom:1px solid #e2e8f0">${b.quantity} × $${pricePerUnit.toFixed(2)}</td><td style="text-align:right;padding:8px 12px;border-bottom:1px solid #e2e8f0">$${lineTotal.toFixed(2)}</td></tr>`;
+            }
           )
           .join("")}</tbody></table>`
       : "";
   const total =
     estimate.totalCost != null
-      ? `<p style="margin-top:12px;font-weight:700;color:#0f172a">Total: $${Number(estimate.totalCost).toFixed(2)}</p>`
+      ? `<p style="margin-top:12px;font-weight:700;color:#0f172a">Total: $${normalizeDollars(estimate.totalCost).toFixed(2)}</p>`
       : "";
   const meta = [
     estimate.fromEmail &&
@@ -82,6 +87,7 @@ function buildEstimateEmailHtml(estimate: z.infer<typeof estimatePayloadSchema>)
     estimate.controlNumber && `Control #: ${escapeHtml(estimate.controlNumber)}`,
     estimate.clientName && `Client: ${escapeHtml(estimate.clientName)}`,
     estimate.jobSiteAddress && `Job site: ${escapeHtml(estimate.jobSiteAddress)}`,
+    estimate.countyLabel && `County: ${escapeHtml(estimate.countyLabel)}`,
     estimate.generatedAt && `Generated: ${escapeHtml(estimate.generatedAt)}`,
   ]
     .filter(Boolean)

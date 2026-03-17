@@ -39,6 +39,11 @@ if (process.env.NEXT_RUNTIME === "nodejs" && SHOULD_INIT_SENTRY) {
   Sentry.init({
     dsn: process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN,
     skipOpenTelemetrySetup: true,
+    // Temporary stability guard: one of Sentry's default server-side automatic
+    // integrations is crashing Next's instrumentation hook on startup under our
+    // current runtime/tooling combo by mutating a read-only `logger` property.
+    // Keep base error reporting alive while disabling the auto-instrumentation set.
+    defaultIntegrations: false,
 
     sendDefaultPii: false,
 

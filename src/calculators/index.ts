@@ -1,4 +1,5 @@
 import type { CalculationResult } from "@/types";
+import { multiplyDollars } from "@/utils/money";
 import {
   sanitizeNum,
   clamp,
@@ -6,7 +7,6 @@ import {
   round,
   safeCeil,
   validateWaste,
-  cents,
 } from "@/utils/validate";
 
 // ─── Concrete ─────────────────────────────────────────────────────────────────
@@ -348,7 +348,7 @@ export function calcFlooring(i: FlooringInputs): CalculationResult[] {
   const area = round(length * width, 6);
   const mult = i.includeWaste ? 1 + waste / 100 : 1;
   const withWaste = round(area * mult, 6);
-  const totalCost = cents(withWaste * costPerSqFt) / 100;
+  const totalCost = multiplyDollars(costPerSqFt, withWaste);
 
   return [
     {
@@ -565,6 +565,110 @@ export function calcPaint(i: PaintInputs): CalculationResult[] {
   ];
 }
 
+// ─── Wire Gauge ───────────────────────────────────────────────────────────────
+
+interface WireGaugeSpec {
+  gauge: string;
+  ampacity: number;
+  resistancePer1000Ft: number;
+}
+
+const MAX_BRANCH_CIRCUIT_VOLTAGE_DROP_PCT = 3;
+
+const COPPER_WIRE_SPECS: WireGaugeSpec[] = [
+  { gauge: "14 AWG", ampacity: 15, resistancePer1000Ft: 3.14 },
+  { gauge: "12 AWG", ampacity: 20, resistancePer1000Ft: 1.98 },
+  { gauge: "10 AWG", ampacity: 30, resistancePer1000Ft: 1.24 },
+  { gauge: "8 AWG", ampacity: 40, resistancePer1000Ft: 0.778 },
+  { gauge: "6 AWG", ampacity: 55, resistancePer1000Ft: 0.491 },
+  { gauge: "4 AWG", ampacity: 70, resistancePer1000Ft: 0.308 },
+  { gauge: "3 AWG", ampacity: 85, resistancePer1000Ft: 0.245 },
+  { gauge: "2 AWG", ampacity: 95, resistancePer1000Ft: 0.194 },
+  { gauge: "1 AWG", ampacity: 110, resistancePer1000Ft: 0.154 },
+  { gauge: "1/0 AWG", ampacity: 125, resistancePer1000Ft: 0.122 },
+];
+
+const ALUMINUM_WIRE_SPECS: WireGaugeSpec[] = [
+  { gauge: "12 AWG", ampacity: 15, resistancePer1000Ft: 3.14 },
+  { gauge: "10 AWG", ampacity: 25, resistancePer1000Ft: 1.97 },
+  { gauge: "8 AWG", ampacity: 30, resistancePer1000Ft: 1.24 },
+  { gauge: "6 AWG", ampacity: 40, resistancePer1000Ft: 0.778 },
+  { gauge: "4 AWG", ampacity: 55, resistancePer1000Ft: 0.491 },
+  { gauge: "3 AWG", ampacity: 65, resistancePer1000Ft: 0.389 },
+  { gauge: "2 AWG", ampacity: 75, resistancePer1000Ft: 0.308 },
+  { gauge: "1 AWG", ampacity: 85, resistancePer1000Ft: 0.245 },
+  { gauge: "1/0 AWG", ampacity: 100, resistancePer1000Ft: 0.194 },
+  { gauge: "2/0 AWG", ampacity: 115, resistancePer1000Ft: 0.154 },
+];
+
+export interface WireGaugeInputs {
+  amps: number;
+  voltage: number;
+  distance: number; // one-way feet
+  material: "copper" | "aluminum";
+}
+
+function getWireSpecs(material: WireGaugeInputs["material"]): WireGaugeSpec[] {
+  return material === "aluminum" ? ALUMINUM_WIRE_SPECS : COPPER_WIRE_SPECS;
+}
+
+export function calcWireGauge(i: WireGaugeInputs): CalculationResult[] {
+  const amps = clamp(sanitizeNum(i.amps, 0), 0, 1000);
+  const voltage = clamp(sanitizeNum(i.voltage, 120), 1, 1000);
+  const distance = clamp(sanitizeNum(i.distance, 0), 0, 100_000);
+  const material = i.material === "aluminum" ? "aluminum" : "copper";
+  const roundTripDistance = round(distance * 2, 6);
+  const specs = getWireSpecs(material);
+  const fallbackSpec = specs[specs.length - 1];
+
+  const minimumAmpacitySpec =
+    specs.find((spec) => spec.ampacity >= amps) ?? fallbackSpec;
+
+  const recommendedSpec =
+    specs.find((spec) => {
+      if (spec.ampacity < amps) return false;
+
+      const voltageDrop = safeDiv(
+        roundTripDistance * amps * spec.resistancePer1000Ft,
+        1000,
+      );
+      const dropPercent = safeDiv(voltageDrop, voltage) * 100;
+
+      return dropPercent <= MAX_BRANCH_CIRCUIT_VOLTAGE_DROP_PCT;
+    }) ?? minimumAmpacitySpec;
+
+  const voltageDrop = round(
+    safeDiv(
+      roundTripDistance * amps * recommendedSpec.resistancePer1000Ft,
+      1000,
+    ),
+    2,
+  );
+  const dropPercent = round(safeDiv(voltageDrop, voltage) * 100, 2);
+
+  return [
+    {
+      label: "Recommended Gauge",
+      value: recommendedSpec.gauge,
+      unit: "",
+      highlight: true,
+      description: `${material} conductor sized for ${amps}A`,
+    },
+    {
+      label: "Voltage Drop",
+      value: voltageDrop.toFixed(2),
+      unit: "V",
+      description: `${dropPercent.toFixed(2)}% across ${roundTripDistance.toFixed(0)} ft`,
+    },
+    {
+      label: "Wire Length",
+      value: roundTripDistance.toFixed(0),
+      unit: "ft",
+      description: "Round-trip conductor length",
+    },
+  ];
+}
+
 // ─── Labor ────────────────────────────────────────────────────────────────────
 
 export interface LaborInputs {
@@ -578,7 +682,8 @@ export function calcLabor(i: LaborInputs): CalculationResult[] {
   const hours = clamp(sanitizeNum(i.hours, 0), 0, 1000);
   const wage = clamp(sanitizeNum(i.wage, 0), 0, 10000);
   const totalHours = round(workers * hours, 6);
-  const totalCost = cents(totalHours * wage) / 100;
+  const totalCost = multiplyDollars(wage, totalHours);
+  const perWorkerCost = multiplyDollars(wage, hours);
 
   return [
     {
@@ -590,7 +695,7 @@ export function calcLabor(i: LaborInputs): CalculationResult[] {
     { label: "Total Hours", value: totalHours, unit: "hrs" },
     {
       label: "Per Worker",
-      value: `$${(cents(hours * wage) / 100).toFixed(2)}`,
+      value: `$${perWorkerCost.toFixed(2)}`,
       unit: "",
       description: `${hours}h × $${wage}/hr`,
     },

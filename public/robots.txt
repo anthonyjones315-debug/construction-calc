@@ -1,9 +1,22 @@
 User-agent: *
+# Removed the non-standard Content-Signal directive.
+# Use standard crawler rules here, and use response headers or page metadata
+# separately if we ever need to communicate additional bot policies.
 Allow: /
-
-Sitemap: https://proconstructioncalc.com/sitemap.xml
-
-User-agent: *
-Allow: /
-
+Disallow: /api
+Disallow: /auth
+Disallow: /cart
+Disallow: /command-center
+Disallow: /estimate/sign
+Disallow: /forgot-password
+Disallow: /offline
+Disallow: /onboarding
+Disallow: /pricebook
+Disallow: /register
+Disallow: /reset-password
+Disallow: /saved
+Disallow: /settings
+Disallow: /sign
+Disallow: /unauthorized
+Disallow: /cdn-cgi
 Sitemap: https://proconstructioncalc.com/sitemap.xml

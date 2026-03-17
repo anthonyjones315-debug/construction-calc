@@ -30,6 +30,9 @@ import {
   multiplyCents,
   centsToDollars,
   sumCents,
+  multiplyDollars,
+  normalizeDollars,
+  sumDollars,
 } from "@/utils/money";
 
 const LIVE_REFRESH_MS = 15000;
@@ -68,6 +71,27 @@ type BuilderRow = {
   customUnitCost?: number;
   saveToPriceBook?: boolean;
 };
+
+type CustomPriceBookMaterial = {
+  name: string;
+  unit_type: string;
+  unit_cost: number;
+  saveToPriceBook: boolean;
+};
+
+type SelectedMaterialRow =
+  | {
+      material: null;
+      custom: CustomPriceBookMaterial;
+      quantity: number;
+      lineTotalCents: number;
+    }
+  | {
+      material: PriceBookItem;
+      custom: null;
+      quantity: number;
+      lineTotalCents: number;
+    };
 
 type EstimateBudgetRow = {
   id: string;
@@ -217,7 +241,7 @@ export function SavedContent({
   }
 
   function toCurrencyFixed(value: string): number {
-    return Number(toNumber(value).toFixed(2));
+    return normalizeDollars(toNumber(value));
   }
 
   function getEstimateControlNumber(estimate: SavedEstimate): string {
@@ -406,12 +430,12 @@ export function SavedContent({
     const { pdf } = await import("@react-pdf/renderer");
     const { createInvoicePDF } = await import("@/components/pdf/InvoicePDF");
 
-    const contractTotal = Number(estimate.total_cost ?? 0);
-    const billedToDate = Number(
-      invoices.reduce((sum, row) => sum + toNumber(row.amount), 0).toFixed(2),
+    const contractTotal = normalizeDollars(Number(estimate.total_cost ?? 0));
+    const billedToDate = sumDollars(
+      invoices.map((row) => toNumber(row.amount)),
     );
-    const remainingBalance = Number(
-      Math.max(0, contractTotal - billedToDate).toFixed(2),
+    const remainingBalance = centsToDollars(
+      Math.max(0, toCents(contractTotal) - toCents(billedToDate)),
     );
     const invoiceAmount = toCurrencyFixed(invoice.amount);
 
@@ -430,11 +454,12 @@ export function SavedContent({
             if (!Number.isFinite(quantity) || !Number.isFinite(unitCost)) {
               return null;
             }
+            const normalizedUnitCost = normalizeDollars(unitCost);
             return {
               serviceItem: serviceItem || "Service Item",
               quantity,
-              unitCost,
-              total: Number((quantity * unitCost).toFixed(2)),
+              unitCost: normalizedUnitCost,
+              total: multiplyDollars(normalizedUnitCost, quantity),
             };
           })
           .filter((row): row is NonNullable<typeof row> => Boolean(row))
@@ -649,7 +674,7 @@ export function SavedContent({
         parsedTotal === null
           ? null
           : Number.isFinite(parsedTotal)
-            ? parsedTotal
+            ? normalizeDollars(parsedTotal)
             : null;
 
       const budget_items = editDraft.budgetRows.map((row) => {
@@ -658,17 +683,17 @@ export function SavedContent({
           row.actualCost.trim() === ""
             ? null
             : Number.isFinite(parsedActual)
-              ? parsedActual
+              ? normalizeDollars(parsedActual)
               : null;
-        const estimated = (row.quantity || 0) * (row.pricePerUnit || 0);
+        const pricePerUnit = normalizeDollars(row.pricePerUnit || 0);
 
         return {
           id: row.id,
           name: row.name,
           category: row.category,
           quantity: row.quantity,
-          pricePerUnit: row.pricePerUnit,
-          estimated_cost: Number(estimated.toFixed(2)),
+          pricePerUnit,
+          estimated_cost: multiplyDollars(pricePerUnit, row.quantity || 0),
           actual_cost: actualCost,
           cost_type: row.category.toLowerCase().includes("labor")
             ? "labor"
@@ -910,19 +935,7 @@ export function SavedContent({
         };
       })
       .filter(
-        (
-          row,
-        ): row is {
-          material: PriceBookItem | null;
-          custom: {
-            name: string;
-            unit_type: string;
-            unit_cost: number;
-            saveToPriceBook: boolean;
-          } | null;
-          quantity: number;
-          lineTotalCents: number;
-        } => Boolean(row),
+        (row): row is SelectedMaterialRow => row !== null,
       );
   }, [builderRows, materials]);
 

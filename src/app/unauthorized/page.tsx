@@ -1,3 +1,10 @@
+import { getNoIndexMetadata } from "@/seo";
+
+export const metadata = getNoIndexMetadata(
+  "Unauthorized | Pro Construction Calc",
+  "Access-denied page for Pro Construction Calc.",
+);
+
 export default function UnauthorizedPage() {
   return (
     <main className="mx-auto flex min-h-[60vh] max-w-3xl flex-col justify-center px-6 py-20">

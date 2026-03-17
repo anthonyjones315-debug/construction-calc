@@ -12,6 +12,12 @@ import { CSPostHogProvider } from "@/components/providers/PostHogProvider";
 import { PostHogPageView } from "@/components/providers/PostHogPageView";
 import { Providers } from "@app/providers";
 import TermlyCMP from "@/components/TermlyCMP";
+import { JsonLD, getLocalBusinessSchema, getVerifiedReviewSchema } from "@/seo";
+import {
+  BUSINESS_NAME,
+  BUSINESS_REGION,
+  BUSINESS_SITE_URL,
+} from "@/lib/business-identity";
 
 const TERMELY_WEBSITE_UUID =
   process.env.NEXT_PUBLIC_TERMELY_WEBSITE_UUID ??
@@ -53,36 +59,37 @@ const jetBrainsMono = JetBrains_Mono({
   variable: "--font-mono",
 });
 
+const brandedSiteTitle = `${BUSINESS_NAME} — Construction Estimating & Cost Calculators`;
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://proconstructioncalc.com"),
-  title: {
-    default:
-      "Pro Construction Calc — Construction Estimating & Cost Calculators",
-    template: "%s | Pro Construction Calc",
-  },
+  metadataBase: new URL(BUSINESS_SITE_URL),
+  title: brandedSiteTitle,
   description:
-    "Professional construction estimating calculators for contractors, including trade-specific quantity math, cost planning, and client-ready estimate exports. Built for Rome, NY and Central New York.",
+    "Professional construction estimating calculators for contractors across Oneida, Madison, and Herkimer counties, including trade-specific quantity math, cost planning, and client-ready estimate exports.",
   keywords: [
     "construction calculator",
     "concrete calculator",
     "framing calculator",
     "roofing calculator",
     "insulation calculator",
-    "Rome NY",
+    "Oneida County NY",
+    "Madison County NY",
+    "Herkimer County NY",
+    "Tri-County New York",
     "Central New York",
     "contractor estimating",
   ],
   authors: [
-    { name: "Pro Construction Calc", url: "https://proconstructioncalc.com" },
+    { name: BUSINESS_NAME, url: BUSINESS_SITE_URL },
   ],
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://proconstructioncalc.com",
-    siteName: "Pro Construction Calc",
-    title: "Pro Construction Calc — Construction Estimating & Cost Calculators",
+    url: BUSINESS_SITE_URL,
+    siteName: BUSINESS_NAME,
+    title: brandedSiteTitle,
     description:
-      "Professional construction estimating calculators for contractors. Trade-specific math, cost planning, and client-ready exports for Central NY.",
+      `Professional construction estimating calculators for contractors across ${BUSINESS_REGION}.`,
     images: [
       {
         url: "/og-image.png",
@@ -94,9 +101,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Pro Construction Calc — Construction Estimating & Cost Calculators",
+    title: brandedSiteTitle,
     description:
-      "Professional construction estimating calculators for contractors. Built for Central New York.",
+      `Professional construction estimating calculators for contractors across ${BUSINESS_REGION}.`,
   },
   robots: { index: true, follow: true },
   verification: {
@@ -109,11 +116,13 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const localBusinessSchema = getLocalBusinessSchema();
+  const verifiedReviewSchema = getVerifiedReviewSchema();
+
   return (
     <html lang="en" className="bg-slate-950 text-slate-200 overflow-x-hidden">
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <link rel="manifest" href="/site.webmanifest" />
         {/*
           Critical CSS vars injected inline so Slate & Orange theme colors
           are available before the external stylesheet or any font loads.
@@ -150,6 +159,8 @@ export default function RootLayout({
             <Suspense fallback={null}>
               <PostHogPageView />
             </Suspense>
+            <JsonLD schema={localBusinessSchema} />
+            {verifiedReviewSchema ? <JsonLD schema={verifiedReviewSchema} /> : null}
             <Providers>
               <Suspense fallback={null}>
                 <ScrollToTop />

@@ -1,5 +1,6 @@
 import Stripe from "stripe";
 import "server-only";
+import { toCents } from "@/utils/money";
 
 const STRIPE_DONATIONS_ENABLED =
   process.env.STRIPE_DONATIONS_ENABLED === "true";
@@ -59,7 +60,7 @@ export async function createDonationCheckoutSession(
 
   const stripe = getStripeClient();
 
-  const amountInCents = Math.round(Math.max(payload.amount, 0) * 100);
+  const amountInCents = toCents(Math.max(payload.amount, 0));
   if (amountInCents <= 0) {
     throw new Error("Donation amount must be greater than zero.");
   }
@@ -98,4 +99,3 @@ export async function createDonationCheckoutSession(
     sessionId: session.id,
   };
 }
-

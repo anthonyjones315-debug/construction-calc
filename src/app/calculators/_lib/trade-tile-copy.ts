@@ -244,7 +244,7 @@ const TILE_COPY: Record<string, TileCopy> = {
     bullets: {
       inputs: "Inputs: Lead volume, CPL, close %, avg ticket.",
       outputs: "Outputs: Cost per sale, budget ceiling, ROI.",
-      compliance: "Compliance: Seasonality toggle for Mohawk Valley.",
+      compliance: "Compliance: Seasonality toggle for tri-county crews.",
     },
   },
   "business-tax-save": {

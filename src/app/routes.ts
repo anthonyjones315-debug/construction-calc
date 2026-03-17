@@ -13,6 +13,7 @@ export const routes = {
   offline: "/offline" as Route,
   pricebook: "/pricebook" as Route,
   privacy: "/privacy" as Route,
+  cart: "/cart" as Route,
   saved: "/saved" as Route,
   settings: "/settings" as Route,
   financialTerms: "/financial-terms" as Route,
@@ -70,9 +71,8 @@ export const legalNavigation = [
   { href: routes.terms, label: "Terms of Service" },
 ] as const;
 
-/** @deprecated Use getFieldNotesRoute. Blog merged into Field Notes hub. */
 export function getBlogPostRoute(slug: string): Route {
-  return `/field-notes/${slug}` as Route;
+  return `/blog/${slug}` as Route;
 }
 
 export function getFieldNotesRoute(slug: string): Route {

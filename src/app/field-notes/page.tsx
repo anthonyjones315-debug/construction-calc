@@ -2,18 +2,17 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { getPageMetadata } from "@/seo";
 import { FIELD_NOTES } from "./data";
 import { FileText } from "lucide-react";
 import { getFieldNotesRoute } from "@routes";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = getPageMetadata({
   title: "Field Notes | Pro Construction Calc",
   description:
-    "Regional construction guides and contractor tips for Oneida County, Rome, Utica, and the Mohawk Valley. Frost depth, retainage, insulation, and more.",
-  alternates: {
-    canonical: "https://proconstructioncalc.com/field-notes",
-  },
-};
+    "Regional construction guides and contractor tips for Oneida, Madison, and Herkimer counties. Tax math, estimating workflows, insulation, and more.",
+  path: "/field-notes",
+});
 
 export default function FieldNotesHubPage() {
   return (
@@ -30,8 +29,8 @@ export default function FieldNotesHubPage() {
               Field Notes
             </h1>
             <p className="mt-3 max-w-2xl text-[--color-ink-dim]">
-              Regional guides and contractor tips for Oneida County and the
-              Mohawk Valley. No fluff — field notes, not filler.
+              Regional guides and contractor tips for Oneida, Madison, and
+              Herkimer counties. No fluff, just useful field guidance.
             </p>
             <div className="mt-4 inline-flex rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-[--color-nav-text]">
               100% on-site · No external click-aways

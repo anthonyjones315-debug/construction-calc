@@ -1,8 +1,14 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { PostHogProvider as PHProvider } from "posthog-js/react";
 import posthog from "posthog-js";
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useState } from "react";
+import {
+  COOKIE_CONSENT_CHANGED_EVENT,
+  readCookieConsent,
+  type CookieConsentChoice,
+} from "@/lib/privacy/consent";
 
 type Props = {
   children: ReactNode;
@@ -10,16 +16,68 @@ type Props = {
 
 let posthogInitialized = false;
 
+function isPostHogLoaded() {
+  return Boolean((posthog as typeof posthog & { __loaded?: boolean }).__loaded);
+}
+
+type PostHogWindowFlags = {
+  __PH_INIT?: boolean;
+  __PH_INIT_STARTED?: boolean;
+};
+
 export function CSPostHogProvider({ children }: Props) {
+  const pathname = usePathname();
+  const [consent, setConsent] = useState<CookieConsentChoice | null>(() =>
+    readCookieConsent(),
+  );
   const token =
     process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN ?? process.env.NEXT_PUBLIC_POSTHOG_KEY;
-  const host = process.env.NEXT_PUBLIC_POSTHOG_HOST || "/ingest";
+  // Always use the first-party ingest proxy in the browser so preview deployments
+  // don't trip CSP on direct PostHog asset/config/event calls.
+  const host = "/ingest";
+  const isHomePage = pathname === "/";
+  const canTrack = consent === "accepted";
+
+  useEffect(() => {
+    function handleConsentChange(event: Event) {
+      const detail = (event as CustomEvent<CookieConsentChoice>).detail;
+      setConsent(detail ?? readCookieConsent());
+    }
+
+    window.addEventListener(COOKIE_CONSENT_CHANGED_EVENT, handleConsentChange);
+
+    return () => {
+      window.removeEventListener(
+        COOKIE_CONSENT_CHANGED_EVENT,
+        handleConsentChange,
+      );
+    };
+  }, []);
 
   useEffect(() => {
     if (!token) return;
     if (typeof window === "undefined") return;
-    if (posthogInitialized || (window as unknown as { __PH_INIT?: boolean }).__PH_INIT) return;
+    if (!canTrack) {
+      if (isPostHogLoaded()) {
+        posthog.opt_out_capturing?.();
+      }
+      return;
+    }
+    if (isHomePage) return;
+    const flags = window as typeof window & PostHogWindowFlags;
 
+    if (
+      posthogInitialized ||
+      isPostHogLoaded() ||
+      flags.__PH_INIT ||
+      flags.__PH_INIT_STARTED
+    ) {
+      return;
+    }
+
+    // Mark initialization before calling posthog.init so React re-renders or
+    // provider re-mounts cannot race into a second init attempt.
+    flags.__PH_INIT_STARTED = true;
     posthog.init(token, {
       api_host: host,
       ui_host: "https://us.posthog.com",
@@ -30,9 +88,9 @@ export function CSPostHogProvider({ children }: Props) {
       persistence: "localStorage",
     });
     posthogInitialized = true;
-    (window as unknown as { __PH_INIT?: boolean }).__PH_INIT = true;
-  }, [host, token]);
+    flags.__PH_INIT = true;
+  }, [canTrack, host, isHomePage, token]);
 
-  if (!token) return <>{children}</>;
+  if (!token || isHomePage || !canTrack) return <>{children}</>;
   return <PHProvider client={posthog}>{children}</PHProvider>;
 }
