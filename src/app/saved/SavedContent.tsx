@@ -51,6 +51,11 @@ type PriceBookItem = {
 type BuilderRow = {
   materialId: string;
   quantity: number;
+  isCustom?: boolean;
+  customName?: string;
+  customUnitType?: string;
+  customUnitCost?: number;
+  saveToPriceBook?: boolean;
 };
 
 type EstimateBudgetRow = {
@@ -856,15 +861,37 @@ export function SavedContent({
   const selectedMaterialRows = useMemo(() => {
     return builderRows
       .map((row) => {
-        const material = materials.find((item) => item.id === row.materialId);
-        if (!material) return null;
-
         const quantity =
           Number.isFinite(row.quantity) && row.quantity > 0 ? row.quantity : 0;
+
+        if (row.isCustom) {
+          const unitCost =
+            Number.isFinite(row.customUnitCost) && row.customUnitCost !== undefined
+              ? Number(row.customUnitCost)
+              : 0;
+          const name = (row.customName ?? "").trim();
+          if (!name) return null;
+          const lineTotal = quantity * unitCost;
+          return {
+            material: null,
+            custom: {
+              name,
+              unit_type: (row.customUnitType ?? "each").trim() || "each",
+              unit_cost: unitCost,
+              saveToPriceBook: Boolean(row.saveToPriceBook),
+            },
+            quantity,
+            lineTotal,
+          };
+        }
+
+        const material = materials.find((item) => item.id === row.materialId);
+        if (!material) return null;
         const lineTotal = quantity * Number(material.unit_cost || 0);
 
         return {
           material,
+          custom: null,
           quantity,
           lineTotal,
         };
@@ -873,7 +900,13 @@ export function SavedContent({
         (
           row,
         ): row is {
-          material: PriceBookItem;
+          material: PriceBookItem | null;
+          custom: {
+            name: string;
+            unit_type: string;
+            unit_cost: number;
+            saveToPriceBook: boolean;
+          } | null;
           quantity: number;
           lineTotal: number;
         } => Boolean(row),
@@ -983,6 +1016,21 @@ export function SavedContent({
     setBuilderRows((rows) => [...rows, { materialId: "", quantity: 1 }]);
   }
 
+  function addCustomBuilderRow() {
+    setBuilderRows((rows) => [
+      ...rows,
+      {
+        materialId: "",
+        quantity: 1,
+        isCustom: true,
+        customName: "",
+        customUnitType: "each",
+        customUnitCost: 0,
+        saveToPriceBook: false,
+      },
+    ]);
+  }
+
   function removeBuilderRow(index: number) {
     setBuilderRows((rows) => rows.filter((_, rowIndex) => rowIndex !== index));
   }
@@ -1021,19 +1069,43 @@ export function SavedContent({
       const sourceChannels = ["pricebook"];
       if (attachedEstimate) sourceChannels.push("calculator");
 
-      const budgetItems = selectedMaterialRows.map(
-        ({ material, quantity, lineTotal }) => ({
-          id: material.id,
-          name: material.material_name,
-          category: material.category ?? "Other",
-          unit_type: material.unit_type ?? "each",
+      // Optionally persist custom rows to price book before building estimate.
+      for (const row of selectedMaterialRows) {
+        if (row.custom?.saveToPriceBook) {
+          try {
+            await fetch("/api/materials", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                material_name: row.custom.name,
+                unit_type: row.custom.unit_type,
+                unit_cost: row.custom.unit_cost,
+                category: "Custom",
+              }),
+            });
+          } catch (error) {
+            console.warn("Unable to save custom material to price book", error);
+          }
+        }
+      }
+
+      const budgetItems = selectedMaterialRows.map(({ material, custom, quantity, lineTotal }) => {
+        const name = material?.material_name ?? custom?.name ?? "Material";
+        const unitType = material?.unit_type ?? custom?.unit_type ?? "each";
+        const pricePerUnit = material?.unit_cost ?? custom?.unit_cost ?? 0;
+
+        return {
+          id: material?.id ?? `custom-${name}`,
+          name,
+          category: material?.category ?? "Other",
+          unit_type: unitType,
           quantity,
-          pricePerUnit: material.unit_cost,
+          pricePerUnit,
           line_total: lineTotal,
           cost_type: "material",
-          source: "pricebook",
-        }),
-      );
+          source: material ? "pricebook" : "custom",
+        };
+      });
 
       const attachedTotal = attachedEstimate?.total_cost ?? 0;
       const combinedTotal = priceBookSubtotal + attachedTotal;
@@ -1365,17 +1437,26 @@ export function SavedContent({
             </label>
           </div>
 
-          <div className="mt-4 flex items-center justify-between">
+          <div className="mt-4 flex items-center justify-between gap-2">
             <p className="text-sm text-[--color-ink-mid] font-medium">
               Price Book Items
             </p>
-            <button
-              type="button"
-              onClick={addBuilderRow}
-              className="rounded-lg border border-[--color-border] px-3 py-1.5 text-sm text-[--color-ink] hover:border-[--color-orange-brand]"
-            >
-              + Add Line
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={addBuilderRow}
+                className="rounded-lg border border-[--color-border] px-3 py-1.5 text-sm text-[--color-ink] hover:border-[--color-orange-brand]"
+              >
+                + Add Line
+              </button>
+              <button
+                type="button"
+                onClick={addCustomBuilderRow}
+                className="rounded-lg border border-[--color-border] px-3 py-1.5 text-sm text-[--color-ink] hover:border-[--color-orange-brand]"
+              >
+                + Custom Line
+              </button>
+            </div>
           </div>
 
           {materialsLoading && (
@@ -1389,48 +1470,123 @@ export function SavedContent({
           )}
 
           <div className="mt-3 space-y-2">
-            {builderRows.map((row, index) => (
-              <div
-                key={`${index}-${row.materialId}`}
-                className="grid grid-cols-[1fr_auto_auto] gap-2"
-              >
-                <select
-                  value={row.materialId}
-                  onChange={(event) =>
-                    updateBuilderRow(index, { materialId: event.target.value })
-                  }
-                  className="rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink]"
+            {builderRows.map((row, index) =>
+              row.isCustom ? (
+                <div
+                  key={`custom-${index}`}
+                  className="grid grid-cols-1 gap-2 rounded-xl border border-[--color-border] bg-[--color-surface-alt] p-3 sm:grid-cols-[1.2fr_0.8fr_0.7fr_auto]"
                 >
-                  <option value="">Select material</option>
-                  {materials.map((item) => (
-                    <option key={item.id} value={item.id}>
-                      {item.material_name} ·{" "}
-                      {USD_CURRENCY.format(item.unit_cost)}/
-                      {item.unit_type ?? "each"}
-                    </option>
-                  ))}
-                </select>
-                <input
-                  type="number"
-                  min={0}
-                  step="any"
-                  value={row.quantity}
-                  onChange={(event) =>
-                    updateBuilderRow(index, {
-                      quantity: Number(event.target.value) || 0,
-                    })
-                  }
-                  className="w-28 rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink]"
-                />
-                <button
-                  type="button"
-                  onClick={() => removeBuilderRow(index)}
-                  className="rounded-lg border border-red-200 px-3 py-2 text-sm text-red-600 hover:bg-red-50"
+                  <input
+                    type="text"
+                    placeholder="Custom material name"
+                    value={row.customName ?? ""}
+                    onChange={(event) =>
+                      updateBuilderRow(index, { customName: event.target.value })
+                    }
+                    className="rounded-lg border border-[--color-border] bg-[--color-bg] px-3 py-2 text-sm text-[--color-ink]"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Unit type (e.g., each, lf)"
+                    value={row.customUnitType ?? "each"}
+                    onChange={(event) =>
+                      updateBuilderRow(index, { customUnitType: event.target.value })
+                    }
+                    className="rounded-lg border border-[--color-border] bg-[--color-bg] px-3 py-2 text-sm text-[--color-ink]"
+                  />
+                  <div className="flex items-center gap-2">
+                    <span className="text-[--color-ink-mid] text-sm">$</span>
+                    <input
+                      type="number"
+                      min={0}
+                      step="0.01"
+                      value={row.customUnitCost ?? 0}
+                      onChange={(event) =>
+                        updateBuilderRow(index, {
+                          customUnitCost: Number(event.target.value) || 0,
+                        })
+                      }
+                      className="w-full rounded-lg border border-[--color-border] bg-[--color-bg] px-3 py-2 text-sm text-[--color-ink]"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      min={0}
+                      step="any"
+                      value={row.quantity}
+                      onChange={(event) =>
+                        updateBuilderRow(index, {
+                          quantity: Number(event.target.value) || 0,
+                        })
+                      }
+                      className="w-24 rounded-lg border border-[--color-border] bg-[--color-bg] px-3 py-2 text-sm text-[--color-ink]"
+                    />
+                    <label className="flex items-center gap-2 text-xs text-[--color-ink-mid]">
+                      <input
+                        type="checkbox"
+                        checked={Boolean(row.saveToPriceBook)}
+                        onChange={(event) =>
+                          updateBuilderRow(index, {
+                            saveToPriceBook: event.target.checked,
+                          })
+                        }
+                        className="h-4 w-4 rounded border-[--color-border]"
+                      />
+                      Save to Price Book
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => removeBuilderRow(index)}
+                      className="rounded-lg border border-red-200 px-3 py-2 text-sm text-red-600 hover:bg-red-50"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div
+                  key={`${index}-${row.materialId}`}
+                  className="grid grid-cols-[1fr_auto_auto] gap-2"
                 >
-                  Remove
-                </button>
-              </div>
-            ))}
+                  <select
+                    value={row.materialId}
+                    onChange={(event) =>
+                      updateBuilderRow(index, { materialId: event.target.value })
+                    }
+                    className="rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink]"
+                  >
+                    <option value="">Select material</option>
+                    {materials.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.material_name} ·{" "}
+                        {USD_CURRENCY.format(item.unit_cost)}/
+                        {item.unit_type ?? "each"}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    type="number"
+                    min={0}
+                    step="any"
+                    value={row.quantity}
+                    onChange={(event) =>
+                      updateBuilderRow(index, {
+                        quantity: Number(event.target.value) || 0,
+                      })
+                    }
+                    className="w-28 rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink]"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeBuilderRow(index)}
+                    className="rounded-lg border border-red-200 px-3 py-2 text-sm text-red-600 hover:bg-red-50"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ),
+            )}
           </div>
 
           <div className="mt-4 space-y-1 text-sm text-[--color-ink-mid]">
