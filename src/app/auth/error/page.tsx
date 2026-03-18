@@ -124,95 +124,103 @@ function AuthErrorContent() {
   return (
     <main
       id="main-content"
-      className="flex min-h-screen items-center justify-center bg-slate-950 px-4 font-sans"
+      className="animated-gradient-bg flex min-h-screen items-center justify-center px-4 py-10 font-sans text-copy-primary"
     >
       <div className="w-full max-w-sm text-center">
-        {/* Logo — Orange Hard Hat (matches sign-in and header) */}
         <div className="inline-flex items-center gap-2 mb-8">
           <HardHat
-            className="h-10 w-10 text-orange-600 shrink-0"
+            className="h-10 w-10 shrink-0 text-primary"
             aria-hidden
           />
-          <span className="text-white font-display font-bold text-xl tracking-tight uppercase">
+          <span className="font-display text-xl font-bold uppercase tracking-tight text-copy-primary">
             Pro Construction Calc
           </span>
         </div>
 
-        {/* Error card */}
         <section
-          className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6 shadow-[0_24px_50px_rgba(0,0,0,0.6)]"
+          className="glass-container-elevated relative overflow-hidden p-6"
           aria-labelledby="auth-error-heading"
           aria-live="polite"
         >
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-950/80">
-            <svg
-              className="w-6 h-6 text-red-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
+          <div
+            aria-hidden
+            className="glass-decorative absolute inset-x-0 top-0 h-28"
+            style={{
+              background:
+                "radial-gradient(circle at top, color-mix(in srgb, var(--color-primary) 16%, transparent), transparent 54%)",
+            }}
+          />
+          <div className="relative">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-red-400/25 bg-red-500/10">
+              <svg
+                className="w-6 h-6 text-red-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 9v2m0 4h.01M12 3a9 9 0 110 18A9 9 0 0112 3z"
+                />
+              </svg>
+            </div>
+            <h1
+              id="auth-error-heading"
+              className="mb-2 text-lg font-semibold text-copy-primary"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 9v2m0 4h.01M12 3a9 9 0 110 18A9 9 0 0112 3z"
+              {title}
+            </h1>
+            <p className="mb-6 text-sm text-copy-secondary">{description}</p>
+            {recoverySteps && recoverySteps.length > 0 && (
+              <ul className="glass-panel-deep mb-6 space-y-2 p-3 text-left text-xs text-copy-secondary">
+                {recoverySteps.map((step) => (
+                  <li key={step} className="flex gap-2">
+                    <span className="text-primary">•</span>
+                    <span>{step}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <div className="space-y-3">
+              <Link
+                href={routes.auth.signIn}
+                prefetch={false}
+                className="glass-button-primary block w-full rounded-lg px-4 py-2.5 text-sm font-black"
+              >
+                {primaryActionLabel}
+              </Link>
+              <button
+                type="button"
+                onClick={() =>
+                  router.push(session?.user?.id ? routes.commandCenter : routes.home)
+                }
+                className="glass-button block w-full rounded-lg px-4 py-2.5 text-sm font-medium"
+              >
+                Back to Command Center
+              </button>
+              <ManualErrorReportButton
+                error={supportError}
+                source="auth-error-page"
+                buttonLabel="Send backup report"
+                className="w-full"
               />
-            </svg>
-          </div>
-          <h1
-            id="auth-error-heading"
-            className="text-white font-semibold text-lg mb-2"
-          >
-            {title}
-          </h1>
-          <p className="mb-6 text-sm text-white/80">{description}</p>
-          {recoverySteps && recoverySteps.length > 0 && (
-            <ul className="mb-6 space-y-2 rounded-lg border border-slate-800 bg-slate-950/80 p-3 text-left text-xs text-white/80">
-              {recoverySteps.map((step) => (
-                <li key={step} className="flex gap-2">
-                  <span className="text-orange-600">•</span>
-                  <span>{step}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-          <div className="space-y-3">
-            <Link
-              href={routes.auth.signIn}
-              prefetch={false}
-              className="block w-full rounded-lg bg-[--color-orange-brand] px-4 py-2.5 text-sm font-black text-white transition hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-slate-950"
-            >
-              {primaryActionLabel}
-            </Link>
-            <button
-              type="button"
-              onClick={() =>
-                router.push(session?.user?.id ? routes.commandCenter : routes.home)
-              }
-              className="block w-full rounded-lg border border-slate-800 bg-transparent px-4 py-2.5 text-sm font-medium text-slate-400 transition hover:bg-slate-800/50 hover:text-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2 focus:ring-offset-slate-950"
-            >
-              Back to Command Center
-            </button>
-            <ManualErrorReportButton
-              error={supportError}
-              source="auth-error-page"
-              buttonLabel="Send backup report"
-              className="w-full"
-            />
-            <a
-              href={`mailto:${BUSINESS_EMAIL}?subject=${encodeURIComponent(
-                `Auth error: ${rawErrorCode}`,
-              )}`}
-              className="block w-full rounded-lg border border-slate-800 bg-transparent px-4 py-2.5 text-sm font-medium text-slate-400 transition hover:bg-slate-800/50 hover:text-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2 focus:ring-offset-slate-950"
-            >
-              Contact Us
-            </a>
+              <a
+                href={`mailto:${BUSINESS_EMAIL}?subject=${encodeURIComponent(
+                  `Auth error: ${rawErrorCode}`,
+                )}`}
+                className="glass-button block w-full rounded-lg px-4 py-2.5 text-sm font-medium"
+              >
+                Contact Us
+              </a>
+            </div>
           </div>
         </section>
 
         {rawErrorCode !== "Default" && (
-          <p className="mt-4 text-xs text-white/50">
+          <p className="mt-4 text-xs text-copy-tertiary">
             Error code: {rawErrorCode}
           </p>
         )}
@@ -227,15 +235,15 @@ export default function AuthErrorPage() {
       fallback={
         <main
           id="main-content"
-          className="flex min-h-screen items-center justify-center bg-slate-950"
+          className="animated-gradient-bg flex min-h-screen items-center justify-center text-copy-primary"
         >
           <div
-            className="flex items-center gap-3 text-white/80"
+            className="glass-panel flex items-center gap-3 text-copy-secondary"
             role="status"
             aria-live="polite"
           >
             <div
-              className="w-8 h-8 border-2 border-orange-600 border-t-transparent rounded-full animate-spin"
+              className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent"
               aria-hidden="true"
             />
             <span>Loading sign-in error…</span>

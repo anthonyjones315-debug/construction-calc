@@ -4,6 +4,7 @@ import * as Sentry from "@sentry/nextjs";
 import { auth } from "@/lib/auth/config";
 import { createServerClient } from "@/lib/supabase/server";
 import {
+  canWriteBusinessData,
   getBusinessContextForSession,
   getTenantScopeColumn,
   getTenantScopeId,
@@ -15,6 +16,10 @@ import {
   getFinancialDashboardTag,
   getSavedEstimatesTag,
 } from "@/lib/cache-tags";
+import {
+  SHARE_CODE_UNAVAILABLE_MESSAGE,
+  isMissingShareCodeColumnError,
+} from "@/lib/estimates/share-code-support";
 import { isEstimateStatus, type EstimateStatus } from "@/lib/estimates/status";
 import { normalizeDollars } from "@/utils/money";
 import { verifyEstimate } from "@/app/actions/calculations";
@@ -224,6 +229,12 @@ export async function PATCH(
 
     const db = createServerClient();
     const businessContext = await getBusinessContextForSession(db, session);
+    if (!canWriteBusinessData(businessContext.role)) {
+      return NextResponse.json(
+        { error: "Only owners, admins, or editors can update shared estimates." },
+        { status: 403 },
+      );
+    }
     const tenantColumn = getTenantScopeColumn(businessContext);
     const tenantId = getTenantScopeId(businessContext);
     const permission = await loadEstimateScope(db, id, tenantColumn, tenantId);
@@ -234,11 +245,28 @@ export async function PATCH(
       );
     }
 
-    const { error } = await db
-      .from("saved_estimates")
-      .update(updates)
-      .eq("id", id)
-      .eq(tenantColumn, tenantId);
+    const updateEstimate = (payload: typeof updates) =>
+      db
+        .from("saved_estimates")
+        .update(payload)
+        .eq("id", id)
+        .eq(tenantColumn, tenantId);
+
+    let { error } = await updateEstimate(updates);
+
+    if (error && isMissingShareCodeColumnError(error)) {
+      const retryUpdates = { ...updates };
+      delete retryUpdates.share_code;
+
+      if (!Object.keys(retryUpdates).length) {
+        return NextResponse.json(
+          { error: SHARE_CODE_UNAVAILABLE_MESSAGE },
+          { status: 503 },
+        );
+      }
+
+      ({ error } = await updateEstimate(retryUpdates));
+    }
 
     if (error) {
       Sentry.captureException(error);

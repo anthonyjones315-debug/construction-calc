@@ -40,15 +40,10 @@ export function ManualErrorReportButton({
 
     return {
       initialSubject: `Manual error report: ${userFacing.title}`,
-      initialMessage: [
-        "Tell us what you were trying to do:",
-        "",
-        "What happened instead:",
-        "",
-        "Anything you expected to see:",
-        "",
-        `Friendly summary: ${userFacing.title} — ${userFacing.message}`,
-        `Reference: ${eventId ?? error.digest ?? "not available"}`,
+      messagePlaceholder: [
+        "Tell us what you were trying to do.",
+        "What happened instead?",
+        "Anything you expected to see?",
       ].join("\n"),
       submitLabel: "Send error report",
       successMessage:
@@ -61,6 +56,7 @@ export function ManualErrorReportButton({
         eventId: eventId ?? undefined,
         digest: error.digest ?? undefined,
         technicalMessage: technicalMessage || undefined,
+        userFacingTitle: userFacing.title,
         userFacingMessage: userFacing.message,
         browserTime,
         userAgent:

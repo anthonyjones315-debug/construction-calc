@@ -11,24 +11,15 @@ import { sanitizeFilename } from "@/utils/sanitize-filename";
 import { getPostHogClient } from "@/lib/posthog-server";
 import * as Sentry from "@sentry/nextjs";
 import { generateInvoiceHtml } from "@/lib/reports/invoice-template";
+import type { Session } from "next-auth";
 
 async function resolvePdfBranding(
   payload: ReturnType<typeof finalizeEstimateSchema.parse>,
+  session: Session,
 ) {
   const db = createServerClient();
-  const session = await auth();
-  const owner =
-    payload.inputs?.owner && typeof payload.inputs.owner === "object"
-      ? (payload.inputs.owner as Record<string, unknown>)
-      : {};
-  const fallbackName =
-    typeof owner.user_name === "string" && owner.user_name.trim()
-      ? owner.user_name.trim()
-      : session?.user?.name?.trim() || null;
-  const fallbackEmail =
-    typeof owner.user_email === "string" && owner.user_email.trim()
-      ? owner.user_email.trim()
-      : session?.user?.email?.trim() || null;
+  const fallbackName = session.user?.name?.trim() || null;
+  const fallbackEmail = session.user?.email?.trim() || null;
 
   let profile: {
     business_name?: string | null;
@@ -37,25 +28,16 @@ async function resolvePdfBranding(
     logo_url?: string | null;
   } | null = null;
 
-  if (session?.user?.id) {
-    const businessContext = await getBusinessContextForSession(db, session);
-    const { data } = await db
-      .from("business_profiles")
-      .select("business_name, business_email, business_phone, logo_url")
-      .eq(
-        getTenantScopeColumn(businessContext),
-        getTenantScopeId(businessContext),
-      )
-      .maybeSingle();
-    profile = data;
-  } else if (typeof owner.user_id === "string" && owner.user_id.trim()) {
-    const { data } = await db
-      .from("business_profiles")
-      .select("business_name, business_email, business_phone, logo_url")
-      .eq("user_id", owner.user_id.trim())
-      .maybeSingle();
-    profile = data;
-  }
+  const businessContext = await getBusinessContextForSession(db, session);
+  const { data } = await db
+    .from("business_profiles")
+    .select("business_name, business_email, business_phone, logo_url")
+    .eq(
+      getTenantScopeColumn(businessContext),
+      getTenantScopeId(businessContext),
+    )
+    .maybeSingle();
+  profile = data;
 
   return {
     brandName:
@@ -89,7 +71,10 @@ export async function POST(request: NextRequest) {
   const payload = parsed.data;
   try {
     const session = await auth();
-    const branding = await resolvePdfBranding(payload);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const branding = await resolvePdfBranding(payload, session);
     const browserlessToken = process.env.BROWSERLESS_API_TOKEN;
     if (!browserlessToken) {
       return NextResponse.json(
@@ -151,17 +136,10 @@ export async function POST(request: NextRequest) {
 
     const pdfBuffer = await browserlessResponse.arrayBuffer();
 
-    const ownerUserId =
-      session?.user?.id ??
-      (typeof payload.inputs?.owner === "object" &&
-      payload.inputs.owner !== null
-        ? (payload.inputs.owner as Record<string, unknown>).user_id
-        : null);
-
-    if (typeof ownerUserId === "string" && ownerUserId) {
+    if (session.user.id) {
       const posthog = getPostHogClient();
       posthog.capture({
-        distinctId: ownerUserId,
+        distinctId: session.user.id,
         event: "pdf_generated",
         properties: { calculator_id: payload.calculator_id },
       });

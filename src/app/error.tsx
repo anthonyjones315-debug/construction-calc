@@ -24,34 +24,44 @@ export default function ErrorBoundary({
   });
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[70vh] bg-slate-950 text-slate-200 px-4">
-      <div className="flex flex-col items-center text-center max-w-md">
-        <TriangleAlert className="h-12 w-12 text-red-500 mb-4" aria-hidden />
-        <h1 className="text-xl font-black uppercase tracking-wide">
-          {userFacing.title}
-        </h1>
-        <p className="mt-3 text-sm text-slate-400">
-          {userFacing.message}
-        </p>
-        {error.digest ? (
-          <p className="mt-2 text-xs text-slate-500">
-            Reference: {error.digest}
+    <div className="animated-gradient-bg flex min-h-[70vh] flex-col items-center justify-center px-4 py-10 text-copy-primary">
+      <div className="glass-container-elevated relative max-w-lg overflow-hidden p-8 text-center">
+        <div
+          aria-hidden
+          className="glass-decorative absolute inset-x-0 top-0 h-32"
+          style={{
+            background:
+              "radial-gradient(circle at top, color-mix(in srgb, var(--color-primary) 18%, transparent), transparent 56%)",
+          }}
+        />
+        <div className="relative flex flex-col items-center">
+          <TriangleAlert className="mb-4 h-12 w-12 text-red-400" aria-hidden />
+          <h1 className="text-xl font-black uppercase tracking-wide text-copy-primary">
+            {userFacing.title}
+          </h1>
+          <p className="mt-3 text-sm text-copy-secondary">
+            {userFacing.message}
           </p>
-        ) : null}
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-          <button
-            type="button"
-            onClick={reset}
-            className="rounded-lg border border-slate-500 px-4 py-2 text-sm font-medium text-slate-200 hover:bg-slate-800 transition"
-          >
-            Try Again
-          </button>
-          <ManualErrorReportButton
-            error={error}
-            source="app-error-boundary"
-            buttonLabel="Report Issue"
-            className="rounded-lg bg-orange-600 px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-orange-500"
-          />
+          {error.digest ? (
+            <p className="mt-2 text-xs text-copy-tertiary">
+              Reference: {error.digest}
+            </p>
+          ) : null}
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={reset}
+              className="glass-button px-4 py-2 text-sm font-medium"
+            >
+              Try Again
+            </button>
+            <ManualErrorReportButton
+              error={error}
+              source="app-error-boundary"
+              buttonLabel="Report Issue"
+              className="glass-button-primary px-4 py-2 text-sm font-bold"
+            />
+          </div>
         </div>
       </div>
     </div>

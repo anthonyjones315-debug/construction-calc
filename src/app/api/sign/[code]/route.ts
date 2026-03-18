@@ -3,6 +3,7 @@ import { revalidateTag } from "next/cache";
 import * as Sentry from "@sentry/nextjs";
 import { z } from "zod";
 import { getPublicEstimateByShareCode } from "@/lib/dal/public-estimates";
+import { ShareCodeColumnMissingError } from "@/lib/estimates/share-code-support";
 import { createServerClient } from "@/lib/supabase/server";
 import { normalizeShareCode } from "@/lib/estimates/finalize";
 import {
@@ -38,6 +39,9 @@ export async function GET(
     return NextResponse.json({ estimate });
   } catch (error) {
     Sentry.captureException(error);
+    if (error instanceof ShareCodeColumnMissingError) {
+      return NextResponse.json({ error: error.message }, { status: 503 });
+    }
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
@@ -146,6 +150,9 @@ export async function POST(
     return NextResponse.json({ ok: true, signedAt });
   } catch (error) {
     Sentry.captureException(error);
+    if (error instanceof ShareCodeColumnMissingError) {
+      return NextResponse.json({ error: error.message }, { status: 503 });
+    }
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Internal Server Error" },
       { status: 500 },

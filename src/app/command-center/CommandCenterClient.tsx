@@ -17,9 +17,9 @@ import {
   Layout,
   MoreHorizontal,
   RefreshCw,
+  Settings,
   ShieldCheck,
   ShoppingCart,
-  Settings,
   Thermometer,
   Trash2,
   Triangle,
@@ -27,12 +27,12 @@ import {
   X,
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import * as Sentry from "@sentry/nextjs";
 import { routes } from "@routes";
 import { CalculatorPage } from "@/app/calculators/_components/CalculatorPage";
 import { getTradePageByPath } from "@/app/calculators/_lib/trade-pages";
 import { useProMode } from "@/hooks/useProMode";
 import { useStore } from "@/lib/store";
-import * as Sentry from "@sentry/nextjs";
 
 type TeamMember = {
   membershipId: string;
@@ -65,39 +65,77 @@ type NavItem = {
   label: string;
   href?: Route;
   icon: LucideIcon;
-  active?: boolean;
   slug: string;
   description?: string;
 };
+
+type WorkspaceSlug =
+  | "overview"
+  | "launch"
+  | "workflow"
+  | "crew"
+  | "pages";
+
+type ToolCategory =
+  | "all"
+  | "concrete"
+  | "structure"
+  | "envelope"
+  | "systems"
+  | "business"
+  | "workspace";
 
 type SentryFeedbackWidget = {
   appendToDom: () => void;
   removeFromDom: () => void;
 };
 
-const primaryNavItems: NavItem[] = [
+const workspaceTabs: Array<{
+  slug: WorkspaceSlug;
+  label: string;
+  icon: LucideIcon;
+  description: string;
+}> = [
   {
-    label: "Home",
-    slug: "dashboard",
-    href: routes.commandCenter,
+    slug: "overview",
+    label: "Overview",
     icon: HardHat,
-    active: true,
-    description: "Dashboard overview",
+    description: "Daily shop brief and owner controls.",
   },
   {
-    label: "Clients",
-    slug: "clients",
-    href: routes.saved,
+    slug: "launch",
+    label: "Launch Pad",
+    icon: Calculator,
+    description: "Fast calculator access without rail clutter.",
+  },
+  {
+    slug: "workflow",
+    label: "Workflow",
+    icon: ShoppingCart,
+    description: "Estimate cart and saved-job activity.",
+  },
+  {
+    slug: "crew",
+    label: "Crew",
     icon: Users,
-    description: "Saved clients and contacts",
+    description: "Invite code, seats, and member controls.",
   },
   {
-    label: "Settings",
-    slug: "settings",
-    href: routes.settings,
-    icon: Settings,
-    description: "Business profile & permissions",
+    slug: "pages",
+    label: "Pages",
+    icon: Layout,
+    description: "Guide, glossary, field notes, and account links.",
   },
+];
+
+const toolCategoryTabs: Array<{ slug: ToolCategory; label: string }> = [
+  { slug: "all", label: "All Tools" },
+  { slug: "concrete", label: "Concrete" },
+  { slug: "structure", label: "Structure" },
+  { slug: "envelope", label: "Envelope" },
+  { slug: "systems", label: "Systems" },
+  { slug: "business", label: "Business" },
+  { slug: "workspace", label: "Workspace" },
 ];
 
 const toolNavItems: NavItem[] = [
@@ -127,63 +165,128 @@ const toolNavItems: NavItem[] = [
     slug: "estimates",
     href: routes.saved,
     icon: FileText,
-    description: "Saved proposals and contracts",
+    description: "Saved proposals, sent jobs, and signed work.",
   },
   {
     label: "Trade Modules",
     slug: "trade-modules",
     href: routes.calculators,
     icon: HardHat,
-    description: "Modular trade calculator hub",
+    description: "Modular trade calculator hub.",
   },
   {
     label: "Concrete & Masonry",
     slug: "masonry",
     href: "/calculators/concrete" as Route,
     icon: BrickWall,
-    description: "Concrete pours, slabs, and masonry packs",
+    description: "Concrete pours, slabs, and masonry packs.",
   },
   {
     label: "Framing & Lumber",
     slug: "framing",
     href: "/calculators/framing" as Route,
     icon: Hammer,
-    description: "Dimension lumber, rafters, and studs",
+    description: "Dimension lumber, rafters, and studs.",
   },
   {
     label: "Roofing & Siding",
     slug: "roofing",
     href: "/calculators/roofing" as Route,
     icon: Triangle,
-    description: "Roofing pitches, coverage & siding",
+    description: "Roofing pitches, coverage, and siding.",
   },
   {
     label: "Mechanical & Site",
     slug: "mechanical",
     href: "/calculators/mechanical" as Route,
     icon: Thermometer,
-    description: "HVAC, ductwork, and equipment math",
+    description: "HVAC, ductwork, and equipment math.",
   },
   {
     label: "Interior",
     slug: "interior",
     href: "/calculators/interior" as Route,
     icon: Layout,
-    description: "Finish, trim, and interior trades",
+    description: "Finish, trim, and interior trades.",
   },
   {
     label: "Business",
     slug: "business",
     href: "/calculators/business" as Route,
     icon: BarChart3,
-    description: "Profit, leads, workforce controls",
+    description: "Profit, leads, workforce, and tax controls.",
   },
   {
     label: "Calculator Library",
     slug: "calculator-library",
     href: routes.calculators,
     icon: Calculator,
-    description: "Browse every field calculator",
+    description: "Browse every field calculator in one place.",
+  },
+];
+
+const commandPages: Array<{
+  label: string;
+  href: Route;
+  icon: LucideIcon;
+  description: string;
+  group: "Operations" | "Reference";
+}> = [
+  {
+    label: "Saved Estimates",
+    href: routes.saved,
+    icon: FileText,
+    description: "Reopen drafts, sent proposals, and signed work.",
+    group: "Operations",
+  },
+  {
+    label: "Price Book",
+    href: routes.pricebook,
+    icon: BarChart3,
+    description: "Keep crew pricing standards and materials aligned.",
+    group: "Operations",
+  },
+  {
+    label: "Business Settings",
+    href: routes.settings,
+    icon: Settings,
+    description: "Branding, owner controls, and account-level setup.",
+    group: "Operations",
+  },
+  {
+    label: "User Guide",
+    href: routes.guide,
+    icon: Layout,
+    description: "Fast workflow reference for crews and office handoff.",
+    group: "Reference",
+  },
+  {
+    label: "Field Notes",
+    href: routes.fieldNotes,
+    icon: HardHat,
+    description: "Regional construction notes and workflow tips.",
+    group: "Reference",
+  },
+  {
+    label: "Glossary",
+    href: routes.glossary,
+    icon: Calculator,
+    description: "Shared estimating terms across every workflow.",
+    group: "Reference",
+  },
+  {
+    label: "Financial Terms",
+    href: routes.financialTerms,
+    icon: ShieldCheck,
+    description: "Markup, margin, burden, CAC, and tax definitions.",
+    group: "Reference",
+  },
+  {
+    label: "FAQ",
+    href: routes.faq,
+    icon: Bell,
+    description: "Common questions before a crew calls the office.",
+    group: "Reference",
   },
 ];
 
@@ -226,6 +329,180 @@ function estimateStatusClasses(status: string | null) {
   return "border-slate-700 bg-slate-800/80 text-slate-300";
 }
 
+function categorizeTool(item: NavItem): ToolCategory {
+  if (
+    ["slab-thickness", "running-lineal-feet", "cubic-yards", "masonry"].includes(
+      item.slug,
+    )
+  ) {
+    return "concrete";
+  }
+
+  if (["framing", "interior"].includes(item.slug)) {
+    return "structure";
+  }
+
+  if (item.slug === "roofing") {
+    return "envelope";
+  }
+
+  if (item.slug === "mechanical") {
+    return "systems";
+  }
+
+  if (item.slug === "business") {
+    return "business";
+  }
+
+  return "workspace";
+}
+
+function formatCartValue(value: string | number | undefined) {
+  if (typeof value === "number") {
+    return value.toLocaleString("en-US");
+  }
+
+  return value ?? "Ready";
+}
+
+function WorkspaceTabButton({
+  label,
+  icon: Icon,
+  active,
+  onClick,
+}: {
+  label: string;
+  icon: LucideIcon;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`inline-flex min-h-11 items-center gap-2 rounded-2xl border px-3.5 py-2 text-sm font-semibold transition ${
+        active
+          ? "border-orange-500/45 bg-orange-500/12 text-white shadow-[0_0_0_1px_rgba(249,115,22,0.14)]"
+          : "border-slate-800 bg-slate-950/65 text-slate-300 hover:border-slate-600 hover:text-white"
+      }`}
+    >
+      <Icon className={`h-4 w-4 ${active ? "text-orange-300" : "text-slate-400"}`} aria-hidden />
+      <span className="whitespace-nowrap">{label}</span>
+    </button>
+  );
+}
+
+function CommandStatCard({
+  label,
+  value,
+  detail,
+  tone,
+}: {
+  label: string;
+  value: string | number;
+  detail: string;
+  tone?: string;
+}) {
+  return (
+    <article className="command-card flex min-h-0 flex-col justify-between gap-3 px-4 py-4">
+      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
+        {label}
+      </p>
+      <div>
+        <p className={`text-3xl font-black tracking-tight ${tone ?? "text-white"}`}>
+          {value}
+        </p>
+        <p className="mt-2 text-xs leading-relaxed text-slate-400">{detail}</p>
+      </div>
+    </article>
+  );
+}
+
+function ToolLaunchCard({
+  item,
+  onOpen,
+}: {
+  item: NavItem;
+  onOpen: (item: NavItem) => void;
+}) {
+  const href = item.href ?? routes.commandCenter;
+  const opensCalculatorModal =
+    typeof href === "string" && Boolean(getTradePageByPath(href));
+
+  const content = (
+    <>
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="truncate text-sm font-bold text-white">{item.label}</p>
+          <p className="mt-1 text-xs leading-relaxed text-slate-400">
+            {item.description ?? "Open this field tool from Command Center."}
+          </p>
+        </div>
+        <item.icon className="mt-0.5 h-4 w-4 shrink-0 text-orange-400" aria-hidden />
+      </div>
+      <div className="mt-4 inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-orange-300">
+        Open tool
+        <ArrowRight className="h-3 w-3" aria-hidden />
+      </div>
+    </>
+  );
+
+  if (opensCalculatorModal && typeof href === "string") {
+    return (
+      <button
+        type="button"
+        onClick={() => onOpen(item)}
+        className="command-card min-h-0 rounded-2xl px-4 py-4 text-left transition hover:border-orange-500/40 hover:bg-slate-950"
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <Link
+      href={href}
+      prefetch={false}
+      className="command-card min-h-0 rounded-2xl px-4 py-4 text-left transition hover:border-orange-500/40 hover:bg-slate-950"
+    >
+      {content}
+    </Link>
+  );
+}
+
+function CommandPageCard({
+  href,
+  icon: Icon,
+  label,
+  description,
+}: {
+  href: Route;
+  icon: LucideIcon;
+  label: string;
+  description: string;
+}) {
+  return (
+    <Link
+      href={href}
+      prefetch={false}
+      className="command-card flex min-h-0 flex-col gap-3 rounded-2xl px-4 py-4 transition hover:border-orange-500/40 hover:bg-slate-950"
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-sm font-bold text-white">{label}</p>
+          <p className="mt-1 text-xs leading-relaxed text-slate-400">{description}</p>
+        </div>
+        <Icon className="mt-0.5 h-4 w-4 shrink-0 text-orange-400" aria-hidden />
+      </div>
+      <span className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-orange-300">
+        Open page
+        <ArrowRight className="h-3 w-3" aria-hidden />
+      </span>
+    </Link>
+  );
+}
+
 export default function CommandCenterClient({
   businessName,
   joinCode,
@@ -244,7 +521,11 @@ export default function CommandCenterClient({
   const [isRefreshingInvite, setIsRefreshingInvite] = useState(false);
   const [activeTool, setActiveTool] = useState<NavItem | null>(null);
   const [toolFilter, setToolFilter] = useState("");
+  const [toolCategory, setToolCategory] = useState<ToolCategory>("all");
   const [handledDeepLink, setHandledDeepLink] = useState<string | null>(null);
+  const [activeWorkspace, setActiveWorkspace] = useState<WorkspaceSlug>(
+    initialToolSlug ? "launch" : draftMode ? "workflow" : "overview",
+  );
   const { proMode, setProMode, mounted: proModeMounted } = useProMode();
   const estimateCart = useStore((s) => s.estimateCart);
   const removeCartItem = useStore((s) => s.removeCartItem);
@@ -262,22 +543,32 @@ export default function CommandCenterClient({
   const seatLimit = 10;
   const seatsUsed = members.length;
   const seatsAvailable = Math.max(seatLimit - seatsUsed, 0);
+  const utilizationPercent = Math.round((seatsUsed / seatLimit) * 100);
   const normalizedFilter = toolFilter.trim().toLowerCase();
-  const filteredToolItems = normalizedFilter
-    ? toolNavItems.filter((item) => {
-        const haystack = [
-          item.label,
-          item.slug,
-          item.description ?? "",
-        ]
-          .join(" ")
-          .toLowerCase();
-        return haystack.includes(normalizedFilter);
-      })
-    : toolNavItems;
+  const filteredToolItems = toolNavItems.filter((item) => {
+    const matchesCategory =
+      toolCategory === "all" || categorizeTool(item) === toolCategory;
+
+    if (!matchesCategory) {
+      return false;
+    }
+
+    if (!normalizedFilter) {
+      return true;
+    }
+
+    const haystack = [item.label, item.slug, item.description ?? ""]
+      .join(" ")
+      .toLowerCase();
+    return haystack.includes(normalizedFilter);
+  });
+  const visibleToolItems = filteredToolItems.slice(0, 6);
   const toolFromQuerySlug = toolFromQuery?.toLowerCase() ?? "";
-  const activeToolHref = typeof activeTool?.href === "string" ? activeTool.href : null;
-  const activeTradePage = activeToolHref ? getTradePageByPath(activeToolHref) : undefined;
+  const activeToolHref =
+    typeof activeTool?.href === "string" ? activeTool.href : null;
+  const activeTradePage = activeToolHref
+    ? getTradePageByPath(activeToolHref)
+    : undefined;
   const latestCartItems = estimateCart.slice(-3).reverse();
   const cartItemCount = estimateCart.length;
   const signedEstimateCount = recentEstimates.filter((estimate) =>
@@ -290,10 +581,9 @@ export default function CommandCenterClient({
     recentEstimates.length - signedEstimateCount - sentEstimateCount,
     0,
   );
-  const utilizationPercent = Math.round((seatsUsed / seatLimit) * 100);
   const profileStatusLabel = needsBusinessProfileSetup
-    ? "Branding still needs business profile details"
-    : "Business profile is production-ready";
+    ? "Branding still needs business profile details."
+    : "Business profile is production-ready.";
   const todayLabel = new Intl.DateTimeFormat("en-US", {
     weekday: "long",
     month: "short",
@@ -305,65 +595,23 @@ export default function CommandCenterClient({
         day: "numeric",
       })
     : "No estimate activity yet";
-  const fieldPriorities = [
-    {
-      label: "Review active estimate cart",
-      value:
-        cartItemCount > 0
-          ? `${cartItemCount} batch item${cartItemCount === 1 ? "" : "s"} ready`
-          : "Cart is clear",
-    },
-    {
-      label: "Follow up sent proposals",
-      value:
-        sentEstimateCount > 0
-          ? `${sentEstimateCount} estimate${sentEstimateCount === 1 ? "" : "s"} waiting on client`
-          : "No proposals waiting on client action",
-    },
-    {
-      label: "Business handoff readiness",
-      value: profileStatusLabel,
-    },
-  ];
-  const featuredToolItems = filteredToolItems.slice(0, 6);
-  const mobileQuickActions = [
-    {
-      label: "Drafts",
-      value: draftEstimateCount > 0 ? `${draftEstimateCount} open` : "Start first",
-      href: routes.saved,
-      icon: FileText,
-    },
-    {
-      label: "Calculators",
-      value: "Field math",
-      href: routes.calculators,
-      icon: Calculator,
-    },
-    {
-      label: "Cart",
-      value: cartItemCount > 0 ? `${cartItemCount} batched` : "Ready to fill",
-      href: routes.cart,
-      icon: ShoppingCart,
-    },
-    {
-      label: "Settings",
-      value: needsBusinessProfileSetup ? "Needs setup" : "Brand ready",
-      href: routes.settings,
-      icon: Settings,
-    },
-  ];
+  const workspaceMeta =
+    workspaceTabs.find((tab) => tab.slug === activeWorkspace) ?? workspaceTabs[0];
+  const recentEstimatePreview = recentEstimates.slice(0, 4);
+  const memberPreview = members.slice(0, 6);
 
   useEffect(() => {
     if (!toolFromQuerySlug) return;
     if (handledDeepLink === toolFromQuerySlug) return;
     const match = toolNavItems.find((entry) => entry.slug === toolFromQuerySlug);
-    if (match) {
-      setActiveTool(match);
-      setHandledDeepLink(toolFromQuerySlug);
-    }
+    if (!match) return;
+
+    setToolCategory(categorizeTool(match));
+    setActiveWorkspace("launch");
+    setActiveTool(match);
+    setHandledDeepLink(toolFromQuerySlug);
   }, [toolFromQuerySlug, handledDeepLink]);
 
-  // Mount Sentry User Feedback widget (bottom-right "Report a bug" trigger)
   useEffect(() => {
     const feedbackApi = Sentry.getFeedback?.() as
       | {
@@ -389,6 +637,7 @@ export default function CommandCenterClient({
 
     try {
       const response = await fetch("/api/command-center", {
+        method: "PATCH",
         cache: "no-store",
       });
       const payload = await response.json().catch(() => ({}));
@@ -399,21 +648,7 @@ export default function CommandCenterClient({
 
       const nextCode = payload.business?.joinCode ?? activeJoinCode;
       setActiveJoinCode(nextCode);
-
-      if (Array.isArray(payload.members)) {
-        setMembers(
-          payload.members.map((member: TeamMember) => ({
-            membershipId: member.membershipId,
-            userId: member.userId,
-            name: member.name,
-            email: member.email,
-            role: member.role,
-            joinedAt: member.joinedAt,
-          })),
-        );
-      }
-
-      setSuccess("Invite code refreshed.");
+      setSuccess("Invite code rotated. Previous codes are now invalid.");
     } catch (refreshError) {
       setError(
         refreshError instanceof Error
@@ -507,735 +742,795 @@ export default function CommandCenterClient({
     }
   }
 
-  return (
-    <div className="command-theme h-full min-h-0 w-full overflow-hidden rounded-none border border-slate-800 bg-slate-950 shadow-[0_20px_48px_rgba(0,0,0,0.45)] sm:rounded-[30px]">
-      <div className="grid h-full min-h-0 lg:grid-cols-[272px,minmax(0,1fr)]">
-        <aside className="hidden min-h-0 overflow-y-auto border-r border-slate-800 bg-[linear-gradient(180deg,#020617_0%,#020617_60%,#111827_100%)] px-3 py-3 text-slate-300 lg:flex lg:flex-col">
-          <div className="flex items-center gap-1.5 rounded-xl px-1.5 py-1">
-            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[--color-orange-brand] text-xs font-bold text-white">
-              P
-            </div>
-            <div className="min-w-0">
-              <p className="truncate text-xs font-semibold text-white">
-                Pro Construction Calc
-              </p>
-              <p className="truncate text-[10px] uppercase tracking-[0.14em] text-slate-500">
-                Owner workspace
-              </p>
-            </div>
-          </div>
-
-          <nav className="mt-2 flex flex-col gap-0.5">
-            {primaryNavItems.map((item) => {
-              const sharedClasses =
-                "flex w-full items-center gap-2 rounded-lg border border-transparent px-3 py-1.5 text-left text-sm font-semibold tracking-tight transition-colors";
-              const stateClasses = item.active
-                ? "bg-slate-900 border-slate-800 text-orange-600"
-                : "text-slate-300 hover:bg-slate-900 hover:border-slate-800 hover:text-white";
-              const className = `${sharedClasses} ${stateClasses}`;
-
-              const navContent = (
-                <>
-                  <item.icon className="h-3.5 w-3.5 shrink-0" aria-hidden />
-                  <span className="truncate">{item.label}</span>
-                </>
-              );
-
-              return (
-                <Link key={item.label} href={item.href ?? routes.commandCenter} className={className}>
-                  {navContent}
-                </Link>
-              );
-            })}
-
-          <div className="mt-2 px-2 text-[9px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-            Tools
-          </div>
-          <div className="px-2 pt-2">
-            <label
-              htmlFor="command-center-tool-search"
-              className="sr-only"
+  const renderOverview = () => (
+    <div className="grid h-full min-h-0 gap-4 xl:grid-cols-[1.2fr,0.88fr]">
+      <article className="public-panel-strong flex min-h-0 flex-col gap-4 px-5 py-5">
+        <div className="flex flex-wrap items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-orange-300">
+          <HardHat className="h-4 w-4" aria-hidden />
+          Morning Brief
+        </div>
+        <div className="space-y-3">
+          <h1 className="text-2xl font-black uppercase tracking-tight text-white xl:text-[2.15rem]">
+            Run the shop without leaving the viewport.
+          </h1>
+          <p className="max-w-2xl text-sm leading-relaxed text-slate-300">
+            The command center now breaks work into focused pages, so the owner
+            sees today&apos;s priorities, the live queue, and the crew controls
+            without a tall scrolling stack.
+          </p>
+        </div>
+        <div className="grid gap-3 md:grid-cols-3">
+          {[
+            {
+              label: "Cart readiness",
+              value:
+                cartItemCount > 0
+                  ? `${cartItemCount} batched item${cartItemCount === 1 ? "" : "s"}`
+                  : "Cart is clear",
+            },
+            {
+              label: "Client follow-up",
+              value:
+                sentEstimateCount > 0
+                  ? `${sentEstimateCount} proposal${sentEstimateCount === 1 ? "" : "s"} waiting`
+                  : "No sent proposals waiting",
+            },
+            {
+              label: "Business profile",
+              value: profileStatusLabel,
+            },
+          ].map((item) => (
+            <div
+              key={item.label}
+              className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3"
             >
-              Search tools
-            </label>
-            <input
-              id="command-center-tool-search"
-              type="text"
-              value={toolFilter}
-              onChange={(event) => setToolFilter(event.target.value)}
-              placeholder="Search tools"
-              className="w-full rounded-xl border border-slate-500 bg-slate-900 px-3 py-2 text-sm text-slate-200 placeholder:text-slate-500 focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
-            />
-          </div>
-
-          {filteredToolItems.length === 0 ? (
-            <div className="px-4 py-3 text-xs text-slate-400">
-              No tools match that term.
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
+                {item.label}
+              </p>
+              <p className="mt-2 text-sm font-semibold text-white">{item.value}</p>
             </div>
-          ) : (
-            filteredToolItems.map((item) => {
-              const sharedClasses =
-                "flex w-full items-center gap-2 rounded-lg border border-transparent px-3 py-1.5 text-left text-sm font-medium transition-colors";
-              const className = `${sharedClasses} text-slate-300 hover:bg-slate-900 hover:border-slate-800 hover:text-white`;
-              const href = item.href ?? routes.commandCenter;
-              const opensCalculatorModal =
-                typeof href === "string" && Boolean(getTradePageByPath(href));
+          ))}
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          {[
+            {
+              href: routes.saved,
+              label: "Open Drafts",
+              copy: "Saved jobs and client follow-up.",
+            },
+            {
+              href: routes.calculators,
+              label: "New Estimate",
+              copy: "Jump into the full calculator library.",
+            },
+            {
+              href: routes.settings,
+              label: "Business Setup",
+              copy: "Logo, pricing, and owner-level settings.",
+            },
+            {
+              href: routes.guide,
+              label: "Owner Guide",
+              copy: "Fast training path for crews and office handoff.",
+            },
+          ].map((action) => (
+            <Link
+              key={action.label}
+              href={action.href}
+              prefetch={false}
+              className="rounded-2xl border border-white/10 bg-slate-950/32 px-4 py-4 transition hover:border-orange-400/50 hover:bg-slate-950/50"
+            >
+              <p className="text-sm font-bold text-white">{action.label}</p>
+              <p className="mt-1 text-xs leading-relaxed text-slate-300">
+                {action.copy}
+              </p>
+            </Link>
+          ))}
+        </div>
+      </article>
 
-              const navContent = (
-                <>
-                  <item.icon className="h-3.5 w-3.5 shrink-0" aria-hidden />
-                  <span className="truncate">{item.label}</span>
-                </>
-              );
+      <div className="grid min-h-0 gap-4">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <CommandStatCard
+            label="Closed / signed"
+            value={signedEstimateCount}
+            detail={`Last activity: ${lastEstimateLabel}`}
+            tone="text-emerald-300"
+          />
+          <CommandStatCard
+            label="Sent / waiting"
+            value={sentEstimateCount}
+            detail="Quotes already out with clients."
+            tone="text-orange-300"
+          />
+          <CommandStatCard
+            label="Drafts in view"
+            value={draftEstimateCount}
+            detail="Open work still in the shop."
+            tone="text-sky-300"
+          />
+          <CommandStatCard
+            label="Crew seats filled"
+            value={`${utilizationPercent}%`}
+            detail={`${seatsUsed}/${seatLimit} seats active on ${planName}.`}
+          />
+        </div>
 
-              if (opensCalculatorModal && typeof href === "string") {
-                return (
-                  <button
-                    key={item.slug}
-                    type="button"
-                    onClick={() => setActiveTool(item)}
-                    className={className}
-                  >
-                    {navContent}
-                  </button>
-                );
-              }
-
-            return (
-              <Link key={item.label} href={href} className={className}>
-                {navContent}
-              </Link>
-            );
-            })
-          )}
-        </nav>
-
-          <div className="mt-auto rounded-2xl border border-white/8 bg-white/[0.03] px-3 py-3">
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-orange-400">
-              Shop-floor note
-            </p>
-            <p className="mt-2 text-xs leading-relaxed text-white/65">
-              Keep today&apos;s work visible: open drafts, crew seats, invite code,
-              and estimate cart should all be reachable without leaving this screen.
-            </p>
-          </div>
-        </aside>
-
-        <section className="flex min-h-0 flex-col bg-slate-950">
-          <div className="flex items-center justify-between border-b border-slate-800 px-4 py-3 sm:px-6">
+        <article className="command-card grid min-h-0 gap-4 px-5 py-5">
+          <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-400">
-                Command Center
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-500">
+                Owner Controls
               </p>
-              <p className="mt-1 text-xs text-slate-400">
-                {businessName} · {todayLabel}
-              </p>
+              <h2 className="mt-1 text-lg font-black uppercase tracking-tight text-white">
+                Live readiness
+              </h2>
             </div>
-            <div className="flex items-center gap-3">
-              {proModeMounted ? (
-                <button
-                  type="button"
-                  onClick={() => setProMode(!proMode)}
-                  className={`inline-flex min-h-9 items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-bold uppercase tracking-[0.12em] transition ${
-                    proMode
-                      ? "border-orange-500/70 bg-orange-500/20 text-orange-400"
-                      : "border-slate-700 bg-slate-900 text-slate-300"
-                  }`}
-                  aria-pressed={proMode}
-                >
-                  Pro Mode
-                </button>
-              ) : null}
+            <span className="inline-flex items-center gap-2 rounded-full border border-orange-500/30 bg-orange-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-orange-300">
+              <ShieldCheck className="h-3.5 w-3.5" aria-hidden />
+              Locked
+            </span>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-4">
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
+                Launch Pad
+              </p>
+              <p className="mt-2 text-sm text-slate-300">
+                Six high-value tools stay one tap away in the Launch Pad view.
+              </p>
               <button
                 type="button"
-                className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-[--color-border] bg-[--color-surface-alt] text-[--color-ink-mid] transition hover:text-[--color-orange-brand]"
-                aria-label="Notifications"
+                onClick={() => setActiveWorkspace("launch")}
+                className="mt-4 inline-flex min-h-10 items-center justify-center rounded-xl bg-orange-500 px-4 text-sm font-black uppercase tracking-[0.08em] text-white transition hover:bg-orange-600"
               >
-                <Bell className="h-4 w-4" aria-hidden />
-                <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-[--color-orange-brand]" />
+                Open Launch Pad
               </button>
-              <div className="flex h-9 w-9 items-center justify-center rounded-full border border-[--color-border] bg-[--color-surface-alt] text-xs font-semibold text-[--color-ink-mid]">
-                {initialsForName(members[0]?.name ?? "Owner")}
-              </div>
+            </div>
+
+            <div className="rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-4">
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
+                Workflow
+              </p>
+              <p className="mt-2 text-sm text-slate-300">
+                Cart items, recent estimates, and handoff status live in one view.
+              </p>
+              <button
+                type="button"
+                onClick={() => setActiveWorkspace("workflow")}
+                className="mt-4 inline-flex min-h-10 items-center justify-center rounded-xl border border-slate-700 px-4 text-sm font-semibold text-slate-200 transition hover:border-orange-500/50 hover:text-white"
+              >
+                Open Workflow
+              </button>
             </div>
           </div>
+        </article>
+      </div>
+    </div>
+  );
 
-          <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 w-full max-w-full sm:px-6 sm:py-6">
-            <div className="space-y-5">
-            <section className="grid gap-3 lg:hidden">
-              <div className="flex items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-slate-900/80 px-4 py-3 shadow-[0_12px_30px_rgba(0,0,0,0.18)]">
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-orange-400">
-                    Field shortcuts
-                  </p>
-                  <p className="mt-1 text-sm text-slate-300">
-                    Keep the top contractor actions one thumb away.
-                  </p>
-                </div>
-                <Link
-                  href={routes.guide}
-                  className="inline-flex min-h-10 items-center justify-center rounded-xl border border-white/12 bg-white/5 px-3 text-xs font-semibold text-white transition hover:border-orange-400/60 hover:text-orange-200"
-                  prefetch={false}
-                >
-                  Guide
-                </Link>
-              </div>
+  const renderLaunchPad = () => (
+    <div className="grid h-full min-h-0 gap-4 xl:grid-cols-[0.9fr,1.1fr]">
+      <article className="command-card flex min-h-0 flex-col gap-4 px-5 py-5">
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-500">
+            Tool Launch
+          </p>
+          <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-white">
+            Open field math without menu sprawl
+          </h2>
+          <p className="mt-2 text-sm leading-relaxed text-slate-400">
+            Search once, switch category bars, and open the calculator directly
+            from this screen.
+          </p>
+        </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                {mobileQuickActions.map((action) => (
-                  <Link
-                    key={action.label}
-                    href={action.href}
-                    prefetch={false}
-                    className="rounded-2xl border border-slate-800 bg-slate-900/85 p-4 text-left shadow-[0_12px_30px_rgba(0,0,0,0.18)] transition hover:border-orange-500/40"
+        <label className="flex flex-col gap-2">
+          <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
+            Search tools
+          </span>
+          <input
+            id="command-center-tool-search"
+            type="text"
+            value={toolFilter}
+            onChange={(event) => setToolFilter(event.target.value)}
+            placeholder="Search calculators, estimates, or workflow tools"
+            className="h-11 rounded-2xl border border-slate-700 bg-slate-950 px-3 text-sm text-slate-200 placeholder:text-slate-500 focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
+          />
+        </label>
+
+        <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+          {toolCategoryTabs.map((category) => (
+            <button
+              key={category.slug}
+              type="button"
+              onClick={() => setToolCategory(category.slug)}
+              className={`inline-flex min-h-10 items-center rounded-full border px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] transition ${
+                toolCategory === category.slug
+                  ? "border-orange-500/45 bg-orange-500/10 text-orange-300"
+                  : "border-slate-700 bg-slate-950 text-slate-300 hover:border-slate-500 hover:text-white"
+              }`}
+            >
+              {category.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-4">
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
+              Results
+            </p>
+            <p className="mt-2 text-3xl font-black text-white">
+              {filteredToolItems.length}
+            </p>
+            <p className="mt-1 text-xs leading-relaxed text-slate-400">
+              Matching tools inside the selected menu bar.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-4">
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
+              Full library
+            </p>
+            <p className="mt-2 text-sm text-slate-300">
+              Need more than the launch grid? Open the full calculator library.
+            </p>
+            <Link
+              href={routes.calculators}
+              prefetch={false}
+              className="mt-4 inline-flex min-h-10 items-center justify-center rounded-xl border border-slate-700 px-4 text-sm font-semibold text-slate-200 transition hover:border-orange-500/50 hover:text-white"
+            >
+              Open Library
+            </Link>
+          </div>
+        </div>
+      </article>
+
+      <div className="grid min-h-0 gap-4 content-start">
+        {visibleToolItems.length === 0 ? (
+          <article className="command-card flex min-h-[220px] items-center justify-center rounded-3xl px-5 py-5 text-center">
+            <div>
+              <p className="text-sm font-bold text-white">No tools match that search.</p>
+              <p className="mt-2 text-sm text-slate-400">
+                Clear the term or switch the category bar to reopen the launch grid.
+              </p>
+            </div>
+          </article>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {visibleToolItems.map((item) => (
+              <ToolLaunchCard
+                key={item.slug}
+                item={item}
+                onOpen={(nextItem) => setActiveTool(nextItem)}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const renderWorkflow = () => (
+    <div className="grid h-full min-h-0 gap-4 xl:grid-cols-[1fr,0.95fr]">
+      <article className="public-panel-strong flex min-h-0 flex-col gap-4 px-5 py-5">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-300">
+              Field Cart
+            </p>
+            <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-white">
+              Batch estimate work in one locked view
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-slate-300">
+              Calculator outputs stay visible here until you clear the batch or
+              hand them off.
+            </p>
+          </div>
+          <div className="grid shrink-0 grid-cols-2 gap-3">
+            <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
+                Open items
+              </p>
+              <p className="mt-1 text-3xl font-black text-white">{cartItemCount}</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
+                Workflow
+              </p>
+              <p className="mt-1 text-sm font-bold text-white">Cart to saved handoff</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          <Link
+            href={routes.cart}
+            prefetch={false}
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-orange-500 px-4 text-sm font-black uppercase tracking-[0.08em] text-white transition hover:bg-orange-600"
+          >
+            Review Cart
+            <ArrowRight className="h-4 w-4" aria-hidden />
+          </Link>
+          <Link
+            href={routes.calculators}
+            prefetch={false}
+            className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-white/20 px-4 text-sm font-semibold text-white transition hover:border-orange-400/60 hover:text-orange-200"
+          >
+            Add More Estimates
+          </Link>
+          <button
+            type="button"
+            onClick={clearCart}
+            disabled={cartItemCount === 0}
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-white/12 bg-white/5 px-4 text-sm font-semibold text-slate-200 transition hover:border-red-400/50 hover:text-red-200 disabled:cursor-not-allowed disabled:opacity-45"
+          >
+            <Trash2 className="h-4 w-4" aria-hidden />
+            Clear Cart
+          </button>
+        </div>
+
+        {cartItemCount === 0 ? (
+          <div className="rounded-2xl border border-dashed border-white/15 bg-slate-950/35 px-4 py-4 text-sm text-slate-300">
+            No estimates in the cart yet. Use any calculator&apos;s
+            <span className="font-semibold text-white"> Add to Cart </span>
+            action and it will stay visible here.
+          </div>
+        ) : (
+          <div className="grid gap-3 md:grid-cols-3">
+            {latestCartItems.map((item) => (
+              <article
+                key={item.id}
+                className="rounded-2xl border border-white/10 bg-slate-950/40 p-4"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-300">
+                      {item.calculatorLabel}
+                    </p>
+                    <p className="mt-1 truncate text-sm font-bold text-white">
+                      {item.estimateName}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeCartItem(item.id)}
+                    className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/10 text-slate-300 transition hover:border-red-400/50 hover:text-red-200"
+                    aria-label={`Remove ${item.estimateName} from cart`}
                   >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="text-sm font-bold text-white">
-                          {action.label}
-                        </p>
-                        <p className="mt-1 text-xs text-slate-400">
-                          {action.value}
-                        </p>
-                      </div>
-                      <action.icon
-                        className="h-4 w-4 shrink-0 text-orange-400"
-                        aria-hidden
-                      />
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </section>
-
-            <section className="grid gap-4 xl:grid-cols-[1.35fr,0.95fr]">
-              <article className="overflow-hidden rounded-3xl border border-orange-500/25 bg-[radial-gradient(circle_at_top_left,rgba(249,115,22,0.18),transparent_42%),linear-gradient(135deg,#111827_0%,#0f172a_48%,#020617_100%)] p-5 shadow-[0_24px_60px_rgba(0,0,0,0.28)]">
-                <div className="flex flex-wrap items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-orange-300">
-                  <HardHat className="h-4 w-4" aria-hidden />
-                  Morning Brief
+                    <X className="h-4 w-4" aria-hidden />
+                  </button>
                 </div>
-                <h1 className="mt-3 text-2xl font-black uppercase tracking-tight text-white sm:text-3xl">
-                  Run the shop without bouncing between tabs.
-                </h1>
-                <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-300">
-                  This workspace is tuned for a local contractor: know what has to
-                  go out today, which quotes need a callback, whether the crew can
-                  still be invited, and which estimate batch is ready to finish.
+                <p className="mt-3 text-sm text-slate-300">
+                  {item.primaryResult.label}:{" "}
+                  <span className="font-mono font-semibold text-white">
+                    {formatCartValue(item.primaryResult.value)} {item.primaryResult.unit}
+                  </span>
                 </p>
-                <div className="mt-5 grid gap-3 md:grid-cols-3">
-                  {fieldPriorities.map((priority) => (
-                    <div
-                      key={priority.label}
-                      className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3"
-                    >
-                      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
-                        {priority.label}
+                <p className="mt-2 text-xs leading-relaxed text-slate-400">
+                  {item.materialList.length > 0
+                    ? item.materialList.slice(0, 3).join(" • ")
+                    : "Estimate ready for batch checkout."}
+                </p>
+              </article>
+            ))}
+          </div>
+        )}
+      </article>
+
+      <div className="grid min-h-0 gap-4">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <CommandStatCard
+            label="Sent / waiting"
+            value={sentEstimateCount}
+            detail="Quotes already with clients."
+            tone="text-orange-300"
+          />
+          <CommandStatCard
+            label="Last activity"
+            value={lastEstimateLabel}
+            detail="Most recent saved-estimate touchpoint."
+          />
+        </div>
+
+        <article className="command-card flex min-h-0 flex-col gap-4 px-5 py-5">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-500">
+                Recent Estimates
+              </p>
+              <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-white">
+                Latest activity
+              </h2>
+            </div>
+            <Link
+              href={routes.saved}
+              prefetch={false}
+              className="inline-flex min-h-10 items-center justify-center rounded-xl border border-slate-700 px-4 text-sm font-semibold text-slate-200 transition hover:border-slate-500 hover:text-white"
+            >
+              View All
+            </Link>
+          </div>
+
+          {recentEstimatePreview.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-slate-700 bg-slate-950/60 px-4 py-5 text-sm text-slate-400">
+              No estimates yet. Start a draft from any calculator and it will
+              appear here.
+            </div>
+          ) : (
+            <div className="grid gap-3">
+              {recentEstimatePreview.map((estimate) => (
+                <Link
+                  key={estimate.id}
+                  href={`${routes.saved}?id=${estimate.id}`}
+                  aria-label={`Open estimate ${estimate.name}`}
+                  prefetch={false}
+                  className="rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-4 transition hover:border-orange-500/35"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-bold text-white">
+                        {estimate.name}
                       </p>
-                      <p className="mt-2 text-sm font-semibold text-white">
-                        {priority.value}
+                      <p className="mt-1 truncate text-xs text-slate-400">
+                        {estimate.clientName || "No client name"}
                       </p>
                     </div>
-                  ))}
+                    <span
+                      className={`inline-flex shrink-0 items-center rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest ${estimateStatusClasses(estimate.status)}`}
+                    >
+                      {formatEstimateStatus(estimate.status)}
+                    </span>
+                  </div>
+                  <p className="mt-3 text-xs text-slate-500">
+                    Updated{" "}
+                    {new Date(estimate.updatedAt).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          )}
+        </article>
+      </div>
+    </div>
+  );
+
+  const renderCrew = () => (
+    <div className="grid h-full min-h-0 gap-4 xl:grid-cols-[0.92fr,1.08fr]">
+      <div className="grid min-h-0 gap-4">
+        <article className="command-card px-5 py-5">
+          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-500">
+            Crew Summary
+          </p>
+          <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-white">
+            Your business team
+          </h2>
+          <p className="mt-2 text-sm leading-relaxed text-slate-400">
+            {businessName} is on the {planName} plan with {seatsUsed}/{seatLimit} seats filled.
+          </p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-4">
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
+                Seats remaining
+              </p>
+              <p className="mt-2 text-3xl font-black text-white">{seatsAvailable}</p>
+            </div>
+            <div className="rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-4">
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
+                Utilization
+              </p>
+              <p className="mt-2 text-3xl font-black text-orange-300">
+                {utilizationPercent}%
+              </p>
+            </div>
+          </div>
+        </article>
+
+        <article className="public-panel-strong px-5 py-5">
+          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-300">
+            Invite New Members
+          </p>
+          <p className="mt-2 text-xs uppercase tracking-[0.22em] text-white/75">
+            Join code
+          </p>
+          <div className="mt-3 rounded-2xl border border-white/10 bg-slate-950/30 px-4 py-4 text-center text-4xl font-black tracking-[0.16em] text-orange-300">
+            {activeJoinCode}
+          </div>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <button
+              type="button"
+              onClick={copyJoinCode}
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-orange-500 px-4 text-sm font-black uppercase tracking-[0.08em] text-white transition hover:bg-orange-600"
+            >
+              <Copy className="h-4 w-4" aria-hidden />
+              Copy Code
+            </button>
+            <button
+              type="button"
+              onClick={refreshInviteCode}
+              disabled={isRefreshingInvite}
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-white/20 px-4 text-sm font-semibold text-white transition hover:border-orange-400/60 hover:text-orange-200 disabled:opacity-60"
+            >
+              <RefreshCw className="h-4 w-4" aria-hidden />
+              {isRefreshingInvite ? "Refreshing" : "Regenerate Code"}
+            </button>
+          </div>
+        </article>
+      </div>
+
+      <article className="command-card flex min-h-0 flex-col gap-4 px-5 py-5">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-500">
+              Current Team Members
+            </p>
+            <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-white">
+              Active crew roster
+            </h2>
+          </div>
+          <Link
+            href={routes.settings}
+            prefetch={false}
+            className="inline-flex min-h-10 items-center justify-center rounded-xl border border-slate-700 px-4 text-sm font-semibold text-slate-200 transition hover:border-slate-500 hover:text-white"
+          >
+            Open Settings
+          </Link>
+        </div>
+
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-2">
+          {memberPreview.map((member) => {
+            const isOwner = member.role === "owner";
+            return (
+              <article
+                key={member.membershipId}
+                className="rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-4"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-700 bg-slate-900 text-xs font-semibold text-slate-200">
+                      {initialsForName(member.name)}
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-white">{member.name}</p>
+                      <p className="text-xs text-slate-400">{member.email}</p>
+                    </div>
+                  </div>
+                  {isOwner ? (
+                    <span className="inline-flex items-center rounded-full border border-orange-500/30 bg-orange-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-orange-300">
+                      Owner
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setManageTargetId(member.membershipId)}
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-transparent text-slate-400 transition hover:border-slate-600 hover:text-white"
+                      aria-label={`Manage ${member.name}`}
+                    >
+                      <MoreHorizontal className="h-4 w-4" aria-hidden />
+                    </button>
+                  )}
                 </div>
-                <div className="mt-5 flex flex-wrap gap-2">
-                  <Link
-                    href={routes.saved}
-                    className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-orange-500 px-4 text-sm font-black uppercase tracking-[0.08em] text-white transition hover:bg-orange-600"
-                  >
-                    Open Drafts
-                  </Link>
-                  <Link
-                    href={routes.calculators}
-                    className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-white/20 px-4 text-sm font-semibold text-white transition hover:border-orange-400/60 hover:text-orange-200"
-                  >
-                    Start New Estimate
-                  </Link>
-                  <Link
-                    href={routes.guide}
-                    className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-white/12 bg-white/5 px-4 text-sm font-semibold text-slate-200 transition hover:border-white/25 hover:text-white"
-                  >
-                    Open Owner Guide
-                  </Link>
+                <div className="mt-4 flex items-center justify-between gap-3 text-xs text-slate-400">
+                  <span>{formatRole(member.role)}</span>
+                  <span>Joined {formatJoinedAt(member.joinedAt)}</span>
                 </div>
               </article>
+            );
+          })}
+        </div>
 
-              <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-2">
-                {[
-                  {
-                    label: "Closed / signed",
-                    value: signedEstimateCount,
-                    tone: "text-emerald-300",
-                  },
-                  {
-                    label: "Sent / waiting",
-                    value: sentEstimateCount,
-                    tone: "text-orange-300",
-                  },
-                  {
-                    label: "Drafts in view",
-                    value: draftEstimateCount,
-                    tone: "text-sky-300",
-                  },
-                  {
-                    label: "Crew seats filled",
-                    value: `${utilizationPercent}%`,
-                    tone: "text-white",
-                  },
-                ].map((stat) => (
-                  <article
-                    key={stat.label}
-                    className="rounded-2xl border border-slate-800 bg-slate-900/85 px-4 py-4 shadow-[0_12px_30px_rgba(0,0,0,0.22)]"
-                  >
-                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
-                      {stat.label}
-                    </p>
-                    <p className={`mt-2 text-3xl font-black ${stat.tone}`}>
-                      {stat.value}
-                    </p>
-                    <p className="mt-2 text-xs text-slate-400">
-                      Last estimate activity: {lastEstimateLabel}
-                    </p>
-                  </article>
-                ))}
-              </section>
-            </section>
+        {members.length > memberPreview.length ? (
+          <p className="text-xs text-slate-500">
+            Showing {memberPreview.length} of {members.length} members. Open Settings
+            for the full roster.
+          </p>
+        ) : null}
+      </article>
+    </div>
+  );
 
-            <section className="overflow-hidden rounded-3xl border border-orange-500/25 bg-[radial-gradient(circle_at_top_left,rgba(249,115,22,0.18),transparent_42%),linear-gradient(135deg,#111827_0%,#0f172a_48%,#020617_100%)] p-5 shadow-[0_24px_60px_rgba(0,0,0,0.28)]">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                <div className="max-w-2xl">
-                  <p className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-orange-300">
-                    <ShoppingCart className="h-4 w-4" aria-hidden />
-                    Field Cart
-                  </p>
-                  <h2 className="mt-2 text-2xl font-black uppercase tracking-tight text-white sm:text-3xl">
-                    Batch your estimate work without leaving Command Center.
-                  </h2>
-                  <p className="mt-2 text-sm leading-relaxed text-slate-300">
-                    Keep active calculator outputs in one place, review them fast,
-                    and hand off the batch when you are ready.
-                  </p>
-                </div>
-                <div className="grid shrink-0 grid-cols-2 gap-3 lg:min-w-[240px]">
-                  <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
-                      Open Items
-                    </p>
-                    <p className="mt-1 text-3xl font-black text-white">
-                      {cartItemCount}
-                    </p>
-                  </div>
-                  <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
-                      Workflow
-                    </p>
-                    <p className="mt-1 text-sm font-bold text-white">
-                      Cart to saved checkout
-                    </p>
-                  </div>
-                </div>
-              </div>
+  const renderPages = () => {
+    const operationsPages = commandPages.filter((page) => page.group === "Operations");
+    const referencePages = commandPages.filter((page) => page.group === "Reference");
 
-              <div className="mt-4 flex flex-wrap gap-2">
-                <Link
-                  href={routes.cart}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-orange-500 px-4 text-sm font-black uppercase tracking-[0.08em] text-white transition hover:bg-orange-600"
-                >
-                  Review Cart
-                  <ArrowRight className="h-4 w-4" aria-hidden />
-                </Link>
-                <Link
-                  href={routes.calculators}
-                  className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-white/20 px-4 text-sm font-semibold text-white transition hover:border-orange-400/60 hover:text-orange-200"
-                >
-                  Add More Estimates
-                </Link>
-                <button
-                  type="button"
-                  onClick={clearCart}
-                  disabled={cartItemCount === 0}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-white/12 bg-white/5 px-4 text-sm font-semibold text-slate-200 transition hover:border-red-400/50 hover:text-red-200 disabled:cursor-not-allowed disabled:opacity-45"
-                >
-                  <Trash2 className="h-4 w-4" aria-hidden />
-                  Clear Cart
-                </button>
-              </div>
-
-              {cartItemCount === 0 ? (
-                <div className="mt-4 rounded-2xl border border-dashed border-white/15 bg-slate-950/35 px-4 py-4 text-sm text-slate-300">
-                  No estimates in the cart yet. Use any calculator&apos;s
-                  <span className="font-semibold text-white"> Add to Cart </span>
-                  action and it will stay visible here at the top of Command Center.
-                </div>
-              ) : (
-                <div className="mt-4 grid gap-3 xl:grid-cols-3">
-                  {latestCartItems.map((item) => (
-                    <article
-                      key={item.id}
-                      className="rounded-2xl border border-white/10 bg-slate-950/40 p-4"
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-300">
-                            {item.calculatorLabel}
-                          </p>
-                          <p className="mt-1 truncate text-sm font-bold text-white">
-                            {item.estimateName}
-                          </p>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => removeCartItem(item.id)}
-                          className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/10 text-slate-300 transition hover:border-red-400/50 hover:text-red-200"
-                          aria-label={`Remove ${item.estimateName} from cart`}
-                        >
-                          <X className="h-4 w-4" aria-hidden />
-                        </button>
-                      </div>
-                      <p className="mt-3 text-sm text-slate-300">
-                        {item.primaryResult.label}:{" "}
-                        <span className="font-mono font-semibold text-white">
-                          {item.primaryResult.value} {item.primaryResult.unit}
-                        </span>
-                      </p>
-                      <p className="mt-2 line-clamp-2 text-xs text-slate-400">
-                        {item.materialList.length > 0
-                          ? item.materialList.join(" • ")
-                          : "Estimate ready for batch checkout."}
-                      </p>
-                    </article>
-                  ))}
-                </div>
-              )}
-            </section>
-
-            <div className="flex items-center justify-between gap-3 rounded-2xl border border-slate-700 bg-slate-900 px-4 py-2.5 text-slate-100">
-              <div className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-orange-600">
-                <ShieldCheck className="h-4 w-4" aria-hidden />
-                Owner Controls Enabled
-              </div>
-              <span className="text-xs text-[--color-ink-dim]">
-                Live status
-              </span>
-            </div>
-
-            <h1 className="text-xl font-sans font-black uppercase leading-none tracking-tight text-white sm:text-3xl lg:text-[2.25rem]">
-              Owner&apos;s Command Center
-            </h1>
-
-            {needsBusinessProfileSetup ? (
-              <div className="rounded-2xl border border-orange-500/25 bg-orange-500/8 px-4 py-3 text-sm text-slate-200">
-                <span className="font-semibold text-orange-300">
-                  Setup your Business Profile.
-                </span>{" "}
-                Add your company name so PDFs, emails, and client-facing signing pages use your branding.
-                <Link
-                  href={routes.settings}
-                  className="ml-2 font-semibold text-orange-400 transition hover:text-orange-300"
-                >
-                  Open settings
-                </Link>
-              </div>
-            ) : null}
-
-            {draftMode && (
-              <div className="rounded-2xl border border-[--color-orange-brand]/50 bg-[--color-orange-brand]/10 px-5 py-4">
-                <p className="text-xs font-bold uppercase tracking-[0.15em] text-orange-600">
-                  Drafting mode
-                </p>
-                <p className="mt-1 text-sm text-slate-200">
-                  Start a new estimate: open a trade calculator below or go to Saved Estimates to continue an existing draft.
-                </p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <Link
-                    href={routes.calculators}
-                    className="inline-flex min-h-10 items-center justify-center rounded-xl bg-[--color-orange-brand] px-4 text-sm font-black text-white transition hover:bg-orange-700"
-                  >
-                    Open Calculators
-                  </Link>
-                  <Link
-                    href={routes.saved}
-                    className="inline-flex min-h-10 items-center justify-center rounded-xl border border-slate-600 px-4 text-sm font-semibold text-slate-200 transition hover:border-slate-500 hover:text-white"
-                  >
-                    Saved Estimates
-                  </Link>
-                </div>
-              </div>
-            )}
-
-            <section className="command-card space-y-4 p-5 xl:col-span-3">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-500">
-                    Fast Tool Launch
-                  </p>
-                  <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-white">
-                    Jump into the calculators crews use most
-                  </h2>
-                </div>
-                <Link
-                  href={routes.calculators}
-                  className="inline-flex min-h-10 items-center justify-center rounded-xl border border-slate-700 px-4 text-sm font-semibold text-slate-200 transition hover:border-slate-500 hover:text-white"
-                >
-                  Full Library
-                </Link>
-              </div>
-
-              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                {featuredToolItems.map((item) => {
-                  const href = item.href ?? routes.commandCenter;
-                  const opensCalculatorModal =
-                    typeof href === "string" && Boolean(getTradePageByPath(href));
-
-                  const cardContent = (
-                    <>
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <p className="truncate text-sm font-bold text-white">
-                            {item.label}
-                          </p>
-                          <p className="mt-1 text-xs text-slate-400">
-                            {item.description ?? "Open this field tool from Command Center."}
-                          </p>
-                        </div>
-                        <item.icon className="h-4 w-4 shrink-0 text-orange-400" aria-hidden />
-                      </div>
-                      <p className="mt-4 text-[10px] font-bold uppercase tracking-[0.16em] text-orange-300">
-                        Open tool
-                      </p>
-                    </>
-                  );
-
-                  if (opensCalculatorModal && typeof href === "string") {
-                    return (
-                      <button
-                        key={item.slug}
-                        type="button"
-                        onClick={() => setActiveTool(item)}
-                        className="rounded-2xl border border-slate-800 bg-slate-950/70 p-4 text-left transition hover:border-orange-500/40 hover:bg-slate-950"
-                      >
-                        {cardContent}
-                      </button>
-                    );
-                  }
-
-                  return (
-                    <Link
-                      key={item.slug}
-                      href={href}
-                      className="rounded-2xl border border-slate-800 bg-slate-950/70 p-4 text-left transition hover:border-orange-500/40 hover:bg-slate-950"
-                      prefetch={false}
-                    >
-                      {cardContent}
-                    </Link>
-                  );
-                })}
-              </div>
-            </section>
-
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            <div className="max-w-full overflow-hidden rounded-2xl border border-slate-700 bg-slate-900 px-5 py-4 text-slate-100">
-                <h2 className="font-sans text-2xl font-black uppercase leading-none tracking-tight text-white sm:text-4xl">
-                  Your Business Team
-                </h2>
-                <p className="mt-2 break-all text-sm text-white/60">
-                  Business Name: {businessName} | Plan: {planName} ({seatsUsed}/
-                  {seatLimit} Seats)
-                </p>
-              </div>
-
-            <div className="rounded-2xl border border-slate-700 bg-slate-900 p-4 text-slate-100">
-                <p className="text-sm font-black uppercase text-white">
-                  Invite New Members
-                </p>
-                <p className="mt-1 text-center text-xs uppercase tracking-[0.22em] text-white/80">
-                  Join Code
-                </p>
-                <div className="mt-2 rounded-xl border border-slate-700 bg-slate-900 px-4 py-2 text-center text-4xl font-sans font-black tracking-[0.14em] text-orange-600 md:text-5xl">
-                  {activeJoinCode}
-                </div>
-                <div className="mt-3 grid grid-cols-2 gap-2 text-xs font-semibold">
-                  <button
-                    type="button"
-                    onClick={copyJoinCode}
-                    className="inline-flex items-center justify-center gap-1 rounded-lg border border-[--color-orange-brand] bg-[--color-orange-brand] px-2 py-2 font-bold text-white shadow-lg transition hover:bg-[--color-orange-dark]"
-                  >
-                    <Copy className="h-3.5 w-3.5" aria-hidden />
-                    Copy Code
-                  </button>
-                  <button
-                    type="button"
-                    onClick={refreshInviteCode}
-                    disabled={isRefreshingInvite}
-                    className="inline-flex items-center justify-center gap-1 rounded-lg border-2 border-orange-400 bg-transparent px-2 py-2 text-orange-300 transition hover:bg-orange-500/10 disabled:opacity-60"
-                  >
-                    <RefreshCw className="h-3.5 w-3.5" aria-hidden />
-                    {isRefreshingInvite ? "Refreshing" : "Regenerate Code"}
-                  </button>
-                </div>
-                <p className="mt-2 text-[11px] text-white/70">
-                  Seats remaining: {seatsAvailable} / {seatLimit}
-                </p>
-              </div>
-            </div>
-
-            {(error || success) && (
-              <div
-                className={`rounded-2xl border px-4 py-3 text-sm shadow ${
-                  error
-                    ? "border-red-500/25 bg-red-500/8"
-                    : "border-emerald-500/25 bg-emerald-500/8"
-                }`}
-              >
-                {error ? (
-                  <p className="text-red-200">{error}</p>
-                ) : (
-                  <p className="text-emerald-200">{success}</p>
-                )}
-              </div>
-            )}
-
-            <div className="command-card space-y-4 p-5 xl:col-span-3">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-500">
-                    Recent Estimates
-                  </p>
-                  <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-white">
-                    Latest Activity
-                  </h2>
-                </div>
-                <Link
-                  href={routes.saved}
-                  className="inline-flex min-h-10 items-center justify-center rounded-xl border border-slate-700 px-4 text-sm font-semibold text-slate-200 transition hover:border-slate-500 hover:text-white"
-                >
-                  View All
-                </Link>
-              </div>
-
-              {recentEstimates.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-slate-700 bg-slate-950/60 px-4 py-5 text-sm text-slate-400">
-                  No estimates yet. Start a draft from any calculator and it will appear here.
-                </div>
-              ) : (
-                <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                  {recentEstimates.map((estimate) => (
-                    <Link
-                      key={estimate.id}
-                      href={`${routes.saved}?id=${estimate.id}`}
-                      className="rounded-2xl border border-slate-800 bg-slate-950/70 p-4"
-                      aria-label={`Open estimate ${estimate.name}`}
-                      prefetch={false}
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <p className="truncate text-sm font-bold text-white">
-                            {estimate.name}
-                          </p>
-                          <p className="mt-1 truncate text-xs text-slate-400">
-                            {estimate.clientName || "No client name"}
-                          </p>
-                        </div>
-                        <span
-                          className={`inline-flex shrink-0 items-center rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest ${estimateStatusClasses(estimate.status)}`}
-                        >
-                          {formatEstimateStatus(estimate.status)}
-                        </span>
-                      </div>
-                      <p className="mt-3 text-xs text-slate-500">
-                        Updated{" "}
-                        {new Date(estimate.updatedAt).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                        })}
-                      </p>
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="command-card space-y-4 p-0 xl:col-span-3">
-              <div className="border-b border-[--color-border] px-5 py-4 text-xl font-sans font-black uppercase tracking-tight text-white">
-                Current Team Members
-              </div>
-              <div className="overflow-x-auto">
-                <table className="min-w-full text-sm">
-                  <thead className="bg-[--color-surface-alt] text-left text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-[--color-ink-dim]">
-                    <tr>
-                      <th className="px-4 py-3">Name</th>
-                      <th className="px-4 py-3">Role</th>
-                      <th className="px-4 py-3">Join Date</th>
-                      <th className="px-4 py-3 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {members.map((member) => {
-                      const isOwner = member.role === "owner";
-                      return (
-                        <tr
-                          key={member.membershipId}
-                          className="border-t border-[--color-border]/70 bg-[--color-surface] text-[--color-ink]"
-                        >
-                          <td className="px-4 py-3">
-                            <div className="flex items-center gap-3">
-                              <div className="flex h-8 w-8 items-center justify-center rounded-full border border-[--color-border] bg-[--color-surface-alt] text-[11px] font-semibold text-[--color-ink-mid]">
-                                {initialsForName(member.name)}
-                              </div>
-                              <div>
-                                <p className="font-medium">{member.name}</p>
-                                <p className="text-xs text-[--color-ink-dim]">
-                                  {member.email}
-                                </p>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-4 py-3">
-                            <span
-                              className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold ${
-                                isOwner
-                                  ? "border-[--color-orange-brand] bg-[--color-orange-brand]/14 text-[--color-orange-brand]"
-                                  : "border-[--color-border] bg-[--color-surface-alt] px-3 py-1 text-[--color-ink-mid]"
-                              }`}
-                            >
-                              {formatRole(member.role)}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3">
-                            <span className="text-sm text-[--color-ink-mid]">
-                              {formatJoinedAt(member.joinedAt)}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3 text-right">
-                            {isOwner ? (
-                              <span className="text-xs text-[--color-ink-dim]">
-                                Owner protected
-                              </span>
-                            ) : (
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  setManageTargetId(member.membershipId)
-                                }
-                                className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-transparent text-[--color-ink-mid] transition hover:border-[--color-border] hover:bg-[--color-surface-alt] hover:text-[--color-ink]"
-                                aria-label={`Manage ${member.name}`}
-                              >
-                                <MoreHorizontal
-                                  className="h-4 w-4"
-                                  aria-hidden
-                                />
-                              </button>
-                            )}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            </div>
+    return (
+      <div className="grid h-full min-h-0 gap-4 xl:grid-cols-[0.9fr,1.1fr]">
+        <article className="public-panel-strong flex min-h-0 flex-col gap-4 px-5 py-5">
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-300">
+              Pages & References
+            </p>
+            <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-white">
+              Consolidated menus for the rest of the system
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-slate-300">
+              Instead of keeping every destination in a tall rail, the command
+              center now gives you focused pages and a clean page launcher.
+            </p>
           </div>
-      </section>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Link
+              href={routes.privacy}
+              prefetch={false}
+              className="rounded-2xl border border-white/10 bg-slate-950/30 px-4 py-4 transition hover:border-orange-400/50"
+            >
+              <p className="text-sm font-bold text-white">Privacy Policy</p>
+              <p className="mt-1 text-xs leading-relaxed text-slate-300">
+                Consent and privacy references for production launch.
+              </p>
+            </Link>
+            <Link
+              href={routes.terms}
+              prefetch={false}
+              className="rounded-2xl border border-white/10 bg-slate-950/30 px-4 py-4 transition hover:border-orange-400/50"
+            >
+              <p className="text-sm font-bold text-white">Terms of Service</p>
+              <p className="mt-1 text-xs leading-relaxed text-slate-300">
+                Legal operating guardrails for crews and exports.
+              </p>
+            </Link>
+          </div>
+          <div className="rounded-2xl border border-white/10 bg-slate-950/30 px-4 py-4">
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
+              Recommended launch loop
+            </p>
+            <ol className="mt-3 grid gap-2 text-sm text-slate-300">
+              <li>1. Start in Overview to check queue and owner controls.</li>
+              <li>2. Open Launch Pad for calculators.</li>
+              <li>3. Move to Workflow before sending or saving.</li>
+              <li>4. Use Crew for invite codes and role changes.</li>
+            </ol>
+          </div>
+        </article>
+
+        <div className="grid min-h-0 gap-4">
+          <section className="command-card px-5 py-5">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-500">
+                  Operations
+                </p>
+                <h2 className="mt-1 text-lg font-black uppercase tracking-tight text-white">
+                  Core business pages
+                </h2>
+              </div>
+            </div>
+            <div className="mt-4 grid gap-3 md:grid-cols-2">
+              {operationsPages.map((page) => (
+                <CommandPageCard key={page.label} {...page} />
+              ))}
+            </div>
+          </section>
+
+          <section className="command-card px-5 py-5">
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-500">
+                Reference
+              </p>
+              <h2 className="mt-1 text-lg font-black uppercase tracking-tight text-white">
+                Guides and definitions
+              </h2>
+            </div>
+            <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+              {referencePages.map((page) => (
+                <CommandPageCard key={page.label} {...page} />
+              ))}
+            </div>
+          </section>
+        </div>
+      </div>
+    );
+  };
+
+  const renderActiveWorkspace = () => {
+    if (activeWorkspace === "launch") return renderLaunchPad();
+    if (activeWorkspace === "workflow") return renderWorkflow();
+    if (activeWorkspace === "crew") return renderCrew();
+    if (activeWorkspace === "pages") return renderPages();
+    return renderOverview();
+  };
+
+  return (
+    <div className="command-center-shell command-theme flex h-full min-h-0 w-full flex-col overflow-hidden rounded-none xl:rounded-[30px]">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 px-4 py-3 sm:px-5">
+        <div className="min-w-0">
+          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-400">
+            Command Center
+          </p>
+          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-400">
+            <span className="truncate font-semibold text-white">{businessName}</span>
+            <span>{todayLabel}</span>
+            <span>{workspaceMeta.description}</span>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          {proModeMounted ? (
+            <button
+              type="button"
+              onClick={() => setProMode(!proMode)}
+              className={`inline-flex min-h-9 items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-bold uppercase tracking-[0.12em] transition ${
+                proMode
+                  ? "border-orange-500/70 bg-orange-500/20 text-orange-400"
+                  : "border-slate-700 bg-slate-900 text-slate-300"
+              }`}
+              aria-pressed={proMode}
+            >
+              Pro Mode
+            </button>
+          ) : null}
+          <button
+            type="button"
+            className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-[--color-border] bg-[--color-surface-alt] text-[--color-ink-mid] transition hover:text-[--color-orange-brand]"
+            aria-label="Notifications"
+          >
+            <Bell className="h-4 w-4" aria-hidden />
+            <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-[--color-orange-brand]" />
+          </button>
+          <div className="flex h-9 w-9 items-center justify-center rounded-full border border-[--color-border] bg-[--color-surface-alt] text-xs font-semibold text-[--color-ink-mid]">
+            {initialsForName(members[0]?.name ?? "Owner")}
+          </div>
+        </div>
+      </div>
+
+      <div className="border-b border-slate-800 px-4 py-3 sm:px-5">
+        <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+          {workspaceTabs.map((item) => (
+            <WorkspaceTabButton
+              key={item.slug}
+              label={item.label}
+              icon={item.icon}
+              active={activeWorkspace === item.slug}
+              onClick={() => setActiveWorkspace(item.slug)}
+            />
+          ))}
+        </div>
+      </div>
+
+      {(error || success) && (
+        <div
+          className={`mx-4 mt-4 rounded-2xl border px-4 py-3 text-sm shadow sm:mx-5 ${
+            error
+              ? "border-red-500/25 bg-red-500/8 text-red-200"
+              : "border-emerald-500/25 bg-emerald-500/8 text-emerald-200"
+          }`}
+        >
+          {error ?? success}
+        </div>
+      )}
+
+      {needsBusinessProfileSetup ? (
+        <div className="mx-4 mt-4 rounded-2xl border border-orange-500/25 bg-orange-500/8 px-4 py-3 text-sm text-slate-200 sm:mx-5">
+          <span className="font-semibold text-orange-300">
+            Setup your Business Profile.
+          </span>{" "}
+          Add your company name so PDFs, emails, and client-facing signing pages use your branding.
+          <Link
+            href={routes.settings}
+            prefetch={false}
+            className="ml-2 font-semibold text-orange-400 transition hover:text-orange-300"
+          >
+            Open settings
+          </Link>
+        </div>
+      ) : null}
+
+      {draftMode ? (
+        <div className="mx-4 mt-4 rounded-2xl border border-orange-500/30 bg-orange-500/10 px-4 py-3 sm:mx-5">
+          <p className="text-xs font-bold uppercase tracking-[0.15em] text-orange-400">
+            Drafting mode
+          </p>
+          <p className="mt-1 text-sm text-slate-200">
+            Start a new estimate from Launch Pad or open Workflow to continue an existing draft.
+          </p>
+        </div>
+      ) : null}
+
+      <div className="min-h-0 flex-1 overflow-hidden px-4 py-4 sm:px-5 sm:py-5">
+        {renderActiveWorkspace()}
       </div>
 
       {activeTool && (
@@ -1249,7 +1544,8 @@ export default function CommandCenterClient({
             <div className="relative z-10 flex h-full w-full max-w-6xl flex-col overflow-hidden border border-slate-800 bg-slate-950 shadow-[0_24px_50px_rgba(0,0,0,0.6)] sm:rounded-3xl">
               <div className="sticky top-0 z-20 flex h-12 items-center justify-between gap-2 border-b border-slate-800 bg-slate-900/95 px-3 backdrop-blur-sm">
                 <nav className="truncate text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-400">
-                  Calculators &gt; {activeTradePage.heroKicker.split("/")[0]?.trim() ?? "Category"}
+                  Calculators &gt;{" "}
+                  {activeTradePage.heroKicker.split("/")[0]?.trim() ?? "Category"}
                 </nav>
                 <div className="flex items-center justify-between gap-2">
                   <button

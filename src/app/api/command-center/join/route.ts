@@ -2,20 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import { auth } from "@/lib/auth/config";
 import { createServerClient } from "@/lib/supabase/server";
+import {
+  findBusinessByJoinCode,
+  normalizeBusinessJoinCode,
+} from "@/lib/supabase/join-code";
 
 const SEAT_LIMIT = 10;
 
-/** Deterministic 6-digit code derived from a business UUID. */
-function makeJoinCode(seed: string): string {
-  let hash = 0;
-  for (let index = 0; index < seed.length; index += 1) {
-    hash = (hash * 31 + seed.charCodeAt(index)) % 1_000_000;
-  }
-  return String(Math.abs(hash)).padStart(6, "0");
-}
-
 function isValidCodeFormat(code: string): boolean {
-  return /^\d{6}$/.test(code.trim());
+  return /^[A-HJ-NP-Z2-9]{6,12}$/.test(normalizeBusinessJoinCode(code));
 }
 
 export async function POST(req: NextRequest) {
@@ -84,30 +79,24 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // ── Resolve the business from its join code ───────────────────────────────
-    // Join codes are derived from business IDs (makeJoinCode(id)). We scan
-    // recent businesses (capped at 2 000) to find a matching code. For
-    // production scale, add a stored `join_code` column to `businesses`.
-    const { data: allBusinesses, error: bizScanError } = await db
-      .from("businesses")
-      .select("id, name")
-      .order("created_at", { ascending: false })
-      .limit(2_000);
-
-    if (bizScanError) {
-      Sentry.captureException(bizScanError, {
-        tags: { route: "join-by-code", step: "scan-businesses" },
+    let matchedBusiness: { id: string; name: string } | null = null;
+    try {
+      matchedBusiness = await findBusinessByJoinCode(db, rawCode);
+    } catch (lookupError) {
+      Sentry.captureException(lookupError, {
+        tags: { route: "join-by-code", step: "lookup-business" },
         extra: { userId },
       });
       return NextResponse.json(
-        { error: "Could not look up the join code. Try again." },
+        {
+          error:
+            lookupError instanceof Error
+              ? lookupError.message
+              : "Could not look up the join code. Try again.",
+        },
         { status: 500 },
       );
     }
-
-    const matchedBusiness = (allBusinesses ?? []).find(
-      (biz) => makeJoinCode(biz.id) === rawCode,
-    );
 
     if (!matchedBusiness) {
       return NextResponse.json(
@@ -169,13 +158,23 @@ export async function POST(req: NextRequest) {
     }
 
     // ── All checks passed — create the membership ────────────────────────────
-    const { error: insertError } = await db.from("memberships").insert({
-      business_id: matchedBusiness.id,
-      user_id: userId,
-      role: "member",
-    });
+    const { data: insertedMembership, error: insertError } = await db
+      .from("memberships")
+      .insert({
+        business_id: matchedBusiness.id,
+        user_id: userId,
+        role: "member",
+      })
+      .select("id")
+      .single();
 
     if (insertError) {
+      if (insertError.code === "23505") {
+        return NextResponse.json(
+          { error: "You are already a member of this business." },
+          { status: 409 },
+        );
+      }
       Sentry.captureException(insertError, {
         tags: { route: "join-by-code", step: "insert-membership" },
         extra: { userId, businessId: matchedBusiness.id },
@@ -186,6 +185,32 @@ export async function POST(req: NextRequest) {
             "⚠️ Connection drop. Could not join the team right now. Try again in a moment.",
         },
         { status: 500 },
+      );
+    }
+
+    const { count: committedSeatCount, error: committedSeatError } = await db
+      .from("memberships")
+      .select("id", { count: "exact", head: true })
+      .eq("business_id", matchedBusiness.id);
+
+    if (committedSeatError) {
+      Sentry.captureException(committedSeatError, {
+        tags: { route: "join-by-code", step: "seat-recount" },
+        extra: { userId, businessId: matchedBusiness.id },
+      });
+      return NextResponse.json(
+        { error: "Unable to verify your seat assignment. Try again." },
+        { status: 500 },
+      );
+    }
+
+    if ((committedSeatCount ?? 0) > SEAT_LIMIT) {
+      await db.from("memberships").delete().eq("id", insertedMembership.id);
+      return NextResponse.json(
+        {
+          error: `This team has reached its ${SEAT_LIMIT}-seat limit. Contact the business owner to expand.`,
+        },
+        { status: 403 },
       );
     }
 

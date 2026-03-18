@@ -64,6 +64,7 @@ create table if not exists saved_estimates (
   client_name      text,
   job_site_address text,
   status           text default 'Draft' check (status in ('Draft','Sent','Approved','Lost','PENDING','SIGNED')),
+  share_code       text unique,
   created_at       timestamptz not null default now(),
   updated_at       timestamptz not null default now()
 );
@@ -74,7 +75,12 @@ alter table saved_estimates
   add column if not exists total_cents bigint,
   add column if not exists tax_basis_points integer,
   add column if not exists verified_county text,
-  add column if not exists verification_status text not null default 'unverified';
+  add column if not exists verification_status text not null default 'unverified',
+  add column if not exists share_code text;
+
+create index if not exists saved_estimates_share_code_idx
+  on saved_estimates(share_code)
+  where share_code is not null;
 
 alter table saved_estimates
   drop constraint if exists saved_estimates_verification_status_check;

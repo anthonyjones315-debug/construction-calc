@@ -20,13 +20,13 @@ export function HomeTaxDefaults() {
   const setTaxRate = useStore((state) => state.setTaxRate);
 
   return (
-    <div className="mt-4 rounded-2xl border border-orange-500/30 bg-[linear-gradient(135deg,rgba(249,115,22,0.16),rgba(15,23,42,0.96))] px-4 py-4 lg:mt-3.5 lg:px-3.5 lg:py-3">
+    <div className="home-tax-panel mt-4 rounded-2xl border border-orange-500/30 bg-[linear-gradient(135deg,rgba(249,115,22,0.16),rgba(15,23,42,0.96))] px-4 py-4 lg:mt-3.5 lg:px-3.5 lg:py-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <p className="text-[11px] font-black uppercase tracking-[0.18em] text-orange-300">
             Tri-County Tax Defaults
           </p>
-          <p className="mt-1 text-sm text-slate-200">
+          <p className="home-tax-copy mt-1 text-sm text-slate-200">
             Configure default regional tax rates for automatic application to new estimates and invoices.
           </p>
         </div>
@@ -37,7 +37,7 @@ export function HomeTaxDefaults() {
           Tax Compliance Guide
         </Link>
       </div>
-      <div className="mt-3 grid gap-2 sm:grid-cols-3">
+      <div className="home-tax-grid mt-3 grid gap-2 sm:grid-cols-3">
         {TRI_COUNTY_TAX_RATES.map((entry) => {
           const isActive = Math.abs(entry.combinedRate - taxRate) < 0.0001;
 
@@ -46,7 +46,7 @@ export function HomeTaxDefaults() {
               key={entry.county}
               type="button"
               onClick={() => setTaxRate(entry.combinedRate)}
-              className={`flex flex-col items-start rounded-xl border px-3 py-3 text-left transition ${
+              className={`home-tax-card flex flex-col items-start rounded-xl border px-3 py-3 text-left transition ${
                 isActive
                   ? "border-orange-400/70 bg-slate-950"
                   : "border-white/10 bg-slate-950/45 hover:border-orange-300/50 hover:bg-slate-900"
@@ -62,10 +62,10 @@ export function HomeTaxDefaults() {
                   </span>
                 ) : null}
               </div>
-              <p className="mt-1 text-xl font-black text-white">
+              <p className="home-tax-rate mt-1 text-xl font-black text-white">
                 {entry.combinedRate.toFixed(2)}%
               </p>
-              <p className="mt-1 text-xs text-slate-500">
+              <p className="home-tax-copy mt-1 text-xs text-slate-500">
                 Combined NYS + local sales tax
               </p>
             </button>

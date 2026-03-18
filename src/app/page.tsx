@@ -54,7 +54,7 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="page-shell flex min-h-dvh flex-col overflow-hidden bg-slate-950 lg:grid lg:grid-rows-[auto_1fr_auto]">
+    <div className="page-shell grid min-h-dvh grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden">
       <JsonLD schema={getWebSiteSchema()} />
       <JsonLD schema={getWebAppSchema()} />
       <Header />
@@ -62,9 +62,9 @@ export default function HomePage() {
         id="main-content"
         className="viewport-main px-3 py-3 sm:px-4 sm:py-4 lg:px-4 lg:py-3"
       >
-        <section className="mx-auto h-full min-h-0 w-full max-w-6xl">
+        <section className="home-shell mx-auto h-full min-h-0 w-full max-w-6xl">
           <div className="grid h-full min-h-0 gap-3 xl:grid-cols-[1.35fr_0.92fr]">
-            <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 px-4 py-4 text-slate-100 transition-colors sm:px-5 sm:py-5 lg:px-5 lg:py-4">
+            <div className="home-primary-column flex h-full flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 px-4 py-4 text-slate-100 transition-colors sm:px-5 sm:py-5 lg:px-5 lg:py-4">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="section-kicker">
                   Industrial-grade estimating
@@ -73,13 +73,13 @@ export default function HomePage() {
                   Built for contractors
                 </span>
               </div>
-              <h1 className="mt-2.5 max-w-2xl text-[clamp(2rem,4vw,3.4rem)] font-display font-bold leading-none">
+              <h1 className="home-display-heading mt-2.5 max-w-2xl font-display font-bold">
                 Pro Construction Calc
                 <span className="mt-2 block text-orange-600">
                   Industrial-grade estimating for New York contractors.
                 </span>
               </h1>
-              <p className="mt-2.5 max-w-xl text-[13px] leading-relaxed text-slate-400 sm:text-sm">
+              <p className="home-hero-copy mt-2.5 max-w-xl text-[13px] leading-relaxed text-slate-400 sm:text-sm">
                 Trade calculators, saved estimates, price book control, and PDF
                 workflows shaped for field use instead of generic dashboards.
                 Designed for quick quoting around Utica, Rome, Herkimer, Oneida,
@@ -133,17 +133,14 @@ export default function HomePage() {
                     desc: "Price book, team access, and saved project workflows that keep jobs consistent.",
                   },
                 ].map(({ icon: Icon, label, desc }) => (
-                  <div
-                    key={label}
-                    className="rounded-2xl border border-slate-800 bg-slate-900 px-3 py-2.5"
-                  >
+                  <div key={label} className="home-feature-card rounded-2xl border border-slate-800 bg-slate-900 px-3 py-2.5">
                     <div className="flex items-center gap-2 text-orange-600">
                       <Icon className="h-4 w-4" aria-hidden />
                       <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-orange-600">
                         {label}
                       </p>
                     </div>
-                    <p className="mt-1 text-[11px] leading-relaxed text-slate-400">
+                    <p className="home-detail-copy home-feature-copy mt-1 text-[11px] leading-relaxed text-slate-400">
                       {desc}
                     </p>
                   </div>
@@ -154,17 +151,14 @@ export default function HomePage() {
 
               <div className="mt-3 grid gap-2 sm:grid-cols-3">
                 {localMarketHighlights.map(({ icon: Icon, title, description }) => (
-                  <div
-                    key={title}
-                    className="rounded-2xl border border-slate-800 bg-slate-950/55 px-3 py-3"
-                  >
+                  <div key={title} className="home-market-card rounded-2xl border border-slate-800 bg-slate-950/55 px-3 py-3">
                     <div className="flex items-center gap-2 text-orange-500">
                       <Icon className="h-4 w-4" aria-hidden />
                       <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-white">
                         {title}
                       </p>
                     </div>
-                    <p className="mt-1.5 text-[11px] leading-relaxed text-slate-400">
+                    <p className="home-detail-copy home-market-copy mt-1.5 text-[11px] leading-relaxed text-slate-400">
                       {description}
                     </p>
                   </div>
@@ -172,8 +166,8 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="flex min-h-0 flex-col gap-3 xl:pt-0.5">
-              <div className="rounded-2xl border border-slate-800 bg-slate-900 p-4 text-slate-100 transition-colors">
+            <div className="home-secondary-column flex min-h-0 flex-col gap-3 xl:pt-0.5">
+              <div className="home-panel rounded-2xl border border-slate-800 bg-slate-900 p-4 text-slate-100 transition-colors">
                 <p className="section-kicker">Explore next</p>
                 <div className="mt-2.5 space-y-2">
                   {[
@@ -202,7 +196,7 @@ export default function HomePage() {
                       <p className="font-display text-sm font-semibold uppercase tracking-wide text-white">
                         {item.title}
                       </p>
-                      <p className="mt-0.5 text-[11px] leading-relaxed text-slate-400">
+                      <p className="home-detail-copy mt-0.5 text-[11px] leading-relaxed text-slate-400">
                         {item.desc}
                       </p>
                     </Link>
@@ -210,7 +204,7 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-slate-800 bg-slate-900 p-4 transition-colors">
+              <div className="home-panel rounded-2xl border border-slate-800 bg-slate-900 p-4 transition-colors">
                 <p className="section-kicker">Why it lands</p>
                 <div className="mt-2.5 grid gap-2 md:grid-cols-3">
                   {[
@@ -228,7 +222,7 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-slate-800 bg-slate-900 p-4 transition-colors">
+              <div className="home-panel rounded-2xl border border-slate-800 bg-slate-900 p-4 transition-colors">
                 <p className="section-kicker">Local contractor shortcuts</p>
                 <div className="mt-2.5 space-y-2">
                   {localFastLinks.map((item) => (
@@ -241,7 +235,7 @@ export default function HomePage() {
                       <p className="text-sm font-display font-semibold uppercase tracking-wide text-white">
                         {item.title}
                       </p>
-                      <p className="mt-1 text-[11px] leading-relaxed text-slate-400">
+                      <p className="home-detail-copy mt-1 text-[11px] leading-relaxed text-slate-400">
                         {item.description}
                       </p>
                     </Link>

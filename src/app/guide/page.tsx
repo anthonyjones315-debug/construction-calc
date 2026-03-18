@@ -32,40 +32,40 @@ const HOW_TO_STEPS = [
   {
     title: "Set units & inputs",
     detail:
-      "Use toggles for total area vs dimensions, yards vs cubic feet, or wall studs vs total studs. Enter lengths, spans, pitch, waste, and pricing where shown.",
+      "Pick the right unit mode, then enter dimensions, spans, waste, or pricing where the tool asks for it.",
     link: routes.calculators,
     cta: "Try a calculator",
   },
   {
     title: "Review results",
     detail:
-      "Primary card shows the key output (squares, studs, bid price). Secondary cards list supporting quantities and board feet. Material list suggests an order-ready line item.",
+      "The primary result gives the headline quantity or bid. Supporting cards cover related quantities and material lists.",
   },
   {
     title: "Save, email, or download",
     detail:
-      "Use Finalize & Send to email, Save Estimate to sync to Command Center, or Download PDF for a client-ready document.",
+      "Finalize & Send emails the estimate, Save syncs it to Command Center, and Download creates the branded PDF.",
     link: routes.commandCenter,
     cta: "Go to Command Center",
   },
   {
     title: "Use business math",
     detail:
-      "Profit Margin, Labor Rate, Lead Estimator, and Tax Save calculators use standardized terms from the Glossary to keep markup, burden, CAC, and tax consistent.",
+      "Margin, labor, leads, and tax tools all use the same shared terms so pricing stays consistent from quote to export.",
     link: routes.glossary,
     cta: "Open Glossary",
   },
   {
     title: "Oneida County workflow",
     detail:
-      "If you work in Oneida County, set the county before you price or export. Verify sales tax, confirm ST-124 status for exempt projects, and keep your estimate notes consistent so the PDF matches what you calculated.",
+      "Before export, confirm county, tax basis, and ST-124 status so the final PDF matches the estimate math.",
     link: routes.financialTerms,
     cta: "Financial Terms",
   },
   {
     title: "Need deeper help?",
     detail:
-      "Field Notes covers crew tips, while the Glossary defines every financial and construction term used across the app.",
+      "Field Notes adds crew tips, and the Glossary explains the financial and construction terms used across the app.",
     link: routes.fieldNotes,
     cta: "Read Field Notes",
   },
@@ -94,132 +94,116 @@ export default function GuidePage() {
   };
 
   return (
-    <div className="command-theme page-shell flex min-h-dvh flex-col bg-[--color-bg] text-[--color-ink]">
+    <div className="command-theme page-shell grid min-h-dvh grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden bg-[--color-bg] text-[--color-ink]">
       <Header />
-      <main id="main-content" className="viewport-main">
+      <main id="main-content" className="viewport-main overflow-hidden">
         <JsonLD schema={howToSchema} />
-        <div className="viewport-frame max-w-6xl">
-          <div className="dark-feature-panel flex items-center gap-3 p-4 text-white">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[--color-orange-brand]/15 shadow-inner">
-              <Compass className="h-6 w-6 text-[--color-orange-brand]" aria-hidden />
+        <div className="guide-shell viewport-frame max-w-6xl">
+          <section className="guide-hero public-panel-strong">
+            <div className="guide-hero-icon">
+              <Compass className="h-6 w-6" aria-hidden />
             </div>
-            <div className="space-y-1">
+            <div className="min-w-0 space-y-1">
               <p className="section-kicker">Quick Start</p>
-              <h1 className="font-display text-xl font-bold leading-tight sm:text-2xl">
+              <h1 className="guide-hero-title text-display-heading">
                 User Guide
               </h1>
-              <p className="text-sm text-[--color-nav-text]/80">
+              <p className="guide-hero-copy text-copy-secondary">
                 Fast workflow reference for calculators, saved estimates, exports, and tri-county tax-aware estimating.
               </p>
             </div>
-          </div>
+          </section>
 
-          <div className="grid min-h-0 gap-3 lg:grid-cols-[1.15fr_0.85fr]">
-            <section className="grid gap-3 md:grid-cols-2">
-              {HOW_TO_STEPS.map((step, idx) => (
-                <div key={step.title} className="content-card p-3.5">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="section-kicker text-[11px] tracking-[0.16em]">
-                        Step {idx + 1}
-                      </p>
-                      <h2 className="mt-1 text-base font-bold text-[--color-ink]">{step.title}</h2>
-                    </div>
-                    {step.link ? (
-                      <Link
-                        href={step.link}
-                        className="inline-flex items-center gap-1 rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-[--color-ink] transition hover:border-[--color-orange-brand]/50 hover:text-[--color-orange-brand]"
-                      >
-                        {step.cta ?? "Open"}
-                        <ArrowRightCircle className="h-3.5 w-3.5" aria-hidden />
-                      </Link>
-                    ) : null}
+          <section className="guide-card-grid">
+            {HOW_TO_STEPS.map((step, idx) => (
+              <article key={step.title} className="guide-card public-panel">
+                <div className="guide-card-header">
+                  <div className="min-w-0">
+                    <p className="section-kicker text-[11px] tracking-[0.16em]">
+                      Step {idx + 1}
+                    </p>
+                    <h2 className="guide-card-title">{step.title}</h2>
                   </div>
-                  <p className="mt-2 text-[13px] leading-relaxed text-[--color-ink-mid]">{step.detail}</p>
-                  {idx === 2 ? (
-                    <div className="mt-3 grid gap-2 text-sm">
-                      <div className="content-card-muted flex flex-col gap-1 p-3">
-                        <CheckCircle2 className="h-4 w-4 text-emerald-500" aria-hidden />
-                        <p className="font-semibold text-[--color-ink]">Primary Result</p>
-                        <p className="text-[12px] text-[--color-ink-mid]">Headline value for ordering or pricing.</p>
-                      </div>
-                      <div className="content-card-muted flex flex-col gap-1 p-3">
-                        <Save className="h-4 w-4 text-[--color-orange-brand]" aria-hidden />
-                        <p className="font-semibold text-[--color-ink]">Material List</p>
-                        <p className="text-[12px] text-[--color-ink-mid]">Order-ready list you can copy or send.</p>
-                      </div>
-                    </div>
+                  {step.link ? (
+                    <Link href={step.link} className="public-link-chip">
+                      {step.cta ?? "Open"}
+                      <ArrowRightCircle className="h-3.5 w-3.5" aria-hidden />
+                    </Link>
                   ) : null}
                 </div>
-              ))}
-            </section>
+                <p className="guide-card-copy">{step.detail}</p>
+                {idx === 2 ? (
+                  <div className="guide-mini-stack">
+                    <div className="guide-mini-card public-panel-muted">
+                      <CheckCircle2 className="h-4 w-4 text-emerald-500" aria-hidden />
+                      <p className="guide-mini-title">Primary result</p>
+                      <p className="guide-mini-copy">Headline value for ordering or pricing.</p>
+                    </div>
+                    <div className="guide-mini-card public-panel-muted">
+                      <Save className="h-4 w-4 text-[--color-orange-brand]" aria-hidden />
+                      <p className="guide-mini-title">Material list</p>
+                      <p className="guide-mini-copy">Order-ready line items you can copy or send.</p>
+                    </div>
+                  </div>
+                ) : null}
+              </article>
+            ))}
 
-            <aside className="grid gap-3">
-              <div className="content-card p-3.5">
-                <div className="inline-flex items-center gap-2 rounded-full border border-[--color-orange-brand]/30 bg-[--color-orange-brand]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[--color-orange-brand]">
-                  <Target className="h-3.5 w-3.5" aria-hidden />
-                  Fast answers
-                </div>
-                <ul className="mt-3 space-y-2 text-[13px] text-[--color-ink-mid]">
-                  <li>Use <strong className="text-[--color-ink]">Area</strong> and <strong className="text-[--color-ink]">Yardage</strong> toggles on concrete, flooring, and siding tools.</li>
-                  <li>Waste defaults to 10%; raise it for complex layouts or heavy cutting.</li>
-                  <li>Business calculators follow the Glossary for markup vs margin, burden, CAC, and tax math.</li>
-                </ul>
+            <article className="guide-card public-panel">
+              <div className="public-chip public-chip-accent">
+                <Target className="h-3.5 w-3.5" aria-hidden />
+                Fast answers
               </div>
+              <ul className="guide-list">
+                <li>Use <strong>Area</strong> and <strong>Yardage</strong> toggles on concrete, flooring, and siding tools.</li>
+                <li>Waste starts at 10%; raise it for heavy cutting or irregular layouts.</li>
+                <li>Business tools reuse glossary terms so markup, margin, burden, CAC, and tax stay aligned.</li>
+              </ul>
+            </article>
 
-              <div className="content-card p-3.5">
-                <div className="inline-flex items-center gap-2 rounded-full border border-[--color-orange-brand]/30 bg-[--color-orange-brand]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[--color-orange-brand]">
-                  Operator checks
-                </div>
-                <ul className="mt-3 space-y-2 text-[13px] text-[--color-ink-mid]">
-                  <li>Use Tax Save with the correct county and ST-124 setting before you export a client-facing estimate.</li>
-                  <li>Saved estimates, invoice PDFs, and the financial dashboard reuse the same math so you can audit one workflow against another.</li>
-                  <li>Mobile users should reopen the live app when they need the newest release, because stale service workers are cleared on launch.</li>
-                </ul>
+            <article className="guide-card public-panel">
+              <div className="public-chip public-chip-accent">
+                Operator checks
               </div>
+              <ul className="guide-list">
+                <li>Pick the right county before exporting a client-facing estimate.</li>
+                <li>Saved estimates, invoice PDFs, and the dashboard all reuse the same verified math path.</li>
+                <li>Reopen the app after updates so you are not working from a stale service worker.</li>
+              </ul>
+            </article>
 
-              <div className="content-card p-3.5">
-                <div className="mb-2 inline-flex items-center gap-2 rounded-full border trim-nav-border bg-white/5 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[--color-nav-text]">
-                  <Handshake className="h-3.5 w-3.5 text-[--color-orange-brand]" aria-hidden />
-                  Share & export
-                </div>
-                <div className="space-y-2 text-[13px] text-[--color-ink-mid]">
-                  <p className="flex items-center gap-2">
-                    <FileDown className="h-4 w-4 shrink-0 text-[--color-orange-brand]" aria-hidden />
-                    Download branded PDFs from the Results panel.
-                  </p>
-                  <p className="flex items-center gap-2">
-                    <Save className="h-4 w-4 shrink-0 text-[--color-orange-brand]" aria-hidden />
-                    Save estimates to Command Center to revisit inputs and outputs.
-                  </p>
-                </div>
+            <article className="guide-card public-panel">
+              <div className="public-chip">
+                <Handshake className="h-3.5 w-3.5 text-[--color-orange-brand]" aria-hidden />
+                Share & export
               </div>
+              <div className="guide-list">
+                <p className="flex items-center gap-2">
+                  <FileDown className="h-4 w-4 shrink-0 text-[--color-orange-brand]" aria-hidden />
+                  Download branded PDFs from the Results panel.
+                </p>
+                <p className="flex items-center gap-2">
+                  <Save className="h-4 w-4 shrink-0 text-[--color-orange-brand]" aria-hidden />
+                  Save to Command Center to revisit inputs and outputs.
+                </p>
+              </div>
+            </article>
 
-              <div className="content-card p-3.5">
-                <p className="section-kicker text-[11px]">More help</p>
-                <div className="mt-3 space-y-2 text-sm">
-                  <Link
-                    href={routes.glossary}
-                    className="content-card-interactive block rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2 text-[--color-ink] transition hover:border-[--color-orange-brand]/50 hover:text-[--color-orange-brand]"
-                  >
-                    Open the Glossary
-                  </Link>
-                  <Link
-                    href={routes.faq}
-                    className="content-card-interactive block rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2 text-[--color-ink] transition hover:border-[--color-orange-brand]/50 hover:text-[--color-orange-brand]"
-                  >
-                    Frequently Asked Questions
-                  </Link>
-                  <Link
-                    href={routes.fieldNotes}
-                    className="content-card-interactive block rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2 text-[--color-ink] transition hover:border-[--color-orange-brand]/50 hover:text-[--color-orange-brand]"
-                  >
-                    Field Notes Library
-                  </Link>
-                </div>
+            <article className="guide-card public-panel">
+              <p className="section-kicker text-[11px]">More help</p>
+              <div className="guide-mini-stack">
+                <Link href={routes.glossary} className="public-link-chip">
+                  Open Glossary
+                </Link>
+                <Link href={routes.faq} className="public-link-chip">
+                  FAQ
+                </Link>
+                <Link href={routes.fieldNotes} className="public-link-chip">
+                  Field Notes
+                </Link>
               </div>
-            </aside>
-          </div>
+            </article>
+          </section>
         </div>
       </main>
       <Footer />
