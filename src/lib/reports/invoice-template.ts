@@ -213,7 +213,7 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
                 ? `<div class="h-12 w-12 overflow-hidden rounded-xl border border-white/10 bg-slate-900/70 backdrop-blur">
                    <img src="${contractorLogoUrl}" alt="${safeContractorName} logo" class="h-full w-full object-contain" />
                  </div>`
-                : `<div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-b from-orange-400 to-orange-600 text-sm font-extrabold tracking-[0.18em] text-white shadow-orange-glow">
+                : `<div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-b from-orange-400 to-orange-600 text-sm font-extrabold tracking-[0.18em] text-slate-950 shadow-orange-glow">
                    ${safeContractorName.charAt(0).toUpperCase() || "C"}
                  </div>`
             }

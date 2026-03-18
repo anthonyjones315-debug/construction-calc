@@ -33,52 +33,62 @@ export type DeviceProfile = {
   highContrastMode: boolean;
 };
 
-function readProfile(): DeviceProfile {
-  if (typeof window === "undefined") {
-    return {
-      isIPhone15: false,
-      isIPadPro: false,
-      isSmartTv: false,
-      isMobile: false,
-      isTablet: false,
-      isDesktop: false,
-      isDesktopOrTv: false,
-      phoneTier: null,
-      tabletTier: null,
-      desktopTier: null,
-      layoutMode: "glass-stack",
-      viewportHeight: 0,
-      viewportWidth: 0,
-      shellMaxWidth: null,
-      shellScaleClass: "",
-      blurClass: "backdrop-glass",
-      bottomBufferClass: "",
-      baseTextClass: "",
-      highContrastMode: false,
-    };
-  }
+export type DeviceProfileInput = {
+  viewportHeight: number;
+  viewportWidth: number;
+  userAgent?: string;
+};
 
-  const viewportHeight = Math.round(window.innerHeight);
-  const viewportWidth = Math.round(window.innerWidth);
-  const userAgent = window.navigator.userAgent.toLowerCase();
-  const shorterEdge = Math.min(viewportHeight, viewportWidth);
-  const longerEdge = Math.max(viewportHeight, viewportWidth);
+function createDefaultDeviceProfile(): DeviceProfile {
+  return {
+    isIPhone15: false,
+    isIPadPro: false,
+    isSmartTv: false,
+    isMobile: false,
+    isTablet: false,
+    isDesktop: false,
+    isDesktopOrTv: false,
+    phoneTier: null,
+    tabletTier: null,
+    desktopTier: null,
+    layoutMode: "glass-stack",
+    viewportHeight: 0,
+    viewportWidth: 0,
+    shellMaxWidth: null,
+    shellScaleClass: "",
+    blurClass: "backdrop-glass",
+    bottomBufferClass: "",
+    baseTextClass: "",
+    highContrastMode: false,
+  };
+}
+
+export function deriveDeviceProfile({
+  viewportHeight,
+  viewportWidth,
+  userAgent = "",
+}: DeviceProfileInput): DeviceProfile {
+  const normalizedHeight = Math.round(viewportHeight);
+  const normalizedWidth = Math.round(viewportWidth);
+  const normalizedUserAgent = userAgent.toLowerCase();
+  const shorterEdge = Math.min(normalizedHeight, normalizedWidth);
+  const longerEdge = Math.max(normalizedHeight, normalizedWidth);
 
   const isIPhone15 =
-    /iphone/.test(userAgent) &&
+    /iphone/.test(normalizedUserAgent) &&
     ((shorterEdge === 390 && longerEdge === 844) ||
       (shorterEdge === 393 && longerEdge === 852));
   const isIPadPro =
-    /ipad/.test(userAgent) &&
+    /ipad/.test(normalizedUserAgent) &&
     ((shorterEdge === 1024 && longerEdge === 1366) ||
       (shorterEdge === 1194 && longerEdge === 834));
   const isSmartTv =
-    /smart-tv|smarttv|hbbtv|appletv|googletv|tv/.test(userAgent) ||
+    /smart-tv|smarttv|hbbtv|appletv|googletv|tv/.test(normalizedUserAgent) ||
     longerEdge >= 2160 ||
-    (viewportWidth >= 2560 && viewportHeight >= 1440);
-  const isMobile = viewportWidth < 768;
-  const isTablet = viewportWidth >= 768 && viewportWidth < 1024;
-  const isDesktop = viewportWidth >= 1024 && !isSmartTv;
+    (normalizedWidth >= 2560 && normalizedHeight >= 1440);
+  const isMobile = normalizedWidth < 768;
+  const isTablet = isIPadPro || (normalizedWidth >= 768 && normalizedWidth < 1024);
+  const isDesktop = normalizedWidth >= 1024 && !isSmartTv && !isIPadPro;
   const isDesktopOrTv = isDesktop || isSmartTv;
 
   let phoneTier: PhoneTier = null;
@@ -109,7 +119,7 @@ function readProfile(): DeviceProfile {
     blurClass = phoneTier === "small" ? "hardware-blur-8" : "backdrop-glass";
     bottomBufferClass = phoneTier === "large" ? "hardware-bottom-buffer" : "";
   } else if (isTablet) {
-    tabletTier = viewportWidth >= 1024 || isIPadPro ? "large" : "standard";
+    tabletTier = normalizedWidth >= 1024 || isIPadPro ? "large" : "standard";
     layoutMode = "tablet-shell";
     shellMaxWidth = tabletTier === "large" ? 880 : 720;
   } else if (isSmartTv) {
@@ -134,8 +144,8 @@ function readProfile(): DeviceProfile {
     tabletTier,
     desktopTier,
     layoutMode,
-    viewportHeight,
-    viewportWidth,
+    viewportHeight: normalizedHeight,
+    viewportWidth: normalizedWidth,
     shellMaxWidth,
     shellScaleClass,
     blurClass,
@@ -143,6 +153,18 @@ function readProfile(): DeviceProfile {
     baseTextClass,
     highContrastMode,
   };
+}
+
+function readProfile(): DeviceProfile {
+  if (typeof window === "undefined") {
+    return createDefaultDeviceProfile();
+  }
+
+  return deriveDeviceProfile({
+    viewportHeight: window.innerHeight,
+    viewportWidth: window.innerWidth,
+    userAgent: window.navigator.userAgent,
+  });
 }
 
 export function useDeviceProfile() {

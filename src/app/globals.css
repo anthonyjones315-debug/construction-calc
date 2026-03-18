@@ -15,19 +15,21 @@
   --animation-gradient-cycle: 30s;
   --animation-highlight-travel: 3.2s;
 
-  /* Semantic design tokens */
-  --color-primary: theme("colors.primary.DEFAULT");
-  --color-primary-foreground: theme("colors.primary.foreground");
+  /* Semantic design tokens.
+     These literals intentionally mirror tailwind.config.ts because
+     Tailwind v4 stalls when theme() is referenced inside @theme. */
+  --color-primary: #FF7A00;
+  --color-primary-foreground: #ffffff;
   --color-primary-rgb: 255 122 0;
-  --color-secondary-10: theme("colors.secondary.10");
-  --color-secondary-20: theme("colors.secondary.20");
-  --color-secondary-30: theme("colors.secondary.30");
-  --color-secondary-40: theme("colors.secondary.40");
-  --color-secondary-50: theme("colors.secondary.50");
-  --color-secondary-60: theme("colors.secondary.60");
-  --color-secondary-70: theme("colors.secondary.70");
-  --color-secondary-80: theme("colors.secondary.80");
-  --color-secondary-90: theme("colors.secondary.90");
+  --color-secondary-10: #e6f3ff;
+  --color-secondary-20: #cce7ff;
+  --color-secondary-30: #a6d4ff;
+  --color-secondary-40: #80c2ff;
+  --color-secondary-50: #0085ff;
+  --color-secondary-60: #0275df;
+  --color-secondary-70: #0564bf;
+  --color-secondary-80: #07549f;
+  --color-secondary-90: #013974;
 
   /* Legacy Brand Colors (preserved for compatibility) */
   --color-orange-brand: var(--color-primary);
@@ -147,6 +149,41 @@
   --shell-footer-h: 3rem;
 }
 
+@utility backdrop-glass {
+  @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+  }
+}
+
+@utility backdrop-glass-light {
+  @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+    backdrop-filter: blur(12px) saturate(160%);
+    -webkit-backdrop-filter: blur(12px) saturate(160%);
+  }
+}
+
+@utility backdrop-glass-heavy {
+  @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+    backdrop-filter: blur(36px) saturate(200%);
+    -webkit-backdrop-filter: blur(36px) saturate(200%);
+  }
+}
+
+@utility glass-gpu {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+@utility no-scroll-shell {
+  height: 844px;
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
 /* ── Dark mode: respect OS preference ──────────────────────────── */
 @media (prefers-color-scheme: dark) {
   :root {
@@ -236,7 +273,7 @@
 }
 
 .light .glass-button-primary {
-  color: white;
+  color: #020617;
 }
 
 .light .glass-input {
@@ -289,6 +326,13 @@
     min-height: 100dvh;
     display: flex;
     flex-direction: column;
+  }
+
+  .bg-\[--color-orange-brand\],
+  .bg-orange-500,
+  .bg-orange-600,
+  .bg-orange-brand {
+    color: #020617 !important;
   }
 
   /* Dark mode: invert white cards to surface color */
@@ -680,28 +724,88 @@
 }
 
 @layer components {
-  .glass-container {
-    @apply glass-gpu rounded-2xl border border-white/10 bg-surface-base/75 shadow-[var(--shadow-glass-md)] backdrop-glass transition-[background,border-color,box-shadow] duration-300;
-  }
-
-  .glass-container-elevated {
-    @apply glass-gpu rounded-2xl border border-white/15 bg-surface-elevated shadow-[var(--shadow-glass-lg)] backdrop-glass;
-  }
-
-  .glass-container-deep {
-    @apply glass-gpu rounded-2xl border border-white/5 bg-surface-deep shadow-[var(--shadow-glass-sm)] backdrop-glass-heavy;
+  .glass-container,
+  .glass-card {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    border: 1px solid rgb(255 255 255 / 0.1);
+    border-radius: 1rem;
+    background: var(--color-surface-base);
+    box-shadow: var(--shadow-glass-md);
+    transition:
+      background 0.3s,
+      border-color 0.3s,
+      box-shadow 0.3s;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
 
   .glass-card {
-    @apply glass-container p-6;
+    padding: 1.5rem;
+  }
+
+  .glass-container-elevated {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    border: 1px solid rgb(255 255 255 / 0.15);
+    border-radius: 1rem;
+    background: var(--color-surface-elevated);
+    box-shadow: var(--shadow-glass-lg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .glass-container-deep {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    border: 1px solid rgb(255 255 255 / 0.05);
+    border-radius: 1rem;
+    background: var(--color-surface-deep);
+    box-shadow: var(--shadow-glass-sm);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
 
   .glass-panel {
-    @apply glass-gpu rounded-xl border border-white/12 bg-surface-elevated p-4 shadow-[var(--shadow-glass-sm)] backdrop-glass;
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    border: 1px solid rgb(255 255 255 / 0.12);
+    border-radius: 0.75rem;
+    background: var(--color-surface-elevated);
+    padding: 1rem;
+    box-shadow: var(--shadow-glass-sm);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
 
   .glass-panel-deep {
-    @apply glass-gpu rounded-xl border border-white/6 bg-surface-deep p-4 shadow-[var(--shadow-glass-md)] backdrop-glass;
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    border: 1px solid rgb(255 255 255 / 0.06);
+    border-radius: 0.75rem;
+    background: var(--color-surface-deep);
+    padding: 1rem;
+    box-shadow: var(--shadow-glass-md);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+    .glass-container,
+    .glass-card,
+    .glass-container-elevated,
+    .glass-panel,
+    .glass-panel-deep,
+    .glass-modal,
+    .glass-nav {
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+    }
+
+    .glass-container-deep {
+      backdrop-filter: blur(36px) saturate(200%);
+      -webkit-backdrop-filter: blur(36px) saturate(200%);
+    }
   }
 
   .glass-input {
@@ -748,7 +852,19 @@
   }
 
   .glass-button {
-    @apply glass-gpu relative overflow-hidden rounded-lg border border-white/10 bg-surface-base px-4 py-2 text-white shadow-[var(--shadow-glass-sm)] backdrop-glass transition-all duration-200 active:scale-[0.98];
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgb(255 255 255 / 0.1);
+    border-radius: 0.5rem;
+    background: var(--color-surface-base);
+    padding: 0.5rem 1rem;
+    color: white;
+    box-shadow: var(--shadow-glass-sm);
+    transition: all 0.2s ease;
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
 
   .glass-button::after {
@@ -769,6 +885,10 @@
     box-shadow: var(--shadow-glass-md), var(--glow-orange-sm);
   }
 
+  .glass-button:active {
+    transform: translateZ(0) scale(0.98);
+  }
+
   .glass-button:hover::after {
     opacity: 1;
     height: 2px;
@@ -776,15 +896,25 @@
   }
 
   .glass-button-primary {
-    @apply glass-gpu relative overflow-hidden rounded-lg border border-white/20 px-4 py-2 text-white shadow-[var(--shadow-md)] transition-all duration-200 active:scale-[0.98];
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgb(255 255 255 / 0.2);
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    color: rgb(2 6 23);
+    box-shadow:
+      var(--shadow-md),
+      0 0 0 1px rgb(var(--color-primary-rgb) / 0.3);
+    transition: all 0.2s ease;
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     background: linear-gradient(
       180deg,
       color-mix(in srgb, var(--color-primary) 86%, white),
       var(--color-primary)
     );
-    box-shadow:
-      var(--shadow-md),
-      0 0 0 1px rgb(var(--color-primary-rgb) / 0.3);
   }
 
   .glass-button-primary::before {
@@ -812,12 +942,27 @@
       var(--glow-orange-md);
   }
 
+  .glass-button-primary:active {
+    transform: translateZ(0) scale(0.98);
+  }
+
   .glass-modal-overlay {
     @apply fixed inset-0 z-50 flex items-center justify-center bg-surface-deep/70 backdrop-blur-sm;
   }
 
   .glass-modal {
-    @apply glass-gpu w-full max-w-[90vw] overflow-y-auto rounded-2xl border border-white/10 bg-surface-base p-6 shadow-[var(--shadow-glass-lg)] backdrop-glass;
+    width: 100%;
+    max-width: 90vw;
+    overflow-y: auto;
+    border: 1px solid rgb(255 255 255 / 0.1);
+    border-radius: 1rem;
+    background: var(--color-surface-base);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-glass-lg);
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
 
   .glass-modal-header {
@@ -829,7 +974,14 @@
   }
 
   .glass-nav {
-    @apply flex gap-1 rounded-xl border border-white/5 bg-surface-deep p-2 backdrop-glass;
+    display: flex;
+    gap: 0.25rem;
+    border: 1px solid rgb(255 255 255 / 0.05);
+    border-radius: 0.75rem;
+    background: var(--color-surface-deep);
+    padding: 0.5rem;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
 
   .glass-nav-item {

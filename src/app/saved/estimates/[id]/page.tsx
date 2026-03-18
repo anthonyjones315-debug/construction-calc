@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { getSafeEstimate } from "@/lib/dal/estimates";
+import { routes } from "@routes";
 
 type InvoiceStatus = "Draft" | "Sent" | "Partially Paid" | "Paid";
 
@@ -127,7 +128,7 @@ export default async function SavedEstimateDetailPage({ params }: Props) {
               </p>
             </div>
             <Link
-              href="/saved"
+              href={routes.saved}
               className="rounded-lg border border-[--color-border] bg-[--color-surface] px-3 py-2 text-sm font-medium text-[--color-ink] hover:border-[--color-orange-brand]"
             >
               Back to Saved

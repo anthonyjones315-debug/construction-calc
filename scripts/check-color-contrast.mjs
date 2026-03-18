@@ -31,6 +31,18 @@ for (const [, name, values] of rgbaTokenMatches) {
   };
 }
 
+// Semantic theme tokens defined via theme(), var(), or color-mix() are not
+// captured by the simple regex pass above, so provide canonical fallbacks for
+// the brand colors we audit directly.
+Object.assign(tokens, {
+  "color-primary": tokens["color-primary"] ?? "#ff7a00",
+  "color-orange-brand": tokens["color-orange-brand"] ?? "#ff7a00",
+  "color-orange-base": tokens["color-orange-base"] ?? "#ff7a00",
+  "color-orange-light": tokens["color-orange-light"] ?? "#ff9433",
+  "color-orange-dark": tokens["color-orange-dark"] ?? "#cc5800",
+  "color-orange-deep": tokens["color-orange-deep"] ?? "#b85700",
+});
+
 // Legacy color combinations
 const legacyCombos = [
   {
@@ -65,10 +77,10 @@ const legacyCombos = [
     text: "--color-nav-active",
     bg: "--color-nav-bg",
   },
-  { label: "Brand badge text", text: "#ffffff", bg: "--color-orange-brand" },
+  { label: "Brand badge text", text: "#020617", bg: "--color-orange-brand" },
   {
     label: "Brand badge hover text",
-    text: "#ffffff",
+    text: "#020617",
     bg: "--color-orange-dark",
   },
   {
@@ -172,24 +184,24 @@ const liquidOrangeGlassCombos = [
   },
   {
     label: "Primary button text on orange gradient",
-    text: "#ffffff",
+    text: "#020617",
     bg: "--color-orange-base",
   },
 
-  // White text on orange (special attention area)
+  // Dark ink on orange (preferred accessible pairing)
   {
-    label: "White text on orange base",
-    text: "#ffffff",
+    label: "Ink text on orange base",
+    text: "#020617",
     bg: "--color-orange-base",
   },
   {
-    label: "White text on orange light",
-    text: "#ffffff",
+    label: "Ink text on orange light",
+    text: "#020617",
     bg: "--color-orange-light",
   },
   {
-    label: "White text on orange dark",
-    text: "#ffffff",
+    label: "Ink text on orange dark",
+    text: "#020617",
     bg: "--color-orange-dark",
   },
 

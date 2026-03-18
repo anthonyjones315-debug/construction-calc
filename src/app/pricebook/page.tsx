@@ -17,6 +17,7 @@ import {
   Loader2,
 } from "lucide-react";
 import Link from "next/link";
+import { routes } from "@routes";
 
 const CATEGORIES = [
   "Concrete",
@@ -180,7 +181,7 @@ function PriceBookContent() {
           Sign in to manage your Price Book
         </h1>
         <Link
-          href="/auth/signin"
+          href={routes.auth.signIn}
           className="inline-flex items-center gap-2 bg-[--color-orange-brand] text-white font-bold px-6 py-3 rounded-xl"
         >
           Sign In Free

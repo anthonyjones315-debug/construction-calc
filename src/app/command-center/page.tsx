@@ -1,6 +1,5 @@
 import type { Route } from "next";
 import type { ReactNode } from "react";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth/config";
@@ -10,14 +9,7 @@ import { createServerClient } from "@/lib/supabase/server";
 import { getNoIndexMetadata } from "@/seo";
 import { routes } from "@routes";
 import CommandCenterClient from "./CommandCenterClient";
-
-const WelcomeGuidePopup = dynamic(
-  () =>
-    import("@/components/ui/WelcomeGuidePopup").then(
-      (mod) => mod.WelcomeGuidePopup,
-    ),
-  { ssr: false },
-);
+import WelcomeGuidePopupClient from "./WelcomeGuidePopupClient";
 
 export const metadata = getNoIndexMetadata(
   "Command Center | Pro Construction Calc",
@@ -451,7 +443,7 @@ export default async function CommandCenterPage({
 
   return (
     <div className="page-shell min-h-dvh grid grid-rows-[auto_1fr_auto] bg-slate-950 text-slate-100">
-      <WelcomeGuidePopup />
+      <WelcomeGuidePopupClient />
       <Header />
       <main id="main-content" className="row-start-2 viewport-main">
         <div className="viewport-frame">

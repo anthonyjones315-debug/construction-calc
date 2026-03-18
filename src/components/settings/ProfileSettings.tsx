@@ -13,6 +13,7 @@ import {
   LogIn,
 } from "lucide-react";
 import Link from "next/link";
+import { routes } from "@routes";
 
 async function parseJsonSafe(
   response: Response,
@@ -204,7 +205,7 @@ export function ProfileSettings() {
           Sign in to manage your business profile
         </h1>
         <Link
-          href="/auth/signin"
+          href={routes.auth.signIn}
           className="inline-flex items-center gap-2 rounded-xl bg-[--color-orange-brand] px-6 py-3 font-bold text-white"
         >
           Sign In Free

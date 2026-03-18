@@ -20,6 +20,7 @@ import { sanitizeFilename } from "@/utils/sanitize-filename";
 import { useContractorProfile } from "@/components/pdf/useContractorProfile";
 import { useHaptic } from "@/hooks/useHaptic";
 import { supabase } from "@/lib/supabase/client";
+import { routes } from "@routes";
 import {
   centsToDollars,
   multiplyDollars,
@@ -801,7 +802,7 @@ export function EstimateDetail({ estimate }: Props) {
       {/* Back / header */}
       <div className="flex items-center justify-between gap-4">
         <Link
-          href="/saved"
+          href={routes.saved}
           className="inline-flex items-center gap-1.5 text-sm text-[--color-ink-mid] hover:text-[--color-ink] transition-colors"
         >
           <ChevronLeft className="w-4 h-4" aria-hidden />

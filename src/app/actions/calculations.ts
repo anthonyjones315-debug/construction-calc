@@ -235,6 +235,13 @@ export async function saveCalculation(
 
   return {
     ...secondAttempt,
-    correctedData: healed.correctedData,
+    correctedData:
+      healed.correctedData ?? {
+        subtotal_cents: healed.subtotal_cents,
+        tax_cents: healed.tax_cents,
+        total_cents: healed.total_cents,
+        tax_basis_points: healed.tax_basis_points,
+        verified_county: healed.verified_county,
+      },
   };
 }

@@ -20,7 +20,11 @@ const approvedFiles = new Set([
   "scripts/benchmark-frontend-metrics.mjs",
   "scripts/check-calculations.mjs",
   "scripts/check-color-contrast.mjs",
+  "scripts/check-structural-syntax.mjs",
   "scripts/enforce-types-only.mjs",
+  "scripts/liquid-orange-glass-performance-test.js",
+  "scripts/liquid-orange-glass-performance-test.mjs",
+  "scripts/performance-test.js",
   "scripts/rewrite-calcs-paths.mjs",
 ]);
 
