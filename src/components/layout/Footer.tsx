@@ -3,7 +3,6 @@ import { HardHat } from "lucide-react";
 import { CookiePreferencesButton } from "@/components/layout/CookiePreferencesButton";
 import { routes } from "@routes";
 import {
-  BUSINESS_CITY_STATE,
   BUSINESS_EMAIL,
   BUSINESS_NAME,
 } from "@/lib/business-identity";

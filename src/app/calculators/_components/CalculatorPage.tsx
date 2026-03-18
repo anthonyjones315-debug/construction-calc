@@ -2341,8 +2341,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       const deviceExport = {
         exportedAt: new Date().toISOString(),
         source: "pro-construction-calc",
-        type: "device-estimate",
         ...finalizePayload,
+        type: "device-estimate",
       };
       const blob = new Blob([JSON.stringify(deviceExport, null, 2)], {
         type: "application/json",

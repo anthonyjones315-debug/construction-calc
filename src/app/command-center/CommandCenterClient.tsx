@@ -1295,7 +1295,6 @@ export default function CommandCenterClient({
             </section>
             </div>
             </div>
-          </div>
       </section>
       </div>
 
