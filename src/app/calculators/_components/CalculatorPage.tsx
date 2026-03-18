@@ -2956,7 +2956,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             </button>
           </div>
         )}
-        <section className={shellClassName}>
+        <section className={shellClassName} suppressHydrationWarning>
           <JsonLD schema={getTradePageSchema(page)} />
 
           <div className="mb-3 flex items-center justify-between gap-2.5">
@@ -4137,6 +4137,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
 
                 <aside
                   ref={resultsCardRef}
+                  suppressHydrationWarning
                   className={`self-start pb-8 glass-container-elevated ${
                     deviceProfile.layoutMode === "glass-stack"
                       ? ""
