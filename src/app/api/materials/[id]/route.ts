@@ -4,6 +4,7 @@ import * as Sentry from "@sentry/nextjs";
 import { auth } from "@/lib/auth/config";
 import { createServerClient } from "@/lib/supabase/server";
 import {
+  canWriteBusinessData,
   getBusinessContextForSession,
   getTenantScopeColumn,
   getTenantScopeId,
@@ -22,6 +23,12 @@ export async function PUT(
   const body = await req.json();
   const db = createServerClient();
   const businessContext = await getBusinessContextForSession(db, session);
+  if (!canWriteBusinessData(businessContext.role)) {
+    return NextResponse.json(
+      { error: "Only owners, admins, or editors can update shared materials." },
+      { status: 403 },
+    );
+  }
   const tenantColumn = getTenantScopeColumn(businessContext);
   const tenantId = getTenantScopeId(businessContext);
   const { error } = await db

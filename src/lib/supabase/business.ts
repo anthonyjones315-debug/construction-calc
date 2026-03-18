@@ -6,6 +6,7 @@ import { UnauthorizedError } from "@/lib/errors/unauthorized";
 export type MembershipRole = "owner" | "member" | "admin" | "editor";
 
 const BUSINESS_DELETE_ROLES: MembershipRole[] = ["owner", "admin"];
+const BUSINESS_WRITE_ROLES: MembershipRole[] = ["owner", "admin", "editor"];
 
 export type BusinessContext = {
   userId: string;
@@ -49,6 +50,10 @@ export function canDeleteBusinessData(role: MembershipRole): boolean {
   return BUSINESS_DELETE_ROLES.includes(role);
 }
 
+export function canWriteBusinessData(role: MembershipRole): boolean {
+  return BUSINESS_WRITE_ROLES.includes(role);
+}
+
 export function assertNoBusinessIdOverride(
   requestedBusinessId: unknown,
   context: BusinessContext,
@@ -84,7 +89,7 @@ function buildBusinessCapabilities(role: MembershipRole) {
   return {
     isOwner,
     isAdmin,
-    canWriteBusinessData: true,
+    canWriteBusinessData: canWriteBusinessData(role),
     canDeleteBusinessData: canDeleteBusinessData(role),
   };
 }

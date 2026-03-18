@@ -135,7 +135,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className="command-theme bg-slate-950 text-slate-200"
+      className="command-theme"
       suppressHydrationWarning
     >
       <head>
@@ -176,7 +176,7 @@ export default function RootLayout({
                 --color-orange-dark: #d06a18;
                 --color-nav-bg: #0a0f1a;
               }
-              html { background: #020617; color: #f8fafc; }
+              html { background: var(--color-bg); color: var(--color-ink); }
               .glass-gpu {
                 will-change: transform, opacity;
                 transform: translateZ(0);
@@ -184,7 +184,9 @@ export default function RootLayout({
                 -webkit-backdrop-filter: blur(12px);
               }
               .no-scroll-shell {
-                height: 844px;
+                inset: 0;
+                min-height: 100vh;
+                height: 100dvh;
                 overflow: hidden;
                 position: fixed;
                 width: 100%;

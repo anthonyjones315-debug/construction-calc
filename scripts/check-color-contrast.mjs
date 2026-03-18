@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 const cssPath = path.resolve(process.cwd(), "src/app/globals.css");
+const INK_DARK = "#020617";
 
 const css = await fs.readFile(cssPath, "utf8");
 // Match both hex colors and rgba colors
@@ -34,14 +35,21 @@ for (const [, name, values] of rgbaTokenMatches) {
 // Semantic theme tokens defined via theme(), var(), or color-mix() are not
 // captured by the simple regex pass above, so provide canonical fallbacks for
 // the brand colors we audit directly.
-Object.assign(tokens, {
-  "color-primary": tokens["color-primary"] ?? "#ff7a00",
-  "color-orange-brand": tokens["color-orange-brand"] ?? "#ff7a00",
-  "color-orange-base": tokens["color-orange-base"] ?? "#ff7a00",
-  "color-orange-light": tokens["color-orange-light"] ?? "#ff9433",
-  "color-orange-dark": tokens["color-orange-dark"] ?? "#cc5800",
-  "color-orange-deep": tokens["color-orange-deep"] ?? "#b85700",
-});
+const fallbackTokens = {
+  "color-primary": "#ff7a00",
+  "color-orange-brand": "#ff7a00",
+  "color-orange-base": "#ff7a00",
+  "color-orange-light": "#ff9433",
+  "color-orange-dark": "#cc5800",
+  "color-orange-deep": "#b85700",
+};
+
+for (const [tokenKey, fallbackValue] of Object.entries(fallbackTokens)) {
+  if (tokens[tokenKey] == null) {
+    console.warn(`Using fallback token ${tokenKey}: ${fallbackValue}`);
+    tokens[tokenKey] = fallbackValue;
+  }
+}
 
 // Legacy color combinations
 const legacyCombos = [
@@ -77,10 +85,10 @@ const legacyCombos = [
     text: "--color-nav-active",
     bg: "--color-nav-bg",
   },
-  { label: "Brand badge text", text: "#020617", bg: "--color-orange-brand" },
+  { label: "Brand badge text", text: INK_DARK, bg: "--color-orange-brand" },
   {
     label: "Brand badge hover text",
-    text: "#020617",
+    text: INK_DARK,
     bg: "--color-orange-dark",
   },
   {
@@ -184,24 +192,24 @@ const liquidOrangeGlassCombos = [
   },
   {
     label: "Primary button text on orange gradient",
-    text: "#020617",
+    text: INK_DARK,
     bg: "--color-orange-base",
   },
 
   // Dark ink on orange (preferred accessible pairing)
   {
     label: "Ink text on orange base",
-    text: "#020617",
+    text: INK_DARK,
     bg: "--color-orange-base",
   },
   {
     label: "Ink text on orange light",
-    text: "#020617",
+    text: INK_DARK,
     bg: "--color-orange-light",
   },
   {
     label: "Ink text on orange dark",
-    text: "#020617",
+    text: INK_DARK,
     bg: "--color-orange-dark",
   },
 
@@ -323,7 +331,9 @@ for (const combo of combos) {
       failures.push(`${combo.label} ratio ${ratio.toFixed(2)} < ${minRatio}`);
     }
   } catch (err) {
-    console.error(`Error processing ${combo.label}: ${err.message}`);
+    const message = err instanceof Error ? err.message : String(err);
+    failures.push(`${combo.label} unresolved token/error: ${message}`);
+    console.error(`Error processing ${combo.label}: ${message}`);
   }
 }
 

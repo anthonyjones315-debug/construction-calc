@@ -71,24 +71,24 @@ export function deriveDeviceProfile({
   const normalizedHeight = Math.round(viewportHeight);
   const normalizedWidth = Math.round(viewportWidth);
   const normalizedUserAgent = userAgent.toLowerCase();
-  const shorterEdge = Math.min(normalizedHeight, normalizedWidth);
-  const longerEdge = Math.max(normalizedHeight, normalizedWidth);
+  const shortSide = Math.min(normalizedHeight, normalizedWidth);
+  const longSide = Math.max(normalizedHeight, normalizedWidth);
 
   const isIPhone15 =
     /iphone/.test(normalizedUserAgent) &&
-    ((shorterEdge === 390 && longerEdge === 844) ||
-      (shorterEdge === 393 && longerEdge === 852));
+    ((shortSide === 390 && longSide === 844) ||
+      (shortSide === 393 && longSide === 852));
   const isIPadPro =
     /ipad/.test(normalizedUserAgent) &&
-    ((shorterEdge === 1024 && longerEdge === 1366) ||
-      (shorterEdge === 1194 && longerEdge === 834));
+    ((shortSide === 1024 && longSide === 1366) ||
+      (shortSide === 834 && longSide === 1194));
   const isSmartTv =
     /smart-tv|smarttv|hbbtv|appletv|googletv|tv/.test(normalizedUserAgent) ||
-    longerEdge >= 2160 ||
+    longSide >= 2160 ||
     (normalizedWidth >= 2560 && normalizedHeight >= 1440);
-  const isMobile = normalizedWidth < 768;
-  const isTablet = isIPadPro || (normalizedWidth >= 768 && normalizedWidth < 1024);
-  const isDesktop = normalizedWidth >= 1024 && !isSmartTv && !isIPadPro;
+  const isMobile = shortSide < 768;
+  const isTablet = isIPadPro || (shortSide >= 768 && shortSide < 1024);
+  const isDesktop = shortSide >= 1024 && !isSmartTv && !isIPadPro;
   const isDesktopOrTv = isDesktop || isSmartTv;
 
   let phoneTier: PhoneTier = null;
@@ -104,9 +104,9 @@ export function deriveDeviceProfile({
 
   if (isMobile) {
     phoneTier =
-      shorterEdge <= 375 || longerEdge <= 812
+      shortSide <= 375 || longSide <= 812
         ? "small"
-        : isIPhone15 || longerEdge <= 844
+        : isIPhone15 || longSide <= 844
           ? "standard"
           : "large";
     layoutMode = "glass-stack";
@@ -119,7 +119,7 @@ export function deriveDeviceProfile({
     blurClass = phoneTier === "small" ? "hardware-blur-8" : "backdrop-glass";
     bottomBufferClass = phoneTier === "large" ? "hardware-bottom-buffer" : "";
   } else if (isTablet) {
-    tabletTier = normalizedWidth >= 1024 || isIPadPro ? "large" : "standard";
+    tabletTier = isIPadPro ? "large" : "standard";
     layoutMode = "tablet-shell";
     shellMaxWidth = tabletTier === "large" ? 880 : 720;
   } else if (isSmartTv) {

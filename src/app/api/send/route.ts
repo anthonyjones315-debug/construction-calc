@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import { Resend } from "resend";
 import { z } from "zod";
+import { auth } from "@/lib/auth/config";
+import { createServerClient } from "@/lib/supabase/server";
+import {
+  getBusinessContextForSession,
+  getTenantScopeColumn,
+  getTenantScopeId,
+} from "@/lib/supabase/business";
 import { multiplyDollars, normalizeDollars } from "@/utils/money";
 
 const FROM_EMAIL = "system@proconstructioncalc.com";
@@ -117,6 +124,11 @@ function escapeHtml(s: string): string {
 
 export async function POST(req: NextRequest) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const resend = getResend();
     if (!resend) {
       return NextResponse.json(
@@ -141,13 +153,40 @@ export async function POST(req: NextRequest) {
     }
 
     const { to, subject, html: rawHtml, estimate, replyTo } = parsed.data;
+    const db = createServerClient();
+    const businessContext = await getBusinessContextForSession(db, session);
+    const tenantColumn = getTenantScopeColumn(businessContext);
+    const tenantId = getTenantScopeId(businessContext);
+    const { data: businessProfile } = await db
+      .from("business_profiles")
+      .select("business_email")
+      .eq(tenantColumn, tenantId)
+      .maybeSingle<{ business_email?: string | null }>();
+
+    const allowedReplyTo = new Set(
+      [session.user.email, businessProfile?.business_email]
+        .filter((value): value is string => Boolean(value?.trim()))
+        .map((value) => value.trim().toLowerCase()),
+    );
+
+    const normalizedReplyTo = replyTo?.trim().toLowerCase();
+    if (normalizedReplyTo && !allowedReplyTo.has(normalizedReplyTo)) {
+      return NextResponse.json(
+        {
+          error:
+            "Reply-to must match the signed-in account email or the active business email.",
+        },
+        { status: 403 },
+      );
+    }
+
     const html = rawHtml ?? (estimate ? buildEstimateEmailHtml(estimate) : "");
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
       to: [to],
       subject,
       html,
-      ...(replyTo && { replyTo }),
+      ...(normalizedReplyTo && { replyTo: normalizedReplyTo }),
     });
 
     if (error) {

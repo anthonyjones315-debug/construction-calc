@@ -30,6 +30,21 @@ describe("deriveDeviceProfile", () => {
     expect(profile.blurClass).toBe("hardware-blur-8");
   });
 
+  it("keeps landscape phones in the mobile profile", () => {
+    const profile = deriveDeviceProfile({
+      viewportWidth: 844,
+      viewportHeight: 390,
+      userAgent:
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15",
+    });
+
+    expect(profile.isMobile).toBe(true);
+    expect(profile.isTablet).toBe(false);
+    expect(profile.isDesktop).toBe(false);
+    expect(profile.phoneTier).toBe("standard");
+    expect(profile.layoutMode).toBe("glass-stack");
+  });
+
   it("expands large tablets into the wide shell layout", () => {
     const profile = deriveDeviceProfile({
       viewportWidth: 1024,

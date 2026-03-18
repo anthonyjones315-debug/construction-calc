@@ -21,6 +21,10 @@ import {
   generateEstimateShareCode,
   withFinalizeInputs,
 } from "@/lib/estimates/finalize";
+import {
+  SHARE_CODE_UNAVAILABLE_MESSAGE,
+  isMissingShareCodeColumnError,
+} from "@/lib/estimates/share-code-support";
 import { isUnauthorizedError } from "@/lib/errors/unauthorized";
 import { sendEstimateSignatureEmail } from "@/lib/email/estimates";
 import { getPostHogClient } from "@/lib/posthog-server";
@@ -87,6 +91,31 @@ export async function POST(request: NextRequest) {
     let signingMeta = buildSigningMeta(generateEstimateShareCode());
     let insertError: { code?: string; message: string } | null = null;
     let savedId: string | null = null;
+    let shareCodeSupported = true;
+
+    const ownerMeta = {
+      user_id: session.user.id,
+      user_email: session.user.email ?? null,
+      user_name: session.user.name ?? null,
+    };
+
+    function buildSavedInputs(includeShareCode: boolean) {
+      if (includeShareCode) {
+        return withFinalizeInputs(payload.inputs, payload, signingMeta, ownerMeta);
+      }
+
+      return {
+        ...(payload.inputs ?? {}),
+        owner: ownerMeta,
+        finalize: {
+          title: payload.metadata.title,
+          calculatorLabel: payload.metadata.calculatorLabel,
+          generatedAt: payload.metadata.generatedAt,
+          jobName: payload.metadata.jobName ?? payload.name,
+          materialList: payload.material_list,
+        },
+      };
+    }
 
     for (let attempt = 0; attempt < 5; attempt += 1) {
       shareCode = signingMeta.shareCode;
@@ -95,16 +124,7 @@ export async function POST(request: NextRequest) {
         user_id: session.user.id,
         name: payload.name,
         calculator_id: payload.calculator_id,
-        inputs: withFinalizeInputs(
-          payload.inputs,
-          payload,
-          signingMeta,
-          {
-            user_id: session.user.id,
-            user_email: session.user.email ?? null,
-            user_name: session.user.name ?? null,
-          },
-        ),
+        inputs: buildSavedInputs(shareCodeSupported),
         results: payload.results,
         budget_items: null,
         client_name: payload.client_name ?? null,
@@ -114,8 +134,11 @@ export async function POST(request: NextRequest) {
             ? normalizeDollars(payload.total_cost)
             : null,
         status: "PENDING",
-        share_code: shareCode,
       };
+
+      if (shareCodeSupported) {
+        insertPayload.share_code = shareCode;
+      }
 
       if (!businessContext.usesLegacyUserScope) {
         insertPayload.business_id = businessContext.businessId;
@@ -143,6 +166,11 @@ export async function POST(request: NextRequest) {
       }
 
       insertError = error;
+      if (error && isMissingShareCodeColumnError(error)) {
+        shareCodeSupported = false;
+        continue;
+      }
+
       if (error?.code !== "23505") {
         break;
       }
@@ -167,13 +195,15 @@ export async function POST(request: NextRequest) {
     }
 
     const clientEmail = getClientEmail(payload.inputs);
-    if (clientEmail) {
+    const signUrl = shareCodeSupported ? signingMeta.signUrl : null;
+
+    if (clientEmail && signUrl) {
       await sendEstimateSignatureEmail({
         to: clientEmail,
         clientName: payload.client_name ?? null,
         estimateName: payload.name,
         jobName: payload.metadata.jobName ?? payload.name,
-        signUrl: signingMeta.signUrl,
+        signUrl,
         contractorName: contractorProfile?.business_name ?? session.user.name ?? null,
         replyTo:
           contractorProfile?.business_email ?? session.user.email ?? null,
@@ -193,7 +223,7 @@ export async function POST(request: NextRequest) {
             ? normalizeDollars(payload.total_cost)
             : null,
         has_client: Boolean(payload.client_name),
-        client_emailed: Boolean(clientEmail),
+        client_emailed: Boolean(clientEmail && signUrl),
       },
     });
     await posthog.shutdown();
@@ -201,9 +231,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       ok: true,
       id: savedId,
-      shareCode,
-      signUrl: signingMeta.signUrl,
-      emailed: Boolean(clientEmail),
+      shareCode: shareCodeSupported ? shareCode : null,
+      signUrl,
+      emailed: Boolean(clientEmail && signUrl),
+      warning: shareCodeSupported ? null : SHARE_CODE_UNAVAILABLE_MESSAGE,
       status: "PENDING",
       verificationStatus: verifyEstimate({
         inputs: payload.inputs,

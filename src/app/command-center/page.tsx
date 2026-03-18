@@ -4,8 +4,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth/config";
 import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
 import { createServerClient } from "@/lib/supabase/server";
+import { getBusinessJoinCode } from "@/lib/supabase/join-code";
 import { getNoIndexMetadata } from "@/seo";
 import { routes } from "@routes";
 import CommandCenterClient from "./CommandCenterClient";
@@ -321,6 +321,18 @@ async function loadCommandCenterData(userId: string): Promise<CommandCenterData>
     };
   }
 
+  if (membership.role !== "owner") {
+    return {
+      hasBusiness: true,
+      isOwner: false,
+      businessName: business.name,
+      joinCode: "",
+      members: [],
+      recentEstimates: [],
+      needsBusinessProfileSetup: false,
+    };
+  }
+
   const { data: memberships } = await db
     .from("memberships")
     .select("id, user_id, role, created_at")
@@ -353,16 +365,11 @@ async function loadCommandCenterData(userId: string): Promise<CommandCenterData>
     .maybeSingle();
 
   const userMap = new Map((users ?? []).map((row) => [row.id, row]));
-  let joinCodeHash = 0;
-  for (const char of business.id) {
-    joinCodeHash = (joinCodeHash * 31 + char.charCodeAt(0)) % 1000000;
-  }
-
   return {
     hasBusiness: true,
     isOwner: membership.role === "owner",
     businessName: business.name,
-    joinCode: String(Math.abs(joinCodeHash)).padStart(6, "0"),
+    joinCode: (await getBusinessJoinCode(db, business.id)).code,
     recentEstimates: (recentEstimates ?? []).map((estimate) => ({
       id: estimate.id,
       name: estimate.name,
@@ -442,15 +449,14 @@ export default async function CommandCenterPage({
   }
 
   return (
-    <div className="page-shell min-h-dvh grid grid-rows-[auto_1fr_auto] bg-slate-950 text-slate-100">
+    <div className="page-shell command-center-page-shell grid min-h-dvh grid-rows-[auto_1fr] overflow-hidden">
       <WelcomeGuidePopupClient />
       <Header />
       <main id="main-content" className="row-start-2 viewport-main">
-        <div className="viewport-frame">
+        <div className="viewport-frame command-center-page-frame">
           {mainContent}
         </div>
       </main>
-      <Footer />
     </div>
   );
 }

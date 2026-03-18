@@ -1,6 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
+import { GlassDialogFrame } from "@/components/ui/glass-elements";
 import { ContactForm } from "./ContactForm";
 
 interface ContactModalProps {
@@ -21,42 +22,39 @@ export function ContactModal({
   if (!open) return null;
 
   return (
-    <>
-      <div
-        className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
-        onClick={onClose}
-        aria-hidden
-      />
+    <div className="glass-modal-overlay px-4" onClick={onClose}>
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="contact-modal-title"
-        className="fixed left-1/2 top-1/2 z-[60] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2"
+        className="relative z-[60] w-full max-w-xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="relative rounded-2xl border border-slate-800 bg-slate-900 p-6 text-white shadow-[0_24px_50px_rgba(0,0,0,0.45)]">
+        <GlassDialogFrame className="max-h-[min(88dvh,54rem)] overflow-hidden p-0">
           <button
             type="button"
             onClick={onClose}
-            className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-white/6 hover:text-white"
+            className="glass-panel-deep absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-xl p-0 text-copy-secondary transition-colors hover:text-copy-primary"
             aria-label="Close"
           >
             <X className="h-4 w-4" aria-hidden />
           </button>
 
-          <h2
-            id="contact-modal-title"
-            className="font-display text-lg font-bold text-white"
-          >
-            {title}
-          </h2>
-          <p className="mt-1 text-sm text-slate-400">{description}</p>
+          <div className="glass-modal-header px-5 pt-5 pr-16">
+            <h2
+              id="contact-modal-title"
+              className="font-display text-lg font-bold text-copy-primary"
+            >
+              {title}
+            </h2>
+            <p className="mt-1 text-sm text-copy-secondary">{description}</p>
+          </div>
 
-          <div className="mt-4">
+          <div className="max-h-[calc(min(88dvh,54rem)-7rem)] overflow-y-auto px-5 pb-5">
             <ContactForm {...formProps} />
           </div>
-        </div>
+        </GlassDialogFrame>
       </div>
-    </>
+    </div>
   );
 }

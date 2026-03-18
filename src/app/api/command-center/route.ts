@@ -3,20 +3,17 @@ import * as Sentry from "@sentry/nextjs";
 import { auth } from "@/lib/auth/config";
 import { createServerClient } from "@/lib/supabase/server";
 import { getBusinessContextForSession } from "@/lib/supabase/business";
+import {
+  JoinCodeRotationUnavailableError,
+  getBusinessJoinCode,
+  rotateBusinessJoinCode,
+} from "@/lib/supabase/join-code";
 
 type UserRow = {
   id: string;
   name: string | null;
   email: string | null;
 };
-
-function makeJoinCode(seed: string): string {
-  let hash = 0;
-  for (let index = 0; index < seed.length; index += 1) {
-    hash = (hash * 31 + seed.charCodeAt(index)) % 1000000;
-  }
-  return String(Math.abs(hash)).padStart(6, "0");
-}
 
 export async function GET() {
   try {
@@ -85,7 +82,7 @@ export async function GET() {
     business: {
       id: businessRow.id,
       name: businessRow.name,
-      joinCode: makeJoinCode(businessRow.id),
+      joinCode: (await getBusinessJoinCode(db, businessRow.id)).code,
     },
     members: (memberships ?? []).map((membership) => {
       const user = userMap.get(membership.user_id);
@@ -100,6 +97,40 @@ export async function GET() {
     }),
   });
   } catch (error) {
+    Sentry.captureException(error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}
+
+export async function PATCH() {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const db = createServerClient();
+    const businessContext = await getBusinessContextForSession(db, session);
+    if (!businessContext.isOwner) {
+      return NextResponse.json(
+        { error: "Only business owners can rotate invite codes." },
+        { status: 403 },
+      );
+    }
+
+    const joinCode = await rotateBusinessJoinCode(db, businessContext.businessId);
+    return NextResponse.json({
+      ok: true,
+      business: {
+        id: businessContext.businessId,
+        joinCode,
+      },
+    });
+  } catch (error) {
+    if (error instanceof JoinCodeRotationUnavailableError) {
+      return NextResponse.json({ error: error.message }, { status: 503 });
+    }
+
     Sentry.captureException(error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }

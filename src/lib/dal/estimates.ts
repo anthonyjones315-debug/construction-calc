@@ -3,6 +3,7 @@ import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { auth } from "@/lib/auth/config";
 import { getEstimateTag, getSavedEstimatesTag } from "@/lib/cache-tags";
+import { isMissingShareCodeColumnError } from "@/lib/estimates/share-code-support";
 import { normalizeEstimateStatus, type EstimateStatus } from "@/lib/estimates/status";
 import {
   redirectForUnauthorizedError,
@@ -233,26 +234,43 @@ async function getSafeEstimateCached(
   cacheTag(getSavedEstimatesTag(businessId));
 
   const db = createServerClient();
-  const query =
-    scopeColumn === "business_id"
-      ? db
-          .from("saved_estimates")
-          .select(
-            "id, user_id, business_id, name, calculator_id, inputs, results, budget_items, total_cost, client_name, job_site_address, status, share_code, created_at, updated_at",
-          )
-          .eq("id", estimateId)
-          .eq("business_id", businessId)
-          .maybeSingle()
-      : db
-          .from("saved_estimates")
-          .select(
-            "id, user_id, name, calculator_id, inputs, results, budget_items, total_cost, client_name, job_site_address, status, share_code, created_at, updated_at",
-          )
-          .eq("id", estimateId)
-          .eq("user_id", businessId)
-          .maybeSingle();
+  const scopedColumn = scopeColumn === "business_id" ? "business_id" : "user_id";
+  const sharedColumns = [
+    "id",
+    "user_id",
+    ...(scopeColumn === "business_id" ? ["business_id"] : []),
+    "name",
+    "calculator_id",
+    "inputs",
+    "results",
+    "budget_items",
+    "total_cost",
+    "client_name",
+    "job_site_address",
+    "status",
+    "created_at",
+    "updated_at",
+  ];
+  const selectColumns = (includeShareCode: boolean) =>
+    [
+      ...sharedColumns,
+      ...(includeShareCode ? ["share_code"] : []),
+    ].join(", ");
 
-  const { data, error } = await query;
+  async function loadEstimate(includeShareCode: boolean) {
+    return db
+      .from("saved_estimates")
+      .select(selectColumns(includeShareCode))
+      .eq("id", estimateId)
+      .eq(scopedColumn, businessId)
+      .maybeSingle();
+  }
+
+  let { data, error } = await loadEstimate(true);
+
+  if (error && isMissingShareCodeColumnError(error)) {
+    ({ data, error } = await loadEstimate(false));
+  }
 
   if (error) {
     throw new Error(`Failed to load estimate: ${error.message}`);
@@ -262,7 +280,7 @@ async function getSafeEstimateCached(
     return null;
   }
 
-  return toSafeEstimate(data as EstimateRow, role);
+  return toSafeEstimate(data as unknown as EstimateRow, role);
 }
 
 export async function getSafeEstimate(

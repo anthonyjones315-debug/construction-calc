@@ -3,6 +3,7 @@ import * as Sentry from "@sentry/nextjs";
 import { auth } from "@/lib/auth/config";
 import { createServerClient } from "@/lib/supabase/server";
 import {
+  canWriteBusinessData,
   getBusinessContextForSession,
   getTenantScopeColumn,
   getTenantScopeId,
@@ -16,6 +17,10 @@ import {
 } from "@/lib/cache-tags";
 import { revalidateTag } from "next/cache";
 import { buildSigningMeta, generateEstimateShareCode } from "@/lib/estimates/finalize";
+import {
+  SHARE_CODE_UNAVAILABLE_MESSAGE,
+  isMissingShareCodeColumnError,
+} from "@/lib/estimates/share-code-support";
 
 async function loadEstimateScope(
   db: ReturnType<typeof createServerClient>,
@@ -65,6 +70,12 @@ export async function POST(
 
     const db = createServerClient();
     const businessContext = await getBusinessContextForSession(db, session);
+    if (!canWriteBusinessData(businessContext.role)) {
+      return NextResponse.json(
+        { error: "Only owners, admins, or editors can rotate share codes." },
+        { status: 403 },
+      );
+    }
     const tenantColumn = getTenantScopeColumn(businessContext);
     const tenantId = getTenantScopeId(businessContext);
     const permission = await loadEstimateScope(db, id, tenantColumn, tenantId);
@@ -125,6 +136,13 @@ export async function POST(
         shareCode = generateEstimateShareCode();
         attempts++;
         continue;
+      }
+
+      if (isMissingShareCodeColumnError(error)) {
+        return NextResponse.json(
+          { error: SHARE_CODE_UNAVAILABLE_MESSAGE },
+          { status: 503 },
+        );
       }
 
       Sentry.captureException(error);

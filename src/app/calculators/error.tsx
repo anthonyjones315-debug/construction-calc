@@ -24,27 +24,35 @@ export default function CalcError({
   });
 
   return (
-    <div className="flex flex-col items-center justify-center py-20 px-4 text-center">
-      <div className="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center mb-4">
-        <AlertTriangle className="w-7 h-7 text-red-500" />
+    <div className="glass-container-elevated relative mx-auto flex max-w-md flex-col items-center justify-center overflow-hidden px-4 py-10 text-center">
+      <div
+        aria-hidden
+        className="glass-decorative absolute inset-x-0 top-0 h-24"
+        style={{
+          background:
+            "radial-gradient(circle at top, color-mix(in srgb, var(--color-primary) 15%, transparent), transparent 56%)",
+        }}
+      />
+      <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl border border-red-400/25 bg-red-500/10 mb-4">
+        <AlertTriangle className="h-7 w-7 text-red-300" />
       </div>
-      <h2 className="text-lg font-bold text-[--color-ink] mb-2">
+      <h2 className="mb-2 text-lg font-bold text-copy-primary">
         {userFacing.title}
       </h2>
-      <p className="text-sm text-[--color-ink-dim] mb-6 max-w-xs">
+      <p className="mb-6 max-w-xs text-sm text-copy-secondary">
         {userFacing.message}
       </p>
-      <div className="flex flex-wrap items-center justify-center gap-3">
+      <div className="relative flex flex-wrap items-center justify-center gap-3">
         <button
           onClick={reset}
-          className="flex items-center gap-2 bg-[--color-orange-brand] text-white font-bold px-5 py-2.5 rounded-xl text-sm"
+          className="glass-button-primary flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold"
         >
-          <RefreshCw className="w-4 h-4" /> Try Again
+          <RefreshCw className="h-4 w-4" /> Try Again
         </button>
         <ManualErrorReportButton
           error={error}
           source="calculator-route-error"
-          className="rounded-xl border border-[--color-orange-brand]/40 px-5 py-2.5 text-sm font-bold text-[--color-orange-brand]"
+          className="px-5 py-2.5 text-sm font-bold"
         />
       </div>
     </div>

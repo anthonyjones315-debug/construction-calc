@@ -4,32 +4,54 @@ import { useEffect, useState } from "react";
 import { Send, Loader2 } from "lucide-react";
 import { getUserFacingErrorDetails } from "@/lib/errors/user-facing";
 
+type ContactReportContext = {
+  reportType?: "general" | "error";
+  source?: string;
+  pageUrl?: string;
+  eventId?: string;
+  digest?: string;
+  technicalMessage?: string;
+  userFacingTitle?: string;
+  userFacingMessage?: string;
+  userAgent?: string;
+  browserTime?: string;
+};
+
 type ContactFormProps = {
   initialName?: string;
   initialEmail?: string;
   initialSubject?: string;
   initialMessage?: string;
+  messagePlaceholder?: string;
   submitLabel?: string;
   successMessage?: string;
   mode?: "general" | "error-report";
-  reportContext?: {
-    reportType?: "general" | "error";
-    source?: string;
-    pageUrl?: string;
-    eventId?: string;
-    digest?: string;
-    technicalMessage?: string;
-    userFacingMessage?: string;
-    userAgent?: string;
-    browserTime?: string;
-  };
+  reportContext?: ContactReportContext;
 };
+
+function buildLockedDiagnostics(reportContext?: ContactReportContext) {
+  if (!reportContext) return "";
+
+  const fields = [
+    ["Friendly summary", reportContext.userFacingTitle],
+    ["Operator-safe message", reportContext.userFacingMessage],
+    ["Source", reportContext.source],
+    ["Reference", reportContext.eventId ?? reportContext.digest],
+    ["Page", reportContext.pageUrl],
+    ["Browser time", reportContext.browserTime],
+    ["User agent", reportContext.userAgent],
+    ["Technical error", reportContext.technicalMessage],
+  ].filter((entry): entry is [string, string] => Boolean(entry[1]?.trim()));
+
+  return fields.map(([label, value]) => `${label}: ${value}`).join("\n\n");
+}
 
 export function ContactForm({
   initialName = "",
   initialEmail = "",
   initialSubject = "",
   initialMessage = "",
+  messagePlaceholder,
   submitLabel = "Send",
   successMessage = "Thanks for reaching out. We'll get back to you soon.",
   mode = "general",
@@ -48,6 +70,18 @@ export function ContactForm({
     setSubject(initialSubject);
     setMessage(initialMessage);
   }, [initialEmail, initialMessage, initialName, initialSubject]);
+
+  const isErrorReport = mode === "error-report";
+  const lockedDiagnostics = buildLockedDiagnostics(reportContext);
+  const resolvedMessagePlaceholder =
+    messagePlaceholder ||
+    (isErrorReport
+      ? [
+          "Tell us what you were trying to do.",
+          "What happened instead?",
+          "Anything you expected to see?",
+        ].join("\n")
+      : "Your message...");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -73,6 +107,7 @@ export function ContactForm({
           eventId: reportContext?.eventId,
           digest: reportContext?.digest,
           technicalMessage: reportContext?.technicalMessage,
+          userFacingTitle: reportContext?.userFacingTitle,
           userFacingMessage: reportContext?.userFacingMessage,
           userAgent: reportContext?.userAgent,
           browserTime: reportContext?.browserTime,
@@ -100,13 +135,20 @@ export function ContactForm({
     }
   }
 
+  const labelClass =
+    "flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary";
+  const labelHintClass =
+    "text-[11px] font-normal normal-case tracking-normal text-copy-tertiary";
+  const fieldShellClass =
+    "glass-input-shell glass-panel-deep relative flex min-h-11 overflow-hidden rounded-xl p-0";
   const inputClass =
-    "h-10 w-full rounded-xl border border-slate-500 bg-slate-900 px-3 text-white placeholder:text-slate-500 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500";
-  const labelClass = "flex flex-col gap-1 text-sm text-slate-300";
+    "glass-input h-11 w-full rounded-none border-0 bg-transparent px-3 text-sm text-field-input shadow-none";
+  const textareaClass =
+    "glass-input min-h-[148px] w-full rounded-none border-0 bg-transparent px-3 py-3 text-sm leading-relaxed text-field-input shadow-none";
 
   if (status === "sent") {
     return (
-      <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-4 text-sm text-emerald-200">
+      <div className="glass-panel border-emerald-500/30 bg-emerald-500/12 px-4 py-4 text-sm text-emerald-100">
         {successMessage}
       </div>
     );
@@ -115,58 +157,100 @@ export function ContactForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <label className={labelClass}>
-        Email <span className="text-red-400">*</span>
-        <input
-          type="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@example.com"
-          className={inputClass}
-        />
+        <span>
+          Email <span className="text-red-400">*</span>
+        </span>
+        <div className={fieldShellClass}>
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            className={inputClass}
+          />
+        </div>
       </label>
       <label className={labelClass}>
-        Name
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Your name"
-          maxLength={120}
-          className={inputClass}
-        />
+        <span>Name</span>
+        <div className={fieldShellClass}>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Your name"
+            maxLength={120}
+            className={inputClass}
+          />
+        </div>
       </label>
       <label className={labelClass}>
-        Subject
-        <input
-          type="text"
-          value={subject}
-          onChange={(e) => setSubject(e.target.value)}
-          placeholder="Feedback / question"
-          maxLength={200}
-          className={inputClass}
-        />
+        <span>Subject</span>
+        <div className={fieldShellClass}>
+          <input
+            type="text"
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            placeholder="Feedback / question"
+            maxLength={200}
+            className={inputClass}
+          />
+        </div>
       </label>
       <label className={labelClass}>
-        Message <span className="text-red-400">*</span>
-        <textarea
-          required
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Your message..."
-          rows={4}
-          maxLength={10000}
-          className={`min-h-[100px] resize-y rounded-xl border border-slate-500 bg-slate-900 px-3 py-2 text-white placeholder:text-slate-500 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500`}
-        />
+        <span>
+          {isErrorReport ? "What happened" : "Message"}{" "}
+          <span className="text-red-400">*</span>
+        </span>
+        {isErrorReport ? (
+          <span className={labelHintClass}>
+            Add your field notes here. We attach the locked system details
+            separately below.
+          </span>
+        ) : null}
+        <div className={fieldShellClass}>
+          <textarea
+            required
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder={resolvedMessagePlaceholder}
+            rows={6}
+            maxLength={10000}
+            className={`${textareaClass} resize-y`}
+          />
+        </div>
       </label>
+      {isErrorReport && lockedDiagnostics ? (
+        <div className="glass-panel-deep space-y-3 border-white/10 bg-black/15 p-4">
+          <div className="space-y-1">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary">
+              Locked System Details
+            </p>
+            <p className={labelHintClass}>
+              This section is attached automatically and stays read-only so the
+              technical error context arrives intact.
+            </p>
+          </div>
+          <div className={fieldShellClass}>
+            <textarea
+              readOnly
+              value={lockedDiagnostics}
+              rows={8}
+              className="glass-input min-h-[180px] w-full rounded-none border-0 bg-transparent px-3 py-3 font-mono text-[12px] leading-relaxed text-copy-secondary shadow-none"
+            />
+          </div>
+        </div>
+      ) : null}
       {status === "error" && errorMessage && (
-        <p className="text-sm text-red-300">{errorMessage}</p>
+        <div className="glass-panel border-red-500/25 bg-red-500/10 px-4 py-3 text-sm text-red-100">
+          {errorMessage}
+        </div>
       )}
       <div className="flex gap-2">
         <button
           type="submit"
           disabled={status === "sending"}
-          className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[--color-orange-brand] px-4 text-sm font-bold text-white transition hover:brightness-95 disabled:opacity-60"
+          className="glass-button-primary inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-bold disabled:opacity-60"
         >
           {status === "sending" ? (
             <Loader2 className="h-4 w-4 animate-spin" aria-hidden />

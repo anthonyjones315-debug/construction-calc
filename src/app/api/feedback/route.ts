@@ -18,6 +18,7 @@ const feedbackSchema = z.object({
   eventId: z.string().max(200).optional(),
   digest: z.string().max(200).optional(),
   technicalMessage: z.string().max(4000).optional(),
+  userFacingTitle: z.string().max(240).optional(),
   userFacingMessage: z.string().max(1200).optional(),
   userAgent: z.string().max(1200).optional(),
   browserTime: z.string().max(120).optional(),
@@ -79,6 +80,7 @@ export async function POST(req: NextRequest) {
       eventId,
       digest,
       technicalMessage,
+      userFacingTitle,
       userFacingMessage,
       userAgent,
       browserTime,
@@ -89,6 +91,7 @@ export async function POST(req: NextRequest) {
     const eventIdValue = normalizeString(eventId);
     const digestValue = normalizeString(digest);
     const technicalMessageValue = normalizeString(technicalMessage);
+    const userFacingTitleValue = normalizeString(userFacingTitle);
     const userFacingMessageValue = normalizeString(userFacingMessage);
     const userAgentValue = normalizeString(userAgent);
     const subjectLine =
@@ -106,6 +109,9 @@ export async function POST(req: NextRequest) {
         ? `<p><strong>Sentry Event ID:</strong> ${escapeHtml(eventIdValue)}</p>`
         : "",
       digestValue ? `<p><strong>Error Digest:</strong> ${escapeHtml(digestValue)}</p>` : "",
+      userFacingTitleValue
+        ? `<p><strong>User-Facing Title:</strong> ${escapeHtml(userFacingTitleValue)}</p>`
+        : "",
       userFacingMessageValue
         ? `<p><strong>User-Facing Summary:</strong> ${escapeHtml(userFacingMessageValue)}</p>`
         : "",

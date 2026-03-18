@@ -109,13 +109,13 @@ export function Header() {
   }, [mobileNavOpen]);
 
   return (
-    <header ref={headerRef} className="sticky top-0 z-50 border-b border-slate-800 bg-slate-950 text-slate-100 shadow-[0_10px_24px_rgba(0,0,0,0.2)]">
+    <header ref={headerRef} className="site-header-shell sticky top-0 z-50">
       <div className="mx-auto flex h-[--shell-header-h] max-w-7xl items-center justify-between gap-1 px-2.5 sm:gap-2 sm:px-3">
         {/* Logo — P brand: always to Command Center dashboard */}
         <Link
           href={brandHref}
           prefetch={false}
-          className="flex shrink-0 items-center gap-1 text-xs font-display font-black tracking-wide text-white transition-colors hover:text-orange-500 sm:text-base"
+          className="flex shrink-0 items-center gap-1 text-xs font-display font-black tracking-wide text-copy-primary transition-colors hover:text-primary sm:text-base"
           aria-label="Pro Construction Calc - Command Center"
         >
           <HardHat className="h-4 w-4 text-orange-500 sm:h-[18px] sm:w-[18px]" aria-hidden />
@@ -125,7 +125,7 @@ export function Header() {
 
         {/* Desktop nav */}
         <nav
-          className="hidden items-center gap-2 text-sm text-slate-300 md:flex"
+          className="site-header-nav hidden items-center gap-2 text-sm md:flex"
           aria-label="Main navigation"
         >
           {primaryNavigation.map(({ href, label }) => (
@@ -133,7 +133,7 @@ export function Header() {
               key={href}
               href={href}
               prefetch={false}
-              className="flex min-h-7 items-center rounded-lg px-2 py-1 text-[11px] transition-colors hover:text-white"
+              className="flex min-h-7 items-center rounded-lg px-2 py-1 text-[11px] transition-colors hover:text-primary"
             >
               {label}
             </Link>
@@ -161,7 +161,7 @@ export function Header() {
           <Link
             href={routes.cart}
             prefetch={false}
-            className="inline-flex min-h-7 items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.14em] text-white transition hover:border-orange-400/60 hover:text-orange-200 sm:px-2.5"
+            className="inline-flex min-h-7 items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.14em] text-copy-primary transition hover:border-orange-400/60 hover:text-primary sm:px-2.5"
             aria-label={`Cart ${cartCount} item${cartCount === 1 ? "" : "s"}`}
           >
             <ShoppingCart className="h-3.5 w-3.5" aria-hidden />
@@ -189,7 +189,7 @@ export function Header() {
             <div className="relative" ref={menuRef}>
               <button
                 onClick={() => setMenuOpen((o) => !o)}
-                className="flex items-center gap-1 rounded-full text-sm text-slate-300 transition-colors hover:text-white"
+                className="flex items-center gap-1 rounded-full text-sm text-copy-secondary transition-colors hover:text-copy-primary"
                 aria-expanded={menuOpen}
                 aria-haspopup="true"
                 aria-controls="account-menu"

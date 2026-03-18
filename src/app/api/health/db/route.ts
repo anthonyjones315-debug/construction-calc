@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import { auth } from "@/lib/auth/config";
 import { createServerClient } from "@/lib/supabase/server";
+import { getBusinessContextForSession } from "@/lib/supabase/business";
 
 type TableHealth = {
   schema: "default" | "public";
@@ -56,6 +57,15 @@ export async function GET() {
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const db = createServerClient();
+    const businessContext = await getBusinessContextForSession(db, session);
+    if (!businessContext.isOwner) {
+      return NextResponse.json(
+        { error: "Only business owners can access database diagnostics." },
+        { status: 403 },
+      );
     }
 
     const projectUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? null;

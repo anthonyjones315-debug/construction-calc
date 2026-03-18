@@ -1,5 +1,9 @@
 import "server-only";
 
+import {
+  ShareCodeColumnMissingError,
+  isMissingShareCodeColumnError,
+} from "@/lib/estimates/share-code-support";
 import { createServerClient } from "@/lib/supabase/server";
 import { normalizeShareCode } from "@/lib/estimates/finalize";
 import {
@@ -127,6 +131,9 @@ export async function getPublicEstimateByShareCode(shareCode: string) {
     .maybeSingle();
 
   if (error) {
+    if (isMissingShareCodeColumnError(error)) {
+      throw new ShareCodeColumnMissingError();
+    }
     throw new Error(`Failed to load public estimate: ${error.message}`);
   }
 
