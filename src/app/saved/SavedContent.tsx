@@ -25,6 +25,7 @@ import type { EstimateStatus } from "@/lib/estimates/status";
 import { sanitizeFilename } from "@/utils/sanitize-filename";
 import { useContractorProfile } from "@/components/pdf/useContractorProfile";
 import { useHaptic } from "@/hooks/useHaptic";
+import { routes } from "@routes";
 import {
   toCents,
   multiplyCents,
@@ -1369,7 +1370,7 @@ export function SavedContent({
           device.
         </p>
         <Link
-          href="/auth/signin"
+          href={routes.auth.signIn}
           className="btn-tactile inline-flex min-h-11 items-center gap-2 rounded-xl bg-[--color-orange-brand] px-4 py-3 font-bold text-white transition-all duration-200 hover:bg-[--color-orange-dark] active:scale-[0.98]"
         >
           Sign In Free
@@ -1399,7 +1400,7 @@ export function SavedContent({
             {showBuilder ? "Close Builder" : "Build from Price Book"}
           </button>
           <Link
-            href="/calculators"
+            href={routes.calculators}
             className="btn-tactile flex min-h-11 items-center gap-2 rounded-lg bg-[--color-orange-brand] px-4 py-2 text-sm font-medium text-white transition-all duration-200 hover:bg-[--color-orange-dark] active:scale-[0.98]"
           >
             <Calculator className="w-4 h-4" aria-hidden />
@@ -1781,7 +1782,7 @@ export function SavedContent({
           <Bookmark className="w-12 h-12 text-[--color-ink-dim] mx-auto mb-4 opacity-40" />
           <p className="text-[--color-ink-dim] mb-4">No saved estimates yet.</p>
           <Link
-            href="/calculators"
+            href={routes.calculators}
             className="text-[--color-orange-brand] font-medium hover:underline text-sm"
           >
             Run your first calculation →
