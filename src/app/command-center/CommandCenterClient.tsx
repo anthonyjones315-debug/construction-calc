@@ -291,7 +291,26 @@ const commandPages: Array<{
 ];
 
 function formatRole(role: string): string {
-  return role === "owner" ? "Owner" : "Member";
+  switch (role) {
+    case "owner":   return "Owner";
+    case "admin":   return "Admin";
+    case "editor":  return "Editor";
+    case "member":  return "Member";
+    default:        return "Member";
+  }
+}
+
+function roleBadgeClasses(role: string): string {
+  switch (role) {
+    case "owner":
+      return "border-orange-500/30 bg-orange-500/10 text-orange-300";
+    case "admin":
+      return "border-blue-500/30 bg-blue-500/10 text-blue-300";
+    case "editor":
+      return "border-emerald-500/30 bg-emerald-500/10 text-emerald-300";
+    default:
+      return "border-slate-700 bg-slate-800/70 text-slate-400";
+  }
 }
 
 function formatJoinedAt(value: string) {
@@ -519,6 +538,7 @@ export default function CommandCenterClient({
   const [manageTargetId, setManageTargetId] = useState<string | null>(null);
   const [activeJoinCode, setActiveJoinCode] = useState(joinCode);
   const [isRefreshingInvite, setIsRefreshingInvite] = useState(false);
+  const [joinCodeRotatable, setJoinCodeRotatable] = useState(true);
   const [activeTool, setActiveTool] = useState<NavItem | null>(null);
   const [toolFilter, setToolFilter] = useState("");
   const [toolCategory, setToolCategory] = useState<ToolCategory>("all");
@@ -642,12 +662,22 @@ export default function CommandCenterClient({
       });
       const payload = await response.json().catch(() => ({}));
 
+      if (response.status === 503) {
+        // Migration not yet applied — column doesn't exist.
+        setJoinCodeRotatable(false);
+        setError(
+          "Code rotation requires a one-time database update. Contact your administrator to apply the join_code migration.",
+        );
+        return;
+      }
+
       if (!response.ok) {
         throw new Error(payload?.error ?? "Unable to refresh the invite code.");
       }
 
       const nextCode = payload.business?.joinCode ?? activeJoinCode;
       setActiveJoinCode(nextCode);
+      setJoinCodeRotatable(true);
       setSuccess("Invite code rotated. Previous codes are now invalid.");
     } catch (refreshError) {
       setError(
@@ -1252,11 +1282,16 @@ export default function CommandCenterClient({
             <button
               type="button"
               onClick={refreshInviteCode}
-              disabled={isRefreshingInvite}
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-white/20 px-4 text-sm font-semibold text-white transition hover:border-orange-400/60 hover:text-orange-200 disabled:opacity-60"
+              disabled={isRefreshingInvite || !joinCodeRotatable}
+              title={
+                !joinCodeRotatable
+                  ? "Rotation requires the join_code migration to be applied."
+                  : "Rotate invite code — old codes become invalid immediately"
+              }
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-white/20 px-4 text-sm font-semibold text-white transition hover:border-orange-400/60 hover:text-orange-200 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <RefreshCw className="h-4 w-4" aria-hidden />
-              {isRefreshingInvite ? "Refreshing" : "Regenerate Code"}
+              {isRefreshingInvite ? "Refreshing…" : "Regenerate Code"}
             </button>
           </div>
         </article>
@@ -1300,22 +1335,30 @@ export default function CommandCenterClient({
                     </div>
                   </div>
                   {isOwner ? (
-                    <span className="inline-flex items-center rounded-full border border-orange-500/30 bg-orange-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-orange-300">
-                      Owner
+                    <span
+                      className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] ${roleBadgeClasses(member.role)}`}
+                    >
+                      {formatRole(member.role)}
                     </span>
                   ) : (
-                    <button
-                      type="button"
-                      onClick={() => setManageTargetId(member.membershipId)}
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-transparent text-slate-400 transition hover:border-slate-600 hover:text-white"
-                      aria-label={`Manage ${member.name}`}
-                    >
-                      <MoreHorizontal className="h-4 w-4" aria-hidden />
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.14em] ${roleBadgeClasses(member.role)}`}
+                      >
+                        {formatRole(member.role)}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setManageTargetId(member.membershipId)}
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-transparent text-slate-400 transition hover:border-slate-600 hover:text-white"
+                        aria-label={`Manage ${member.name}`}
+                      >
+                        <MoreHorizontal className="h-4 w-4" aria-hidden />
+                      </button>
+                    </div>
                   )}
                 </div>
                 <div className="mt-4 flex items-center justify-between gap-3 text-xs text-slate-400">
-                  <span>{formatRole(member.role)}</span>
                   <span>Joined {formatJoinedAt(member.joinedAt)}</span>
                 </div>
               </article>
