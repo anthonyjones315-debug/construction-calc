@@ -25,6 +25,10 @@ import { isUnauthorizedError } from "@/lib/errors/unauthorized";
 import { sendEstimateSignatureEmail } from "@/lib/email/estimates";
 import { getPostHogClient } from "@/lib/posthog-server";
 import { normalizeDollars } from "@/utils/money";
+import {
+  saveCalculation,
+  verifyEstimate,
+} from "@/app/actions/calculations";
 
 function getClientEmail(input: Record<string, unknown> | undefined) {
   const candidate = input?.client_email;
@@ -117,11 +121,20 @@ export async function POST(request: NextRequest) {
         insertPayload.business_id = businessContext.businessId;
       }
 
-      const { data, error } = await db
-        .from("saved_estimates")
-        .insert(insertPayload)
-        .select("id")
-        .single();
+      const { data, error } = await saveCalculation(db, insertPayload, {
+        inputs:
+          typeof insertPayload.inputs === "object" && insertPayload.inputs
+            ? (insertPayload.inputs as Record<string, unknown>)
+            : {},
+        total_cost:
+          typeof insertPayload.total_cost === "number"
+            ? insertPayload.total_cost
+            : null,
+        county:
+          typeof payload.inputs?.selected_county === "string"
+            ? payload.inputs.selected_county
+            : null,
+      });
 
       if (!error && data?.id) {
         savedId = data.id;
@@ -192,6 +205,14 @@ export async function POST(request: NextRequest) {
       signUrl: signingMeta.signUrl,
       emailed: Boolean(clientEmail),
       status: "PENDING",
+      verificationStatus: verifyEstimate({
+        inputs: payload.inputs,
+        total_cost: payload.total_cost ?? null,
+        county:
+          typeof payload.inputs?.selected_county === "string"
+            ? payload.inputs.selected_county
+            : null,
+      }).verification_status,
     });
   } catch (error) {
     if (isUnauthorizedError(error)) {

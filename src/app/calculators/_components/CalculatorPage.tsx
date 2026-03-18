@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import type { Route } from "next";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -53,10 +54,7 @@ import {
   Wrench,
   X,
 } from "lucide-react";
-import {
-  EmailEstimateModal,
-  type EstimatePayload,
-} from "@/components/ui/EmailEstimateModal";
+import type { EstimatePayload } from "@/components/ui/EmailEstimateModal";
 import { ManualErrorReportButton } from "@/components/support/ManualErrorReportButton";
 import { JsonLD } from "@/seo";
 import { ArticleMarkdown } from "@/components/content/ArticleMarkdown";
@@ -73,8 +71,10 @@ import {
 import { calculateNysSalesTax } from "@/services/taxEngine";
 import { routes } from "@routes";
 import { UnitToggle } from "./UnitToggle";
-import { ProInput } from "@/components/ui/ProInput";
-import { ProResult } from "@/components/ui/ProResult";
+import {
+  ProInput,
+  ProResult,
+} from "@/components/ui/glass-elements";
 import { useProMode } from "@/hooks/useProMode";
 import { triggerHaptic } from "@/hooks/useHaptic";
 import { sanitizeFilename } from "@/utils/sanitize-filename";
@@ -89,6 +89,46 @@ import { getConcreteInputLabelsFromCopy } from "@/data/construction-terms";
 import { useStore } from "@/lib/store";
 import { recordVisit } from "@/lib/recommendations/activity";
 import { getUserFacingErrorDetails } from "@/lib/errors/user-facing";
+import { useDeviceProfile } from "@/hooks/useDeviceProfile";
+
+const EmailEstimateModal = dynamic(
+  () =>
+    import("@/components/ui/EmailEstimateModal").then(
+      (mod) => mod.EmailEstimateModal,
+    ),
+  { ssr: false },
+);
+
+const CalculatorAuditPanel = dynamic(
+  () =>
+    import("./CalculatorAuditPanel").then(
+      (mod) => mod.CalculatorAuditPanel,
+    ),
+  {
+    ssr: false,
+    loading: () => (
+      <section className="glass-panel p-3 transition-colors">
+        <div className="flex items-center justify-between gap-2">
+          <div className="skeleton h-3 w-32" />
+          <div className="skeleton h-3 w-10" />
+        </div>
+        <div className="mt-3 space-y-2">
+          {[0, 1, 2].map((index) => (
+            <div
+              key={index}
+              className="glass-panel-deep rounded-lg px-3 py-3"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div className="skeleton h-3 w-20" />
+                <div className="skeleton h-4 w-16" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    ),
+  },
+);
 
 type TradeModule = {
   label: string;
@@ -704,6 +744,7 @@ type CalculatorPageProps = {
 };
 
 export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
+  const calculatorShellRef = useRef<HTMLElement>(null);
   const { data: session } = useSession();
   const contractorProfile = useContractorProfile();
   const { proMode, mounted } = useProMode();
@@ -757,7 +798,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   const [depthThickness, setDepthThickness] = useState(4);
   const [wasteFactor, setWasteFactor] = useState(10);
   const [saveState, setSaveState] = useState<
-    "idle" | "saving" | "saved" | "downloaded"
+    "idle" | "saving" | "saved" | "corrected" | "downloaded"
   >("idle");
   const [areaInputMode, setAreaInputMode] =
     useState<AreaInputMode>("dimensions");
@@ -797,7 +838,9 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   const [createdSignUrl, setCreatedSignUrl] = useState<string | null>(null);
   const [aiOptimizeBusy, setAiOptimizeBusy] = useState(false);
   const [aiOptimizeError, setAiOptimizeError] = useState<string | null>(null);
-  const [aiOptimizeContent, setAiOptimizeContent] = useState<string | null>(null);
+  const [aiOptimizeContent, setAiOptimizeContent] = useState<string | null>(
+    null,
+  );
   const [estimateName, setEstimateName] = useState(
     `${displayTitle(page.title)} Estimate`,
   );
@@ -814,6 +857,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   const hapticTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isFirstCalcRender = useRef(true);
   const userInteracted = useRef(false);
+  const didAutoFocusRef = useRef(false);
   const hasReportedError = useRef(false);
   const resultsCardRef = useRef<HTMLElement | null>(null);
   const moduleDropdownRef = useRef<HTMLDivElement | null>(null);
@@ -823,6 +867,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     page.key === "business-tax-save";
   const [taxRegion, setTaxRegion] = useState<"NYS" | "Other">("NYS");
   const [taxCounty, setTaxCounty] = useState<string>("Oneida");
+  const deviceProfile = useDeviceProfile();
   const [capitalImprovement, setCapitalImprovement] = useState(false);
 
   const breadcrumbs = useMemo(
@@ -879,6 +924,73 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     setFinalizeSuccess(null);
     setCreatedSignUrl(null);
   }, [page.title]);
+
+  useEffect(() => {
+    if (!deviceProfile.isMobile || didAutoFocusRef.current) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      calculatorShellRef.current
+        ?.querySelectorAll<HTMLInputElement>('input[type="number"]')
+        .forEach((input) => {
+          input.inputMode = "decimal";
+          input.enterKeyHint = "done";
+        });
+
+      const firstNumericInput =
+        calculatorShellRef.current?.querySelector<HTMLInputElement>(
+          'input[type="number"]',
+        );
+
+      if (!firstNumericInput) return;
+      if (
+        document.activeElement instanceof HTMLElement &&
+        document.activeElement !== document.body
+      ) {
+        return;
+      }
+
+      firstNumericInput.focus({ preventScroll: true });
+      didAutoFocusRef.current = true;
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [deviceProfile.isMobile, page.canonicalPath]);
+
+  useEffect(() => {
+    didAutoFocusRef.current = false;
+  }, [page.canonicalPath]);
+
+  useEffect(() => {
+    if (
+      !deviceProfile.isMobile ||
+      typeof window === "undefined" ||
+      !window.visualViewport
+    ) {
+      return;
+    }
+
+    const viewport = window.visualViewport;
+    const syncKeyboardInset = () => {
+      const inset = Math.max(
+        0,
+        window.innerHeight - viewport.height - viewport.offsetTop,
+      );
+      document.documentElement.style.setProperty(
+        "--keyboard-inset",
+        `${inset}px`,
+      );
+    };
+
+    syncKeyboardInset();
+    viewport.addEventListener("resize", syncKeyboardInset);
+    viewport.addEventListener("scroll", syncKeyboardInset);
+
+    return () => {
+      viewport.removeEventListener("resize", syncKeyboardInset);
+      viewport.removeEventListener("scroll", syncKeyboardInset);
+      document.documentElement.style.setProperty("--keyboard-inset", "0px");
+    };
+  }, [deviceProfile.isMobile]);
 
   // Personalization: record calculator visit for "recommended starting points" (cookie-gated)
   useEffect(() => {
@@ -1302,7 +1414,9 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         const taxOwedCents = toCents(taxResult.taxDue);
         const netIncomeCents = Math.max(0, grossRevenueCents - taxOwedCents);
         const effectiveTaxRate =
-          grossRevenueCents === 0 ? 0 : (taxOwedCents / grossRevenueCents) * 100;
+          grossRevenueCents === 0
+            ? 0
+            : (taxOwedCents / grossRevenueCents) * 100;
         const taxSavingsCents = capitalImprovement
           ? 0
           : scaleCentsByBasisPoints(
@@ -1625,12 +1739,12 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         };
       }
 
-    const derivedStuds = Math.max(2, Math.ceil(runFeet / spacingFeet) + 1);
-    const totalStuds = isWallStudTotalMode
-      ? wallStudTargetCount
-      : isWallFramingCalculator && staggeredStudWall
-        ? Math.max(4, derivedStuds * 2)
-        : Math.max(8, derivedStuds);
+      const derivedStuds = Math.max(2, Math.ceil(runFeet / spacingFeet) + 1);
+      const totalStuds = isWallStudTotalMode
+        ? wallStudTargetCount
+        : isWallFramingCalculator && staggeredStudWall
+          ? Math.max(4, derivedStuds * 2)
+          : Math.max(8, derivedStuds);
 
       if (page.canonicalPath.includes("/framing/wall")) {
         const totalPlateLf = runFeet * (staggeredStudWall ? 6 : 3);
@@ -1845,7 +1959,9 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             ? 0
             : Number(roofPitchPreset)
           : clampValue(
-              isRoofingShinglesCalculator ? roofPitchRiseCustom : depthThickness,
+              isRoofingShinglesCalculator
+                ? roofPitchRiseCustom
+                : depthThickness,
               0,
               24,
             );
@@ -1853,7 +1969,9 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       const pitchMultiplier =
         pitchRisePerTwelve <= 0
           ? 1
-          : Math.sqrt(1 + (pitchRisePerTwelve / 12) * (pitchRisePerTwelve / 12));
+          : Math.sqrt(
+              1 + (pitchRisePerTwelve / 12) * (pitchRisePerTwelve / 12),
+            );
 
       const baseRoofArea = (() => {
         if (!isRoofingShinglesCalculator) {
@@ -1894,12 +2012,19 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         return Math.max(1, Math.ceil((perimeterFt * 1.1) / 100));
       })();
 
-      const rollsUnderlayment = Math.max(1, Math.ceil(effectiveRoofArea / 1000));
+      const rollsUnderlayment = Math.max(
+        1,
+        Math.ceil(effectiveRoofArea / 1000),
+      );
       const nails = Math.max(1, Math.ceil(squares * 320));
       return {
         primary: {
-          label: isRoofingShinglesCalculator ? "Order Bundles" : "Total Squares",
-          value: isRoofingShinglesCalculator ? bundles.toString() : squares.toFixed(2),
+          label: isRoofingShinglesCalculator
+            ? "Order Bundles"
+            : "Total Squares",
+          value: isRoofingShinglesCalculator
+            ? bundles.toString()
+            : squares.toFixed(2),
           unit: isRoofingShinglesCalculator ? "bundles" : "sq",
         },
         secondary: [
@@ -1940,7 +2065,9 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             : []),
           `Order ${rollsUnderlayment} Rolls Synthetic Underlayment`,
           ...(isRoofingShinglesCalculator
-            ? [`Allow ~${nails.toLocaleString()} nails (≈320 nails/square @ 4 nails/shingle).`]
+            ? [
+                `Allow ~${nails.toLocaleString()} nails (≈320 nails/square @ 4 nails/shingle).`,
+              ]
             : []),
         ],
       };
@@ -2056,7 +2183,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         throw new Error(payload?.error ?? "AI optimizer failed.");
       }
 
-      const content = typeof payload?.content === "string" ? payload.content : "";
+      const content =
+        typeof payload?.content === "string" ? payload.content : "";
       if (!content.trim()) {
         throw new Error("AI optimizer returned an empty response.");
       }
@@ -2178,8 +2306,17 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
           throw new Error(payload?.error ?? "Failed to save estimate.");
         }
 
-        setSaveState("saved");
-        setFinalizeSuccess("Estimate saved to your account.");
+        const correctedData =
+          payload?.correctedData && typeof payload.correctedData === "object"
+            ? payload.correctedData
+            : null;
+
+        setSaveState(correctedData ? "corrected" : "saved");
+        setFinalizeSuccess(
+          correctedData
+            ? "Verified & Locked. Server-side math was corrected before save."
+            : "Estimate saved to your account.",
+        );
         haptic(10);
         queueSaveStateReset();
         return;
@@ -2300,6 +2437,101 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     return estimateCountySelection;
   }, [estimateCountyCustom, estimateCountySelection]);
 
+  const shellClassName = useMemo(() => {
+    const tabletShell =
+      deviceProfile.tabletTier === "large"
+        ? "tablet-shell-large"
+        : deviceProfile.tabletTier === "standard"
+          ? "tablet-shell-standard"
+          : "";
+
+    return [
+      "mx-auto w-full px-3 py-4 pb-14 sm:px-5 sm:py-5 lg:px-7 lg:py-4 shell-content",
+      deviceProfile.layoutMode === "tablet-shell" ? tabletShell : "max-w-6xl",
+      deviceProfile.bottomBufferClass,
+      deviceProfile.baseTextClass,
+    ]
+      .filter(Boolean)
+      .join(" ");
+  }, [
+    deviceProfile.baseTextClass,
+    deviceProfile.bottomBufferClass,
+    deviceProfile.layoutMode,
+    deviceProfile.tabletTier,
+  ]);
+
+  const calculatorSurfaceClassName = useMemo(() => {
+    if (deviceProfile.layoutMode === "command-center") {
+      return "grid gap-3 xl:grid-cols-[minmax(0,1.05fr)_minmax(320px,0.8fr)_minmax(280px,0.75fr)]";
+    }
+
+    if (deviceProfile.layoutMode === "two-column") {
+      return "grid gap-3 lg:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]";
+    }
+
+    return "grid gap-2";
+  }, [deviceProfile.layoutMode]);
+
+  const liveAudit = useMemo(() => {
+    const formatCurrency = (cents: number) => centsToDollars(cents).toFixed(2);
+
+    if (!isBusinessTaxSave) {
+      return {
+        title: "Live Audit Log",
+        rows: [
+          { label: "County", value: resolvedEstimateCounty ?? "Not selected" },
+          { label: "Waste Factor", value: `${wasteFactor}%` },
+          {
+            label: "Primary Result",
+            value: `${displayResults.primary.value} ${getPrimaryDisplayUnit(displayResults.primary)}`,
+          },
+        ],
+      };
+    }
+
+    const grossRevenueCents = toCents(Math.max(0, baseMeasurement));
+    const deductionsCents = toCents(Math.max(0, depthThickness));
+    const subtotalCents = Math.max(0, grossRevenueCents - deductionsCents);
+    const basisPoints =
+      taxRegion === "NYS"
+        ? taxCounty === "Oneida"
+          ? 875
+          : taxCounty === "Herkimer"
+            ? 825
+            : taxCounty === "Madison"
+              ? 800
+              : 0
+        : toBasisPoints(widthSpan);
+    const taxCents = capitalImprovement
+      ? 0
+      : scaleCentsByBasisPoints(subtotalCents, basisPoints);
+    const totalCents = subtotalCents + taxCents;
+
+    return {
+      title: "Live Audit Log",
+      rows: [
+        { label: "County", value: taxRegion === "NYS" ? taxCounty : "Custom / Other" },
+        { label: "Basis Points", value: basisPoints.toString() },
+        { label: "Subtotal", value: formatCurrency(subtotalCents) },
+        { label: "Tax", value: formatCurrency(taxCents) },
+        { label: "Total", value: formatCurrency(totalCents) },
+      ],
+    };
+  }, [
+    baseMeasurement,
+    capitalImprovement,
+    depthThickness,
+    displayResults.primary,
+    isBusinessTaxSave,
+    resolvedEstimateCounty,
+    taxCounty,
+    taxRegion,
+    wasteFactor,
+    widthSpan,
+  ]);
+
+  const showEmptyStateWatermark = !userInteracted.current;
+
   const finalizePayload = useMemo(
     () => ({
       name: estimateName.trim() || `${displayTitle(page.title)} Estimate`,
@@ -2363,7 +2595,9 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
 
     if (estimateCountySelection === "Custom" && !estimateCountyCustom.trim()) {
       setFinalizeSuccess(null);
-      setFinalizeError("Enter the custom county or tax market before continuing.");
+      setFinalizeError(
+        "Enter the custom county or tax market before continuing.",
+      );
       setFinalizeOpen(true);
       return null;
     }
@@ -2664,11 +2898,16 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       }}
     >
       <main
+        ref={calculatorShellRef}
         id="main-content"
-        className="command-theme flex min-h-0 flex-1 flex-col overflow-hidden bg-[--color-bg] text-white"
+        className={`command-theme flex min-h-0 flex-1 flex-col overflow-hidden animated-gradient-bg text-white ${
+          deviceProfile.isMobile ? "h-[100dvh]" : ""
+        } ${deviceProfile.isIPhone15 ? "no-scroll-shell iphone-15:h-[100dvh]" : ""} ${
+          deviceProfile.highContrastMode ? "contrast-125 saturate-110" : ""
+        }`}
       >
         {closeModal && (
-          <div className="sticky top-0 z-40 flex h-12 items-center justify-between border-b border-slate-800 bg-slate-900/95 px-3 backdrop-blur-sm">
+          <div className="sticky top-0 z-40 flex h-12 items-center justify-between border-b border-white/5 bg-surface-deep px-3 backdrop-glass-heavy">
             <div className="min-w-0">
               <p className="truncate text-[10px] font-bold uppercase tracking-[0.12em] text-orange-400">
                 {page.heroKicker}
@@ -2690,7 +2929,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             </button>
           </div>
         )}
-        <section className="mx-auto w-full max-w-6xl px-3 py-4 pb-14 sm:px-5 sm:py-5 lg:px-7 lg:py-4 lg:pb-6">
+        <section className={shellClassName}>
           <JsonLD schema={getTradePageSchema(page)} />
 
           <div className="mb-3 flex items-center justify-between gap-2.5">
@@ -2784,24 +3023,34 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             </section>
           ) : null}
 
-          <div className="overflow-hidden rounded-3xl border trim-nav-border bg-[--color-nav-bg] shadow-[0_18px_40px_rgba(0,0,0,0.38)]">
-            <div className="grid grid-cols-1 gap-2 px-4 py-4 sm:px-6 sm:py-5 lg:grid-cols-2 lg:items-center bg-[radial-gradient(ellipse_at_top_right,rgba(30,35,45,0.95),#0a0a0b_70%),linear-gradient(180deg,#0d0f14_0%,#0A0A0B_100%)]">
+          <div
+            className={`overflow-hidden rounded-3xl border-glow glass-container-deep shadow-[0_18px_40px_rgba(0,0,0,0.38)] ${
+              deviceProfile.desktopTier === "tv" ? "rim-spread-tv" : ""
+            } ${deviceProfile.shellScaleClass} ${deviceProfile.blurClass}`}
+          >
+            <div
+              className={`grid grid-cols-1 gap-2 px-4 py-4 sm:px-6 sm:py-5 ${
+                deviceProfile.layoutMode === "command-center"
+                  ? "xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)] xl:items-start"
+                  : "lg:grid-cols-2 lg:items-center"
+              } ${deviceProfile.blurClass}`}
+            >
               <div className="relative z-10 max-w-xl">
-                <div className="inline-flex items-center gap-2 rounded-full border border-[--color-orange-brand]/45 bg-[--color-orange-brand]/15 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.15em] text-orange-500">
+                <div className="inline-flex items-center gap-2 rounded-full border border-orange-base/45 bg-orange-base/15 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.15em] text-orange-light">
                   <HardHat className="h-3.5 w-3.5" aria-hidden />
                   {page.heroKicker}
                 </div>
 
                 {!closeModal ? (
-                  <h1 className="mt-2 text-2xl font-black leading-tight text-white md:text-3xl">
+                  <h1 className="mt-2 text-2xl font-black leading-tight text-display-heading md:text-3xl">
                     {displayTitle(page.title)}
                   </h1>
                 ) : null}
-                <p className="mt-2 text-sm leading-relaxed text-[--color-nav-text]/82 sm:text-base">
+                <p className="mt-2 text-sm leading-relaxed text-copy-secondary sm:text-base">
                   {page.description}
                 </p>
 
-                <div className="mt-3 inline-flex items-center gap-2 rounded-lg border border-[--color-orange-brand]/30 bg-[--color-orange-brand]/10 px-3 py-1.5 text-sm text-[--color-orange-brand]">
+                <div className="mt-3 inline-flex items-center gap-2 rounded-lg border border-orange-base/30 bg-orange-base/10 px-3 py-1.5 text-sm text-copy-accent">
                   <MapPin className="h-3.5 w-3.5 shrink-0" aria-hidden />
                   {page.localFocus}
                 </div>
@@ -2810,7 +3059,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                   <button
                     type="button"
                     onClick={openFinalizeModal}
-                    className="inline-flex h-9 min-h-9 items-center gap-2 rounded-xl border-2 border-orange-400/80 bg-transparent px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white transition-all duration-200 hover:border-orange-400 hover:text-white active:scale-[0.98]"
+                    className="glass-button-primary inline-flex h-9 min-h-9 items-center gap-2 rounded-xl px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white transition-all duration-200 hover:text-white active:scale-[0.98]"
                   >
                     <PenSquare className="h-3.5 w-3.5" aria-hidden />
                     Finalize &amp; Send
@@ -2818,7 +3067,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                   <button
                     type="button"
                     onClick={openEmailEstimateModal}
-                    className="inline-flex h-9 min-h-9 items-center gap-2 rounded-xl border-2 border-orange-400/80 bg-transparent px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white transition-all duration-200 hover:border-orange-400 hover:text-white active:scale-[0.98]"
+                    className="glass-button-primary inline-flex h-9 min-h-9 items-center gap-2 rounded-xl px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white transition-all duration-200 hover:text-white active:scale-[0.98]"
                   >
                     <Mail className="h-3.5 w-3.5" aria-hidden />
                     Email Estimate
@@ -2827,7 +3076,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                     type="button"
                     onClick={handleSaveEstimate}
                     disabled={saveState !== "idle"}
-                    className={`inline-flex h-9 min-h-9 items-center gap-2 rounded-xl border-2 border-white/80 bg-transparent px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white transition-all duration-200 hover:border-orange-400 hover:text-white active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 ${saveState !== "idle" ? "scale-95" : ""}`}
+                    className={`glass-button inline-flex h-9 min-h-9 items-center gap-2 rounded-xl px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white transition-all duration-200 hover:text-white active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 ${saveState !== "idle" ? "scale-95" : ""} ${saveState === "corrected" ? "verified-lock-pulse border-primary text-primary" : ""}`}
                   >
                     {saveState === "saving" ? (
                       <>
@@ -2841,6 +3090,14 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                           aria-hidden
                         />
                         Saved
+                      </>
+                    ) : saveState === "corrected" ? (
+                      <>
+                        <Check
+                          className="h-3.5 w-3.5 text-primary"
+                          aria-hidden
+                        />
+                        Verified &amp; Locked
                       </>
                     ) : saveState === "downloaded" ? (
                       <>
@@ -2860,20 +3117,20 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                 </div>
 
                 {primaryMaterialOrder ? (
-                  <div className="mt-3 rounded-xl border border-orange-500/30 bg-orange-500/10 px-3 py-2">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-400">
+                  <div className="mt-3 rounded-xl border border-orange-base/30 bg-orange-base/10 px-3 py-2">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-light">
                       Material Order
                     </p>
-                    <p className="mt-1 text-sm font-semibold text-white">
+                    <p className="mt-1 text-sm font-semibold text-copy-primary">
                       {primaryMaterialOrder}
                     </p>
                   </div>
                 ) : null}
 
                 {isBusinessTaxSave && (
-                  <div className="mt-3 grid gap-2 rounded-xl border border-slate-700 bg-slate-900/70 p-3 text-xs sm:grid-cols-[minmax(0,1.1fr)_minmax(0,1.1fr)] sm:text-sm">
+                  <div className="mt-3 grid gap-2 rounded-xl glass-panel-deep p-3 text-xs sm:grid-cols-[minmax(0,1.1fr)_minmax(0,1.1fr)] sm:text-sm">
                     <div className="space-y-1">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-copy-tertiary">
                         Tax Region
                       </p>
                       <select
@@ -2883,19 +3140,19 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                             event.target.value === "NYS" ? "NYS" : "Other",
                           )
                         }
-                        className="h-9 w-full rounded-lg border border-slate-600 bg-slate-950 px-2 text-xs text-slate-100 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500 sm:text-sm"
+                        className="glass-input h-9 w-full px-2 text-xs outline-none transition sm:text-sm"
                       >
                         <option value="NYS">New York State (NYS)</option>
                         <option value="Other">Outside NYS / Custom</option>
                       </select>
-                      <p className="text-[10px] leading-snug text-slate-400">
+                      <p className="text-[10px] leading-snug text-copy-tertiary">
                         NYS region uses combined county + state sales tax;
                         otherwise enter your own blended tax rate below.
                       </p>
-                      <label className="mt-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-white">
+                      <label className="mt-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-copy-primary">
                         <input
                           type="checkbox"
-                          className="h-4 w-4 rounded border-slate-600 bg-slate-900 text-orange-500"
+                          className="h-4 w-4 rounded glass-input text-orange-base"
                           checked={capitalImprovement}
                           onChange={(event) =>
                             setCapitalImprovement(event.target.checked)
@@ -2903,7 +3160,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                         />
                         Capital Improvement (ST-124)
                       </label>
-                      <p className="text-[10px] leading-snug text-slate-400">
+                      <p className="text-[10px] leading-snug text-copy-tertiary">
                         Capital improvements require NYS Form ST-124; no sales
                         tax charged to the client when on file.
                       </p>
@@ -2911,7 +3168,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
 
                     {taxRegion === "NYS" && (
                       <div className="space-y-1">
-                        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-copy-tertiary">
                           NYS County
                         </p>
                         <select
@@ -2926,7 +3183,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                               setWidthSpan(match.combinedRate);
                             }
                           }}
-                          className="h-9 w-full rounded-lg border border-slate-600 bg-slate-950 px-2 text-xs text-slate-100 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500 sm:text-sm"
+                          className="glass-input h-9 w-full px-2 text-xs outline-none transition sm:text-sm"
                         >
                           {NYS_COUNTY_TAX_RATES.map((entry) => (
                             <option key={entry.county} value={entry.county}>
@@ -2935,7 +3192,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                             </option>
                           ))}
                         </select>
-                        <p className="text-[10px] leading-snug text-slate-400">
+                        <p className="text-[10px] leading-snug text-copy-tertiary">
                           County pick auto-fills your Tax Rate (%) input using
                           the latest combined NYS guidance.
                         </p>
@@ -2946,21 +3203,21 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
               </div>
             </div>
 
-            <div className="space-y-2 p-3 sm:p-4 bg-[--color-nav-bg]">
-              <aside className="mb-3 hidden rounded-2xl border border-slate-800 bg-slate-900/50 p-3 transition-colors lg:block">
-                <h2 className="text-sm font-black uppercase tracking-[0.12em] text-white">
+            <div className="space-y-2 p-3 sm:p-4 glass-container-deep">
+              <aside className="mb-3 hidden glass-panel lg:block">
+                <h2 className="text-sm font-black uppercase tracking-[0.12em] text-display-heading">
                   Tool Navigator
                 </h2>
                 <div className="relative mt-3">
                   <Search
-                    className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[--color-nav-text]/60"
+                    className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-copy-tertiary"
                     aria-hidden
                   />
                   <input
                     value={search}
                     onChange={(event) => setSearch(event.target.value)}
                     placeholder="Search 25+ trade tools"
-                    className="h-10 w-full rounded-xl border border-slate-500 bg-slate-900 pl-9 pr-3 text-sm text-white tabular-nums tracking-tight outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
+                    className="glass-input h-10 w-full rounded-xl pl-9 pr-3 text-sm text-field-input tabular-nums tracking-tight outline-none"
                   />
                 </div>
 
@@ -2979,21 +3236,21 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                         }
                         aria-expanded={openModuleGroup === group.label}
                         aria-haspopup="true"
-                        className="flex min-h-11 w-full flex-col items-center justify-center gap-1 rounded-xl border-2 border-slate-500 bg-slate-900 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.09em] text-[--color-nav-text] transition-all duration-200 ease-in-out hover:border-orange-400 hover:text-white active:scale-[0.98]"
+                        className="glass-button flex min-h-11 w-full flex-col items-center justify-center gap-1 rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-[0.09em] text-copy-secondary transition-all duration-200 ease-in-out hover:text-white active:scale-[0.98]"
                       >
                         <group.icon
-                          className="h-4 w-4 text-[--color-orange-brand]"
+                          className="h-4 w-4 text-orange-base"
                           aria-hidden
                         />
                         {group.label}
                         <ChevronDown
-                          className="h-3 w-3 text-[--color-nav-text]/75"
+                          className="h-3 w-3 text-copy-tertiary"
                           aria-hidden
                         />
                       </button>
 
                       <div
-                        className={`absolute left-0 top-full z-20 mt-1 w-56 rounded-xl border border-slate-500 bg-[#0f1521] p-2 shadow-[0_18px_40px_rgba(0,0,0,0.45)] transition-all duration-200 ease-in-out ${
+                        className={`absolute left-0 top-full z-20 mt-1 w-56 glass-panel p-2 shadow-[0_18px_40px_rgba(0,0,0,0.45)] transition-all duration-200 ease-in-out ${
                           openModuleGroup === group.label
                             ? "pointer-events-auto visible opacity-100"
                             : "pointer-events-none invisible opacity-0"
@@ -3004,13 +3261,16 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                             key={module.href}
                             href={module.href}
                             onClick={() => setOpenModuleGroup(null)}
-                            className={`mb-1 flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs transition last:mb-0 ${
+                            className={`glass-nav-item mb-1 flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs transition last:mb-0 ${
                               page.canonicalPath === module.href
                                 ? "bg-[--color-orange-brand]/25 text-[--color-orange-brand]"
                                 : "text-[--color-nav-text] hover:bg-white/7 hover:text-white"
                             }`}
                           >
-                            <module.icon className="h-3.5 w-3.5" aria-hidden />
+                            <module.icon
+                              className="h-3.5 w-3.5 text-orange-light"
+                              aria-hidden
+                            />
                             {normalizeDisplayedLabel(
                               module.label,
                               page.canonicalPath,
@@ -3023,13 +3283,13 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                 </div>
               </aside>
 
-              <div className="grid gap-2 lg:grid-cols-[minmax(0,1.15fr)_340px]">
+              <div className={calculatorSurfaceClassName}>
                 <section
-                  className={`rounded-2xl border border-slate-800 bg-slate-900/50 transition-colors ${effectiveProMode ? "p-3" : "p-3 sm:p-4"}`}
+                  className={`glass-container transition-colors ${effectiveProMode ? "p-3" : "p-3 sm:p-4"}`}
                 >
                   <div className="flex justify-center">
                     <div
-                      className={`rounded-full bg-orange-600/15 p-4 mb-3 flex items-center justify-center ${iconPulse ? "animate-pulse" : ""}`}
+                      className={`rounded-full bg-orange-base/15 p-4 mb-3 flex items-center justify-center ${iconPulse ? "animate-pulse" : ""}`}
                     >
                       {page.category === "roofing" ? (
                         <RoofingGlyph className="h-[52px] w-[52px]" />
@@ -3040,7 +3300,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                             <IconComponent
                               size={52}
                               strokeWidth={1.5}
-                              className="text-orange-600"
+                              className="text-orange-base"
                               aria-hidden
                             />
                           );
@@ -3048,7 +3308,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                       )}
                     </div>
                   </div>
-                  <h2 className="text-sm font-black uppercase tracking-[0.12em] text-white">
+                  <h2 className="text-sm font-black uppercase tracking-[0.12em] text-display-heading">
                     Inputs
                   </h2>
 
@@ -3093,7 +3353,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                     return (
                       <div className="mt-2 space-y-2">
                         {showFramingMaterialSelector && (
-                          <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-[--color-nav-text]/80">
+                          <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary">
                             Material Type
                             <select
                               value={selectedFramingMaterial}
@@ -3102,7 +3362,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                   event.target.value as FramingMaterialKind,
                                 )
                               }
-                              className="h-11 rounded-xl border border-slate-500 bg-slate-900 px-3 text-sm text-white outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
+                              className="glass-input h-11 rounded-xl px-3 text-sm text-field-input outline-none"
                             >
                               <option value="wall-studs">Wall Studs</option>
                               <option value="floor-joists">Floor Joists</option>
@@ -3116,20 +3376,24 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                         )}
                         <div className="space-y-1">
                           <div className="min-h-[24px] space-y-1">
-                            {supportsAreaToggle && !isRoofingShinglesCalculator && (
-                              <UnitToggle
-                                label="Area"
-                                value={areaInputMode}
-                                options={[
-                                  { value: "dimensions", label: "Dimensions" },
-                                  {
-                                    value: "total-sq-ft",
-                                    label: "Total Sq Ft",
-                                  },
-                                ]}
-                                onChange={handleAreaInputModeChange}
-                              />
-                            )}
+                            {supportsAreaToggle &&
+                              !isRoofingShinglesCalculator && (
+                                <UnitToggle
+                                  label="Area"
+                                  value={areaInputMode}
+                                  options={[
+                                    {
+                                      value: "dimensions",
+                                      label: "Dimensions",
+                                    },
+                                    {
+                                      value: "total-sq-ft",
+                                      label: "Total Sq Ft",
+                                    },
+                                  ]}
+                                  onChange={handleAreaInputModeChange}
+                                />
+                              )}
                             {supportsConcreteVolumeToggle && (
                               <UnitToggle
                                 label="Yardage"
@@ -3195,7 +3459,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                               (isSidingRoute ||
                                 (page.category === "roofing" &&
                                   !page.canonicalPath.includes("pitch"))) && (
-                                <p className="text-[10px] leading-tight text-slate-500">
+                                <p className="text-field-hint">
                                   One "Square" covers 100 square feet of area.
                                 </p>
                               )}
@@ -3209,8 +3473,14 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                 label="Roof Input"
                                 value={roofingInputMode}
                                 options={[
-                                  { value: "dimensions", label: "Input Dimensions" },
-                                  { value: "direct-squares", label: "Direct Squares" },
+                                  {
+                                    value: "dimensions",
+                                    label: "Input Dimensions",
+                                  },
+                                  {
+                                    value: "direct-squares",
+                                    label: "Direct Squares",
+                                  },
                                 ]}
                                 onChange={setRoofingInputMode}
                               />
@@ -3490,7 +3760,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                 unitSuffix="ft"
                               />
 
-                              <div className="space-y-2 rounded-2xl border border-slate-800 bg-slate-950/35 p-3">
+                              <div className="space-y-2 glass-panel p-3">
                                 <UnitToggle
                                   label="Stud Spacing (OC)"
                                   value={wallStudSpacingMode}
@@ -3510,7 +3780,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                 />
                                 {wallStudSpacingMode === "custom" ? (
                                   <ProInput
-                                    label='Custom OC Spacing (in)'
+                                    label="Custom OC Spacing (in)"
                                     subLabel='Typical values are 12", 16", or 24" on-center.'
                                     type="number"
                                     min={8}
@@ -3584,11 +3854,11 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                   aria-pressed={staggeredStudWall}
                                 >
                                   <span>Staggered Stud Wall</span>
-                                  <span className="text-xs font-black uppercase tracking-[0.14em]">
+                                  <span className="text-xs font-black uppercase tracking-[0.14em] text-copy-accent">
                                     {staggeredStudWall ? "On" : "Off"}
                                   </span>
                                 </button>
-                                <p className="text-[11px] leading-snug text-slate-400">
+                                <p className="text-field-hint text-[11px] leading-snug">
                                   Staggered mode doubles stud rows and plate
                                   footage. Stud height only changes the order
                                   list, not the stud count math.
@@ -3633,7 +3903,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                               {supportsWallStudToggle &&
                               activeFramingMaterial === "wall-studs" &&
                               page.canonicalPath.includes("/framing/wall") ? (
-                                <div className="space-y-2 rounded-2xl border border-slate-800 bg-slate-950/35 p-3">
+                                <div className="space-y-2 glass-panel p-3">
                                   <UnitToggle
                                     label="Stud Height"
                                     value={wallStudHeightMode}
@@ -3801,15 +4071,15 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                           )}
                         </div>
 
-                        <label className="block rounded-xl border border-white/15 bg-[--color-nav-bg] p-3">
-                          <div className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-[0.12em] text-[--color-nav-text]/80">
+                        <label className="block rounded-xl glass-panel-deep p-3">
+                          <div className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary">
                             <span id="waste-factor-label">
                               {isTrimRoute ? "Miter Waste %" : "Waste Factor %"}
                             </span>
                             <span className="tabular-nums">{wasteFactor}%</span>
                           </div>
                           {!effectiveProMode && (
-                            <p className="mb-2 text-[10px] leading-tight text-slate-400">
+                            <p className="mb-2 text-field-hint">
                               {getInlineSubLabel(
                                 isTrimRoute ? "Miter Waste" : "Waste Factor",
                               )}
@@ -3830,7 +4100,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                 ),
                               )
                             }
-                            className="w-full accent-[--color-orange-brand]"
+                            className="w-full accent-orange-base"
                           />
                         </label>
                       </div>
@@ -3840,7 +4110,19 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
 
                 <aside
                   ref={resultsCardRef}
-                  className="self-start pb-8 lg:sticky lg:top-24 lg:self-start lg:pb-0"
+                  className={`self-start pb-8 glass-container-elevated ${
+                    deviceProfile.layoutMode === "glass-stack"
+                      ? ""
+                      : "lg:sticky lg:top-24 lg:self-start lg:pb-0"
+                  } ${
+                    deviceProfile.layoutMode === "command-center"
+                      ? "xl:col-start-2"
+                      : ""
+                  } ${
+                    deviceProfile.tabletTier === "large"
+                      ? "tablet-bottom-tray order-3 mt-2 border-t border-white/10 pt-3"
+                      : ""
+                  }`}
                 >
                   <ProResult
                     primary={displayResults.primary}
@@ -3854,19 +4136,20 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                     onFinalize={openFinalizeModal}
                     finalizeLabel="Finalize & Send"
                     finalizeIcon={<PenSquare className="h-4 w-4" aria-hidden />}
+                    showEmptyStateWatermark={showEmptyStateWatermark}
                   />
 
-                  <section className="rounded-xl border border-slate-800 bg-slate-900/50 p-3 transition-colors">
+                  <section className="glass-panel p-3 transition-colors">
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <div className="rounded-md bg-[--color-orange-brand] p-1.5 text-white">
+                        <div className="rounded-md bg-orange-base p-1.5 text-white">
                           <Sparkles className="h-3.5 w-3.5" aria-hidden />
                         </div>
                         <div>
-                          <p className="text-sm font-bold text-white">
+                          <p className="text-sm font-bold text-copy-primary">
                             AI Material Optimizer
                           </p>
-                          <p className="text-xs text-[--color-nav-text]/75">
+                          <p className="text-xs text-copy-tertiary">
                             Cost savings & best practices
                           </p>
                         </div>
@@ -3875,7 +4158,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                         type="button"
                         onClick={runAiOptimizer}
                         disabled={aiOptimizeBusy}
-                        className="min-h-9 rounded-lg border border-white/20 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.12em] text-[--color-nav-text] transition-all duration-200 hover:border-[--color-orange-brand]/45 hover:text-white active:scale-[0.98]"
+                        className="glass-button min-h-9 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.12em] transition-all duration-200 hover:text-white active:scale-[0.98]"
                       >
                         {aiOptimizeBusy ? "Optimizing…" : "Optimize"}
                       </button>
@@ -3883,9 +4166,11 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                   </section>
 
                   {aiOptimizeError || aiOptimizeContent ? (
-                    <section className="mt-2 rounded-xl border border-slate-800 bg-slate-900/50 p-3 transition-colors">
+                    <section className="glass-panel mt-2 p-3 transition-colors">
                       {aiOptimizeError ? (
-                        <p className="text-sm text-red-200">{aiOptimizeError}</p>
+                        <p className="text-sm text-red-200">
+                          {aiOptimizeError}
+                        </p>
                       ) : aiOptimizeContent ? (
                         <div className="text-sm">
                           <ArticleMarkdown content={aiOptimizeContent} />
@@ -3895,19 +4180,19 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                   ) : null}
 
                   {terminologyTerms.length ? (
-                    <section className="mt-2 rounded-xl border border-slate-800 bg-slate-900/50 p-3 transition-colors">
+                    <section className="glass-panel mt-2 p-3 transition-colors">
                       <div className="flex items-center justify-between gap-2">
                         <div>
-                          <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[--color-orange-brand]">
+                          <p className="text-[10px] font-black uppercase tracking-[0.14em] text-copy-accent">
                             Terminology
                           </p>
-                          <p className="text-xs text-[--color-nav-text]">
+                          <p className="text-xs text-copy-secondary">
                             Industry-standard inputs used in this calculator.
                           </p>
                         </div>
                         <Link
                           href={routes.glossary}
-                          className="text-[11px] font-semibold uppercase tracking-[0.12em] text-white underline-offset-4 hover:text-[--color-orange-brand]"
+                          className="text-[11px] font-semibold uppercase tracking-[0.12em] text-copy-primary underline-offset-4 hover:text-orange-base"
                         >
                           Glossary
                         </Link>
@@ -3916,19 +4201,19 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                         {terminologyTerms.slice(0, 3).map((term) => (
                           <li
                             key={term.key}
-                            className="rounded-lg border border-white/10 bg-white/5 px-3 py-2"
+                            className="glass-panel-deep rounded-lg px-3 py-2"
                           >
                             <div className="flex items-center justify-between gap-2">
-                              <span className="text-xs font-bold uppercase tracking-[0.12em] text-white">
+                              <span className="text-xs font-bold uppercase tracking-[0.12em] text-copy-primary">
                                 {term.label}
                               </span>
                               {term.unit ? (
-                                <span className="text-[10px] uppercase tracking-[0.12em] text-[--color-nav-text]">
+                                <span className="text-[10px] uppercase tracking-[0.12em] text-copy-secondary">
                                   {term.unit}
                                 </span>
                               ) : null}
                             </div>
-                            <p className="mt-1 text-xs leading-relaxed text-[--color-nav-text]">
+                            <p className="mt-1 text-xs leading-relaxed text-copy-secondary">
                               {term.definition}
                             </p>
                           </li>
@@ -3936,11 +4221,41 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                       </ul>
                     </section>
                   ) : null}
+
+                  {deviceProfile.layoutMode === "two-column" && (
+                    <CalculatorAuditPanel
+                      className="mt-2"
+                      title={liveAudit.title}
+                      rows={liveAudit.rows}
+                    />
+                  )}
                 </aside>
+
+                {deviceProfile.layoutMode === "command-center" && (
+                  <aside
+                    className={`glass-container-deep p-3 ${
+                      deviceProfile.layoutMode === "command-center"
+                        ? "xl:col-start-3"
+                        : ""
+                    }`}
+                  >
+                    <CalculatorAuditPanel
+                      className="bg-transparent p-0 shadow-none"
+                      title={liveAudit.title}
+                      rows={liveAudit.rows}
+                    />
+                  </aside>
+                )}
               </div>
 
-              <section className="rounded-2xl border border-slate-800 bg-slate-900/50 p-3 sm:p-4 transition-colors">
-                <h3 className="text-xs font-bold uppercase tracking-[0.14em] text-white/70">
+              <section
+                className={`glass-container p-3 sm:p-4 transition-colors ${
+                  deviceProfile.layoutMode === "command-center"
+                    ? "xl:mt-1"
+                    : ""
+                }`}
+              >
+                <h3 className="text-xs font-bold uppercase tracking-[0.14em] text-display-heading">
                   Trade Module Paths
                 </h3>
                 <div className="mt-2 grid gap-2 sm:grid-cols-3">
@@ -3948,10 +4263,10 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                     <Link
                       key={item.href}
                       href={item.href}
-                      className="group flex min-h-9 items-center gap-2 rounded-xl border border-slate-800 bg-slate-900/50 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.08em] text-[--color-nav-text] transition-all duration-200 hover:border-orange-500/50 hover:text-[--color-orange-brand] active:scale-[0.98]"
+                      className="glass-button group flex min-h-9 items-center gap-2 rounded-xl px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.08em] transition-all duration-200 hover:text-orange-light active:scale-[0.98]"
                     >
                       <item.icon
-                        className="h-3.5 w-3.5 transition-all duration-200 group-hover:text-[--color-orange-brand]"
+                        className="h-3.5 w-3.5 transition-all duration-200 group-hover:text-orange-base"
                         aria-hidden
                       />
                       <span className="truncate">{item.label}</span>
@@ -3964,10 +4279,10 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                     <li key={link.href}>
                       <Link
                         href={link.href as Route}
-                        className="inline-flex items-center gap-2 text-sm text-[--color-nav-text]/85 transition-all duration-300 ease-in-out hover:text-white"
+                        className="inline-flex items-center gap-2 text-sm text-copy-secondary transition-all duration-300 ease-in-out hover:text-primary"
                       >
                         <ArrowRight
-                          className="h-3.5 w-3.5 text-[--color-orange-brand]"
+                          className="h-3.5 w-3.5 text-orange-base"
                           aria-hidden
                         />
                         {normalizeDisplayedLabel(
@@ -3979,17 +4294,17 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                   ))}
                 </ul>
 
-                <div className="mt-3 rounded-xl border border-[--color-orange-brand]/35 bg-[--color-orange-brand]/10 p-3">
-                  <p className="text-xs font-bold uppercase tracking-[0.15em] text-orange-500">
+                <div className="mt-3 rounded-xl border border-orange-base/35 bg-orange-base/10 p-3">
+                  <p className="text-xs font-bold uppercase tracking-[0.15em] text-orange-light">
                     Field Notes
                   </p>
-                  <p className="mt-2 text-sm text-[--color-nav-text]/90">
+                  <p className="mt-2 text-sm text-copy-secondary">
                     Regional guides and contractor tips — 100% on-site, no
                     external links.
                   </p>
                   <Link
                     href={routes.fieldNotes}
-                    className="mt-2 inline-flex min-h-9 items-center gap-2 rounded-lg bg-[--color-orange-brand] px-3 py-1.5 text-xs font-black uppercase tracking-widest text-white transition-all duration-200 hover:brightness-95 active:scale-[0.98]"
+                    className="mt-2 inline-flex min-h-9 items-center gap-2 rounded-lg glass-button-primary px-3 py-1.5 text-xs font-black uppercase tracking-widest text-white transition-all duration-200 hover:brightness-95 active:scale-[0.98]"
                   >
                     Open Field Notes
                     <ArrowRight className="h-3.5 w-3.5" aria-hidden />
@@ -4000,13 +4315,13 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
           </div>
 
           <nav
-            className="fixed bottom-14 left-0 right-0 z-40 flex min-h-10 items-center justify-between border-t trim-nav-border bg-[--color-nav-bg]/95 px-4 py-1.5 backdrop-blur-xl lg:hidden"
+            className="fixed bottom-14 left-0 right-0 z-40 flex min-h-10 items-center justify-between border-t border-white/5 bg-surface-deep px-4 py-1.5 backdrop-glass-heavy lg:hidden"
             aria-label="Mobile tool actions"
           >
             <Link
               href={routes.commandCenter}
               prefetch={false}
-              className="inline-flex min-h-9 items-center gap-1.5 px-3 text-xs font-semibold uppercase tracking-widest text-[--color-nav-text] transition-all duration-200 active:scale-[0.98]"
+              className="glass-nav-item inline-flex min-h-9 items-center gap-1.5 px-3 text-xs font-semibold uppercase tracking-widest transition-all duration-200 active:scale-[0.98]"
             >
               <HardHat className="h-3.5 w-3.5" aria-hidden />
               Dashboard
@@ -4014,7 +4329,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             <button
               type="button"
               onClick={() => setMobileMenuOpen((current) => !current)}
-              className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-white/20 px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-[--color-orange-brand] transition-all duration-200 active:scale-[0.98]"
+              className="glass-button inline-flex min-h-9 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-orange-base transition-all duration-200 active:scale-[0.98]"
             >
               <Menu className="h-3.5 w-3.5" aria-hidden />
               Modules
@@ -4022,7 +4337,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             <button
               type="button"
               onClick={openFinalizeModal}
-              className="inline-flex min-h-9 items-center gap-1.5 px-3 text-xs font-semibold uppercase tracking-widest text-[--color-nav-text] transition-all duration-200 active:scale-[0.98]"
+              className="glass-nav-item inline-flex min-h-9 items-center gap-1.5 px-3 text-xs font-semibold uppercase tracking-widest transition-all duration-200 active:scale-[0.98]"
             >
               <PenSquare className="h-3.5 w-3.5" aria-hidden />
               Finalize &amp; Send
@@ -4030,15 +4345,20 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
           </nav>
         </section>
 
-        <div className="fixed bottom-0 left-0 w-full z-40 border-t border-slate-800 bg-slate-950 px-4 py-3 pb-safe lg:hidden">
+        <div className="fixed bottom-0 left-0 w-full z-40 border-t border-white/5 bg-surface-deep backdrop-glass-heavy px-4 py-3 pb-safe keyboard-safe-pb lg:hidden critical-ui-container">
           <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-3">
             <div className="min-w-0">
-              <p className="truncate text-xs font-bold uppercase tracking-[0.14em] text-[--color-nav-text]/80">
+              <p className="truncate text-xs font-bold uppercase tracking-[0.14em] text-copy-secondary">
                 {calculatorResults.primary.label}
               </p>
-              <p className="truncate text-lg font-black tabular-nums tracking-tight text-orange-500">
-                {calculatorResults.primary.value}{" "}
-                <span className="text-white">
+              <p className="truncate text-lg font-black tabular-nums tracking-tight text-copy-accent">
+                <span
+                  key={calculatorResults.primary.value}
+                  className="result-counter"
+                >
+                  {calculatorResults.primary.value}
+                </span>{" "}
+                <span className="text-copy-primary">
                   {getPrimaryDisplayUnit(calculatorResults.primary)}
                 </span>
               </p>
@@ -4046,7 +4366,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             <button
               type="button"
               onClick={openFinalizeModal}
-              className="inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-lg border-2 border-orange-400/80 px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white"
+              className="glass-button-primary inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-lg px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white"
             >
               <PenSquare className="h-3.5 w-3.5" aria-hidden />
               Finalize &amp; Send
@@ -4061,7 +4381,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
           replyTo={contractorProfile.businessEmail}
         />
         {finalizeOpen ? (
-          <div className="fixed inset-0 z-60 flex items-end justify-center bg-black/70 p-0 sm:items-center sm:p-4">
+          <div className="glass-modal-overlay">
             <button
               type="button"
               className="absolute inset-0"
@@ -4070,78 +4390,80 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                 finalizeBusy ? undefined : setFinalizeOpen(false)
               }
             />
-            <div className="relative z-10 w-full max-w-lg rounded-t-3xl border border-slate-800 bg-slate-950 p-5 shadow-[0_24px_60px_rgba(0,0,0,0.55)] sm:rounded-3xl">
+            <div className="glass-modal relative z-10 w-full max-w-lg rounded-t-3xl p-5 shadow-[0_24px_60px_rgba(0,0,0,0.55)] sm:rounded-3xl">
               <button
                 type="button"
-                onClick={() => (finalizeBusy ? undefined : setFinalizeOpen(false))}
-                className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/15 text-slate-300 transition hover:border-orange-500 hover:text-white"
+                onClick={() =>
+                  finalizeBusy ? undefined : setFinalizeOpen(false)
+                }
+                className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full glass-button text-copy-tertiary transition hover:border-orange-base hover:text-primary"
                 aria-label="Close Finalize & Send"
               >
                 <X className="h-4 w-4" aria-hidden />
               </button>
-              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-500">
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-light">
                 Finalize &amp; Send
               </p>
-              <h3 className="mt-2 text-xl font-black text-white">
+              <h3 className="mt-2 text-xl font-black text-display-heading">
                 Download or send for signature
               </h3>
-              <p className="mt-2 text-sm text-slate-400">
+              <p className="mt-2 text-sm text-copy-tertiary">
                 Create the server PDF or email the customer a signature link.
               </p>
 
               <div className="mt-4 grid gap-3">
-                <label className="text-sm text-slate-300">
+                <label className="text-sm text-copy-secondary">
                   Estimate Name
                   <input
                     value={estimateName}
                     onChange={(event) => setEstimateName(event.target.value)}
-                    className="mt-1 h-11 w-full rounded-xl border border-slate-500 bg-slate-900 px-3 text-white outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
+                    className="glass-input mt-1 h-11 w-full rounded-xl px-3 outline-none"
                   />
                 </label>
-                <label className="text-sm text-slate-300">
+                <label className="text-sm text-copy-secondary">
                   Client Name
                   <input
                     value={estimateClientName}
                     onChange={(event) =>
                       setEstimateClientName(event.target.value)
                     }
-                    className="mt-1 h-11 w-full rounded-xl border border-slate-500 bg-slate-900 px-3 text-white outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
+                    className="glass-input mt-1 h-11 w-full rounded-xl px-3 outline-none"
                     placeholder="Optional"
                   />
                 </label>
-                <label className="text-sm text-slate-300">
+                <label className="text-sm text-copy-secondary">
                   Client Email
                   <input
                     value={estimateClientEmail}
                     onChange={(event) =>
                       setEstimateClientEmail(event.target.value)
                     }
-                    className="mt-1 h-11 w-full rounded-xl border border-slate-500 bg-slate-900 px-3 text-white outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
+                    className="glass-input mt-1 h-11 w-full rounded-xl px-3 outline-none"
                     placeholder="Optional"
                     type="email"
                   />
                 </label>
-                <label className="text-sm text-slate-300">
+                <label className="text-sm text-copy-secondary">
                   Job Name
                   <input
                     value={estimateJobName}
                     onChange={(event) => setEstimateJobName(event.target.value)}
-                    className="mt-1 h-11 w-full rounded-xl border border-slate-500 bg-slate-900 px-3 text-white outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
+                    className="glass-input mt-1 h-11 w-full rounded-xl px-3 outline-none"
                     placeholder="Optional"
                   />
                 </label>
-                <label className="text-sm text-slate-300">
+                <label className="text-sm text-copy-secondary">
                   Job Site Address
                   <input
                     value={estimateJobAddress}
                     onChange={(event) =>
                       setEstimateJobAddress(event.target.value)
                     }
-                    className="mt-1 h-11 w-full rounded-xl border border-slate-500 bg-slate-900 px-3 text-white outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
+                    className="glass-input mt-1 h-11 w-full rounded-xl px-3 outline-none"
                     placeholder="Optional"
                   />
                 </label>
-                <label className="text-sm text-slate-300">
+                <label className="text-sm text-copy-secondary">
                   County For This Estimate
                   <select
                     value={estimateCountySelection}
@@ -4150,7 +4472,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                         event.target.value as EstimateCountySelection | "",
                       )
                     }
-                    className="mt-1 h-11 w-full rounded-xl border border-slate-500 bg-slate-900 px-3 text-white outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
+                    className="glass-input mt-1 h-11 w-full rounded-xl px-3 outline-none"
                   >
                     <option value="">Choose county or tax handling</option>
                     {ESTIMATE_COUNTY_OPTIONS.map((option) => (
@@ -4163,49 +4485,49 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                   </select>
                 </label>
                 {estimateCountySelection === "Custom" ? (
-                  <label className="text-sm text-slate-300">
+                  <label className="text-sm text-copy-secondary">
                     Custom County / Tax Market
                     <input
                       value={estimateCountyCustom}
                       onChange={(event) =>
                         setEstimateCountyCustom(event.target.value)
                       }
-                      className="mt-1 h-11 w-full rounded-xl border border-slate-500 bg-slate-900 px-3 text-white outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
+                      className="glass-input mt-1 h-11 w-full rounded-xl px-3 outline-none"
                       placeholder="Example: Onondaga or tax exempt"
                     />
                   </label>
                 ) : null}
               </div>
 
-              <p className="mt-3 text-xs text-slate-400">
-                Required for any estimate that leaves the calculator: save,
-                PDF, email, or signature.
+              <p className="mt-3 text-xs text-copy-tertiary">
+                Required for any estimate that leaves the calculator: save, PDF,
+                email, or signature.
               </p>
 
               {primaryMaterialOrder ? (
-                <div className="mt-4 rounded-2xl border border-orange-500/30 bg-orange-500/10 px-4 py-3">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-400">
+                <div className="mt-4 rounded-2xl border border-orange-base/30 bg-orange-base/10 px-4 py-3">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-light">
                     First Material Order
                   </p>
-                  <p className="mt-1 text-sm font-semibold text-white">
+                  <p className="mt-1 text-sm font-semibold text-copy-primary">
                     {primaryMaterialOrder}
                   </p>
                 </div>
               ) : null}
 
               {createdSignUrl ? (
-                <div className="mt-4 rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
+                <div className="mt-4 glass-panel px-4 py-3">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-copy-tertiary">
                     Sign Link
                   </p>
-                  <p className="mt-1 break-all text-sm text-white">
+                  <p className="mt-1 break-all text-sm text-copy-primary">
                     {createdSignUrl}
                   </p>
                   <div className="mt-3 flex gap-2">
                     <button
                       type="button"
                       onClick={handleCopySignUrl}
-                      className="inline-flex min-h-10 flex-1 items-center justify-center rounded-xl border border-orange-500/40 px-3 text-sm font-semibold text-orange-400"
+                      className="glass-button inline-flex min-h-10 flex-1 items-center justify-center rounded-xl border border-orange-base/40 px-3 text-sm font-semibold text-orange-light"
                     >
                       Copy Link
                     </button>
@@ -4213,7 +4535,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                       href={createdSignUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex min-h-10 flex-1 items-center justify-center rounded-xl border-2 border-white/80 px-3 text-sm font-semibold text-white"
+                      className="glass-button inline-flex min-h-10 flex-1 items-center justify-center rounded-xl px-3 text-sm font-semibold text-copy-primary"
                     >
                       Open
                     </a>
@@ -4222,7 +4544,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
               ) : null}
 
               {!canUseSignAndReturn ? (
-                <p className="mt-4 text-xs text-slate-500">
+                <p className="mt-4 text-xs text-copy-tertiary">
                   Sign & Return only appears for signed-in users with Pro Mode
                   enabled.
                 </p>
@@ -4230,7 +4552,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
 
               <div className="mt-4 min-h-[56px] space-y-2">
                 {finalizeError ? (
-                  <p className="rounded-xl border border-red-500/25 bg-red-500/10 px-3 py-2 text-sm text-red-200">
+                  <p className="rounded-xl border border-error/25 bg-error/10 px-3 py-2 text-sm text-red-200">
                     {finalizeError}{" "}
                     <button
                       type="button"
@@ -4239,26 +4561,30 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                           new Error("User reported finalize error"),
                           {
                             tags: { route: "finalize_modal" },
-                            extra: { finalizeError, canonicalPath: page.canonicalPath },
+                            extra: {
+                              finalizeError,
+                              canonicalPath: page.canonicalPath,
+                            },
                           },
                         );
                         if (typeof Sentry.showReportDialog === "function") {
                           Sentry.showReportDialog({
                             title: "Report this issue",
-                            subtitle: "Tell us what happened during Finalize & Send.",
+                            subtitle:
+                              "Tell us what happened during Finalize & Send.",
                           });
                         } else {
                           setFinalizeSuccess("Thanks — error reported.");
                         }
                       }}
-                      className="ml-1 text-xs font-medium underline underline-offset-2 text-red-100 hover:text-red-50"
+                      className="ml-1 text-xs font-medium underline underline-offset-2 text-copy-accent hover:text-red-50"
                     >
                       Report this issue
                     </button>
                   </p>
                 ) : null}
                 {finalizeSuccess ? (
-                  <p className="rounded-xl border border-emerald-500/25 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-200">
+                  <p className="rounded-xl border border-success/25 bg-success/10 px-3 py-2 text-sm text-emerald-200">
                     {finalizeSuccess}
                   </p>
                 ) : null}
@@ -4273,7 +4599,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                   type="button"
                   onClick={handleDownloadPdf}
                   disabled={finalizeBusy !== null}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-900 px-4 text-sm font-semibold text-white transition hover:border-orange-500 disabled:opacity-60"
+                  className="glass-button inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold text-copy-primary transition hover:border-orange-base disabled:opacity-60"
                 >
                   <FileDown className="h-4 w-4" aria-hidden />
                   {finalizeBusy === "pdf" ? "Generating..." : "Download PDF"}
@@ -4282,7 +4608,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                   type="button"
                   onClick={handleAddToCart}
                   disabled={finalizeBusy !== null}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-900 px-4 text-sm font-semibold text-white transition hover:border-orange-500 disabled:opacity-60"
+                  className="glass-button inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold text-copy-primary transition hover:border-orange-base disabled:opacity-60"
                 >
                   <ShoppingCart className="h-4 w-4" aria-hidden />
                   Add to Cart
@@ -4293,7 +4619,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                     openEmailEstimateModal();
                   }}
                   disabled={finalizeBusy !== null}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-900 px-4 text-sm font-semibold text-white transition hover:border-orange-500 disabled:opacity-60"
+                  className="glass-button inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold text-copy-primary transition hover:border-orange-base disabled:opacity-60"
                 >
                   <Mail className="h-4 w-4" aria-hidden />
                   Email Client
@@ -4303,7 +4629,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                     type="button"
                     onClick={handleSendForSignature}
                     disabled={finalizeBusy !== null}
-                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-orange-500 px-4 text-sm font-bold text-white transition hover:bg-orange-600 disabled:opacity-60"
+                    className="glass-button-primary rim-light-active inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-bold text-white transition hover:bg-orange-light disabled:opacity-60"
                   >
                     <Mail className="h-4 w-4" aria-hidden />
                     {finalizeBusy === "sign"

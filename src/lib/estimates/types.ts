@@ -30,7 +30,7 @@ export type EstimatePayload = {
   job_site_address?: string | null;
   material_list?: string[];
   results: EstimateResult[];
-  total_cost?: number | undefined;
+  total_cost?: number | null | undefined;
   inputs?: Record<string, unknown>;
   signature?: EstimateSignature;
 };

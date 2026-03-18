@@ -17,6 +17,7 @@ import {
 } from "@/lib/cache-tags";
 import { isEstimateStatus, type EstimateStatus } from "@/lib/estimates/status";
 import { normalizeDollars } from "@/utils/money";
+import { verifyEstimate } from "@/app/actions/calculations";
 
 async function loadEstimateScope(
   db: ReturnType<typeof createServerClient>,
@@ -137,14 +138,20 @@ export async function PATCH(
     }
 
     const updates: {
-    name?: string | null;
-    total_cost?: number | null;
-    client_name?: string | null;
-    job_site_address?: string | null;
-    status?: EstimateStatus;
-    budget_items?: unknown[] | null;
-    inputs?: Record<string, unknown> | null;
-    share_code?: string | null;
+      name?: string | null;
+      total_cost?: number | null;
+      client_name?: string | null;
+      job_site_address?: string | null;
+      status?: EstimateStatus;
+      budget_items?: unknown[] | null;
+      inputs?: Record<string, unknown> | null;
+      share_code?: string | null;
+      subtotal_cents?: number | null;
+      tax_cents?: number | null;
+      total_cents?: number | null;
+      tax_basis_points?: number | null;
+      verified_county?: string | null;
+      verification_status?: string;
     } = {};
 
     if (body.name !== undefined)
@@ -193,6 +200,19 @@ export async function PATCH(
         typeof body.share_code === "string" && body.share_code.trim()
           ? body.share_code.trim().slice(0, 32)
           : null;
+    }
+
+    if (updates.total_cost !== undefined || updates.inputs !== undefined) {
+      const verified = verifyEstimate({
+        inputs: updates.inputs,
+        total_cost: updates.total_cost ?? null,
+      });
+      updates.subtotal_cents = verified.subtotal_cents;
+      updates.tax_cents = verified.tax_cents;
+      updates.total_cents = verified.total_cents;
+      updates.tax_basis_points = verified.tax_basis_points;
+      updates.verified_county = verified.verified_county;
+      updates.verification_status = verified.verification_status;
     }
 
     if (!Object.keys(updates).length) {

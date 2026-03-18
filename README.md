@@ -62,6 +62,14 @@ npm run check-calcs
 
 Copy `.env.local.example` to `.env.local` and set required variables (see repo docs or `.env.local.example` for the full list).
 
+## Supabase Production Pooling
+
+- Use `SUPABASE_DB_TRANSACTION_URL` for runtime database traffic. This should be the Supabase Transaction pooler on port `6543`.
+- Use `SUPABASE_DB_SESSION_URL` only for `npm run db:push`. This should be the Session pooler on port `5432`.
+- [`src/db/index.ts`](/Users/anthonyjones/GitHub/construction-calc/src/db/index.ts) uses `postgres` plus Drizzle with `max: 10` to avoid serverless connection spikes.
+- [`drizzle.config.ts`](/Users/anthonyjones/GitHub/construction-calc/drizzle.config.ts) is intentionally pinned to the session URL so migrations do not run through the transaction pooler.
+- Owner isolation for estimates is defined in [`estimates-rls-production.sql`](/Users/anthonyjones/GitHub/construction-calc/src/lib/supabase/estimates-rls-production.sql) and mirrored in [`schema.sql`](/Users/anthonyjones/GitHub/construction-calc/src/lib/supabase/schema.sql).
+
 ---
 
 ## Versioning

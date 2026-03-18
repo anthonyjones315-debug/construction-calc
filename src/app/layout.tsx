@@ -9,6 +9,8 @@ import { PWAInstallBanner } from "@/components/layout/PWAInstallBanner";
 import { CrispChat } from "@/components/support/CrispChat";
 import { CSPostHogProvider } from "@/components/providers/PostHogProvider";
 import { PostHogPageView } from "@/components/providers/PostHogPageView";
+import { WebVitals } from "@/components/providers/WebVitals";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { Providers } from "@app/providers";
 import TermlyCMP from "@/components/TermlyCMP";
 import { JsonLD, getLocalBusinessSchema, getVerifiedReviewSchema } from "@/seo";
@@ -31,6 +33,19 @@ const TERMELY_AUTO_BLOCK =
 const SHOULD_LINK_MANIFEST =
   process.env.VERCEL_ENV === "production" ||
   process.env.NODE_ENV !== "production";
+
+function getOrigin(url: string | undefined): string | null {
+  if (!url) return null;
+
+  try {
+    return new URL(url).origin;
+  } catch {
+    return null;
+  }
+}
+
+const supabaseOrigin = getOrigin(process.env.NEXT_PUBLIC_SUPABASE_URL);
+const resendOrigin = "https://api.resend.com";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -118,12 +133,29 @@ export default function RootLayout({
   const verifiedReviewSchema = getVerifiedReviewSchema();
 
   return (
-    <html lang="en" className="bg-slate-950 text-slate-200">
+    <html
+      lang="en"
+      className="command-theme bg-slate-950 text-slate-200"
+      suppressHydrationWarning
+    >
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         {SHOULD_LINK_MANIFEST ? (
           <link rel="manifest" href="/app.webmanifest" />
         ) : null}
+        {supabaseOrigin ? (
+          <>
+            <link rel="preconnect" href={supabaseOrigin} crossOrigin="" />
+            <link rel="dns-prefetch" href={supabaseOrigin} />
+          </>
+        ) : null}
+        <link rel="preconnect" href={resendOrigin} crossOrigin="" />
+        <link rel="dns-prefetch" href={resendOrigin} />
+        <meta
+          name="apple-mobile-web-app-status-bar-style"
+          content="black-translucent"
+        />
+        <meta name="theme-color" content="#FF7A00" />
         {/*
           Critical CSS vars injected inline so Slate & Orange theme colors
           are available before the external stylesheet or any font loads.
@@ -145,6 +177,22 @@ export default function RootLayout({
                 --color-nav-bg: #0a0f1a;
               }
               html { background: #020617; color: #f8fafc; }
+              .glass-gpu {
+                will-change: transform, opacity;
+                transform: translateZ(0);
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
+              }
+              .no-scroll-shell {
+                height: 844px;
+                overflow: hidden;
+                position: fixed;
+                width: 100%;
+              }
+              .glass-decorative {
+                pointer-events: none;
+                user-select: none;
+              }
             `,
           }}
         />
@@ -152,39 +200,42 @@ export default function RootLayout({
       <body
         className={`command-theme ${inter.variable} ${oswald.variable} ${jetBrainsMono.variable} min-h-dvh flex flex-col`}
       >
-        <a href="#main-content" className="skip-link" tabIndex={0}>
-          Skip to main content
-        </a>
-        <Suspense fallback={null}>
-          <CSPostHogProvider>
-            <Suspense fallback={null}>
-              <PostHogPageView />
-            </Suspense>
-            <JsonLD schema={localBusinessSchema} />
-            {verifiedReviewSchema ? (
-              <JsonLD schema={verifiedReviewSchema} />
-            ) : null}
-            <Providers>
+        <ThemeProvider>
+          <a href="#main-content" className="skip-link" tabIndex={0}>
+            Skip to main content
+          </a>
+          <Suspense fallback={null}>
+            <CSPostHogProvider>
               <Suspense fallback={null}>
-                <ScrollToTop />
+                <PostHogPageView />
               </Suspense>
-              {TERMELY_WEBSITE_UUID && (
-                <TermlyCMP
-                  websiteUUID={TERMELY_WEBSITE_UUID}
-                  autoBlock={TERMELY_AUTO_BLOCK}
-                  masterConsentsOrigin={TERMELY_MASTER_CONSENTS_ORIGIN}
-                />
-              )}
-              {children}
-            </Providers>
-          </CSPostHogProvider>
-        </Suspense>
-        <ServiceWorker />
-        <OptionalTracking />
-        <PWAInstallBanner />
-        <Suspense fallback={null}>
-          <CrispChat />
-        </Suspense>
+              <JsonLD schema={localBusinessSchema} />
+              {verifiedReviewSchema ? (
+                <JsonLD schema={verifiedReviewSchema} />
+              ) : null}
+              <Providers>
+                <Suspense fallback={null}>
+                  <ScrollToTop />
+                </Suspense>
+                {TERMELY_WEBSITE_UUID && (
+                  <TermlyCMP
+                    websiteUUID={TERMELY_WEBSITE_UUID}
+                    autoBlock={TERMELY_AUTO_BLOCK}
+                    masterConsentsOrigin={TERMELY_MASTER_CONSENTS_ORIGIN}
+                  />
+                )}
+                <WebVitals />
+                {children}
+              </Providers>
+            </CSPostHogProvider>
+          </Suspense>
+          <ServiceWorker />
+          <OptionalTracking />
+          <PWAInstallBanner />
+          <Suspense fallback={null}>
+            <CrispChat />
+          </Suspense>
+        </ThemeProvider>
       </body>
     </html>
   );

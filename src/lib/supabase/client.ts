@@ -26,6 +26,12 @@ export interface SavedEstimate {
   }[];
   budget_items: Record<string, unknown>[] | null;
   total_cost: number | null;
+  subtotal_cents?: number | null;
+  tax_cents?: number | null;
+  total_cents?: number | null;
+  tax_basis_points?: number | null;
+  verified_county?: string | null;
+  verification_status?: "unverified" | "verified" | "corrected";
   client_name: string | null;
   job_site_address: string | null;
   status: "Draft" | "Sent" | "Approved" | "Lost" | "PENDING" | "SIGNED";

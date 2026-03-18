@@ -16,6 +16,7 @@ import { primaryNavigation, routes } from "@routes";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import { useClickOutside } from "@/hooks/useClickOutside";
 import { useStore } from "@/lib/store";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 export function Header() {
   const pathname = usePathname();
@@ -141,6 +142,7 @@ export function Header() {
 
         {/* Right side: command shortcut + offline badge + auth + mobile hamburger */}
         <div className="flex items-center gap-1.5 sm:gap-2">
+          <ThemeToggle />
           {/* Mobile-friendly quick jump into Command Center */}
           <Link
             href={commandCenterHref}

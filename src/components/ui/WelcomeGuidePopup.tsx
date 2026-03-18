@@ -11,6 +11,11 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { routes } from "@routes";
+import {
+  GlassDialogFrame,
+  GlassFeatureItem,
+  GlassIconBadge,
+} from "./glass-elements";
 
 const STORAGE_KEY = "pcc_welcome_guide_dismissed_v1";
 const SESSION_KEY = "pcc_welcome_guide_seen_v1";
@@ -95,7 +100,7 @@ export function WelcomeGuidePopup({
         className="fixed left-1/2 top-1/2 z-[60] w-[calc(100%-1.5rem)] max-w-md -translate-x-1/2 -translate-y-1/2 px-[env(safe-area-inset-left,0px)] py-[env(safe-area-inset-top,0px)] sm:w-[calc(100%-2rem)]"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="relative max-h-[calc(100dvh-1.5rem-env(safe-area-inset-top,0px)-env(safe-area-inset-bottom,0px))] overflow-y-auto rounded-2xl border border-slate-800 bg-slate-900 p-5 text-white shadow-[0_24px_50px_rgba(0,0,0,0.45)] before:pointer-events-none before:absolute before:inset-0 before:rounded-2xl before:bg-[radial-gradient(circle_at_top,rgba(247,148,29,0.08),transparent_42%)] before:content-[''] sm:p-6">
+        <GlassDialogFrame className="max-h-[calc(100dvh-1.5rem-env(safe-area-inset-top,0px)-env(safe-area-inset-bottom,0px))] overflow-y-auto p-5 text-white shadow-[0_24px_50px_rgba(0,0,0,0.45)] sm:p-6">
           <button
             type="button"
             onClick={dismiss}
@@ -106,14 +111,14 @@ export function WelcomeGuidePopup({
           </button>
 
           <div className="relative mb-4 flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[--color-orange-brand]/12">
+            <GlassIconBadge>
               <BookOpenCheck
-                className="h-5 w-5 text-[--color-orange-brand]"
+                className="h-5 w-5"
                 aria-hidden
               />
-            </div>
+            </GlassIconBadge>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-orange-500">
+              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary">
                 Welcome
               </p>
               <h2
@@ -150,13 +155,10 @@ export function WelcomeGuidePopup({
                 label: "Best practices for secure account recovery",
               },
             ].map(({ icon: Icon, label }) => (
-              <div
-                key={label}
-                className="flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-800/70 px-3 py-2 text-xs text-slate-300"
-              >
-                <Icon className="h-4 w-4 text-[--color-orange-brand]" aria-hidden />
+              <GlassFeatureItem key={label}>
+                <Icon className="h-4 w-4 text-primary" aria-hidden />
                 <span>{label}</span>
-              </div>
+              </GlassFeatureItem>
             ))}
           </div>
 
@@ -193,7 +195,7 @@ export function WelcomeGuidePopup({
               Close for now
             </button>
           </div>
-        </div>
+        </GlassDialogFrame>
       </div>
     </>
   );

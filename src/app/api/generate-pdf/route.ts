@@ -10,7 +10,7 @@ import { finalizeEstimateSchema } from "@/lib/estimates/finalize";
 import { sanitizeFilename } from "@/utils/sanitize-filename";
 import { getPostHogClient } from "@/lib/posthog-server";
 import * as Sentry from "@sentry/nextjs";
-import { generateInvoiceHtml } from "@/lib/pdf/invoice-template";
+import { generateInvoiceHtml } from "@/lib/reports/invoice-template";
 
 async function resolvePdfBranding(
   payload: ReturnType<typeof finalizeEstimateSchema.parse>,
@@ -123,6 +123,16 @@ export async function POST(request: NextRequest) {
               left: "0.4in",
               right: "0.4in",
             },
+            // Ensure fonts and advanced CSS effects like glass have time to load
+            waitFor: {
+              timeout: 3000, // Wait up to 3 seconds for all resources to load
+              selector: "body.ready", // If we add this class to the body when fonts load
+              selectorType: "css",
+            },
+            // Improve quality for glass effects and gradient rendering
+            preferCSSPageSize: true,
+            omitBackground: false,
+            scale: 0.95, // Slight scaling to improve sharpness
           },
         }),
       },
