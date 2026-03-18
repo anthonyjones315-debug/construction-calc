@@ -59,6 +59,8 @@ type CommandCenterClientProps = {
   needsBusinessProfileSetup: boolean;
   draftMode?: boolean;
   initialToolSlug?: string;
+  /** The current user's role in this business. */
+  userRole: string;
 };
 
 type NavItem = {
@@ -530,6 +532,7 @@ export default function CommandCenterClient({
   needsBusinessProfileSetup,
   draftMode = false,
   initialToolSlug,
+  userRole,
 }: CommandCenterClientProps) {
   const [members, setMembers] = useState<TeamMember[]>(initialMembers);
   const [busyMemberId, setBusyMemberId] = useState<string | null>(null);
@@ -558,6 +561,10 @@ export default function CommandCenterClient({
       members.find((member) => member.membershipId === manageTargetId) ?? null,
     [members, manageTargetId],
   );
+
+  // Capability flags derived from the current user's role.
+  // owner + admin → can manage members and rotate join codes.
+  const canManageCrew = userRole === "owner" || userRole === "admin";
 
   const planName = "Pro Team";
   const seatLimit = 10;
@@ -1279,20 +1286,22 @@ export default function CommandCenterClient({
               <Copy className="h-4 w-4" aria-hidden />
               Copy Code
             </button>
-            <button
-              type="button"
-              onClick={refreshInviteCode}
-              disabled={isRefreshingInvite || !joinCodeRotatable}
-              title={
-                !joinCodeRotatable
-                  ? "Rotation requires the join_code migration to be applied."
-                  : "Rotate invite code — old codes become invalid immediately"
-              }
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-white/20 px-4 text-sm font-semibold text-white transition hover:border-orange-400/60 hover:text-orange-200 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <RefreshCw className="h-4 w-4" aria-hidden />
-              {isRefreshingInvite ? "Refreshing…" : "Regenerate Code"}
-            </button>
+            {canManageCrew && (
+              <button
+                type="button"
+                onClick={refreshInviteCode}
+                disabled={isRefreshingInvite || !joinCodeRotatable}
+                title={
+                  !joinCodeRotatable
+                    ? "Rotation requires the join_code migration to be applied."
+                    : "Rotate invite code — old codes become invalid immediately"
+                }
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-white/20 px-4 text-sm font-semibold text-white transition hover:border-orange-400/60 hover:text-orange-200 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <RefreshCw className="h-4 w-4" aria-hidden />
+                {isRefreshingInvite ? "Refreshing…" : "Regenerate Code"}
+              </button>
+            )}
           </div>
         </article>
       </div>
@@ -1334,7 +1343,7 @@ export default function CommandCenterClient({
                       <p className="text-xs text-slate-400">{member.email}</p>
                     </div>
                   </div>
-                  {isOwner ? (
+                  {isOwner || !canManageCrew ? (
                     <span
                       className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] ${roleBadgeClasses(member.role)}`}
                     >
@@ -1661,7 +1670,7 @@ export default function CommandCenterClient({
         </div>
       )}
 
-      {manageTarget && (
+      {manageTarget && canManageCrew && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
           <button
             type="button"
@@ -1685,14 +1694,17 @@ export default function CommandCenterClient({
               >
                 Set Member
               </button>
-              <button
-                type="button"
-                onClick={() => updateRole(manageTarget.membershipId, "owner")}
-                disabled={busyMemberId === manageTarget.membershipId}
-                className="rounded-2xl border border-slate-700 px-3 py-2 text-sm font-semibold text-slate-200 transition hover:border-[--color-orange-brand] hover:bg-white/6 disabled:opacity-60"
-              >
-                Promote Owner
-              </button>
+              {/* Only the business owner can transfer ownership to another member */}
+              {userRole === "owner" && (
+                <button
+                  type="button"
+                  onClick={() => updateRole(manageTarget.membershipId, "owner")}
+                  disabled={busyMemberId === manageTarget.membershipId}
+                  className="rounded-2xl border border-slate-700 px-3 py-2 text-sm font-semibold text-slate-200 transition hover:border-[--color-orange-brand] hover:bg-white/6 disabled:opacity-60"
+                >
+                  Promote Owner
+                </button>
+              )}
             </div>
             <button
               type="button"
