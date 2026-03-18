@@ -280,6 +280,10 @@ create table if not exists price_book (
   updated_at            timestamptz not null default now()
 );
 
+-- Guard: table may already exist from a previous run without organization_id.
+alter table price_book
+  add column if not exists organization_id uuid references organizations(id) on delete cascade;
+
 alter table price_book enable row level security;
 alter table price_book force row level security;
 
@@ -306,6 +310,10 @@ create table if not exists leads (
   updated_at        timestamptz not null default now()
 );
 
+-- Guard: table may already exist from a previous run without organization_id.
+alter table leads
+  add column if not exists organization_id uuid references organizations(id) on delete cascade;
+
 alter table leads enable row level security;
 alter table leads force row level security;
 
@@ -316,7 +324,11 @@ create index if not exists leads_org_status_idx
   on leads(organization_id, status);
 
 -- Projects pipeline (Kanban-compatible).
-create type project_status as enum ('lead','quoted','won','lost','completed');
+-- Guard: CREATE TYPE errors if the type already exists; use DO block instead.
+do $$ begin
+  create type project_status as enum ('lead','quoted','won','lost','completed');
+exception when duplicate_object then null;
+end $$;
 
 create table if not exists projects (
   id                 uuid primary key default uuid_generate_v4(),
@@ -334,6 +346,10 @@ create table if not exists projects (
   created_at         timestamptz not null default now(),
   updated_at         timestamptz not null default now()
 );
+
+-- Guard: table may already exist from a previous run without organization_id.
+alter table projects
+  add column if not exists organization_id uuid references organizations(id) on delete cascade;
 
 alter table projects enable row level security;
 alter table projects force row level security;
@@ -359,6 +375,10 @@ create table if not exists takeoff_measurements (
   created_at        timestamptz not null default now(),
   updated_at        timestamptz not null default now()
 );
+
+-- Guard: table may already exist from a previous run without organization_id.
+alter table takeoff_measurements
+  add column if not exists organization_id uuid references organizations(id) on delete cascade;
 
 alter table takeoff_measurements enable row level security;
 alter table takeoff_measurements force row level security;

@@ -36,6 +36,7 @@ type RecentEstimate = {
 type CommandCenterData = {
   hasBusiness: boolean;
   isOwner: boolean;
+  userRole: string;
   businessName: string;
   joinCode: string;
   members: TeamMember[];
@@ -295,6 +296,7 @@ async function loadCommandCenterData(userId: string): Promise<CommandCenterData>
     return {
       hasBusiness: false,
       isOwner: false,
+      userRole: "member",
       businessName: "",
       joinCode: "",
       members: [],
@@ -313,6 +315,7 @@ async function loadCommandCenterData(userId: string): Promise<CommandCenterData>
     return {
       hasBusiness: false,
       isOwner: false,
+      userRole: "member",
       businessName: "",
       joinCode: "",
       members: [],
@@ -321,17 +324,9 @@ async function loadCommandCenterData(userId: string): Promise<CommandCenterData>
     };
   }
 
-  if (membership.role !== "owner") {
-    return {
-      hasBusiness: true,
-      isOwner: false,
-      businessName: business.name,
-      joinCode: "",
-      members: [],
-      recentEstimates: [],
-      needsBusinessProfileSetup: false,
-    };
-  }
+  // Owner and admin can see the full roster and join code; others see read-only data.
+  const canManageCrew =
+    membership.role === "owner" || membership.role === "admin";
 
   const { data: memberships } = await db
     .from("memberships")
@@ -368,8 +363,11 @@ async function loadCommandCenterData(userId: string): Promise<CommandCenterData>
   return {
     hasBusiness: true,
     isOwner: membership.role === "owner",
+    userRole: membership.role,
     businessName: business.name,
-    joinCode: (await getBusinessJoinCode(db, business.id)).code,
+    joinCode: canManageCrew
+      ? (await getBusinessJoinCode(db, business.id)).code
+      : "",
     recentEstimates: (recentEstimates ?? []).map((estimate) => ({
       id: estimate.id,
       name: estimate.name,
@@ -432,8 +430,6 @@ export default async function CommandCenterPage({
 
   if (!userId || !commandCenterData || !commandCenterData.hasBusiness) {
     mainContent = <CommandCenterOnboarding setupError={setupError} />;
-  } else if (!commandCenterData.isOwner) {
-    mainContent = <NotOwnerState />;
   } else {
     mainContent = (
       <CommandCenterClient
@@ -444,6 +440,7 @@ export default async function CommandCenterPage({
         needsBusinessProfileSetup={commandCenterData.needsBusinessProfileSetup}
         draftMode={draftMode}
         initialToolSlug={toolParam ?? undefined}
+        userRole={commandCenterData.userRole}
       />
     );
   }

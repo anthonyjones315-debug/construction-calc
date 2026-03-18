@@ -28,9 +28,9 @@ async function loadTargetMembership(
 
   const db = createServerClient();
   const context = await getBusinessContextForSession(db, session);
-  if (!context.isOwner) {
+  if (!context.isAdmin) {
     return {
-      error: "Only business owners can manage team members.",
+      error: "Only business owners and admins can manage team members.",
       status: 403,
     };
   }
@@ -71,10 +71,18 @@ export async function PATCH(
   const body = await req.json().catch(() => ({}));
   const role = typeof body?.role === "string" ? body.role : "";
 
-  if (role !== "owner" && role !== "member") {
+  if (!["owner", "admin", "editor", "member"].includes(role)) {
     return NextResponse.json(
-      { error: "Role must be owner or member." },
+      { error: "Invalid role. Must be owner, admin, editor, or member." },
       { status: 400 },
+    );
+  }
+
+  // Only the business owner can transfer ownership or assign the owner role.
+  if (role === "owner" && !loaded.context.isOwner) {
+    return NextResponse.json(
+      { error: "Only the business owner can transfer ownership." },
+      { status: 403 },
     );
   }
 
