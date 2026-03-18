@@ -312,6 +312,7 @@ export default function CommandCenterClient({
         cartItemCount > 0
           ? `${cartItemCount} batch item${cartItemCount === 1 ? "" : "s"} ready`
           : "Cart is clear",
+      href: routes.cart,
     },
     {
       label: "Follow up sent proposals",
@@ -319,10 +320,12 @@ export default function CommandCenterClient({
         sentEstimateCount > 0
           ? `${sentEstimateCount} estimate${sentEstimateCount === 1 ? "" : "s"} waiting on client`
           : "No proposals waiting on client action",
+      href: routes.saved,
     },
     {
       label: "Business handoff readiness",
       value: profileStatusLabel,
+      href: routes.settings,
     },
   ];
   const featuredToolItems = filteredToolItems.slice(0, 6);
@@ -724,9 +727,11 @@ export default function CommandCenterClient({
                 </p>
                 <div className="mt-5 grid gap-3 md:grid-cols-3">
                   {fieldPriorities.map((priority) => (
-                    <div
+                    <Link
                       key={priority.label}
-                      className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3"
+                      href={priority.href}
+                      prefetch={false}
+                      className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 transition hover:border-orange-500/30 hover:bg-white/8"
                     >
                       <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
                         {priority.label}
@@ -734,7 +739,7 @@ export default function CommandCenterClient({
                       <p className="mt-2 text-sm font-semibold text-white">
                         {priority.value}
                       </p>
-                    </div>
+                    </Link>
                   ))}
                 </div>
                 <div className="mt-5 flex flex-wrap gap-2">
@@ -765,26 +770,32 @@ export default function CommandCenterClient({
                     label: "Closed / signed",
                     value: signedEstimateCount,
                     tone: "text-emerald-300",
+                    href: routes.saved,
                   },
                   {
                     label: "Sent / waiting",
                     value: sentEstimateCount,
                     tone: "text-orange-300",
+                    href: routes.saved,
                   },
                   {
                     label: "Drafts in view",
                     value: draftEstimateCount,
                     tone: "text-sky-300",
+                    href: routes.saved,
                   },
                   {
                     label: "Crew seats filled",
                     value: `${utilizationPercent}%`,
                     tone: "text-white",
+                    href: routes.settings,
                   },
                 ].map((stat) => (
-                  <article
+                  <Link
                     key={stat.label}
-                    className="rounded-2xl border border-slate-800 bg-slate-900/85 px-4 py-4 shadow-[0_12px_30px_rgba(0,0,0,0.22)]"
+                    href={stat.href}
+                    prefetch={false}
+                    className="rounded-2xl border border-slate-800 bg-slate-900/85 px-4 py-4 shadow-[0_12px_30px_rgba(0,0,0,0.22)] transition hover:border-orange-500/30 hover:bg-slate-900"
                   >
                     <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
                       {stat.label}
@@ -795,7 +806,7 @@ export default function CommandCenterClient({
                     <p className="mt-2 text-xs text-slate-400">
                       Last estimate activity: {lastEstimateLabel}
                     </p>
-                  </article>
+                  </Link>
                 ))}
               </section>
             </section>
@@ -1232,6 +1243,56 @@ export default function CommandCenterClient({
                   </tbody>
                 </table>
               </div>
+            </div>
+
+            <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              <div className="col-span-full">
+                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-500">
+                  Local Contractor Shortcuts
+                </p>
+              </div>
+              {[
+                {
+                  label: "Legal & Compliance",
+                  description: "Privacy policy, terms of service, and ST-124 capital improvement reference.",
+                  href: routes.financialTerms,
+                  icon: ShieldCheck,
+                },
+                {
+                  label: "Financial Glossary",
+                  description: "Markup vs margin, burden rate, CAC, and tax definitions used across the app.",
+                  href: routes.glossary,
+                  icon: FileText,
+                },
+                {
+                  label: "Field Notes Library",
+                  description: "Crew tips, county tax guides, and trade-specific workflow notes.",
+                  href: routes.fieldNotes,
+                  icon: FileText,
+                },
+                {
+                  label: "Saved Estimates",
+                  description: "Review drafts, sent proposals, and signed estimates.",
+                  href: routes.saved,
+                  icon: BarChart3,
+                },
+              ].map((shortcut) => (
+                <Link
+                  key={shortcut.label}
+                  href={shortcut.href}
+                  prefetch={false}
+                  className="rounded-2xl border border-slate-800 bg-slate-900/85 p-4 transition hover:border-orange-500/40 hover:bg-slate-900"
+                >
+                  <div className="flex items-start gap-3">
+                    <shortcut.icon className="mt-0.5 h-4 w-4 shrink-0 text-orange-400" aria-hidden />
+                    <div>
+                      <p className="text-sm font-bold text-white">{shortcut.label}</p>
+                      <p className="mt-1 text-xs text-slate-400">{shortcut.description}</p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </section>
             </div>
             </div>
           </div>

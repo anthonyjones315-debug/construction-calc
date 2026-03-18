@@ -852,6 +852,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     EstimateCountySelection | ""
   >("");
   const [estimateCountyCustom, setEstimateCountyCustom] = useState("");
+  const [estimateQuoteNote, setEstimateQuoteNote] = useState("");
+  const [estimateInternalNote, setEstimateInternalNote] = useState("");
 
   const haptic = useHaptic();
   const hapticTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -1740,14 +1742,21 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       }
 
       const derivedStuds = Math.max(2, Math.ceil(runFeet / spacingFeet) + 1);
+      // Apply waste to base stud count only (not to the already-rounded-up integer)
+      const derivedStudsWithWaste = isWallStudTotalMode
+        ? Math.max(2, derivedStuds)
+        : Math.ceil(derivedStuds * wasteMultiplier);
       const totalStuds = isWallStudTotalMode
         ? wallStudTargetCount
         : isWallFramingCalculator && staggeredStudWall
-          ? Math.max(4, derivedStuds * 2)
-          : Math.max(8, derivedStuds);
+          ? Math.max(4, derivedStudsWithWaste * 2)
+          : Math.max(8, derivedStudsWithWaste);
 
       if (page.canonicalPath.includes("/framing/wall")) {
-        const totalPlateLf = runFeet * (staggeredStudWall ? 6 : 3);
+        // Standard framing: 1 bottom plate + 1 top plate = 2 plates total per run foot
+        // Staggered wall: 2 bottom + 2 top = 4 plates
+        const plateCount = staggeredStudWall ? 4 : 2;
+        const totalPlateLf = runFeet * plateCount;
         const studStockLabel = (() => {
           if (!isWallFramingCalculator) {
             return `${framingLengthFeet.toFixed(2)}'`;
@@ -1784,8 +1793,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
           materialList: [
             `Order ${totalStuds} - 2x4x${studStockLabel} studs`,
             staggeredStudWall
-              ? `Order ${totalPlateLf.toFixed(1)} LF plates (double top + double sole for staggered wall)`
-              : `Order ${totalPlateLf.toFixed(1)} LF plates (double top + single sole)`,
+              ? `Order ${totalPlateLf.toFixed(1)} LF plates (2 bottom + 2 top for staggered wall)`
+              : `Order ${totalPlateLf.toFixed(1)} LF plates (1 bottom + 1 top)`,
           ],
         };
       }
@@ -1795,7 +1804,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       const kingStuds = estimatedOpenings * 2;
       const commonStuds = Math.max(0, totalStuds - jackStuds - kingStuds);
       const boardFeet = getBoardFeet(totalStuds, 2, 4, framingLengthFeet);
-      const totalPlateLf = runFeet * 3;
+      const totalPlateLf = runFeet * 2;
       const plates16ft = Math.max(1, Math.ceil(totalPlateLf / 16));
       return {
         primary: {
@@ -2135,6 +2144,13 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       materialList: calculatorResults.materialList,
     };
   }, [calculatorResults, canShowPricing]);
+
+  const hasMonetaryOutput = useMemo(() => {
+    return (
+      isMonetaryResult(calculatorResults.primary) ||
+      calculatorResults.secondary.some(isMonetaryResult)
+    );
+  }, [calculatorResults]);
 
   async function runAiOptimizer() {
     if (aiOptimizeBusy) return;
@@ -2553,7 +2569,10 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         client_email: estimateClientEmail.trim() || null,
         selected_county_mode: estimateCountySelection || null,
         selected_county: resolvedEstimateCounty,
+        internal_note: estimateInternalNote.trim() || null,
       },
+      quote_note: estimateQuoteNote.trim() || null,
+      type: "calculator_report" as const,
       metadata: {
         title: page.title,
         calculatorLabel: page.heroKicker,
@@ -2577,6 +2596,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       estimateJobAddress,
       estimateJobName,
       estimateName,
+      estimateQuoteNote,
+      estimateInternalNote,
       page.canonicalPath,
       page.heroKicker,
       page.title,
@@ -2881,6 +2902,12 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                   className="rounded-xl border border-white/20 px-4 py-2 text-sm font-bold uppercase tracking-wide text-white"
                 />
               </div>
+              <a
+                href="/calculators"
+                className="mt-3 inline-block rounded-xl border border-white/15 px-4 py-2 text-sm font-medium text-[--color-nav-text]/70 hover:text-[--color-nav-text] transition"
+              >
+                Back to Calculators
+              </a>
             </div>
           </main>
         );
@@ -4463,40 +4490,76 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                     placeholder="Optional"
                   />
                 </label>
+                {hasMonetaryOutput ? (
+                  <>
+                    <label className="text-sm text-copy-secondary">
+                      County For This Estimate
+                      <select
+                        value={estimateCountySelection}
+                        onChange={(event) =>
+                          setEstimateCountySelection(
+                            event.target.value as EstimateCountySelection | "",
+                          )
+                        }
+                        className="glass-input mt-1 h-11 w-full rounded-xl px-3 outline-none"
+                      >
+                        <option value="">Choose county or tax handling</option>
+                        {ESTIMATE_COUNTY_OPTIONS.map((option) => (
+                          <option key={option} value={option}>
+                            {option === "None"
+                              ? "None (no county selected)"
+                              : option}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    {estimateCountySelection === "Custom" ? (
+                      <label className="text-sm text-copy-secondary">
+                        Custom County / Tax Market
+                        <input
+                          value={estimateCountyCustom}
+                          onChange={(event) =>
+                            setEstimateCountyCustom(event.target.value)
+                          }
+                          className="glass-input mt-1 h-11 w-full rounded-xl px-3 outline-none"
+                          placeholder="Example: Onondaga or tax exempt"
+                        />
+                      </label>
+                    ) : null}
+                  </>
+                ) : (
+                  <div className="rounded-xl border border-white/10 bg-white/5 px-3 py-3">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-copy-tertiary">
+                      Waste Calculation Audit
+                    </p>
+                    <p className="mt-1 text-xs text-copy-tertiary">
+                      This calculator produces unit quantities only. Tax and county
+                      settings apply when a dollar amount is present.
+                    </p>
+                  </div>
+                )}
                 <label className="text-sm text-copy-secondary">
-                  County For This Estimate
-                  <select
-                    value={estimateCountySelection}
-                    onChange={(event) =>
-                      setEstimateCountySelection(
-                        event.target.value as EstimateCountySelection | "",
-                      )
-                    }
-                    className="glass-input mt-1 h-11 w-full rounded-xl px-3 outline-none"
-                  >
-                    <option value="">Choose county or tax handling</option>
-                    {ESTIMATE_COUNTY_OPTIONS.map((option) => (
-                      <option key={option} value={option}>
-                        {option === "None"
-                          ? "None (no county selected)"
-                          : option}
-                      </option>
-                    ))}
-                  </select>
+                  Quote Note <span className="text-copy-tertiary text-xs font-normal">(appears on PDF)</span>
+                  <textarea
+                    value={estimateQuoteNote}
+                    onChange={(event) => setEstimateQuoteNote(event.target.value)}
+                    className="glass-input mt-1 w-full rounded-xl px-3 py-2 outline-none resize-none"
+                    rows={2}
+                    placeholder="Optional note shown to the client on the estimate PDF"
+                    maxLength={1000}
+                  />
                 </label>
-                {estimateCountySelection === "Custom" ? (
-                  <label className="text-sm text-copy-secondary">
-                    Custom County / Tax Market
-                    <input
-                      value={estimateCountyCustom}
-                      onChange={(event) =>
-                        setEstimateCountyCustom(event.target.value)
-                      }
-                      className="glass-input mt-1 h-11 w-full rounded-xl px-3 outline-none"
-                      placeholder="Example: Onondaga or tax exempt"
-                    />
-                  </label>
-                ) : null}
+                <label className="text-sm text-copy-secondary">
+                  Internal Note <span className="text-copy-tertiary text-xs font-normal">(never on PDF)</span>
+                  <textarea
+                    value={estimateInternalNote}
+                    onChange={(event) => setEstimateInternalNote(event.target.value)}
+                    className="glass-input mt-1 w-full rounded-xl px-3 py-2 outline-none resize-none"
+                    rows={2}
+                    placeholder="Internal-only project notes. Not shown to the client."
+                    maxLength={2000}
+                  />
+                </label>
               </div>
 
               <p className="mt-3 text-xs text-copy-tertiary">

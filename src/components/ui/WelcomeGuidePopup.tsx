@@ -140,19 +140,19 @@ export function WelcomeGuidePopup({
             {[
               {
                 icon: LayoutDashboard,
-                label: "Command Center setup and first-run workflow",
+                label: "Command Center: estimates, team, and price book in one place",
               },
               {
                 icon: Receipt,
-                label: "Estimate math, pricing, and audit checks",
+                label: "Estimate math, pricing, and tax audit for tri-county work",
               },
               {
                 icon: FileText,
-                label: "Client-ready PDF handoff and saved jobs",
+                label: "Client-ready PDF export and saved estimate management",
               },
               {
                 icon: ShieldCheck,
-                label: "Best practices for secure account recovery",
+                label: "Oneida County tax rates and ST-124 capital improvement rules",
               },
             ].map(({ icon: Icon, label }) => (
               <GlassFeatureItem key={label}>

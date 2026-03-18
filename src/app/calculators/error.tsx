@@ -47,6 +47,12 @@ export default function CalcError({
           className="rounded-xl border border-[--color-orange-brand]/40 px-5 py-2.5 text-sm font-bold text-[--color-orange-brand]"
         />
       </div>
+      <a
+        href="/calculators"
+        className="mt-4 inline-block rounded-xl border border-[--color-border] px-5 py-2.5 text-sm font-medium text-[--color-ink-dim] hover:text-[--color-ink] transition"
+      >
+        Back to Calculators
+      </a>
     </div>
   );
 }

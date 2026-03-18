@@ -20,6 +20,12 @@ export const finalizeEstimateSchema = z
     results: z.array(estimateResultSchema).min(1).max(25),
     material_list: z.array(z.string().trim().min(1).max(200)).min(1).max(50),
     inputs: z.record(z.string(), z.unknown()).optional(),
+    /** Customer-facing note shown on the estimate PDF. */
+    quote_note: z.string().trim().max(1000).nullable().optional(),
+    /** Internal project note. Never rendered on PDFs or client-facing output. */
+    internal_note: z.string().trim().max(2000).nullable().optional(),
+    /** Document type discriminant. Defaults to calculator_report. */
+    type: z.enum(["calculator_report", "estimate"]).optional(),
     metadata: z
       .object({
         title: z.string().trim().min(1).max(200),

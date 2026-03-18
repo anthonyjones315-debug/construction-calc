@@ -69,6 +69,12 @@ export default function GlobalError({
                 className="rounded-lg bg-orange-600 px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-orange-500"
               />
             </div>
+            <a
+              href="/"
+              className="mt-4 rounded-lg border border-slate-700 px-4 py-2 text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-slate-200 transition"
+            >
+              Go to Home
+            </a>
           </div>
         </div>
       </body>

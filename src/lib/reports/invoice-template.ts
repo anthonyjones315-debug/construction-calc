@@ -73,6 +73,10 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
     Array.isArray(payload.material_list) && payload.material_list.length
       ? payload.material_list
       : [];
+  const quoteNote =
+    typeof payload.quote_note === "string" && payload.quote_note.trim()
+      ? payload.quote_note.trim()
+      : null;
 
   const primaryResult = payload.results[0];
 
@@ -319,6 +323,18 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
             ${materialsRows || `<li class="text-sm text-white/90">Order estimate for ${payload.name}.</li>`}
           </ul>
         </section>
+
+        <!-- Quote Note (customer-facing) -->
+        ${
+          quoteNote
+            ? `<section class="glass-panel px-5 py-4">
+               <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/80">
+                 Note
+               </p>
+               <p class="mt-1 text-sm text-white/90 whitespace-pre-line">${quoteNote}</p>
+             </section>`
+            : ""
+        }
 
         <!-- Field Notes -->
         <section class="glass-panel px-5 py-4">

@@ -99,6 +99,47 @@ Use our [footing volume calculator](/calculators/concrete/footing) once the desi
     `,
   },
   {
+    slug: "oneida-county-sales-tax-2026",
+    title: "Oneida County Sales Tax (8.75%) and ST-124 Rules",
+    description:
+      "A contractor-focused guide to Oneida County's current combined sales tax rate covering the Rome and Utica market, ST-124 capital improvement exemptions, and clean estimating habits.",
+    category: "Business & Legal",
+    date: "May 2026",
+    lastVerified: "2026-03-17",
+    relatedToolLinks: [
+      { href: "/calculators/business/tax-save", label: "Tax Save Calculator" },
+      { href: "/calculators/business/profit-margin", label: "Profit Margin" },
+      { href: "/calculators/business/labor-rate", label: "Labor Rate" },
+    ],
+    content: `
+## Current combined rate
+
+New York's current jurisdiction table lists Oneida County at 8.75 percent combined sales tax. That is 4 percent state tax plus 4.75 percent local tax. This applies to taxable repair and maintenance work performed within Oneida County, including the Rome and Utica metro areas.
+
+## Capital improvements and Form ST-124
+
+If the project qualifies as a capital improvement under NYS tax law, collect a signed Form ST-124 from the property owner before the job starts. A valid ST-124 on file means you do not charge sales tax on labor for that scope. Materials you purchase for the job are still taxable at the point of purchase unless a separate exemption applies.
+
+## Common traps in the Rome and Utica market
+
+- Remodeling a kitchen or bathroom usually qualifies as a capital improvement. Patching or repairing the same space usually does not.
+- A job that mixes new work with repair work needs two separate invoice lines so the tax treatment is clear on paper.
+- Do not rely on what the last GC told you. Verify the project type before the proposal goes out.
+
+## Clean estimating habits
+
+- Enter the 8.75 percent rate in the Tax Save calculator before you build the bid.
+- Keep the signed ST-124 in the job file alongside the executed contract and final invoice.
+- Show tax as its own line on every taxable estimate so clients are not surprised at closeout.
+
+## Local contractor note
+
+Oneida County projects often span multiple municipalities from Rome to Utica to Whitesboro. Tax treatment does not change by city for sales tax purposes, but permit requirements and inspection processes can vary significantly. Confirm local jurisdiction paperwork before you break ground.
+
+Use our [Tax Save calculator](/calculators/business/tax-save) to model the taxable and exempt versions of a bid before it leaves your desk.
+    `,
+  },
+  {
     slug: "herkimer-county-sales-tax-2026",
     title: "Herkimer County Sales Tax (8.25%) and ST-124 Rules",
     description:
