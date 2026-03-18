@@ -3,6 +3,7 @@ import { Resend } from "resend";
 import { generateOtpEmailHtml } from "./templates/two-factor-otp";
 
 const FROM_EMAIL = "security@proconstructioncalc.com";
+const FROM_NAME = "Pro Construction Calc Security";
 const DEFAULT_SITE_URL = "https://proconstructioncalc.com";
 const TWO_FACTOR_EXPIRY_MINUTES = 5;
 
@@ -37,7 +38,7 @@ export async function sendTwoFactorCodeEmail(input: {
   }
 
   const siteUrl = getSiteUrl();
-  const subject = "Your Pro Construction Calc security code";
+  const subject = "Security Code for Pro Construction Calc | Time-Sensitive";
 
   // Generate email content using the new template
   const html = generateOtpEmailHtml({
@@ -57,7 +58,7 @@ export async function sendTwoFactorCodeEmail(input: {
   ].join("\n");
 
   const { error } = await resend.emails.send({
-    from: FROM_EMAIL,
+    from: `${FROM_NAME} <${FROM_EMAIL}>`,
     to: [input.to],
     subject,
     html,

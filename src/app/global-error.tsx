@@ -14,7 +14,21 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    Sentry.captureException(error);
+    const lowerMessage = error.message.toLowerCase();
+    const isMathIntegrityError =
+      lowerMessage.includes("check constraint") ||
+      lowerMessage.includes("check violation") ||
+      lowerMessage.includes("total_cents");
+
+    Sentry.captureException(error, {
+      tags: {
+        global_boundary: "true",
+        math_integrity: String(isMathIntegrityError),
+      },
+      extra: {
+        digest: error.digest,
+      },
+    });
   }, [error]);
 
   const userFacing = getUserFacingErrorDetails(error, {

@@ -4,8 +4,8 @@
   "private": true,
   "description": "",
   "scripts": {
-    "dev": "next dev --webpack",
-    "build": "npm run check:strict-types && next build --webpack",
+    "dev": "next dev --turbopack",
+    "build": "npm run check:strict-types && npm run check:syntax-guards && next build",
     "start": "next start",
     "lint": "npm run check:root-types && npm run lint:src",
     "test": "vitest run",
@@ -13,7 +13,9 @@
     "typecheck": "tsc --noEmit",
     "check:root-types": "node scripts/enforce-types-only.mjs",
     "check:strict-types": "npm run check:root-types && npm run typecheck && npm run lint:src",
+    "check:syntax-guards": "node scripts/check-structural-syntax.mjs",
     "build:calcs": "tsc -p tsconfig.calcs.json",
+    "db:push": "drizzle-kit push",
     "check-calculations": "npm run build:calcs && node scripts/rewrite-calcs-paths.mjs && node scripts/check-calculations.mjs",
     "check-colors": "node scripts/check-color-contrast.mjs",
     "check-calcs": "npm run check-calculations && npm run check-colors",
@@ -37,6 +39,8 @@
     "lucide-react": "^0.577.0",
     "next": "^16.1.6",
     "next-auth": "^5.0.0-beta.30",
+    "next-themes": "^0.4.6",
+    "postgres": "^3.4.7",
     "postcss": "^8.5.8",
     "posthog-js": "^1.360.2",
     "posthog-node": "^5.28.2",
@@ -49,13 +53,16 @@
     "stripe": "^20.4.1",
     "tailwindcss": "^4.2.1",
     "typescript": "^5.9.3",
+    "drizzle-orm": "^0.44.5",
     "zod": "^4.3.6",
     "zustand": "^5.0.11"
   },
   "devDependencies": {
     "babel-plugin-react-compiler": "^1.0.0",
+    "drizzle-kit": "^0.31.6",
     "eslint": "^9.39.4",
     "eslint-config-next": "^16.1.6",
+    "puppeteer": "^24.7.1",
     "vitest": "^1.6.0"
   }
 }

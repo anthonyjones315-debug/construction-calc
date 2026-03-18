@@ -19,6 +19,10 @@ import {
 import { isUnauthorizedError } from "@/lib/errors/unauthorized";
 import { getPostHogClient } from "@/lib/posthog-server";
 import { normalizeDollars } from "@/utils/money";
+import {
+  saveCalculation,
+  verifyEstimate,
+} from "@/app/actions/calculations";
 
 const saveEstimateSchema = z
   .object({
@@ -147,12 +151,33 @@ export async function POST(req: NextRequest) {
       insertPayload.business_id = businessContext.businessId;
     }
 
-    const { data, error } = await db
-      .schema("public")
-      .from("saved_estimates")
-      .insert(insertPayload)
-      .select("id")
-      .single();
+    const verification = verifyEstimate({
+      inputs: {
+        ...(typeof insertPayload.inputs === "object" && insertPayload.inputs
+          ? (insertPayload.inputs as Record<string, unknown>)
+          : {}),
+      },
+      total_cost:
+        typeof insertPayload.total_cost === "number"
+          ? insertPayload.total_cost
+          : null,
+    });
+
+    const { data, error, correctedData } = await saveCalculation(
+      db.schema("public"),
+      insertPayload,
+      {
+        inputs:
+          typeof insertPayload.inputs === "object" && insertPayload.inputs
+            ? (insertPayload.inputs as Record<string, unknown>)
+            : {},
+        total_cost:
+          typeof insertPayload.total_cost === "number"
+            ? insertPayload.total_cost
+            : null,
+        county: verification.verified_county,
+      },
+    );
 
     if (error) {
       const schemaHint = getSchemaMismatchHint(error.message);
@@ -162,8 +187,11 @@ export async function POST(req: NextRequest) {
         message: error.message,
       });
       Sentry.captureException(error, {
-        tags: { route: "save-estimate" },
-        extra: { requestId, userId: session.user.id, schemaHint },
+        tags: {
+          route: "save-estimate",
+          math_integrity: String(error.code === "23514"),
+        },
+        extra: { requestId, userId: session.user.id, schemaHint, correctedData },
       });
       return NextResponse.json(
         {
@@ -171,6 +199,13 @@ export async function POST(req: NextRequest) {
             ? `${schemaHint} Raw error: ${error.message}. Project: ${projectUrl} (ref: ${requestId})`
             : `Save failed: ${error.message} (ref: ${requestId})`,
         },
+        { status: 500 },
+      );
+    }
+
+    if (!data?.id) {
+      return NextResponse.json(
+        { error: `Save failed: missing estimate id (ref: ${requestId})` },
         { status: 500 },
       );
     }
@@ -194,7 +229,12 @@ export async function POST(req: NextRequest) {
     });
     await posthog.shutdown();
 
-    return NextResponse.json({ ok: true, id: data.id });
+    return NextResponse.json({
+      ok: true,
+      id: data.id,
+      correctedData: correctedData ?? null,
+      verificationStatus: verification.verification_status,
+    });
   } catch (error) {
     if (isUnauthorizedError(error)) {
       return NextResponse.json({ error: error.message }, { status: 403 });

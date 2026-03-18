@@ -1,5 +1,6 @@
 import type { Route } from "next";
 import type { ReactNode } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth/config";
@@ -7,9 +8,16 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { createServerClient } from "@/lib/supabase/server";
 import { getNoIndexMetadata } from "@/seo";
-import { WelcomeGuidePopup } from "@/components/ui/WelcomeGuidePopup";
 import { routes } from "@routes";
 import CommandCenterClient from "./CommandCenterClient";
+
+const WelcomeGuidePopup = dynamic(
+  () =>
+    import("@/components/ui/WelcomeGuidePopup").then(
+      (mod) => mod.WelcomeGuidePopup,
+    ),
+  { ssr: false },
+);
 
 export const metadata = getNoIndexMetadata(
   "Command Center | Pro Construction Calc",

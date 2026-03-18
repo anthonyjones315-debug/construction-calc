@@ -81,8 +81,16 @@ export function CSPostHogProvider({ children }: Props) {
       person_profiles: "identified_only",
       capture_pageview: false,
       autocapture: true,
+      capture_performance: true,
       disable_session_recording: false,
       persistence: "localStorage",
+    });
+    posthog.onFeatureFlags(() => {
+      const intensity = posthog.getFeatureFlag("liquid-glass-intensity");
+      document.documentElement.dataset.glassIntensity =
+        typeof intensity === "string" && intensity
+          ? intensity
+          : "balanced";
     });
     posthogInitialized = true;
     flags.__PH_INIT = true;

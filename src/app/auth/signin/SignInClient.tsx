@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { getSession, signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -9,8 +10,15 @@ import { routes } from "@routes";
 import posthog from "posthog-js";
 import * as Sentry from "@sentry/nextjs";
 import { ManualErrorReportButton } from "@/components/support/ManualErrorReportButton";
-import { WelcomeGuidePopup } from "@/components/ui/WelcomeGuidePopup";
 import { BUSINESS_EMAIL } from "@/lib/business-identity";
+
+const WelcomeGuidePopup = dynamic(
+  () =>
+    import("@/components/ui/WelcomeGuidePopup").then(
+      (mod) => mod.WelcomeGuidePopup,
+    ),
+  { ssr: false },
+);
 
 const callbackHandlerErrorCodes = new Set([
   "OAUTH_CALLBACK_HANDLER_ERROR",

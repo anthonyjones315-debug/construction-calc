@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-import { XCircle } from "lucide-react";
+import { XCircle, ShieldCheck } from "lucide-react";
+import { GlassButton, GlassIconBadge } from "@/components/ui/glass-elements";
 
 const TWO_FACTOR_CODE_LENGTH = 6;
 
@@ -23,7 +23,6 @@ export function TwoFactorInput({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(error);
   const inputRef = useRef<HTMLInputElement>(null);
-  const router = useRouter();
 
   // Focus input on mount
   useEffect(() => {
@@ -69,30 +68,40 @@ export function TwoFactorInput({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      className="fixed inset-0 z-50 flex items-center justify-center glass-modal-overlay"
       onKeyDown={handleKeyDown}
     >
-      <div className="w-full max-w-md p-6 bg-white rounded-2xl shadow-xl">
-        <div className="flex items-start justify-between mb-4">
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900">
-              Enter verification code
-            </h2>
-            <p className="mt-1 text-sm text-gray-600">
-              We sent a code to {email}
-            </p>
+      <div className="w-full max-w-md glass-modal">
+        <div className="glass-modal-header flex items-start justify-between">
+          <div className="flex items-center gap-3">
+            <GlassIconBadge className="rounded-full">
+              <ShieldCheck className="w-6 h-6" />
+            </GlassIconBadge>
+            <div>
+              <h2 className="text-xl font-semibold text-white">
+                Enter verification code
+              </h2>
+              <p className="text-sm text-[rgba(255,255,255,0.8)]">
+                We sent a code to {email}
+              </p>
+            </div>
           </div>
           <button
             onClick={onCancel}
-            className="text-gray-400 hover:text-gray-500"
+            className="text-[rgba(255,255,255,0.6)] hover:text-white transition-colors"
+            aria-label="Close"
           >
             <XCircle className="w-6 h-6" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="mt-4">
+            <label htmlFor="security-code" className="sr-only">
+              Security code
+            </label>
             <input
+              id="security-code"
               ref={inputRef}
               type="text"
               inputMode="numeric"
@@ -100,32 +109,41 @@ export function TwoFactorInput({
               maxLength={TWO_FACTOR_CODE_LENGTH}
               value={code}
               onChange={(e) => setCode(e.target.value.replace(/[^0-9]/g, ""))}
-              className="w-full px-4 py-3 text-2xl tracking-[0.35em] text-center font-mono border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              className="glass-input w-full rounded-lg px-4 py-3 text-center font-mono text-2xl tracking-[0.35em] text-black"
               placeholder="000000"
               disabled={isSubmitting}
+              aria-invalid={!!submitError}
+              aria-describedby={submitError ? "error-message" : undefined}
               required
             />
           </div>
 
           {submitError && (
-            <p className="mt-2 text-sm text-red-600">{submitError}</p>
+            <p
+              id="error-message"
+              className="mt-2 text-sm text-[rgba(239,68,68,1)]"
+              role="alert"
+            >
+              {submitError}
+            </p>
           )}
 
-          <div className="mt-6 space-y-2">
-            <button
-              type="submit"
-              disabled={code.length !== TWO_FACTOR_CODE_LENGTH || isSubmitting}
-              className="w-full px-4 py-2 text-white bg-orange-500 rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isSubmitting ? "Verifying..." : "Verify"}
-            </button>
-            <button
+          <div className="glass-modal-footer">
+            <GlassButton
               type="button"
               onClick={onCancel}
-              className="w-full px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+              className="w-full px-4 py-2 md:w-auto"
             >
               Cancel
-            </button>
+            </GlassButton>
+            <GlassButton
+              type="submit"
+              variant="primary"
+              disabled={code.length !== TWO_FACTOR_CODE_LENGTH || isSubmitting}
+              className="w-full px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50 md:w-auto"
+            >
+              {isSubmitting ? "Verifying..." : "Verify"}
+            </GlassButton>
           </div>
         </form>
       </div>

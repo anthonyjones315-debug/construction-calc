@@ -54,6 +54,12 @@ create table if not exists saved_estimates (
   results          jsonb not null default '[]',
   budget_items     jsonb default null,
   total_cost       decimal(10,2) default null,
+  subtotal_cents   bigint,
+  tax_cents        bigint,
+  total_cents      bigint,
+  tax_basis_points integer,
+  verified_county  text,
+  verification_status text not null default 'unverified' check (verification_status in ('unverified','verified','corrected')),
   -- CRM fields (from schema screenshot)
   client_name      text,
   job_site_address text,
@@ -62,19 +68,55 @@ create table if not exists saved_estimates (
   updated_at       timestamptz not null default now()
 );
 
+alter table saved_estimates
+  add column if not exists subtotal_cents bigint,
+  add column if not exists tax_cents bigint,
+  add column if not exists total_cents bigint,
+  add column if not exists tax_basis_points integer,
+  add column if not exists verified_county text,
+  add column if not exists verification_status text not null default 'unverified';
+
+alter table saved_estimates
+  drop constraint if exists saved_estimates_verification_status_check;
+
+alter table saved_estimates
+  add constraint saved_estimates_verification_status_check
+  check (verification_status in ('unverified','verified','corrected'));
+
+alter table saved_estimates
+  drop constraint if exists saved_estimates_total_cents_consistency;
+
+alter table saved_estimates
+  add constraint saved_estimates_total_cents_consistency
+  check (
+    (
+      subtotal_cents is null
+      and tax_cents is null
+      and total_cents is null
+    )
+    or total_cents = subtotal_cents + tax_cents
+  );
+
 alter table saved_estimates enable row level security;
 alter table saved_estimates force row level security;
 
--- No RLS policies — auth.uid() is always NULL with NextAuth.
--- All access is via server-side API routes using service_role key.
--- RLS enabled + no policies = hard deny for any direct client access.
+-- Trusted server routes still use service_role and bypass RLS.
+-- This policy protects any future direct authenticated access path.
 drop policy if exists "Users can view own estimates"   on saved_estimates;
 drop policy if exists "Users can insert own estimates" on saved_estimates;
 drop policy if exists "Users can update own estimates" on saved_estimates;
 drop policy if exists "Users can delete own estimates" on saved_estimates;
+drop policy if exists "Users can only see their own estimates" on saved_estimates;
 
 revoke all on saved_estimates from anon;
-revoke all on saved_estimates from authenticated;
+grant select, insert, update, delete on saved_estimates to authenticated;
+
+create policy "Users can only see their own estimates"
+  on saved_estimates
+  for all
+  to authenticated
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
 
 -- ─── Business Profiles (one per user, for PDF branding) ────────
 create table if not exists business_profiles (

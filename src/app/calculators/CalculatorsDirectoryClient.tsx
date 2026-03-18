@@ -1,9 +1,9 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import type { Route } from "next";
 import { useMemo, useState, useEffect } from "react";
-import { SplashPopup } from "@/components/ui/SplashPopup";
 import { COOKIE_CONSENT_CHANGED_EVENT } from "@/lib/privacy/consent";
 import { getRecentPaths } from "@/lib/recommendations/activity";
 import {
@@ -21,6 +21,11 @@ import {
   type TradePageDefinition,
 } from "@/app/calculators/_lib/trade-pages";
 import type { TradePageKey } from "@/app/calculators/_lib/trade-pages";
+
+const SplashPopup = dynamic(
+  () => import("@/components/ui/SplashPopup").then((mod) => mod.SplashPopup),
+  { ssr: false },
+);
 
 const DIRECTORY_CATEGORIES: Array<{
   key: TradePageKey;
@@ -174,7 +179,7 @@ export function CalculatorsDirectoryClient() {
         {/* Hero: full-width dark industrial gradient, no trade image */}
         <section className="dark-feature-panel overflow-hidden text-white">
           <div className="relative w-full bg-[radial-gradient(ellipse_at_top_right,rgba(30,35,45,0.95),#0a0a0b_70%),linear-gradient(180deg,#0d0f14_0%,#0A0A0B_100%)] px-5 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
-            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(247,148,29,0.06),transparent_45%)]" />
+            <div className="glass-decorative absolute inset-0 bg-[linear-gradient(135deg,rgba(247,148,29,0.06),transparent_45%)]" />
             <div className="relative z-10 mx-auto w-full max-w-5xl">
               <div className="flex items-center gap-2 text-[--color-orange-brand]">
                 <HardHat className="h-4 w-4" aria-hidden />
