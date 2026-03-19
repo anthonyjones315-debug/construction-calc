@@ -75,9 +75,9 @@ const workflowSteps = [
 
 export default function AboutPage() {
   return (
-    <div className="light public-page page-shell flex min-h-dvh flex-col">
+    <div className="light public-page page-shell">
       <Header />
-      <main id="main-content" className="min-h-0 flex-1 overflow-y-auto">
+      <main id="main-content" className="flex-1">
         <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
           <section className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white px-6 py-7 shadow-sm sm:px-8 sm:py-8">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(249,115,22,0.06),transparent_34%)]" />

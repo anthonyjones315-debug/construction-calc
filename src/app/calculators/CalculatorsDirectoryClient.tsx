@@ -185,7 +185,7 @@ export function CalculatorsDirectoryClient() {
     <>
       <main
         id="main-content"
-        className="scrollbar-none min-h-0 min-w-0 flex-1 overflow-y-auto bg-[--color-bg]"
+        className="flex-1 bg-[--color-bg]"
         tabIndex={-1}
       >
         {/* ── Compact 1-line header: kicker + inline search ─────── */}

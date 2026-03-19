@@ -5,7 +5,7 @@ export function CookiePreferencesButton() {
     <div className="flex items-center">
       <a
         href="#"
-        className="termly-display-preferences text-[--color-ink-mid] hover:text-white transition-colors"
+        className="termly-display-preferences text-[--color-ink-mid] hover:text-[--color-orange-brand] transition-colors"
       >
         Cookie Preferences
       </a>

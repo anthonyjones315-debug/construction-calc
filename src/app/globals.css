@@ -193,6 +193,13 @@
   width: 100%;
 }
 
+/* ── Prevent color flash on initial render ─────────────────────── */
+/* Apply .no-fouc to <html> via layout.tsx, remove it after hydration */
+.no-fouc,
+.no-fouc * {
+  transition: none !important;
+}
+
 /* ── Dark mode: respect OS preference ──────────────────────────── */
 @media (prefers-color-scheme: dark) {
   :root {
