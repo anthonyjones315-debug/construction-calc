@@ -172,8 +172,8 @@ export default function RootLayout({
                 --color-ink-mid: #334155;
                 --color-ink-dim: #475569;
                 --color-border: rgb(148 163 184 / 0.45);
-                --color-orange-brand: #b85a10;
-                --color-orange-dark: #ad4f0d;
+                --color-orange-brand: #ea580c;
+                --color-orange-dark: #c2410c;
                 --color-nav-bg: rgb(255 247 237 / 0.94);
               }
               html { background: var(--color-bg); color: var(--color-ink); }

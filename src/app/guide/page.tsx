@@ -94,9 +94,9 @@ export default function GuidePage() {
   };
 
   return (
-    <div className="public-page page-shell grid min-h-dvh grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden">
+    <div className="light public-page page-shell">
       <Header />
-      <main id="main-content" className="viewport-main overflow-hidden">
+      <main id="main-content" className="flex-1">
         <JsonLD schema={howToSchema} />
         <div className="guide-shell viewport-frame max-w-6xl">
           {/* ── Compact inline header — no separate hero banner ── */}

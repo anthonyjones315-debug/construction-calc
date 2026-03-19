@@ -93,13 +93,13 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="light public-page page-shell grid min-h-dvh grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden">
+    <div className="light public-page page-shell">
       <JsonLD schema={getWebSiteSchema()} />
       <JsonLD schema={getWebAppSchema()} />
       <Header />
       <main
         id="main-content"
-        className="viewport-main box-border w-full max-w-full overflow-x-clip px-3 py-3 sm:px-4 sm:py-4 lg:px-4 lg:py-3"
+        className="flex-1 box-border w-full max-w-full px-3 py-3 sm:px-4 sm:py-4 lg:px-4 lg:py-3"
       >
         <section className="home-shell mx-auto h-full min-h-0 w-full max-w-5xl">
           <div className="grid h-full min-h-0 gap-3 lg:grid-cols-[1.35fr_0.92fr]">

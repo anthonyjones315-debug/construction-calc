@@ -193,6 +193,13 @@
   width: 100%;
 }
 
+/* ── Prevent color flash on initial render ─────────────────────── */
+/* Apply .no-fouc to <html> via layout.tsx, remove it after hydration */
+.no-fouc,
+.no-fouc * {
+  transition: none !important;
+}
+
 /* ── Dark mode: respect OS preference ──────────────────────────── */
 @media (prefers-color-scheme: dark) {
   :root {
@@ -442,7 +449,7 @@ html.light {
     width: 100%;
     max-width: 100%;
     overflow-x: clip;
-    overflow: hidden;
+    overflow-y: hidden;
   }
 
   body {
@@ -454,7 +461,7 @@ html.light {
     width: 100%;
     max-width: 100%;
     overflow-x: clip;
-    overflow: hidden;
+    overflow-y: hidden;
     height: 100vh;
     height: 100dvh;
     min-height: 100dvh;
@@ -1435,7 +1442,28 @@ html.light {
     --color-border: #e7e2d8;
     --color-panel-dark: #f0ede7;
     --color-panel-deep: #eae6df;
+    /* Unify orange to one shade so section-kicker, links, labels, and
+       text-[--color-orange-brand] / text-orange-600 all resolve the same */
+    --color-primary: #ea580c;
+    --color-orange-brand: #ea580c;
+    --color-orange-dark: #c2410c;
     background: #f8f5f0;
+  }
+
+  /* Public pages scroll normally — content flows below the sticky header */
+  .public-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+    overflow-y: auto;
+    overflow-x: clip;
+  }
+
+  /* Ensure cards always render white on the cream public background */
+  .public-page .content-card,
+  .public-page .content-card-muted {
+    background: #ffffff;
+    border-color: #e7e2d8;
   }
 
   .public-page .page-shell {

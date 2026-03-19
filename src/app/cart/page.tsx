@@ -20,11 +20,11 @@ export default function CartPage() {
   }
 
   return (
-    <div className="command-theme page-shell flex min-h-dvh flex-col bg-[--color-bg] text-white">
+    <div className="light public-page page-shell">
       <Header />
       <main
         id="main-content"
-        className="min-h-0 flex-1 overflow-y-auto scrollbar-none"
+        className="flex-1"
       >
         <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
           <div className="mb-6">
@@ -56,7 +56,7 @@ export default function CartPage() {
                       <p className="text-xs font-bold uppercase tracking-[0.16em] text-[--color-orange-brand]/90">
                         {item.calculatorLabel}
                       </p>
-                      <p className="mt-1 text-sm font-semibold text-white">
+                      <p className="mt-1 text-sm font-semibold text-[--color-ink]">
                         {item.estimateName}
                       </p>
                       <p className="mt-1 text-xs text-[--color-nav-text]/80">
@@ -72,13 +72,13 @@ export default function CartPage() {
                       )}
                     </div>
                     <div className="flex items-center gap-2 pt-1 sm:flex-col sm:items-end sm:pt-0">
-                      <span className="rounded-full bg-white/5 px-3 py-1 text-xs text-[--color-nav-text]/90">
+                      <span className="rounded-full bg-slate-100 px-3 py-1 text-xs text-[--color-ink-mid]">
                         Qty {item.quantity}
                       </span>
                       <button
                         type="button"
                         onClick={() => removeCartItem(item.id)}
-                        className="text-xs font-semibold text-red-300 hover:text-red-200"
+                        className="text-xs font-semibold text-red-600 hover:text-red-700"
                       >
                         Remove
                       </button>
@@ -97,7 +97,7 @@ export default function CartPage() {
                   <button
                     type="button"
                     onClick={clearCart}
-                    className="rounded-xl border border-white/30 px-4 py-2 text-sm font-semibold text-white hover:bg-white/5"
+                    className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-[--color-ink] hover:bg-slate-50"
                   >
                     Clear queue
                   </button>

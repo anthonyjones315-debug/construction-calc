@@ -36,11 +36,11 @@ export default function FinancialTermsPage() {
   };
 
   return (
-    <div className="public-page page-shell flex min-h-dvh flex-col">
+    <div className="light public-page page-shell">
       <Header />
       <main
         id="main-content"
-        className="min-h-0 flex-1 overflow-y-auto"
+        className="flex-1"
       >
         <JsonLD schema={schema} />
         <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
