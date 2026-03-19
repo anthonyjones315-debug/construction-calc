@@ -18,7 +18,7 @@ export const metadata: Metadata = getPageMetadata({
 
 export default function ContactPage() {
   return (
-    <div className="public-page page-shell flex min-h-dvh flex-col">
+    <div className="light public-page page-shell flex min-h-dvh flex-col">
       <Header />
       <main
         id="main-content"

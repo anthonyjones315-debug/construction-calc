@@ -36,7 +36,7 @@ export default function FinancialTermsPage() {
   };
 
   return (
-    <div className="public-page page-shell flex min-h-dvh flex-col">
+    <div className="light public-page page-shell flex min-h-dvh flex-col">
       <Header />
       <main
         id="main-content"
