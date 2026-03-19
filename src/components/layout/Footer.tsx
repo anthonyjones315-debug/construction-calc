@@ -13,8 +13,8 @@ const COPYRIGHT_YEAR = 2026;
 export function Footer() {
   return (
     <footer className="site-footer-shell safe-area-pb text-sm">
-      <div className="mx-auto max-w-7xl px-3 py-3 sm:px-4">
-        <div className="grid min-h-[--shell-footer-h] gap-3 md:grid-cols-[minmax(0,auto)_minmax(0,1fr)] md:items-center xl:grid-cols-[minmax(0,auto)_minmax(0,1fr)_minmax(0,auto)]">
+      <div className="mx-auto max-w-7xl px-3 py-4 sm:px-4">
+        <div className="grid min-h-[--shell-footer-h] gap-4 md:grid-cols-[minmax(0,auto)_minmax(0,1fr)] md:items-center xl:grid-cols-[minmax(0,auto)_minmax(0,1fr)_minmax(0,auto)]">
           <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-[--color-ink-mid]">
             <HardHat className="h-3.5 w-3.5 shrink-0 text-[--color-orange-brand]" aria-hidden />
             <span className="font-display font-black uppercase tracking-[0.14em] text-[--color-ink] sm:whitespace-nowrap">
@@ -24,11 +24,11 @@ export function Footer() {
               {BUSINESS_CITY_STATE}
             </span>
             <span className="text-[--color-ink-dim] sm:whitespace-nowrap">
-              © {COPYRIGHT_YEAR}
+              © {COPYRIGHT_YEAR} · v0.1 Beta
             </span>
           </div>
 
-          <p className="text-[10px] leading-relaxed text-[--color-ink-dim] md:col-span-2 md:max-w-none md:text-center xl:col-span-1 xl:max-w-xl xl:justify-self-center">
+          <p className="text-[11px] leading-relaxed text-[--color-ink-dim] md:col-span-2 md:max-w-none md:text-center xl:col-span-1 xl:max-w-xl xl:justify-self-center">
             Built for contractors working across Oneida, Herkimer, and Madison County. Verify quantities, site conditions, and local code before ordering or building.
           </p>
 

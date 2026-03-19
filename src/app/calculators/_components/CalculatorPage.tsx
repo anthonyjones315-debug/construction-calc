@@ -2898,9 +2898,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       <main
         ref={calculatorShellRef}
         id="main-content"
-        className={`command-theme page-shell flex min-h-0 flex-1 flex-col overflow-hidden text-white ${
-          deviceProfile.isMobile ? "h-[100dvh]" : ""
-        } ${deviceProfile.isIPhone15 ? "no-scroll-shell iphone-15:h-[100dvh]" : ""} ${
+        className={`command-theme page-shell flex min-h-0 flex-1 flex-col overflow-y-auto bg-[--color-bg] ${
           deviceProfile.highContrastMode ? "contrast-125 saturate-110" : ""
         }`}
       >

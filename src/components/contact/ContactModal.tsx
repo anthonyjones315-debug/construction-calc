@@ -27,10 +27,10 @@ export function ContactModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="contact-modal-title"
-        className="relative z-[60] w-full max-w-xl"
+        className="relative z-[80] w-full max-w-xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <GlassDialogFrame className="max-h-[min(88dvh,54rem)] overflow-hidden p-0">
+        <GlassDialogFrame className="flex max-h-[min(88dvh,54rem)] flex-col overflow-hidden p-0">
           <button
             type="button"
             onClick={onClose}
@@ -50,7 +50,7 @@ export function ContactModal({
             <p className="mt-1 text-sm text-copy-secondary">{description}</p>
           </div>
 
-          <div className="max-h-[calc(min(88dvh,54rem)-7rem)] overflow-y-auto px-5 pb-5">
+          <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-5">
             <ContactForm {...formProps} />
           </div>
         </GlassDialogFrame>

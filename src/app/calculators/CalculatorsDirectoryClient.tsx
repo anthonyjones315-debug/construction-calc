@@ -188,43 +188,49 @@ export function CalculatorsDirectoryClient() {
         className="flex-1 bg-[--color-bg]"
         tabIndex={-1}
       >
-        {/* ── Compact 1-line header: kicker + inline search ─────── */}
-        <div className="border-b border-slate-300 bg-white px-4 py-3 sm:px-6">
-          <div className="mx-auto flex max-w-5xl items-center gap-3">
-            <div className="flex items-center gap-2 shrink-0 text-[--color-orange-brand]">
-              <HardHat className="h-4 w-4" aria-hidden />
-              <h1 className="font-display text-sm font-bold uppercase tracking-[0.16em]">
-                Trade Modules
-              </h1>
+        {/* ── Hero strip ──────────────────────────────────────── */}
+        <div className="border-b-2 border-orange-100 bg-white px-4 py-5 sm:px-6 sm:py-6">
+          <div className="mx-auto max-w-5xl text-center">
+            <div className="flex items-center justify-center gap-2 text-[--color-orange-brand]">
+              <HardHat className="h-5 w-5" aria-hidden />
+              <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-orange-600">
+                Pro Construction Calc
+              </span>
             </div>
-            <div className="flex flex-1 items-center rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 focus-within:border-[--color-orange-brand] focus-within:ring-1 focus-within:ring-[--color-orange-brand]">
-              <Search
-                className="h-3.5 w-3.5 shrink-0 text-slate-400"
-                aria-hidden
-              />
-              <input
-                type="search"
-                autoComplete="off"
-                placeholder={
-                  'Search: "concrete slab", "roof pitch", "profit margin"\u2026'
-                }
-                className="ml-2 flex-1 bg-transparent text-sm text-slate-900 placeholder:text-slate-500 outline-none"
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                aria-label="Search construction calculators by trade, task, or name"
-              />
+            <h1 className="mt-1 font-display text-2xl font-black text-slate-900 sm:text-3xl">
+              Professional Estimating Calculators
+            </h1>
+            <p className="mt-1 text-sm text-slate-500">
+              Oneida · Madison · Herkimer County, NY
+            </p>
+            <div className="mx-auto mt-3 max-w-2xl">
+              <div className="flex items-center rounded-xl border border-slate-300 bg-slate-50 px-3 py-2.5 focus-within:border-[--color-orange-brand] focus-within:ring-1 focus-within:ring-[--color-orange-brand]">
+                <Search
+                  className="h-4 w-4 shrink-0 text-slate-400"
+                  aria-hidden
+                />
+                <input
+                  type="search"
+                  autoComplete="off"
+                  placeholder={
+                    'Search: "concrete slab", "roof pitch", "profit margin"\u2026'
+                  }
+                  className="ml-2 flex-1 bg-transparent text-sm text-slate-900 placeholder:text-slate-500 outline-none"
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  aria-label="Search construction calculators by trade, task, or name"
+                />
+              </div>
             </div>
-          </div>
-          <div className="mx-auto mt-2 flex max-w-5xl items-center gap-1">
-            <p className="text-xs text-slate-500">
-              {totalCalculators} professional calculators across 6 trade modules
+            <p className="mt-2 text-xs text-slate-500">
+              {totalCalculators} professional calculators · 6 trade modules
             </p>
           </div>
         </div>
 
         {/* ── Recent/suggested chip strip — 1 row max ──────────── */}
         {showRecommended && recommendedToShow.length > 0 && (
-          <div className="border-b border-slate-200 bg-slate-50 px-4 py-2 sm:px-6">
+          <div className="border-b border-[--color-border] bg-[--color-surface-alt] px-4 py-2 sm:px-6">
             <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-2">
               <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">
                 Recent:
@@ -234,7 +240,7 @@ export function CalculatorsDirectoryClient() {
                   key={page.key}
                   href={page.href as Route}
                   prefetch={false}
-                  className="rounded-full border border-slate-300 bg-white px-3 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-[--color-orange-brand]/60 hover:text-[--color-orange-brand]"
+                  className="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-[--color-orange-brand]/60 hover:text-[--color-orange-brand]"
                 >
                   {page.title}
                 </Link>
@@ -293,7 +299,7 @@ export function CalculatorsDirectoryClient() {
                   key={key}
                   href={href as Route}
                   prefetch={false}
-                  className="group flex flex-col rounded-xl border border-slate-300 bg-white p-4 shadow-sm transition-all duration-200 hover:border-orange-500/50 hover:bg-orange-50"
+                  className="group relative flex flex-col rounded-xl border border-[--color-border] bg-[--color-surface] p-4 shadow-sm transition-all duration-200 hover:border-orange-300 hover:shadow-md before:absolute before:left-0 before:top-4 before:bottom-4 before:w-[3px] before:rounded-full before:bg-orange-500/0 hover:before:bg-orange-500 before:transition-all"
                 >
                   <div className="flex items-center gap-2.5">
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[--color-orange-brand]/12">
@@ -351,13 +357,13 @@ export function CalculatorsDirectoryClient() {
                 key={calc.key}
                 href={calc.href as Route}
                 prefetch={false}
-                className="group flex flex-col rounded-xl border border-slate-300 bg-white p-4 shadow-sm transition-all duration-200 hover:border-orange-500/50 hover:bg-orange-50"
+                className="group flex flex-col rounded-xl border border-[--color-border] bg-[--color-surface-alt] p-4 shadow-sm transition-all duration-200 hover:border-orange-300 hover:shadow-md"
               >
                 <div className="flex items-center justify-between gap-2">
                   <p className="font-semibold text-slate-900 group-hover:text-[--color-orange-brand]">
                     {calc.title}
                   </p>
-                  <span className="shrink-0 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+                  <span className="shrink-0 rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">
                     {calc.categoryLabel}
                   </span>
                 </div>
@@ -366,7 +372,7 @@ export function CalculatorsDirectoryClient() {
                 </p>
                 <div className="mt-auto flex items-center pt-2 text-xs font-semibold text-[--color-orange-brand]">
                   Open
-                  <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+                  <ArrowRight className="h-3.5 w-3.5 opacity-0 transition-opacity group-hover:opacity-100" aria-hidden />
                 </div>
               </Link>
             ))}

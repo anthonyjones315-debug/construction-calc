@@ -167,14 +167,15 @@ export default function RootLayout({
               :root {
                 --color-bg: #f6f4ef;
                 --color-surface: #ffffff;
-                --color-surface-alt: #f8f9fa;
-                --color-ink: #020617;
+                --color-surface-alt: #fafaf8;
+                --color-ink: #0f1117;
                 --color-ink-mid: #334155;
-                --color-ink-dim: #475569;
-                --color-border: rgb(148 163 184 / 0.45);
+                --color-ink-dim: #64748b;
+                --color-border: #e2e0db;
                 --color-orange-brand: #ea580c;
                 --color-orange-dark: #c2410c;
-                --color-nav-bg: rgb(255 247 237 / 0.94);
+                --color-nav-bg: rgba(255, 247, 237, 0.94);
+                --shell-header-h: 52px;
               }
               html { background: var(--color-bg); color: var(--color-ink); }
               .glass-gpu {
@@ -182,14 +183,6 @@ export default function RootLayout({
                 transform: translateZ(0);
                 backdrop-filter: blur(12px);
                 -webkit-backdrop-filter: blur(12px);
-              }
-              .no-scroll-shell {
-                inset: 0;
-                min-height: 100vh;
-                height: 100dvh;
-                overflow: hidden;
-                position: fixed;
-                width: 100%;
               }
               .glass-decorative {
                 pointer-events: none;
