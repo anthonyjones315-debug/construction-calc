@@ -55,8 +55,8 @@ self.addEventListener("fetch", (event) => {
         if (isNavigation) {
           return (
             (await caches.match(event.request)) ||
-            (await caches.match("/")) ||
-            (await caches.match(OFFLINE_URL))
+            (await caches.match(OFFLINE_URL)) ||
+            new Response("", { status: 504, statusText: "Offline" })
           );
         }
 

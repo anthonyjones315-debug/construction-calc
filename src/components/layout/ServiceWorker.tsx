@@ -10,7 +10,8 @@ import { routes } from "@routes";
 export function ServiceWorker() {
   useEffect(() => {
     const enableInDev = process.env.NEXT_PUBLIC_ENABLE_SW_DEV === "true";
-    const shouldRegister = process.env.NODE_ENV === "production" || enableInDev;
+    const shouldRegister =
+      process.env.NEXT_PUBLIC_VERCEL_ENV === "production" || enableInDev;
 
     if (
       typeof window === "undefined" ||

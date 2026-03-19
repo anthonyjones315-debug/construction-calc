@@ -29,11 +29,10 @@ test.describe("Calculator System", () => {
     // Find first category link
     const firstCalc = page.locator('a[href^="/calculators/"]').first();
 
-    if (await firstCalc.isVisible()) {
-      await firstCalc.click();
-      // Should navigate to a calculator page
-      await expect(page).toHaveURL(/\/calculators\//);
-    }
+    await expect(firstCalc).toBeVisible();
+    await firstCalc.click();
+    // Should navigate to a calculator page
+    await expect(page).toHaveURL(/\/calculators\/);
   });
 
   test("should accept form input in calculator", async ({ page }) => {
@@ -42,22 +41,18 @@ test.describe("Calculator System", () => {
     // Navigate to first calculator
     const firstCalc = page.locator('a[href*="/calculators/"]').first();
 
-    if (await firstCalc.isVisible()) {
-      await firstCalc.click();
+    await expect(firstCalc).toBeVisible();
+    await firstCalc.click();
 
-      // Wait for calculator form to load
-      const inputs = page.locator('input[type="number"], input[type="text"]');
-      const inputCount = await inputs.count();
+    // Wait for calculator form to load
+    const inputs = page.locator('input[type="number"], input[type="text"]');
+    await expect(inputs.first()).toBeVisible();
+    // Fill first input
+    await inputs.first().fill("100");
 
-      if (inputCount > 0) {
-        // Fill first input
-        await inputs.first().fill("100");
-
-        // Check that value was set
-        const value = await inputs.first().inputValue();
-        expect(value).toBe("100");
-      }
-    }
+    // Check that value was set
+    const value = await inputs.first().inputValue();
+    expect(value).toBe("100");
   });
 
   test("should display results after calculation", async ({ page }) => {
@@ -66,24 +61,22 @@ test.describe("Calculator System", () => {
     // Navigate to first calculator
     const firstCalc = page.locator('a[href*="/calculators/"]').first();
 
-    if (await firstCalc.isVisible()) {
-      await firstCalc.click();
+    await expect(firstCalc).toBeVisible();
+    await firstCalc.click();
 
-      // Fill form and trigger calculation
-      const inputs = page.locator('input[type="number"]');
-      if ((await inputs.count()) > 0) {
-        await inputs.first().fill("100");
+    // Fill form and trigger calculation
+    const inputs = page.locator('input[type="number"]');
+    await expect(inputs.first()).toBeVisible();
+    await inputs.first().fill("100");
 
-        // Look for results section
-        // Results might appear automatically or after a button click
-        const calculateBtn = page
-          .locator("button")
-          .filter({ hasText: /calculate|compute/i });
+    // Look for results section
+    // Results might appear automatically or after a button click
+    const calculateBtn = page
+      .locator("button")
+      .filter({ hasText: /calculate|compute/i });
 
-        if (await calculateBtn.isVisible()) {
-          await calculateBtn.click();
-        }
-      }
+    if (await calculateBtn.isVisible()) {
+      await calculateBtn.click();
     }
   });
 });

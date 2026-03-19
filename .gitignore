@@ -12,3 +12,7 @@ tsconfig.tsbuildinfo
 *.tsbuildinfo
 dist-calcs
 .env.local
+
+# Playwright test artifacts
+playwright-report/**
+test-results/

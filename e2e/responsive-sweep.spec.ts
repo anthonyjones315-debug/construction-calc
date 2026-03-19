@@ -21,28 +21,22 @@ const PATHS = [
 test.describe("Responsive UI Sweep", () => {
   for (const viewport of VIEWPORTS) {
     test(`core routes render safely at ${viewport.name}`, async ({ page }) => {
+      test.setTimeout(60_000);
       await page.setViewportSize({
         width: viewport.width,
         height: viewport.height,
       });
 
       for (const path of PATHS) {
-        await page.goto(path);
+        const response = await page.goto(path, {
+          waitUntil: "domcontentloaded",
+        });
 
-        const statusCode = page.url().toLowerCase().includes("404")
-          ? 404
-          : await page.evaluate(() => {
-              const title = document.title.toLowerCase();
-              if (title.includes("404") || title.includes("not found")) {
-                return 404;
-              }
-              return 200;
-            });
+        expect(response && response.status()).toBeLessThan(400);
 
-        expect(statusCode).not.toBe(404);
-
-        const mainOrBody = page.locator('main, [role="main"], body').first();
-        await expect(mainOrBody).toBeVisible();
+        const mainEl = page.locator('main, [role="main"]').first();
+        await expect(mainEl).toBeVisible();
+        await expect(mainEl).not.toBeEmpty();
 
         const overflowMetrics = await page.evaluate(() => ({
           innerWidth: window.innerWidth,

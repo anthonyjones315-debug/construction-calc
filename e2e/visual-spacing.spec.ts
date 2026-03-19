@@ -10,16 +10,17 @@ test.describe("Visual Spacing and Alignment", () => {
     // Hero section (parent container)
     const heroSection = page.locator('[data-testid="home-hero"]').first();
 
+    await expect(heroSection).toBeVisible();
     const heroBox = await heroSection.boundingBox();
     const heroFirstChild = heroSection.locator("> *").first();
     const childBox = await heroFirstChild.boundingBox();
 
-    if (heroBox && childBox) {
-      // Check left padding
-      const leftPadding = childBox.x - heroBox.x;
-      expect(leftPadding).toBeGreaterThanOrEqual(0);
-      expect(leftPadding).toBeLessThan(100); // Reasonable padding
-    }
+    expect(heroBox).not.toBeNull();
+    expect(childBox).not.toBeNull();
+    // Check left padding
+    const leftPadding = childBox!.x - heroBox!.x;
+    expect(leftPadding).toBeGreaterThanOrEqual(0);
+    expect(leftPadding).toBeLessThan(100); // Reasonable padding
   });
 
   test("should have proper text color contrast on dark background", async ({
@@ -147,13 +148,13 @@ test.describe("Visual Spacing and Alignment", () => {
       await page.goto("/");
 
       const main = page.locator("main").first();
+      await expect(main).toBeVisible();
       const box = await main.boundingBox();
 
-      if (box) {
-        // Content should fit the viewport width
-        expect(box.x).toBeGreaterThanOrEqual(0);
-        expect(box.x + box.width).toBeLessThanOrEqual(viewport.width + 2);
-      }
+      expect(box).not.toBeNull();
+      // Content should fit the viewport width
+      expect(box!.x).toBeGreaterThanOrEqual(0);
+      expect(box!.x + box!.width).toBeLessThanOrEqual(viewport.width + 2);
     }
   });
 

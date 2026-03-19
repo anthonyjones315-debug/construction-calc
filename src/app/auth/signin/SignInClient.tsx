@@ -430,7 +430,7 @@ export default function SignInClient({
       id="main-content"
       className="flex min-h-dvh overflow-hidden bg-[#f6f4ef] px-4 py-10 font-sans items-center justify-center"
     >
-      <WelcomeGuidePopup forceOpen={forceWelcome} />
+      {forceWelcome && <WelcomeGuidePopup forceOpen={forceWelcome} />}
       {(isSigningIn || isCredentialsSigningIn) && (
         <div
           className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-[#f6f4ef]/95 backdrop-blur-sm"

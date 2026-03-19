@@ -442,7 +442,7 @@ html.light {
     width: 100%;
     max-width: 100%;
     overflow-x: clip;
-    overflow: hidden;
+    overflow-y: hidden;
   }
 
   body {
@@ -454,7 +454,7 @@ html.light {
     width: 100%;
     max-width: 100%;
     overflow-x: clip;
-    overflow: hidden;
+    overflow-y: hidden;
     height: 100vh;
     height: 100dvh;
     min-height: 100dvh;
