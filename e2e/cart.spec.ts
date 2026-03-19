@@ -4,8 +4,6 @@ test.describe("Cart and Estimates", () => {
   test("should load cart page", async ({ page }) => {
     await page.goto("/cart");
 
-    // Check for cart-related elements
-    const cartContent = page.locator('h1, h2, [data-testid*="cart"]');
     // Cart might be empty, so just check page loads
     await expect(page).not.toHaveURL(/error|404/);
   });
@@ -29,15 +27,14 @@ test.describe("Cart and Estimates", () => {
   }) => {
     await page.goto("/cart");
 
-    // Look for button/link back to calculators
-    const continueBtn = page
-      .locator("a, button")
-      .filter({ hasText: /continue|calculators|shopping/i });
+    // Use main navigation calculators link as deterministic return path
+    const calculatorsLink = page
+      .getByRole("navigation", { name: /main navigation/i })
+      .getByRole("link", { name: /^calculators$/i });
 
-    if (await continueBtn.isVisible()) {
-      await continueBtn.click();
-      await expect(page).toHaveURL(/calculators/);
-    }
+    await expect(calculatorsLink).toBeVisible();
+    await calculatorsLink.click();
+    await expect(page).toHaveURL(/\/calculators/);
   });
 });
 

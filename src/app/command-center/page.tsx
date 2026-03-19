@@ -1,6 +1,5 @@
 import type { Route } from "next";
 import type { ReactNode } from "react";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth/config";
 import { Header } from "@/components/layout/Header";
@@ -255,30 +254,6 @@ function CommandCenterOnboarding({
             Create Your Business
           </button>
         </form>
-      </section>
-    </div>
-  );
-}
-
-function NotOwnerState() {
-  return (
-    <div className="mx-auto flex min-h-[60vh] w-full max-w-2xl items-center px-4 py-12 sm:px-6">
-      <section className="w-full rounded-2xl border border-slate-700 bg-slate-900 p-6 text-white shadow-[0_12px_28px_rgba(0,0,0,0.35)]">
-        <h1 className="text-2xl font-black uppercase text-white">
-          Owner Access Required
-        </h1>
-        <p className="mt-2 text-sm text-white/60">
-          You are signed in, but only business owners can manage the Command
-          Center team tools.
-        </p>
-        <div className="mt-5">
-          <Link
-            href={routes.calculators}
-            className="inline-flex h-10 items-center justify-center rounded-lg border-2 border-orange-400 bg-transparent px-4 text-sm font-black uppercase text-orange-300 shadow-lg transition hover:bg-orange-600/10"
-          >
-            Go to Calculators
-          </Link>
-        </div>
       </section>
     </div>
   );

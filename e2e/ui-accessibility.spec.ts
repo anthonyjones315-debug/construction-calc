@@ -31,12 +31,14 @@ test.describe("UI and Accessibility", () => {
     await page.goto("/");
 
     // Content should be visible
-    const main = page.locator("main, body");
+    const main = page.locator('main, [role="main"]');
     await expect(main).toBeVisible();
 
     // Check for mobile navigation (hamburger menu or collapsed nav)
-    const nav = page.locator('nav, [role="navigation"]');
-    await expect(nav).toBeVisible();
+    const mobileMenuToggle = page.getByRole("button", {
+      name: /toggle navigation menu/i,
+    });
+    await expect(mobileMenuToggle).toBeVisible();
   });
 
   test("should be responsive on tablet viewport", async ({ page }) => {

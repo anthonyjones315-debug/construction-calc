@@ -4,17 +4,18 @@ test.describe("Calculator System", () => {
   test("should load calculators hub page", async ({ page }) => {
     await page.goto("/calculators");
 
-    // Check for page title or heading
-    const heading = page.locator("h1, h2").filter({ hasText: /calculator/i });
+    // Check for canonical page title and primary heading
+    await expect(page).toHaveTitle(/construction calculators|calculator/i);
+    const heading = page.getByRole("heading", { level: 1 });
     await expect(heading).toBeVisible();
   });
 
   test("should display calculator categories", async ({ page }) => {
     await page.goto("/calculators");
 
-    // Look for category cards or links
+    // Look for visible category cards in the module grid
     const categories = page.locator(
-      '[data-testid*="category"], .category, [role="listitem"]',
+      'a[href^="/calculators/"] h2, a[href^="/calculators/"] [data-testid*="category"]',
     );
     const count = await categories.count();
 
@@ -25,11 +26,8 @@ test.describe("Calculator System", () => {
   test("should navigate to a specific calculator", async ({ page }) => {
     await page.goto("/calculators");
 
-    // Find first calculator link
-    const firstCalc = page
-      .locator("a")
-      .filter({ hasText: /concrete|framing|roofing/i })
-      .first();
+    // Find first category link
+    const firstCalc = page.locator('a[href^="/calculators/"]').first();
 
     if (await firstCalc.isVisible()) {
       await firstCalc.click();
@@ -77,9 +75,6 @@ test.describe("Calculator System", () => {
         await inputs.first().fill("100");
 
         // Look for results section
-        const results = page.locator(
-          '[data-testid*="result"], .result, [role="region"]',
-        );
         // Results might appear automatically or after a button click
         const calculateBtn = page
           .locator("button")

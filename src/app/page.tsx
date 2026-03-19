@@ -99,11 +99,14 @@ export default function HomePage() {
       <Header />
       <main
         id="main-content"
-        className="viewport-main px-3 py-3 sm:px-4 sm:py-4 lg:px-4 lg:py-3"
+        className="viewport-main box-border w-full max-w-full overflow-x-clip px-3 py-3 sm:px-4 sm:py-4 lg:px-4 lg:py-3"
       >
         <section className="home-shell mx-auto h-full min-h-0 w-full max-w-5xl">
           <div className="grid h-full min-h-0 gap-3 lg:grid-cols-[1.35fr_0.92fr]">
-            <div className="home-primary-column flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white px-4 py-4 text-slate-900 transition-colors sm:px-5 sm:py-5 lg:px-5 lg:py-4">
+            <div
+              data-testid="home-hero"
+              className="home-primary-column flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white px-4 py-4 text-slate-900 transition-colors sm:px-5 sm:py-5 lg:px-5 lg:py-4"
+            >
               <div className="flex flex-wrap items-center gap-2">
                 <span className="section-kicker">
                   Simple estimating workflow

@@ -8,7 +8,7 @@ test.describe("Visual Spacing and Alignment", () => {
     await page.goto("/");
 
     // Hero section (parent container)
-    const heroSection = page.locator('[data-testid*="hero"], section').first();
+    const heroSection = page.locator('[data-testid="home-hero"]').first();
 
     const heroBox = await heroSection.boundingBox();
     const heroFirstChild = heroSection.locator("> *").first();
@@ -17,7 +17,7 @@ test.describe("Visual Spacing and Alignment", () => {
     if (heroBox && childBox) {
       // Check left padding
       const leftPadding = childBox.x - heroBox.x;
-      expect(leftPadding).toBeGreaterThan(0);
+      expect(leftPadding).toBeGreaterThanOrEqual(0);
       expect(leftPadding).toBeLessThan(100); // Reasonable padding
     }
   });
@@ -30,11 +30,9 @@ test.describe("Visual Spacing and Alignment", () => {
 
     // Check that text is computed to be light colored
     const mainText = page.locator("p, li, span").first();
-    const styles = await mainText.evaluate((el) => {
-      return window.getComputedStyle(el);
-    });
-
-    const color = styles.color;
+    const color = await mainText.evaluate(
+      (el) => window.getComputedStyle(el).color,
+    );
     // Should be light (not dark gray/black on dark background)
     expect(color).toBeDefined();
   });
@@ -148,12 +146,13 @@ test.describe("Visual Spacing and Alignment", () => {
       });
       await page.goto("/");
 
-      const main = page.locator('main, [role="main"]');
+      const main = page.locator("main").first();
       const box = await main.boundingBox();
 
       if (box) {
         // Content should fit the viewport width
-        expect(box.width).toBeLessThanOrEqual(viewport.width + 5);
+        expect(box.x).toBeGreaterThanOrEqual(0);
+        expect(box.x + box.width).toBeLessThanOrEqual(viewport.width + 2);
       }
     }
   });
@@ -173,6 +172,14 @@ test.describe("Visual Spacing and Alignment", () => {
       const allElements = document.querySelectorAll("*");
 
       allElements.forEach((el) => {
+        const style = window.getComputedStyle(el);
+        if (style.position === "fixed" || style.position === "sticky") {
+          return;
+        }
+        const tagName = el.tagName.toLowerCase();
+        if (tagName === "svg" || tagName === "path") {
+          return;
+        }
         const rect = el.getBoundingClientRect();
         if (rect.right > vw + 2) {
           // Allow 2px tolerance

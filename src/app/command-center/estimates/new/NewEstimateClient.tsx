@@ -1439,7 +1439,7 @@ export default function NewEstimateClient() {
         toIndex: index + 1,
       });
     },
-    [dispatch],
+    [dispatch, state.lineItems.length],
   );
 
   const handleTaxChange = useCallback(

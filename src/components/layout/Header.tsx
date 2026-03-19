@@ -112,7 +112,7 @@ export function Header() {
 
   return (
     <header ref={headerRef} className="site-header-shell sticky top-0 z-50">
-      <div className="mx-auto flex h-[--shell-header-h] max-w-7xl items-center justify-between gap-1 px-2.5 sm:gap-2 sm:px-3">
+      <div className="mx-auto flex h-[--shell-header-h] min-w-0 max-w-7xl items-center justify-between gap-1 px-2 sm:gap-1.5 sm:px-3">
         {/* Logo */}
         <Link
           href={brandHref}
@@ -149,7 +149,7 @@ export function Header() {
         </nav>
 
         {/* Right side */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
+        <div className="flex min-w-0 shrink-0 items-center gap-1 sm:gap-1.5">
           {/* Command Center quick link */}
           <Link
             href={commandCenterHref}
@@ -169,7 +169,7 @@ export function Header() {
           <Link
             href={routes.cart}
             prefetch={false}
-            className="inline-flex min-h-7 items-center gap-1 rounded-full border border-slate-300 bg-white px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.14em] text-slate-700 transition hover:border-orange-400 hover:text-orange-600 sm:px-2.5"
+            className="inline-flex min-h-7 items-center gap-1 rounded-full border border-slate-300 bg-white px-1.5 py-1 text-[9px] font-semibold uppercase tracking-[0.14em] text-slate-700 transition hover:border-orange-400 hover:text-orange-600 sm:px-2.5"
             aria-label={`Estimate queue ${estimateCount} item${estimateCount === 1 ? "" : "s"}`}
           >
             <ClipboardList className="h-3.5 w-3.5" aria-hidden />
@@ -181,7 +181,7 @@ export function Header() {
 
           {/* Offline badge */}
           <span
-            className={`rounded-full border border-slate-300 bg-white px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500 ${
+            className={`hidden rounded-full border border-slate-300 bg-white px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500 md:inline-flex ${
               isMounted && !online ? "" : "invisible"
             }`}
             aria-live="polite"
@@ -247,7 +247,10 @@ export function Header() {
                     className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 transition-colors hover:bg-orange-50 hover:text-orange-600"
                     onClick={() => setMenuOpen(false)}
                   >
-                    <span className="w-4 text-center text-slate-400" aria-hidden>
+                    <span
+                      className="w-4 text-center text-slate-400"
+                      aria-hidden
+                    >
                       ⚙
                     </span>
                     Business Profile
@@ -259,7 +262,10 @@ export function Header() {
                     className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 transition-colors hover:bg-orange-50 hover:text-orange-600"
                     onClick={() => setMenuOpen(false)}
                   >
-                    <span className="w-4 text-center text-slate-400" aria-hidden>
+                    <span
+                      className="w-4 text-center text-slate-400"
+                      aria-hidden
+                    >
                       🏠
                     </span>
                     Command Center
@@ -271,7 +277,10 @@ export function Header() {
                     className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 transition-colors hover:bg-orange-50 hover:text-orange-600"
                     onClick={() => setMenuOpen(false)}
                   >
-                    <span className="w-4 text-center text-slate-400" aria-hidden>
+                    <span
+                      className="w-4 text-center text-slate-400"
+                      aria-hidden
+                    >
                       ▣
                     </span>
                     My Estimates
@@ -294,7 +303,7 @@ export function Header() {
             <Link
               href={routes.auth.signIn}
               prefetch={false}
-              className="btn-tactile flex min-h-7 items-center rounded-lg bg-orange-600 px-2.5 text-[11px] font-black uppercase text-white transition-all duration-200 hover:bg-orange-700 active:scale-[0.98]"
+              className="btn-tactile flex min-h-7 items-center rounded-lg bg-orange-600 px-2 text-[10px] font-black uppercase text-white transition-all duration-200 hover:bg-orange-700 active:scale-[0.98] sm:px-2.5 sm:text-[11px]"
               aria-label="Sign in to your Estimating Cockpit"
             >
               Sign In
@@ -362,7 +371,10 @@ export function Header() {
             onClick={() => setMobileNavOpen(false)}
             className="flex min-h-9 items-center rounded-lg px-4 py-1.5 text-sm text-slate-700 transition-colors hover:bg-orange-50 hover:text-orange-600"
           >
-            <ClipboardList className="h-4 w-4 mr-2 text-slate-400" aria-hidden />
+            <ClipboardList
+              className="h-4 w-4 mr-2 text-slate-400"
+              aria-hidden
+            />
             Estimates ({estimateCount})
           </Link>
         </nav>

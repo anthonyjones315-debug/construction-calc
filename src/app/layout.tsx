@@ -50,6 +50,7 @@ const resendOrigin = "https://api.resend.com";
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  viewportFit: "cover",
   // Allow users to zoom for accessibility instead of locking scale.
   maximumScale: 5,
   userScalable: true,
@@ -133,11 +134,7 @@ export default function RootLayout({
   const verifiedReviewSchema = getVerifiedReviewSchema();
 
   return (
-    <html
-      lang="en"
-      className="command-theme light"
-      suppressHydrationWarning
-    >
+    <html lang="en" className="command-theme light" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         {SHOULD_LINK_MANIFEST ? (
@@ -155,6 +152,9 @@ export default function RootLayout({
           name="apple-mobile-web-app-status-bar-style"
           content="black-translucent"
         />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-title" content="Pro Calc" />
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta name="theme-color" content="#FF7A00" />
         {/*
           Critical CSS vars injected inline so Slate & Orange theme colors
