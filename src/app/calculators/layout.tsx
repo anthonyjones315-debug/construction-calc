@@ -17,7 +17,7 @@ export default function CalculatorsLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="command-theme flex min-h-dvh flex-col bg-slate-950 lg:grid lg:grid-rows-[auto_1fr_auto]">
+    <div className="command-theme flex min-h-dvh flex-col bg-[--color-bg] lg:grid lg:grid-rows-[auto_1fr_auto]">
       <JsonLD schema={getWebAppSchema()} />
       <Header />
       <div className="min-h-0 min-w-0 flex-1">{children}</div>

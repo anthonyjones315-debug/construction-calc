@@ -18,43 +18,43 @@ export const metadata: Metadata = getPageMetadata({
 
 export default function ContactPage() {
   return (
-    <div className="page-shell flex min-h-dvh flex-col bg-[#0F0F10] text-white">
+    <div className="command-theme page-shell flex min-h-dvh flex-col bg-[--color-bg] text-[--color-ink]">
       <Header />
       <main
         id="main-content"
-        className="min-h-0 flex-1 overflow-y-auto bg-[#0F0F10]"
+        className="min-h-0 flex-1 overflow-y-auto"
       >
         <div className="mx-auto max-w-xl px-4 py-12 sm:px-6">
-          <h1 className="mb-2 text-2xl font-black uppercase text-white">
+          <h1 className="mb-2 text-2xl font-black uppercase text-[--color-ink]">
             Need Help?
           </h1>
-          <p className="mb-8 text-sm text-white/60">
+          <p className="mb-8 text-sm text-[--color-ink-dim]">
             Send a bug report, question, or feature request. We read everything.
           </p>
           <div className="mb-6 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl border border-white/10 bg-[#1A1A1C] p-4">
-              <p className="text-[11px] font-black uppercase tracking-[0.14em] text-orange-400">
+            <div className="content-card p-4">
+              <p className="text-[11px] font-black uppercase tracking-[0.14em] text-[--color-orange-brand]">
                 Business
               </p>
-              <p className="mt-2 text-sm font-semibold text-white">
+              <p className="mt-2 text-sm font-semibold text-[--color-ink]">
                 {BUSINESS_NAME}
               </p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-[#1A1A1C] p-4">
-              <p className="text-[11px] font-black uppercase tracking-[0.14em] text-orange-400">
+            <div className="content-card p-4">
+              <p className="text-[11px] font-black uppercase tracking-[0.14em] text-[--color-orange-brand]">
                 Location
               </p>
-              <p className="mt-2 text-sm font-semibold text-white">
+              <p className="mt-2 text-sm font-semibold text-[--color-ink]">
                 {BUSINESS_CITY_STATE}
               </p>
             </div>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-[#1A1A1C] p-6">
-            <p className="mb-4 text-sm text-white/60">
+          <div className="content-card p-6">
+            <p className="mb-4 text-sm text-[--color-ink-dim]">
               Prefer email? Reach us at{" "}
               <a
                 href={`mailto:${BUSINESS_EMAIL}`}
-                className="font-semibold text-orange-300 transition hover:text-orange-200"
+                className="font-semibold text-[--color-orange-brand] transition hover:text-[--color-orange-light]"
               >
                 {BUSINESS_EMAIL}
               </a>

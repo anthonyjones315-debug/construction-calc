@@ -63,7 +63,7 @@ export default function HomePage() {
         className="viewport-main px-3 py-3 sm:px-4 sm:py-4 lg:px-4 lg:py-3"
       >
         <section className="home-shell mx-auto h-full min-h-0 w-full max-w-6xl">
-          <div className="grid h-full min-h-0 gap-3 xl:grid-cols-[1.35fr_0.92fr]">
+          <div className="grid h-full min-h-0 gap-3 lg:grid-cols-[1.35fr_0.92fr]">
             <div className="home-primary-column flex h-full flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 px-4 py-4 text-slate-100 transition-colors sm:px-5 sm:py-5 lg:px-5 lg:py-4">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="section-kicker">
@@ -85,31 +85,33 @@ export default function HomePage() {
                 Designed for quick quoting around Utica, Rome, Herkimer, Oneida,
                 and Madison County jobs.
               </p>
-              <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+              <div className="mt-4 flex flex-wrap gap-2">
+                {/* Primary CTA — full emphasis */}
                 <Link
                   href={`${routes.commandCenter}?mode=draft`}
                   prefetch={false}
-                  className="btn-tactile inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-xl bg-[--color-orange-brand] px-3 py-2.5 text-xs font-black text-white transition-all duration-200 hover:bg-orange-700 active:scale-[0.98]"
+                  className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[--color-orange-brand] px-4 py-2.5 text-xs font-black text-white transition-all duration-200 hover:bg-orange-700 active:scale-[0.98]"
                 >
                   Start New Estimate <ArrowRight className="h-4 w-4" aria-hidden />
                 </Link>
+                {/* Secondary CTAs — ghost/outline, compact */}
                 <Link
                   href={routes.calculators}
-                  className="btn-tactile inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-xl border border-slate-600 px-3 py-2.5 text-xs font-semibold text-slate-200 transition-all duration-200 hover:border-slate-500 hover:text-white active:scale-[0.98]"
+                  className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-600 px-3 py-2.5 text-xs font-semibold text-slate-200 transition-all duration-200 hover:border-slate-500 hover:text-white active:scale-[0.98]"
                 >
-                  Open Calculators
+                  Calculators
                 </Link>
                 <Link
                   href={routes.saved}
                   prefetch={false}
-                  className="btn-tactile inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-xl border border-slate-600 px-3 py-2.5 text-xs font-semibold text-slate-200 transition-all duration-200 hover:border-slate-500 hover:text-white active:scale-[0.98]"
+                  className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-600 px-3 py-2.5 text-xs font-semibold text-slate-200 transition-all duration-200 hover:border-slate-500 hover:text-white active:scale-[0.98]"
                 >
-                  Saved Estimates
+                  Saved
                 </Link>
                 <Link
                   href={routes.pricebook}
                   prefetch={false}
-                  className="btn-tactile inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-xl border border-slate-600 px-3 py-2.5 text-xs font-semibold text-slate-200 transition-all duration-200 hover:border-slate-500 hover:text-white active:scale-[0.98]"
+                  className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-600 px-3 py-2.5 text-xs font-semibold text-slate-200 transition-all duration-200 hover:border-slate-500 hover:text-white active:scale-[0.98]"
                 >
                   Price Book
                 </Link>
@@ -205,21 +207,23 @@ export default function HomePage() {
               </div>
 
               <div className="home-panel rounded-2xl border border-slate-800 bg-slate-900 p-4 transition-colors">
-                <p className="section-kicker">Why it lands</p>
-                <div className="mt-2.5 grid gap-2 md:grid-cols-3">
+                <p className="section-kicker">Tri-County Tax Defaults</p>
+                <div className="mt-2.5 grid grid-cols-3 gap-2">
                   {[
-                    "Fast field-first workflows",
-                    "Orange actions with clear contrast",
-                    "Consistent panels across public and signed-in views",
-                  ].map((item) => (
+                    { county: "Oneida", rate: "8.75%" },
+                    { county: "Madison", rate: "8.00%" },
+                    { county: "Herkimer", rate: "8.25%" },
+                  ].map(({ county, rate }) => (
                     <div
-                      key={item}
-                      className="rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-2.5 text-xs font-medium text-slate-400"
+                      key={county}
+                      className="rounded-xl border border-slate-800 bg-slate-950/55 px-3 py-2 text-center"
                     >
-                      {item}
+                      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-orange-500">{county}</p>
+                      <p className="mt-0.5 text-lg font-black text-white">{rate}</p>
                     </div>
                   ))}
                 </div>
+                <p className="mt-2 text-[10px] text-slate-500">Combined state + local rate · Repairs &amp; maintenance</p>
               </div>
 
               <div className="home-panel rounded-2xl border border-slate-800 bg-slate-900 p-4 transition-colors">

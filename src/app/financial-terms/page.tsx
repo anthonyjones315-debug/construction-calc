@@ -36,102 +36,102 @@ export default function FinancialTermsPage() {
   };
 
   return (
-    <div className="page-shell flex min-h-dvh flex-col bg-[#0F0F10] text-white">
+    <div className="command-theme page-shell flex min-h-dvh flex-col bg-[--color-bg] text-[--color-ink]">
       <Header />
       <main
         id="main-content"
-        className="min-h-0 flex-1 overflow-y-auto bg-[#0F0F10]"
+        className="min-h-0 flex-1 overflow-y-auto"
       >
         <JsonLD schema={schema} />
         <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-          <div className="mb-6 flex items-center gap-3 rounded-2xl border border-white/10 bg-[#16171C] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+          <div className="mb-6 flex items-center gap-3 dark-feature-panel p-5">
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-600/15 shadow-inner">
-              <BookOpenCheck className="h-7 w-7 text-orange-500" aria-hidden />
+              <BookOpenCheck className="h-7 w-7 text-[--color-orange-brand]" aria-hidden />
             </div>
             <div className="space-y-1">
-              <p className="text-xs font-black uppercase tracking-[0.16em] text-orange-400">
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-[--color-orange-brand]">
                 Common Language
               </p>
               <h1 className="text-2xl font-black leading-tight text-white sm:text-3xl">
                 Financial Terms Database
               </h1>
-              <p className="text-sm text-white/70">
+              <p className="text-sm text-[--color-ink-mid]">
                 One source of truth for markup vs margin, labor burden, CAC, and tax defaults. The same labels appear in every calculator, saved estimate, and client PDF.
               </p>
             </div>
           </div>
 
           <div className="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
-            <section className="space-y-3 rounded-2xl border border-white/10 bg-[#16171C] p-5">
+            <section className="space-y-3 rounded-2xl border border-white/10 content-card p-5">
               <div className="flex items-center gap-2">
-                <div className="rounded-md bg-orange-600/20 p-2 text-orange-400">
+                <div className="rounded-md bg-orange-600/20 p-2 text-[--color-orange-brand]">
                   <Receipt className="h-4 w-4" aria-hidden />
                 </div>
                 <div>
-                  <p className="text-[11px] font-black uppercase tracking-[0.16em] text-orange-400">
+                  <p className="text-[11px] font-black uppercase tracking-[0.16em] text-[--color-orange-brand]">
                     NYS Tax Defaults
                   </p>
-                  <p className="text-sm text-white/75">
+                  <p className="text-sm text-[--color-ink-mid]">
                     Capital Improvements require NYS Form ST-124 (no sales tax on labor). Repairs use the combined county rate.
                   </p>
                 </div>
               </div>
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                 <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-                  <p className="text-xs font-black uppercase tracking-[0.14em] text-orange-400">
+                  <p className="text-xs font-black uppercase tracking-[0.14em] text-[--color-orange-brand]">
                     Oneida County
                   </p>
                   <p className="mt-1 text-2xl font-black text-white">{ONEIDA_RATE.toFixed(2)}%</p>
-                  <p className="text-sm text-white/70">
+                  <p className="text-sm text-[--color-ink-mid]">
                     Combined state (4.00%) + local (4.75%) rate applied to repairs and maintenance.
                   </p>
                 </div>
                 <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-                  <p className="text-xs font-black uppercase tracking-[0.14em] text-orange-400">
+                  <p className="text-xs font-black uppercase tracking-[0.14em] text-[--color-orange-brand]">
                     Madison County
                   </p>
                   <p className="mt-1 text-2xl font-black text-white">{MADISON_RATE.toFixed(2)}%</p>
-                  <p className="text-sm text-white/70">
+                  <p className="text-sm text-[--color-ink-mid]">
                     Combined state (4.00%) + local (4.00%) rate applied to repairs and maintenance.
                   </p>
                 </div>
                 <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-                  <p className="text-xs font-black uppercase tracking-[0.14em] text-orange-400">
+                  <p className="text-xs font-black uppercase tracking-[0.14em] text-[--color-orange-brand]">
                     Herkimer County
                   </p>
                   <p className="mt-1 text-2xl font-black text-white">{HERKIMER_RATE.toFixed(2)}%</p>
-                  <p className="text-sm text-white/70">
+                  <p className="text-sm text-[--color-ink-mid]">
                     Combined state (4.00%) + local (4.25%) rate applied to repairs and maintenance.
                   </p>
                 </div>
                 <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-                  <p className="text-xs font-black uppercase tracking-[0.14em] text-orange-400">
+                  <p className="text-xs font-black uppercase tracking-[0.14em] text-[--color-orange-brand]">
                     Capital Improvement
                   </p>
-                  <p className="mt-1 text-sm text-white/80">
+                  <p className="mt-1 text-sm text-[--color-ink-mid]">
                     Collect and retain <strong>Form ST-124</strong>; no sales tax billed to the customer. Materials may still be taxable at purchase—plan margin accordingly.
                   </p>
                 </div>
               </div>
-              <p className="text-xs text-white/60">
+              <p className="text-xs text-[--color-ink-dim]">
                 These defaults power the Tax Save calculator, estimate PDFs, and the business price book so tax math is consistent across the platform.
               </p>
             </section>
 
             <aside className="space-y-3">
-              <div className="rounded-2xl border border-white/10 bg-[#16171C] p-4">
+              <div className="rounded-2xl border border-white/10 content-card p-4">
                 <div className="flex items-center gap-2">
-                  <div className="rounded-md bg-orange-600/20 p-2 text-orange-400">
+                  <div className="rounded-md bg-orange-600/20 p-2 text-[--color-orange-brand]">
                     <ShieldCheck className="h-4 w-4" aria-hidden />
                   </div>
                   <div>
-                    <p className="text-[11px] font-black uppercase tracking-[0.14em] text-orange-400">
+                    <p className="text-[11px] font-black uppercase tracking-[0.14em] text-[--color-orange-brand]">
                       Operator Notes
                     </p>
-                    <p className="text-sm text-white/75">Tri-county estimating checks that show up in the app today</p>
+                    <p className="text-sm text-[--color-ink-mid]">Tri-county estimating checks that show up in the app today</p>
                   </div>
                 </div>
-                <ul className="mt-3 space-y-2 text-sm text-white/75">
+                <ul className="mt-3 space-y-2 text-sm text-[--color-ink-mid]">
                   <li>Tax Save separates capital improvements from repairs so ST-124 jobs do not get mixed with taxable repair work.</li>
                   <li>Saved estimates and exported PDFs use the same tax labels shown in the calculators to reduce drift.</li>
                   <li>Oneida, Madison, and Herkimer defaults are visible here before you audit a live estimate.</li>
@@ -144,19 +144,19 @@ export default function FinancialTermsPage() {
                 </Link>
               </div>
 
-              <div className="rounded-2xl border border-white/10 bg-[#16171C] p-4">
+              <div className="rounded-2xl border border-white/10 content-card p-4">
                 <div className="flex items-center gap-2">
-                  <div className="rounded-md bg-orange-600/20 p-2 text-orange-400">
+                  <div className="rounded-md bg-orange-600/20 p-2 text-[--color-orange-brand]">
                     <FileText className="h-4 w-4" aria-hidden />
                   </div>
                   <div>
-                    <p className="text-[11px] font-black uppercase tracking-[0.14em] text-orange-400">
+                    <p className="text-[11px] font-black uppercase tracking-[0.14em] text-[--color-orange-brand]">
                       User Guide
                     </p>
-                    <p className="text-sm text-white/75">Stay on-site; no external links.</p>
+                    <p className="text-sm text-[--color-ink-mid]">Stay on-site; no external links.</p>
                   </div>
                 </div>
-                <ul className="mt-3 space-y-2 text-sm text-white/75">
+                <ul className="mt-3 space-y-2 text-sm text-[--color-ink-mid]">
                   <li>Markup vs Margin, Labor Burden, and CAC use these exact labels in every calculator.</li>
                   <li>Client-ready PDFs pull the same definitions so exports match on-screen math.</li>
                   <li>Glossary and this page share one dataset—no drift between tools.</li>
@@ -179,9 +179,9 @@ export default function FinancialTermsPage() {
             </aside>
           </div>
 
-          <div className="mt-4 rounded-2xl border border-white/10 bg-[#16171C] p-5">
+          <div className="mt-4 rounded-2xl border border-white/10 content-card p-5">
             <div className="mb-3 flex items-center gap-2">
-              <div className="rounded-md bg-orange-600/20 p-2 text-orange-400">
+              <div className="rounded-md bg-orange-600/20 p-2 text-[--color-orange-brand]">
                 <HardHat className="h-4 w-4" aria-hidden />
               </div>
               <h2 className="text-lg font-black uppercase tracking-[0.14em] text-white">
@@ -194,10 +194,10 @@ export default function FinancialTermsPage() {
                   key={term.key}
                   className="rounded-xl border border-white/10 bg-white/5 p-3"
                 >
-                  <p className="text-xs font-black uppercase tracking-[0.12em] text-orange-400">
+                  <p className="text-xs font-black uppercase tracking-[0.12em] text-[--color-orange-brand]">
                     {term.label}
                   </p>
-                  <p className="mt-1 text-sm leading-relaxed text-white/80">{term.definition}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-[--color-ink-mid]">{term.definition}</p>
                   {term.unit ? (
                     <p className="mt-1 text-[11px] uppercase tracking-[0.12em] text-white/50">
                       Default Unit: {term.unit}

@@ -142,27 +142,6 @@ const toolCategoryTabs: Array<{ slug: ToolCategory; label: string }> = [
 
 const toolNavItems: NavItem[] = [
   {
-    label: "Slab Thickness (Inches)",
-    slug: "slab-thickness",
-    href: "/calculators/concrete/slab" as Route,
-    icon: BrickWall,
-    description: "Compute slab thickness in inches and convert to volume.",
-  },
-  {
-    label: "Running Lineal Feet",
-    slug: "running-lineal-feet",
-    href: "/calculators/concrete/block" as Route,
-    icon: BrickWall,
-    description: "Quick lineal foot math for footings and block walls.",
-  },
-  {
-    label: "Cubic Yards",
-    slug: "cubic-yards",
-    href: "/calculators/concrete/slab" as Route,
-    icon: BarChart3,
-    description: "Translate area and thickness into cubic yard totals.",
-  },
-  {
     label: "Estimates",
     slug: "estimates",
     href: routes.saved,
@@ -170,11 +149,11 @@ const toolNavItems: NavItem[] = [
     description: "Saved proposals, sent jobs, and signed work.",
   },
   {
-    label: "Trade Modules",
+    label: "Trade Calculators",
     slug: "trade-modules",
     href: routes.calculators,
     icon: HardHat,
-    description: "Modular trade calculator hub.",
+    description: "Open the full calculator library — concrete, framing, roofing, and more.",
   },
   {
     label: "Concrete & Masonry",
@@ -217,13 +196,6 @@ const toolNavItems: NavItem[] = [
     href: "/calculators/business" as Route,
     icon: BarChart3,
     description: "Profit, leads, workforce, and tax controls.",
-  },
-  {
-    label: "Calculator Library",
-    slug: "calculator-library",
-    href: routes.calculators,
-    icon: Calculator,
-    description: "Browse every field calculator in one place.",
   },
 ];
 
@@ -608,9 +580,6 @@ export default function CommandCenterClient({
     recentEstimates.length - signedEstimateCount - sentEstimateCount,
     0,
   );
-  const profileStatusLabel = needsBusinessProfileSetup
-    ? "Branding still needs business profile details."
-    : "Business profile is production-ready.";
   const todayLabel = new Intl.DateTimeFormat("en-US", {
     weekday: "long",
     month: "short",
@@ -780,168 +749,157 @@ export default function CommandCenterClient({
   }
 
   const renderOverview = () => (
-    <div className="grid h-full min-h-0 gap-4 xl:grid-cols-[1.2fr,0.88fr]">
-      <article className="public-panel-strong flex min-h-0 flex-col gap-4 px-5 py-5">
-        <div className="flex flex-wrap items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-orange-300">
-          <HardHat className="h-4 w-4" aria-hidden />
-          Morning Brief
+    <div className="flex h-full min-h-0 flex-col gap-3">
+      {/* ── Compact status bar — 44px ─────────────────────────────── */}
+      <div className="flex flex-wrap items-center gap-px rounded-xl border border-slate-800 bg-slate-950/60 overflow-hidden">
+        <div className="status-bar-cell flex-1 border-r border-slate-800 py-2.5">
+          <span className={`status-dot${cartItemCount > 0 ? " status-dot-warn" : ""}`} />
+          {cartItemCount > 0 ? `${cartItemCount} item${cartItemCount === 1 ? "" : "s"} in cart` : "Cart clear"}
         </div>
-        <div className="space-y-3">
-          <h1 className="text-2xl font-black uppercase tracking-tight text-white xl:text-[2.15rem]">
-            Run the shop without leaving the viewport.
-          </h1>
-          <p className="max-w-2xl text-sm leading-relaxed text-slate-300">
-            The command center now breaks work into focused pages, so the owner
-            sees today&apos;s priorities, the live queue, and the crew controls
-            without a tall scrolling stack.
-          </p>
+        <div className="status-bar-cell flex-1 border-r border-slate-800 py-2.5">
+          <span className={`status-dot${sentEstimateCount > 0 ? " status-dot-warn" : ""}`} />
+          {sentEstimateCount > 0 ? `${sentEstimateCount} proposal${sentEstimateCount === 1 ? "" : "s"} waiting` : "No follow-ups pending"}
         </div>
-        <div className="grid gap-3 md:grid-cols-3">
-          {[
-            {
-              label: "Cart readiness",
-              value:
-                cartItemCount > 0
-                  ? `${cartItemCount} batched item${cartItemCount === 1 ? "" : "s"}`
-                  : "Cart is clear",
-            },
-            {
-              label: "Client follow-up",
-              value:
-                sentEstimateCount > 0
-                  ? `${sentEstimateCount} proposal${sentEstimateCount === 1 ? "" : "s"} waiting`
-                  : "No sent proposals waiting",
-            },
-            {
-              label: "Business profile",
-              value: profileStatusLabel,
-            },
-          ].map((item) => (
-            <div
-              key={item.label}
-              className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3"
-            >
-              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
-                {item.label}
-              </p>
-              <p className="mt-2 text-sm font-semibold text-white">{item.value}</p>
-            </div>
-          ))}
+        <div className="status-bar-cell flex-1 py-2.5">
+          <span className={`status-dot${needsBusinessProfileSetup ? " status-dot-warn" : ""}`} />
+          {needsBusinessProfileSetup ? "Profile needs setup" : "Profile ready"}
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          {[
-            {
-              href: routes.saved,
-              label: "Open Drafts",
-              copy: "Saved jobs and client follow-up.",
-            },
-            {
-              href: routes.calculators,
-              label: "New Estimate",
-              copy: "Jump into the full calculator library.",
-            },
-            {
-              href: routes.settings,
-              label: "Business Setup",
-              copy: "Logo, pricing, and owner-level settings.",
-            },
-            {
-              href: routes.guide,
-              label: "Owner Guide",
-              copy: "Fast training path for crews and office handoff.",
-            },
-          ].map((action) => (
-            <Link
-              key={action.label}
-              href={action.href}
-              prefetch={false}
-              className="rounded-2xl border border-white/10 bg-slate-950/32 px-4 py-4 transition hover:border-orange-400/50 hover:bg-slate-950/50"
-            >
-              <p className="text-sm font-bold text-white">{action.label}</p>
-              <p className="mt-1 text-xs leading-relaxed text-slate-300">
-                {action.copy}
-              </p>
-            </Link>
-          ))}
-        </div>
-      </article>
+      </div>
 
-      <div className="grid min-h-0 gap-4">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <CommandStatCard
-            label="Closed / signed"
-            value={signedEstimateCount}
-            detail={`Last activity: ${lastEstimateLabel}`}
-            tone="text-emerald-300"
-          />
-          <CommandStatCard
-            label="Sent / waiting"
-            value={sentEstimateCount}
-            detail="Quotes already out with clients."
-            tone="text-orange-300"
-          />
-          <CommandStatCard
-            label="Drafts in view"
-            value={draftEstimateCount}
-            detail="Open work still in the shop."
-            tone="text-sky-300"
-          />
-          <CommandStatCard
-            label="Crew seats filled"
-            value={`${utilizationPercent}%`}
-            detail={`${seatsUsed}/${seatLimit} seats active on ${planName}.`}
-          />
-        </div>
+      {/* ── Quick-action bar — 44px ───────────────────────────────── */}
+      <div className="flex flex-wrap gap-2">
+        <Link
+          href={`${routes.commandCenter}?mode=draft`}
+          prefetch={false}
+          className="action-bar-btn action-bar-btn-primary"
+        >
+          <Calculator className="h-3.5 w-3.5" aria-hidden />
+          New Estimate
+        </Link>
+        <Link
+          href={routes.saved}
+          prefetch={false}
+          className="action-bar-btn"
+        >
+          <FileText className="h-3.5 w-3.5" aria-hidden />
+          Open Drafts
+        </Link>
+        <Link
+          href={routes.settings}
+          prefetch={false}
+          className="action-bar-btn"
+        >
+          <Settings className="h-3.5 w-3.5" aria-hidden />
+          Business Setup
+        </Link>
+        <Link
+          href={routes.guide}
+          prefetch={false}
+          className="action-bar-btn"
+        >
+          <HardHat className="h-3.5 w-3.5" aria-hidden />
+          Owner Guide
+        </Link>
+      </div>
 
-        <article className="command-card grid min-h-0 gap-4 px-5 py-5">
+      {/* ── 4-up KPI row — 64px ───────────────────────────────────── */}
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <div className="stat-kpi border-l-2 border-l-emerald-500">
+          <span className="stat-kpi-value text-emerald-300">{signedEstimateCount}</span>
+          <span className="stat-kpi-label">Closed / Signed</span>
+        </div>
+        <div className="stat-kpi border-l-2 border-l-orange-500">
+          <span className="stat-kpi-value text-orange-300">{sentEstimateCount}</span>
+          <span className="stat-kpi-label">Sent / Waiting</span>
+        </div>
+        <div className="stat-kpi border-l-2 border-l-sky-500">
+          <span className="stat-kpi-value text-sky-300">{draftEstimateCount}</span>
+          <span className="stat-kpi-label">Drafts Active</span>
+        </div>
+        <div className="stat-kpi border-l-2 border-l-slate-500">
+          <span className="stat-kpi-value">{utilizationPercent}%</span>
+          <span className="stat-kpi-label">Crew Seats</span>
+        </div>
+      </div>
+
+      {/* ── Main content grid ─────────────────────────────────────── */}
+      <div className="grid min-h-0 flex-1 gap-3 xl:grid-cols-[1.2fr,0.88fr]">
+        <article className="command-card flex min-h-0 flex-col gap-3 overflow-hidden px-4 py-4">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-500">
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[--color-orange-brand]">
                 Owner Controls
               </p>
-              <h2 className="mt-1 text-lg font-black uppercase tracking-tight text-white">
-                Live readiness
-              </h2>
+              <h2 className="app-heading mt-0.5">Live readiness</h2>
             </div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-orange-500/30 bg-orange-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-orange-300">
-              <ShieldCheck className="h-3.5 w-3.5" aria-hidden />
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-orange-500/30 bg-orange-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-orange-300">
+              <ShieldCheck className="h-3 w-3" aria-hidden />
               Locked
             </span>
           </div>
-
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-4">
-              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
-                Launch Pad
-              </p>
-              <p className="mt-2 text-sm text-slate-300">
-                Six high-value tools stay one tap away in the Launch Pad view.
-              </p>
+          <div className="grid gap-2.5 sm:grid-cols-2">
+            <div className="rounded-xl border border-slate-800 bg-slate-950/70 px-4 py-3">
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">Launch Pad</p>
+              <p className="mt-1.5 text-sm text-slate-300">Six high-value tools stay one tap away.</p>
               <button
                 type="button"
                 onClick={() => setActiveWorkspace("launch")}
-                className="mt-4 inline-flex min-h-10 items-center justify-center rounded-xl bg-orange-500 px-4 text-sm font-black uppercase tracking-[0.08em] text-white transition hover:bg-orange-600"
+                className="mt-3 inline-flex h-9 items-center justify-center rounded-lg bg-orange-500 px-4 text-xs font-black uppercase tracking-[0.08em] text-white transition hover:bg-orange-600"
               >
                 Open Launch Pad
               </button>
             </div>
-
-            <div className="rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-4">
-              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
-                Workflow
-              </p>
-              <p className="mt-2 text-sm text-slate-300">
-                Cart items, recent estimates, and handoff status live in one view.
-              </p>
+            <div className="rounded-xl border border-slate-800 bg-slate-950/70 px-4 py-3">
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">Workflow</p>
+              <p className="mt-1.5 text-sm text-slate-300">Cart items and estimate handoff in one view.</p>
               <button
                 type="button"
                 onClick={() => setActiveWorkspace("workflow")}
-                className="mt-4 inline-flex min-h-10 items-center justify-center rounded-xl border border-slate-700 px-4 text-sm font-semibold text-slate-200 transition hover:border-orange-500/50 hover:text-white"
+                className="mt-3 inline-flex h-9 items-center justify-center rounded-lg border border-slate-700 px-4 text-xs font-semibold text-slate-200 transition hover:border-orange-500/50 hover:text-white"
               >
                 Open Workflow
               </button>
             </div>
           </div>
+        </article>
+
+        <article className="command-card flex min-h-0 flex-col gap-3 overflow-hidden px-4 py-4">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[--color-orange-brand]">
+              Recent Activity
+            </p>
+            <Link
+              href={routes.saved}
+              prefetch={false}
+              className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-400 transition hover:text-[--color-orange-brand]"
+            >
+              View All →
+            </Link>
+          </div>
+          {recentEstimatePreview.length === 0 ? (
+            <div className="flex flex-1 items-center justify-center rounded-xl border border-dashed border-slate-700 bg-slate-950/60 px-4 py-6 text-center text-sm text-slate-400">
+              No estimates yet. Start a draft from any calculator.
+            </div>
+          ) : (
+            <div className="space-y-2 overflow-y-auto">
+              {recentEstimatePreview.map((estimate) => (
+                <Link
+                  key={estimate.id}
+                  href={`${routes.saved}?id=${estimate.id}`}
+                  prefetch={false}
+                  className="flex items-center justify-between gap-3 rounded-xl border border-slate-800 bg-slate-950/70 px-3 py-2.5 transition hover:border-orange-500/35"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-bold text-white">{estimate.name}</p>
+                    <p className="truncate text-xs text-slate-400">{estimate.clientName || "No client"}</p>
+                  </div>
+                  <span className={`shrink-0 inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${estimateStatusClasses(estimate.status)}`}>
+                    {formatEstimateStatus(estimate.status)}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          )}
         </article>
       </div>
     </div>
@@ -1237,150 +1195,133 @@ export default function CommandCenterClient({
   );
 
   const renderCrew = () => (
-    <div className="grid h-full min-h-0 gap-4 xl:grid-cols-[0.92fr,1.08fr]">
-      <div className="grid min-h-0 gap-4">
-        <article className="command-card px-5 py-5">
-          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-500">
-            Crew Summary
-          </p>
-          <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-white">
-            Your business team
-          </h2>
-          <p className="mt-2 text-sm leading-relaxed text-slate-400">
-            {businessName} is on the {planName} plan with {seatsUsed}/{seatLimit} seats filled.
-          </p>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-4">
-              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
-                Seats remaining
-              </p>
-              <p className="mt-2 text-3xl font-black text-white">{seatsAvailable}</p>
+    <div className="flex h-full min-h-0 flex-col gap-3">
+      {/* ── Top 2-col row: team info + invite code ─────────────────── */}
+      <div className="grid gap-3 sm:grid-cols-2">
+        <article className="command-card px-4 py-4">
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-orange-brand]">Your Team</p>
+          <h2 className="app-heading mt-0.5">{planName} · {seatsUsed}/{seatLimit} seats</h2>
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <div className="rounded-lg border border-slate-800 bg-slate-950/70 px-3 py-2">
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">Remaining</p>
+              <p className="mt-1 text-2xl font-black text-white">{seatsAvailable}</p>
             </div>
-            <div className="rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-4">
-              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
-                Utilization
-              </p>
-              <p className="mt-2 text-3xl font-black text-orange-300">
-                {utilizationPercent}%
-              </p>
+            <div className="rounded-lg border border-slate-800 bg-slate-950/70 px-3 py-2">
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">Utilization</p>
+              <p className="mt-1 text-2xl font-black text-orange-300">{utilizationPercent}%</p>
             </div>
           </div>
         </article>
 
-        <article className="public-panel-strong px-5 py-5">
-          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-300">
-            Invite New Members
-          </p>
-          <p className="mt-2 text-xs uppercase tracking-[0.22em] text-white/75">
-            Join code
-          </p>
-          <div className="mt-3 rounded-2xl border border-white/10 bg-slate-950/30 px-4 py-4 text-center text-4xl font-black tracking-[0.16em] text-orange-300">
-            {activeJoinCode}
-          </div>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <article className="public-panel-strong px-4 py-4">
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-300">Invite New Member</p>
+          <p className="mt-2 text-[10px] uppercase tracking-[0.18em] text-white/60">Join Code</p>
+          {/* Compact monospace code pill + inline copy */}
+          <div className="mt-1.5 flex items-center gap-2">
+            <code className="flex-1 rounded-lg border border-white/10 bg-slate-950/30 px-3 py-2 font-mono text-2xl font-black tracking-[0.1em] text-orange-300">
+              {activeJoinCode}
+            </code>
             <button
               type="button"
               onClick={copyJoinCode}
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-orange-500 px-4 text-sm font-black uppercase tracking-[0.08em] text-white transition hover:bg-orange-600"
+              className="action-bar-btn action-bar-btn-primary shrink-0"
+              aria-label="Copy join code"
             >
-              <Copy className="h-4 w-4" aria-hidden />
-              Copy Code
+              <Copy className="h-3.5 w-3.5" aria-hidden />
+              Copy
             </button>
-            {canManageCrew && (
-              <button
-                type="button"
-                onClick={refreshInviteCode}
-                disabled={isRefreshingInvite || !joinCodeRotatable}
-                title={
-                  !joinCodeRotatable
-                    ? "Rotation requires the join_code migration to be applied."
-                    : "Rotate invite code — old codes become invalid immediately"
-                }
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-white/20 px-4 text-sm font-semibold text-white transition hover:border-orange-400/60 hover:text-orange-200 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <RefreshCw className="h-4 w-4" aria-hidden />
-                {isRefreshingInvite ? "Refreshing…" : "Regenerate Code"}
-              </button>
-            )}
           </div>
+          {canManageCrew && (
+            <button
+              type="button"
+              onClick={refreshInviteCode}
+              disabled={isRefreshingInvite || !joinCodeRotatable}
+              title={
+                !joinCodeRotatable
+                  ? "Rotation requires the join_code migration to be applied."
+                  : "Rotate invite code — old codes become invalid immediately"
+              }
+              className="mt-2 inline-flex h-8 items-center gap-1.5 rounded-lg border border-white/15 px-3 text-xs font-semibold text-white/70 transition hover:border-orange-400/60 hover:text-orange-200 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <RefreshCw className="h-3 w-3" aria-hidden />
+              {isRefreshingInvite ? "Refreshing…" : "Rotate Code"}
+            </button>
+          )}
+          <p className="mt-2 text-xs text-white/50">Share with your crew. Old codes invalidate on rotate.</p>
         </article>
       </div>
 
-      <article className="command-card flex min-h-0 flex-col gap-4 px-5 py-5">
+      {/* ── Crew roster table ──────────────────────────────────────── */}
+      <article className="command-card flex min-h-0 flex-1 flex-col gap-3 overflow-hidden px-4 py-4">
         <div className="flex items-center justify-between gap-3">
-          <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-500">
-              Current Team Members
-            </p>
-            <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-white">
-              Active crew roster
-            </h2>
-          </div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-orange-brand]">Active Crew Roster</p>
           <Link
             href={routes.settings}
             prefetch={false}
-            className="inline-flex min-h-10 items-center justify-center rounded-xl border border-slate-700 px-4 text-sm font-semibold text-slate-200 transition hover:border-slate-500 hover:text-white"
+            className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-400 transition hover:text-[--color-orange-brand]"
           >
-            Open Settings
+            Open Settings →
           </Link>
         </div>
 
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-2">
-          {memberPreview.map((member) => {
-            const isOwner = member.role === "owner";
-            return (
-              <article
-                key={member.membershipId}
-                className="rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-4"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-700 bg-slate-900 text-xs font-semibold text-slate-200">
-                      {initialsForName(member.name)}
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold text-white">{member.name}</p>
-                      <p className="text-xs text-slate-400">{member.email}</p>
-                    </div>
-                  </div>
-                  {isOwner || !canManageCrew ? (
-                    <span
-                      className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] ${roleBadgeClasses(member.role)}`}
-                    >
-                      {formatRole(member.role)}
-                    </span>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.14em] ${roleBadgeClasses(member.role)}`}
-                      >
+        <div className="min-h-0 overflow-y-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-slate-800 text-left text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
+                <th className="pb-2 pr-4">Name</th>
+                <th className="pb-2 pr-4">Role</th>
+                <th className="pb-2 pr-4">Joined</th>
+                <th className="pb-2">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {memberPreview.map((member) => {
+                const isOwner = member.role === "owner";
+                return (
+                  <tr key={member.membershipId} className="border-b border-slate-800/60 last:border-0">
+                    <td className="py-2.5 pr-4">
+                      <div className="flex items-center gap-2">
+                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-slate-700 bg-slate-900 text-[10px] font-semibold text-slate-200">
+                          {initialsForName(member.name)}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="truncate text-xs font-bold text-white">{member.name}</p>
+                          <p className="truncate text-[10px] text-slate-400">{member.email}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-2.5 pr-4">
+                      <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.12em] ${roleBadgeClasses(member.role)}`}>
                         {formatRole(member.role)}
                       </span>
-                      <button
-                        type="button"
-                        onClick={() => setManageTargetId(member.membershipId)}
-                        className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-transparent text-slate-400 transition hover:border-slate-600 hover:text-white"
-                        aria-label={`Manage ${member.name}`}
-                      >
-                        <MoreHorizontal className="h-4 w-4" aria-hidden />
-                      </button>
-                    </div>
-                  )}
-                </div>
-                <div className="mt-4 flex items-center justify-between gap-3 text-xs text-slate-400">
-                  <span>Joined {formatJoinedAt(member.joinedAt)}</span>
-                </div>
-              </article>
-            );
-          })}
+                    </td>
+                    <td className="py-2.5 pr-4 text-[10px] text-slate-400">{formatJoinedAt(member.joinedAt)}</td>
+                    <td className="py-2.5">
+                      {!isOwner && canManageCrew ? (
+                        <button
+                          type="button"
+                          onClick={() => setManageTargetId(member.membershipId)}
+                          className="inline-flex h-7 w-7 items-center justify-center rounded border border-slate-700 text-slate-400 transition hover:border-orange-500/50 hover:text-white"
+                          aria-label={`Manage ${member.name}`}
+                        >
+                          <MoreHorizontal className="h-3.5 w-3.5" aria-hidden />
+                        </button>
+                      ) : (
+                        <span className="text-[10px] text-slate-600">Owner protected</span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
 
-        {members.length > memberPreview.length ? (
-          <p className="text-xs text-slate-500">
-            Showing {memberPreview.length} of {members.length} members. Open Settings
-            for the full roster.
+        {members.length > memberPreview.length && (
+          <p className="text-[10px] text-slate-500">
+            Showing {memberPreview.length} of {members.length}. Open Settings for full roster.
           </p>
-        ) : null}
+        )}
       </article>
     </div>
   );

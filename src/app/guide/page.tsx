@@ -99,20 +99,19 @@ export default function GuidePage() {
       <main id="main-content" className="viewport-main overflow-hidden">
         <JsonLD schema={howToSchema} />
         <div className="guide-shell viewport-frame max-w-6xl">
-          <section className="guide-hero public-panel-strong">
-            <div className="guide-hero-icon">
-              <Compass className="h-6 w-6" aria-hidden />
+          {/* ── Compact inline header — no separate hero banner ── */}
+          <div className="flex items-center gap-3 pb-1">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[--color-orange-brand]/12 text-[--color-orange-brand]">
+              <Compass className="h-4 w-4" aria-hidden />
             </div>
-            <div className="min-w-0 space-y-1">
+            <div className="min-w-0">
               <p className="section-kicker">Quick Start</p>
-              <h1 className="guide-hero-title text-display-heading">
-                User Guide
-              </h1>
-              <p className="guide-hero-copy text-copy-secondary">
-                Fast workflow reference for calculators, saved estimates, exports, and tri-county tax-aware estimating.
-              </p>
+              <h1 className="app-heading mt-0.5">User Guide</h1>
             </div>
-          </section>
+            <p className="ml-auto hidden max-w-xs text-[11px] leading-relaxed text-[--color-ink-dim] sm:block">
+              Calculators → results → save/export/share. Tri-county tax-aware.
+            </p>
+          </div>
 
           <section className="guide-card-grid">
             {HOW_TO_STEPS.map((step, idx) => (

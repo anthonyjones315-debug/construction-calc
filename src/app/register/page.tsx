@@ -46,7 +46,7 @@ export default function RegisterPage() {
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-4">
-            <div className="w-8 h-8 bg-orange-brand rounded flex items-center justify-center">
+            <div className="w-8 h-8 bg-[--color-orange-brand] rounded flex items-center justify-center">
               <span className="text-white font-bold text-sm font-display">
                 P
               </span>
@@ -144,7 +144,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={!canSubmit}
-              className="w-full rounded-lg bg-orange-brand px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-[--color-orange-dark] disabled:cursor-wait disabled:bg-[--color-orange-dark]"
+              className="w-full rounded-lg bg-[--color-orange-brand] px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-[--color-orange-dark] disabled:cursor-wait disabled:bg-[--color-orange-dark]"
             >
               {isPending ? "Creating account…" : "Register"}
             </button>
