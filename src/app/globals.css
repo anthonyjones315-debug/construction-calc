@@ -1173,6 +1173,49 @@ html.light {
     --command-card-shadow: 0 10px 24px rgba(2, 6, 23, 0.4);
   }
 
+  /* ── Public / pre-login cream theme ───────────────────────────── */
+  /* Apply .public-page to the outer page wrapper on unauthenticated pages.
+     Overrides design tokens for a warm cream feel vs. post-login dark industrial. */
+  .public-page {
+    --color-bg:          #F8F5F0;
+    --color-nav-bg:      #FFFFFE;
+    --color-nav-text:    #44403C;
+    --color-ink:         #1C1917;
+    --color-ink-mid:     #57534E;
+    --color-ink-dim:     #78716C;
+    --color-surface:     #FFFFFF;
+    --color-surface-alt: #F5F2ED;
+    --color-border:      #E7E2D8;
+    --color-panel-dark:  #F0EDE7;
+    --color-panel-deep:  #EAE6DF;
+    background: #F8F5F0;
+  }
+
+  .public-page .page-shell {
+    background: #F8F5F0;
+  }
+
+  .public-page .site-header-shell {
+    background: rgba(255, 255, 254, 0.92);
+    border-bottom-color: #E7E2D8;
+    color: #1C1917;
+    box-shadow: 0 2px 12px rgba(28, 25, 23, 0.06);
+  }
+
+  .public-page .site-header-nav a {
+    color: #57534E;
+  }
+
+  .public-page .site-header-nav a:hover {
+    color: var(--color-primary);
+  }
+
+  .public-page .site-footer-shell {
+    border-top-color: #E7E2D8;
+    background: #F0EDE7;
+    color: #78716C;
+  }
+
   .site-header-shell {
     border-bottom: 1px solid color-mix(in srgb, var(--color-border) 88%, transparent);
     background: color-mix(in srgb, var(--color-nav-bg) 92%, transparent);

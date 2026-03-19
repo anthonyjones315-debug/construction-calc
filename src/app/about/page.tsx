@@ -75,7 +75,7 @@ const workflowSteps = [
 
 export default function AboutPage() {
   return (
-    <div className="command-theme page-shell flex min-h-dvh flex-col bg-[--color-bg] text-[--color-ink]">
+    <div className="public-page page-shell flex min-h-dvh flex-col">
       <Header />
       <main id="main-content" className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8">

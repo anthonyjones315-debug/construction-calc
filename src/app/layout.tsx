@@ -211,9 +211,11 @@ export default function RootLayout({
               <Suspense fallback={null}>
                 <PostHogPageView />
               </Suspense>
-              <JsonLD schema={localBusinessSchema} />
               {verifiedReviewSchema ? (
-                <JsonLD schema={verifiedReviewSchema} />
+                <>
+                  <JsonLD schema={localBusinessSchema} />
+                  <JsonLD schema={verifiedReviewSchema} />
+                </>
               ) : null}
               <Providers>
                 <Suspense fallback={null}>

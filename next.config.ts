@@ -105,6 +105,8 @@ const nextConfig: NextConfig = {
       "https://us.consent.api.termly.io",
       "https://proconstructioncalc.com",
       "https://*.supabase.co",
+      // Google user avatar images (service worker fetch)
+      "https://lh3.googleusercontent.com",
       // Crisp chat WebSocket / API
       "https://client.relay.crisp.chat",
       "https://client.crisp.chat",

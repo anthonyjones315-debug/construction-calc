@@ -23,45 +23,92 @@ export interface FieldNote {
 
 export const FIELD_NOTES: FieldNote[] = [
   {
-    slug: "2026-ny-construction-updates",
-    title: "2026 NY Construction Updates: Energy Code Pause, Marcy UDC, and ST-124",
+    slug: "waste-factors-by-trade",
+    title: "Material Waste Factors: What to Add for Concrete, Framing, Roofing, and Flooring",
     description:
-      "Three items worth checking before you lock a 2026 tri-county bid: the current energy-code court pause, Marcy site-review rules, and capital-improvement tax handling.",
-    category: "Code & Compliance",
-    date: "April 2026",
-    lastVerified: "2026-03-17",
-    sources: [
-      "https://www.tax.ny.gov/pdf/publications/sales/pub718.pdf",
-      "https://www.tax.ny.gov/pdf/current_forms/st/st124_fill_in.pdf",
-    ],
+      "Practical waste percentages for the trades where ordering short creates real problems. Know these numbers before you call the supplier.",
+    category: "Estimating",
+    date: "March 2026",
     relatedToolLinks: [
-      { href: "/calculators/business/tax-save", label: "Tax Save Calculator" },
-      { href: "/calculators/business/profit-margin", label: "Profit Margin" },
-      { href: "/calculators/business/labor-rate", label: "Labor Rate" },
-      { href: "/calculators/business/lead-estimator", label: "Lead Estimator" },
+      { href: "/calculators/concrete/slab", label: "Slab Calculator" },
+      { href: "/calculators/framing/wall-studs", label: "Wall Studs Calculator" },
+      { href: "/calculators/roofing/shingles", label: "Shingles Calculator" },
+      { href: "/calculators/finish/flooring", label: "Flooring Calculator" },
     ],
     content: `
-## State energy code status
+## Why waste factors exist
 
-New York's 2025 Uniform and Energy Code updates took effect on December 31, 2025. The Department of State also says the fossil-fuel equipment prohibitions are suspended by court order while appeals are pending. For 2026 bids, treat statewide all-electric compliance as a live code-watch item, not a settled deadline you can quote from memory.
+No pour, no framing package, and no roofing takeoff comes out exactly to the plan dimension. Concrete spills, lumber gets cut wrong, shingles get cracked in handling, and flooring pieces get wasted at walls and transitions. Waste factors are how experienced estimators account for this before the order goes in — not after.
 
-## What that means in the field
+## Concrete
 
-- Verify the current code status before locking equipment selections.
-- Carry enough electrical scope for heat pumps and electric water heating when owners want all-electric or electric-ready designs.
-- Write any exemption, alternate path, or owner preference directly into the proposal.
+For a straightforward slab-on-grade, carry 10 percent over the calculated volume. Footings and formed work can run a little higher because the forms are never perfectly square and spills happen at the chute. If the pour is complex or the crew is less experienced, move to 12 to 15 percent. Short-loading a concrete truck is expensive and embarrassing.
 
-## Marcy UDC review
+## Framing lumber
 
-The Town of Marcy has an adopted Unified Development Code on file with the state. Before you price a job there, confirm the parcel zoning, the allowed use, and whether site plan, lighting, parking, buffering, or stormwater review will affect scope and schedule.
+Wall framing waste typically runs 10 to 15 percent over the stud count from the plan. Add corners, double top plates, trimmers, kings, cripples, and let-in bracing before you order — those pieces add up fast. Roof framing waste can be higher, especially with hips, valleys, and ridge cuts.
 
-## ST-124 and Oneida County tax
+## Roofing shingles
 
-For qualifying capital improvements, keep a signed Form ST-124 on file and do not charge sales tax on labor. For taxable repair work, Oneida County is currently listed at an 8.75 percent combined rate, so show that line clearly on the estimate and invoice.
+A standard open gable roof with no complex cuts can be estimated with 10 percent waste. Add hips, valleys, dormers, skylights, or tight rake cuts and move to 15 percent. Most suppliers sell in squares, so round up after adding waste, never before.
 
-## Practical move
+## Flooring
 
-If you are bidding a 2026 project in Marcy or elsewhere in Oneida County, check the code status first, confirm land-use review requirements second, and clean up the tax treatment before the proposal leaves your desk.
+Straight-lay tile or plank flooring typically needs 10 percent. Diagonal or herringbone patterns need 15 percent or more because every cut along the perimeter wastes a larger piece. Always go higher in rooms with lots of angles or obstacles.
+
+## Drywall and insulation
+
+For drywall, 10 percent is standard. Insulation batts cut to fit around wiring, blocking, and odd stud bays can see 5 to 10 percent depending on the floor plan.
+
+## The field rule
+
+When in doubt, carry more. A leftover pallet of shingles can go back. Waiting for a second concrete truck cannot.
+    `,
+  },
+  {
+    slug: "deck-framing-basics",
+    title: "Deck Framing Basics: Joist Span, Post Spacing, and Ledger Attachment",
+    description:
+      "The structural decisions that keep a deck code-compliant and safe — before you order a single board.",
+    category: "Framing",
+    date: "March 2026",
+    relatedToolLinks: [
+      { href: "/calculators/framing/deck-joists", label: "Deck Joist Calculator" },
+      { href: "/calculators/framing/floor", label: "Floor Framing Calculator" },
+      { href: "/calculators/concrete/footing", label: "Footing Volume Calculator" },
+    ],
+    content: `
+## Start with the span table, not a rule of thumb
+
+Joist size and spacing are not guesses — they come from a span table based on species, grade, spacing, and load. A 2x8 at 16 inches on center may carry a different span than the same lumber at 12 or 24 inches, and the difference matters when the client is standing on the deck.
+
+## Common joist sizing starting points
+
+For a lightly loaded residential deck using #2 Southern Pine or Douglas Fir:
+
+- 2x8 at 16 inches on center spans approximately 12 to 13 feet.
+- 2x10 at 16 inches on center spans approximately 15 to 16 feet.
+- 2x12 at 16 inches on center spans approximately 18 feet.
+
+Always confirm against the current AWC span tables or your plan engineer before ordering. Species and grade change the number.
+
+## Post spacing
+
+Beam design drives post spacing. A properly sized beam at 8-foot post spacing carries a different load than the same beam at 12-foot spacing. Run the tributary area and beam span together, not separately. If the deck cantilevers past the outer beam, account for that load too.
+
+## Ledger attachment
+
+The ledger is where most deck failures start. Attach to the rim joist or solid blocking — not through siding or stucco. Use stainless or hot-dipped galvanized structural screws or through-bolts sized for the connection load. Check local code for required fastener patterns; many jurisdictions now require engineered ledger connections for anything beyond a simple residential deck.
+
+## Footings
+
+The footing has to carry the post load and get below frost depth. In Oneida County, that means starting at 48 inches. Size the footing from the tributary area and soil bearing capacity — a local soils report or the permit set will tell you if the assumed bearing pressure works.
+
+## Practical takeaway
+
+Frame the deck like it is going to hold a crowd. Because eventually it will.
+
+Use our [deck joist calculator](/calculators/framing/deck-joists) and [footing volume calculator](/calculators/concrete/footing) to get clean material counts before the truck arrives.
     `,
   },
   {
@@ -99,80 +146,10 @@ Use our [footing volume calculator](/calculators/concrete/footing) once the desi
     `,
   },
   {
-    slug: "herkimer-county-sales-tax-2026",
-    title: "Herkimer County Sales Tax (8.25%) and ST-124 Rules",
-    description:
-      "A straightforward guide to Herkimer County's current combined sales tax rate and how ST-124 changes the labor line on a qualifying capital-improvement job.",
-    category: "Business & Legal",
-    date: "May 2026",
-    lastVerified: "2026-03-17",
-    relatedToolLinks: [
-      { href: "/calculators/business/tax-save", label: "Tax Save Calculator" },
-      { href: "/calculators/business/profit-margin", label: "Profit Margin" },
-      { href: "/calculators/business/labor-rate", label: "Labor Rate" },
-    ],
-    content: `
-## Current combined rate
-
-New York's current jurisdiction table lists Herkimer County at 8.25 percent combined sales tax. That is 4 percent state tax plus 4.25 percent local tax.
-
-## When ST-124 changes the invoice
-
-If the job qualifies as a capital improvement and you have a signed Form ST-124 on file, labor is not taxed. If the work is repair or maintenance, the taxable labor line stays in play.
-
-## Clean estimating habits
-
-- Separate repair work from capital-improvement work on mixed jobs.
-- Keep materials, labor, overhead, and profit visible instead of hiding tax inside a lump sum.
-- Save the signed ST-124 with the estimate and invoice package.
-
-## Local reminder
-
-Permit handling and review timing can still vary by town or village, so do not let the tax math distract you from jurisdiction-specific paperwork.
-
-Use our [Tax Save calculator](/calculators/business/tax-save) to model the job both ways before you send the bid.
-    `,
-  },
-  {
-    slug: "madison-county-sales-tax-2026",
-    title: "Madison County Sales Tax (8.00%) and ST-124 Rules",
-    description:
-      "How to handle Madison County's current combined rate and keep taxable repairs separate from true capital-improvement work.",
-    category: "Business & Legal",
-    date: "May 2026",
-    lastVerified: "2026-03-17",
-    relatedToolLinks: [
-      { href: "/calculators/business/tax-save", label: "Tax Save Calculator" },
-      { href: "/calculators/business/profit-margin", label: "Profit Margin" },
-      { href: "/calculators/business/labor-rate", label: "Labor Rate" },
-    ],
-    content: `
-## Current combined rate
-
-Madison County is currently listed at an 8.00 percent combined sales tax rate. That is 4 percent state tax plus 4 percent local tax.
-
-## Where contractors get tripped up
-
-The mistake is not usually the percentage. It is treating every residential job like a capital improvement. If the work is repair or maintenance, tax still applies. If it qualifies and you have Form ST-124 on file, labor is not taxed.
-
-## Keep the paperwork clean
-
-- Decide early whether the scope is taxable repair, exempt capital improvement, or a mix of both.
-- Split mixed scopes into separate lines so the invoice tells the same story as the contract.
-- Keep the exemption form in the file, not in someone's inbox.
-
-## Practical takeaway
-
-The easier you make the paper trail, the easier it is to defend the invoice later.
-
-Use our [Tax Save calculator](/calculators/business/tax-save) to compare the taxed and exempt versions before you send the estimate.
-    `,
-  },
-  {
     slug: "nys-retainage-laws",
     title: "NYS Retainage Rules: What Local GCs Should Read First",
     description:
-      "A tighter summary of public-work retainage limits, private-contract risk, and the cash-flow questions tri-county contractors should answer before signing.",
+      "Public vs private retainage limits, cash-flow risk, and the contract questions to answer before you sign.",
     category: "Business & Legal",
     date: "March 2025",
     relatedToolLinks: [
@@ -409,6 +386,42 @@ Permit schedules stretch when the scope is unclear, site plans are missing, engi
 Build schedule buffer into the estimate, tell the client what assumptions the start date depends on, and keep labor planning flexible until the permit is actually in hand.
 
 Use our [Lead Estimator](/calculators/business/lead-estimator) and [labor rate calculator](/calculators/business/labor-rate) to model the schedule risk before you commit.
+    `,
+  },
+  {
+    slug: "2026-ny-construction-updates",
+    title: "2026 NY Construction Updates: Energy Code Pause and Marcy UDC",
+    description:
+      "Two items worth checking before you lock a 2026 tri-county bid: the current energy-code court pause and Marcy site-review requirements.",
+    category: "Code & Compliance",
+    date: "April 2026",
+    lastVerified: "2026-03-17",
+    sources: [
+      "https://www.dos.ny.gov/licensing/",
+    ],
+    relatedToolLinks: [
+      { href: "/calculators/mechanical/btu-estimator", label: "BTU Estimator" },
+      { href: "/calculators/business/profit-margin", label: "Profit Margin" },
+      { href: "/calculators/business/labor-rate", label: "Labor Rate" },
+    ],
+    content: `
+## State energy code status
+
+New York's 2025 Uniform and Energy Code updates took effect on December 31, 2025. The fossil-fuel equipment prohibitions are currently suspended by court order while appeals are pending. For 2026 bids, treat statewide all-electric compliance as a live code-watch item, not a settled deadline you can quote from memory.
+
+## What that means in the field
+
+- Verify the current code status before locking equipment selections.
+- Carry enough electrical scope for heat pumps and electric water heating when owners want all-electric or electric-ready designs.
+- Write any exemption, alternate path, or owner preference directly into the proposal.
+
+## Marcy UDC review
+
+The Town of Marcy has an adopted Unified Development Code on file with the state. Before you price a job there, confirm the parcel zoning, the allowed use, and whether site plan, lighting, parking, buffering, or stormwater review will affect scope and schedule.
+
+## Practical move
+
+If you are bidding a 2026 project in Marcy or elsewhere in Oneida County, check the code status first and confirm land-use review requirements second before the proposal leaves your desk.
     `,
   },
 ];

@@ -1,8 +1,21 @@
 import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { ArrowRight, HardHat, ShieldCheck, FileText, MapPin, ClipboardCheck, Clock3 } from "lucide-react";
-import { JsonLD, getPageMetadata, getWebAppSchema, getWebSiteSchema } from "@/seo";
+import {
+  ArrowRight,
+  HardHat,
+  ShieldCheck,
+  FileText,
+  MapPin,
+  ClipboardCheck,
+  Clock3,
+} from "lucide-react";
+import {
+  JsonLD,
+  getPageMetadata,
+  getWebAppSchema,
+  getWebSiteSchema,
+} from "@/seo";
 import { HomeTaxDefaults } from "@/app/HomeTaxDefaults";
 import { routes } from "@routes";
 
@@ -39,17 +52,20 @@ export default function HomePage() {
     {
       href: routes.fieldNotes,
       title: "Field Notes",
-      description: "Local tax, frost-depth, and estimating guidance for tri-county work.",
+      description:
+        "Local tax, frost-depth, and estimating guidance for tri-county work.",
     },
     {
       href: routes.financialTerms,
       title: "Tax Defaults",
-      description: "Quick-reference Oneida, Madison, and Herkimer county sales-tax context.",
+      description:
+        "Quick-reference Oneida, Madison, and Herkimer county sales-tax context.",
     },
     {
       href: routes.guide,
       title: "Operator Guide",
-      description: "The shortest path from calculator run to client-ready estimate.",
+      description:
+        "The shortest path from calculator run to client-ready estimate.",
     },
   ];
 
@@ -92,7 +108,8 @@ export default function HomePage() {
                   prefetch={false}
                   className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[--color-orange-brand] px-4 py-2.5 text-xs font-black text-white transition-all duration-200 hover:bg-orange-700 active:scale-[0.98]"
                 >
-                  Start New Estimate <ArrowRight className="h-4 w-4" aria-hidden />
+                  Start New Estimate{" "}
+                  <ArrowRight className="h-4 w-4" aria-hidden />
                 </Link>
                 {/* Secondary CTAs — ghost/outline, compact */}
                 <Link
@@ -135,7 +152,10 @@ export default function HomePage() {
                     desc: "Price book, team access, and saved project workflows that keep jobs consistent.",
                   },
                 ].map(({ icon: Icon, label, desc }) => (
-                  <div key={label} className="home-feature-card rounded-2xl border border-slate-800 bg-slate-900 px-3 py-2.5">
+                  <div
+                    key={label}
+                    className="home-feature-card rounded-2xl border border-slate-800 bg-slate-900 px-3 py-2.5"
+                  >
                     <div className="flex items-center gap-2 text-orange-600">
                       <Icon className="h-4 w-4" aria-hidden />
                       <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-orange-600">
@@ -152,19 +172,24 @@ export default function HomePage() {
               <HomeTaxDefaults />
 
               <div className="mt-3 grid gap-2 sm:grid-cols-3">
-                {localMarketHighlights.map(({ icon: Icon, title, description }) => (
-                  <div key={title} className="home-market-card rounded-2xl border border-slate-800 bg-slate-950/55 px-3 py-3">
-                    <div className="flex items-center gap-2 text-orange-500">
-                      <Icon className="h-4 w-4" aria-hidden />
-                      <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-white">
-                        {title}
+                {localMarketHighlights.map(
+                  ({ icon: Icon, title, description }) => (
+                    <div
+                      key={title}
+                      className="home-market-card rounded-2xl border border-slate-800 bg-slate-950/55 px-3 py-3"
+                    >
+                      <div className="flex items-center gap-2 text-orange-500">
+                        <Icon className="h-4 w-4" aria-hidden />
+                        <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-white">
+                          {title}
+                        </p>
+                      </div>
+                      <p className="home-detail-copy home-market-copy mt-1.5 text-[11px] leading-relaxed text-slate-400">
+                        {description}
                       </p>
                     </div>
-                    <p className="home-detail-copy home-market-copy mt-1.5 text-[11px] leading-relaxed text-slate-400">
-                      {description}
-                    </p>
-                  </div>
-                ))}
+                  ),
+                )}
               </div>
             </div>
 
@@ -218,12 +243,18 @@ export default function HomePage() {
                       key={county}
                       className="rounded-xl border border-slate-800 bg-slate-950/55 px-3 py-2 text-center"
                     >
-                      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-orange-500">{county}</p>
-                      <p className="mt-0.5 text-lg font-black text-white">{rate}</p>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-orange-500">
+                        {county}
+                      </p>
+                      <p className="mt-0.5 text-lg font-black text-white">
+                        {rate}
+                      </p>
                     </div>
                   ))}
                 </div>
-                <p className="mt-2 text-[10px] text-slate-500">Combined state + local rate · Repairs &amp; maintenance</p>
+                <p className="mt-2 text-[10px] text-slate-500">
+                  Combined state + local rate · Repairs &amp; maintenance
+                </p>
               </div>
 
               <div className="home-panel rounded-2xl border border-slate-800 bg-slate-900 p-4 transition-colors">

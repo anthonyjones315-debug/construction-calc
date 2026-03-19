@@ -36,7 +36,7 @@ export default function FinancialTermsPage() {
   };
 
   return (
-    <div className="command-theme page-shell flex min-h-dvh flex-col bg-[--color-bg] text-[--color-ink]">
+    <div className="public-page page-shell flex min-h-dvh flex-col">
       <Header />
       <main
         id="main-content"

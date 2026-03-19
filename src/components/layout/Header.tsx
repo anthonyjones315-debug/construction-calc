@@ -121,6 +121,9 @@ export function Header() {
           <HardHat className="h-4 w-4 text-orange-500 sm:h-[18px] sm:w-[18px]" aria-hidden />
           <span className="hidden sm:block">Pro Construction Calc</span>
           <span className="sm:hidden">PC</span>
+          <span className="ml-1 rounded-full border border-orange-500/40 bg-orange-500/10 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-[0.14em] text-orange-400">
+            Beta
+          </span>
         </Link>
 
         {/* Desktop nav */}

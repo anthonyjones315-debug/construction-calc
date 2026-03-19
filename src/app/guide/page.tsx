@@ -94,7 +94,7 @@ export default function GuidePage() {
   };
 
   return (
-    <div className="command-theme page-shell grid min-h-dvh grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden bg-[--color-bg] text-[--color-ink]">
+    <div className="public-page page-shell grid min-h-dvh grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden">
       <Header />
       <main id="main-content" className="viewport-main overflow-hidden">
         <JsonLD schema={howToSchema} />
