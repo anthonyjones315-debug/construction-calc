@@ -16,7 +16,7 @@ export const metadata: Metadata = getPageMetadata({
 
 export default function FieldNotesHubPage() {
   return (
-    <div className="light page-shell flex min-h-dvh flex-col bg-[var(--color-bg)]">
+    <div className="light public-page page-shell">
       <Header />
       <main id="main-content" className="flex-1">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-8 sm:px-6">
