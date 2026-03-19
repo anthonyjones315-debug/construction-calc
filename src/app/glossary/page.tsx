@@ -70,9 +70,9 @@ export default function GlossaryPage() {
   };
 
   return (
-    <div className="command-theme page-shell flex min-h-dvh flex-col bg-[--color-bg] text-[--color-ink]">
+    <div className="light public-page page-shell">
       <Header />
-      <main id="main-content" className="flex-1 overflow-y-auto">
+      <main id="main-content" className="flex-1">
         <JsonLD schema={schema} />
         <div className="mx-auto w-full max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
           <div className="dark-feature-panel mb-8 flex items-center gap-4 p-6 text-white">

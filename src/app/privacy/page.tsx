@@ -22,9 +22,9 @@ const privacyHtml = fs.readFileSync(privacyHtmlPath, "utf8");
 
 export default function PrivacyPage() {
   return (
-    <div className="flex min-h-dvh flex-col bg-[--color-bg]">
+    <div className="light public-page page-shell">
       <Header />
-      <main id="main-content" className="min-h-0 flex-1 overflow-y-auto">
+      <main id="main-content" className="flex-1">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
           <div
             className="prose prose-sm max-w-none bg-white text-black shadow-md rounded-xl p-4"

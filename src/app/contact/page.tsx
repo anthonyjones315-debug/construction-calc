@@ -18,11 +18,11 @@ export const metadata: Metadata = getPageMetadata({
 
 export default function ContactPage() {
   return (
-    <div className="public-page page-shell flex min-h-dvh flex-col">
+    <div className="light public-page page-shell">
       <Header />
       <main
         id="main-content"
-        className="min-h-0 flex-1 overflow-y-auto"
+        className="flex-1"
       >
         <div className="mx-auto max-w-xl px-4 py-12 sm:px-6">
           <h1 className="mb-2 text-2xl font-black uppercase text-[--color-ink]">
