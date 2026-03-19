@@ -16,23 +16,23 @@ export const metadata: Metadata = getPageMetadata({
 
 export default function FieldNotesHubPage() {
   return (
-    <div className="page-shell flex min-h-dvh flex-col bg-[var(--color-bg)]">
+    <div className="light page-shell flex min-h-dvh flex-col bg-[var(--color-bg)]">
       <Header />
-      <main id="main-content" className="viewport-main">
-        <div className="viewport-frame max-w-6xl">
+      <main id="main-content" className="flex-1">
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-8 sm:px-6">
           {/* Hero */}
-          <div className="rounded-2xl border border-white/10 bg-[var(--color-surface)] p-5 shadow-[0_10px_30px_rgba(0,0,0,0.15)]">
-            <p className="text-xs font-bold uppercase tracking-[0.15em] text-orange-500">
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p className="text-xs font-bold uppercase tracking-[0.15em] text-orange-600">
               Methods and guidance
             </p>
-            <h1 className="mt-1.5 font-display text-2xl font-bold text-[--color-ink] sm:text-3xl">
+            <h1 className="mt-1.5 font-display text-2xl font-bold text-slate-900 sm:text-3xl">
               Field Notes
             </h1>
-            <p className="mt-2 max-w-2xl text-sm text-[--color-ink-dim]">
+            <p className="mt-2 max-w-2xl text-sm text-slate-600">
               Regional guides and contractor tips for Oneida, Madison, and
               Herkimer counties. No fluff, just useful field guidance.
             </p>
-            <div className="mt-3 inline-flex rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[--color-nav-text]">
+            <div className="mt-3 inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-600">
               100% on-site · No external click-aways
             </div>
           </div>
@@ -42,35 +42,33 @@ export default function FieldNotesHubPage() {
             {FIELD_NOTES.map((note) => (
               <article
                 key={note.slug}
-                className="flex min-h-0 flex-col rounded-2xl border border-white/10 bg-[var(--color-surface)] p-4 shadow-[0_10px_30px_rgba(0,0,0,0.12)] transition-shadow hover:shadow-[0_18px_38px_rgba(15,18,27,0.15)]"
+                className="flex min-h-0 flex-col rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
               >
                 <div className="mb-3 flex flex-wrap items-center gap-2">
-                  <span className="rounded-full bg-[--color-orange-soft] px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-[--color-orange-brand]">
+                  <span className="rounded-full bg-orange-50 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-orange-600">
                     {note.category}
                   </span>
                   {note.category === "Energy" && (
-                    <span className="rounded-full bg-orange-500/20 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-orange-500">
+                    <span className="rounded-full bg-orange-100 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-orange-700">
                       2026 Update
                     </span>
                   )}
-                  <span className="text-xs text-[--color-ink-dim]">
-                    {note.date}
-                  </span>
+                  <span className="text-xs text-slate-500">{note.date}</span>
                 </div>
-                <h2 className="font-display text-lg font-bold text-[--color-ink]">
+                <h2 className="font-display text-lg font-bold text-slate-900">
                   <Link
                     href={getFieldNotesRoute(note.slug)}
-                    className="transition-colors hover:text-[--color-orange-brand]"
+                    className="transition-colors hover:text-orange-600"
                   >
                     {note.title}
                   </Link>
                 </h2>
-                <p className="mt-2 flex-1 text-[13px] leading-relaxed text-[--color-ink-dim] line-clamp-4">
+                <p className="mt-2 flex-1 text-[13px] leading-relaxed text-slate-600 line-clamp-4">
                   {note.description}
                 </p>
                 <Link
                   href={getFieldNotesRoute(note.slug)}
-                  className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-[--color-orange-brand] transition-colors hover:text-[--color-orange-dark]"
+                  className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-orange-600 transition-colors hover:text-orange-700"
                 >
                   <FileText className="h-4 w-4 shrink-0" aria-hidden />
                   Read article →

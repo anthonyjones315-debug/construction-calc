@@ -365,6 +365,56 @@ html.light {
   color: var(--color-text-tertiary) !important;
 }
 
+/* ─── Additional light-mode overrides for calculator & trade pages ─────── */
+
+/* Disable animated gradient background in light mode */
+.light .animated-gradient-bg,
+.light.animated-gradient-bg {
+  background: var(--color-bg) !important;
+  animation: none !important;
+}
+
+/* Surface utility classes in light mode */
+.light .bg-surface-deep,
+.light .bg-surface-base,
+.light .bg-surface-elevated {
+  background: rgb(255 255 255 / 0.76) !important;
+}
+
+/* White alpha borders → light slate borders */
+.light .border-white\/5,
+.light .border-white\/10,
+.light .border-white\/12,
+.light .border-white\/15,
+.light .border-white\/20 {
+  border-color: rgb(148 163 184 / 0.4) !important;
+}
+
+/* White alpha backgrounds → light surface tones */
+.light .bg-white\/5,
+.light .bg-white\/\[0\.04\] {
+  background: rgb(248 250 252 / 0.6) !important;
+}
+
+/* Black alpha backgrounds → near-white */
+.light .bg-black\/30,
+.light .bg-black\/25 {
+  background: rgb(241 245 249 / 0.5) !important;
+}
+
+/* Orange-400 accent → orange-600 in light mode */
+.light .text-orange-400 {
+  color: #ea580c !important;
+}
+
+/* Dark feature panel override in light context */
+.light .dark-feature-panel {
+  background: white !important;
+  border-color: rgb(203 213 225) !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08) !important;
+  color: #111827 !important;
+}
+
 @layer base {
   * {
     box-sizing: border-box;
@@ -804,6 +854,32 @@ html.light {
     width: 0;
     height: 0;
     display: none;
+  }
+
+  /* Collapsible section styles */
+  details > summary {
+    list-style: none;
+  }
+
+  details > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  details > summary::after {
+    content: "";
+  }
+
+  details[open] > summary::after {
+    content: "";
+  }
+
+  /* Custom marker for details/summary */
+  details summary .chevron {
+    transition: transform 0.2s ease;
+  }
+
+  details[open] summary .chevron {
+    transform: rotate(180deg);
   }
 
   .viewport-frame {

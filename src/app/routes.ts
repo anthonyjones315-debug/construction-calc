@@ -9,6 +9,7 @@ export const routes = {
   fieldNotes: "/field-notes" as Route,
   calculators: "/calculators" as Route,
   commandCenter: "/command-center" as Route,
+  newEstimate: "/command-center/estimates/new" as Route,
   faq: "/faq" as Route,
   offline: "/offline" as Route,
   pricebook: "/pricebook" as Route,
@@ -73,6 +74,10 @@ export const legalNavigation = [
 
 export function getBlogPostRoute(slug: string): Route {
   return `/blog/${slug}` as Route;
+}
+
+export function getEstimateDetailRoute(id: string): Route {
+  return `/command-center/estimates/${id}` as Route;
 }
 
 export function getFieldNotesRoute(slug: string): Route {

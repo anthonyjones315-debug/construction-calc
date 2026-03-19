@@ -103,12 +103,12 @@ export default function HomePage() {
       >
         <section className="home-shell mx-auto h-full min-h-0 w-full max-w-5xl">
           <div className="grid h-full min-h-0 gap-3 lg:grid-cols-[1.35fr_0.92fr]">
-            <div className="home-primary-column flex h-full flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 px-4 py-4 text-slate-100 transition-colors sm:px-5 sm:py-5 lg:px-5 lg:py-4">
+            <div className="home-primary-column flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white px-4 py-4 text-slate-900 transition-colors sm:px-5 sm:py-5 lg:px-5 lg:py-4">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="section-kicker">
                   Simple estimating workflow
                 </span>
-                <span className="rounded-full border border-slate-700 bg-slate-800 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-300">
+                <span className="rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-600">
                   Built for contractors
                 </span>
               </div>
@@ -118,7 +118,7 @@ export default function HomePage() {
                   Fast, easy-to-use calculators for everyday field estimates.
                 </span>
               </h1>
-              <p className="home-hero-copy mt-2.5 max-w-xl text-[13px] leading-relaxed text-slate-400 sm:text-sm">
+              <p className="home-hero-copy mt-2.5 max-w-xl text-[13px] leading-relaxed text-slate-600 sm:text-sm">
                 Run your quantities, apply your pricing, and move straight into
                 client-ready estimates. No bloated dashboard flow—just the tools
                 you need to quote jobs quickly.
@@ -128,7 +128,7 @@ export default function HomePage() {
                 <Link
                   href={`${routes.commandCenter}?mode=draft`}
                   prefetch={false}
-                  className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[--color-orange-brand] px-4 py-2.5 text-xs font-black text-white transition-all duration-200 hover:bg-orange-700 active:scale-[0.98]"
+                  className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-orange-600 px-4 py-2.5 text-xs font-black text-white transition-all duration-200 hover:bg-orange-700 active:scale-[0.98]"
                 >
                   Start New Estimate{" "}
                   <ArrowRight className="h-4 w-4" aria-hidden />
@@ -136,21 +136,21 @@ export default function HomePage() {
                 {/* Secondary CTAs — ghost/outline, compact */}
                 <Link
                   href={routes.calculators}
-                  className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-600 px-3 py-2.5 text-xs font-semibold text-slate-200 transition-all duration-200 hover:border-slate-500 hover:text-white active:scale-[0.98]"
+                  className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 px-3 py-2.5 text-xs font-semibold text-slate-700 transition-all duration-200 hover:border-orange-300 hover:text-orange-700 active:scale-[0.98]"
                 >
                   Calculators
                 </Link>
                 <Link
                   href={routes.saved}
                   prefetch={false}
-                  className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-600 px-3 py-2.5 text-xs font-semibold text-slate-200 transition-all duration-200 hover:border-slate-500 hover:text-white active:scale-[0.98]"
+                  className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 px-3 py-2.5 text-xs font-semibold text-slate-700 transition-all duration-200 hover:border-orange-300 hover:text-orange-700 active:scale-[0.98]"
                 >
                   Saved
                 </Link>
                 <Link
                   href={routes.pricebook}
                   prefetch={false}
-                  className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-600 px-3 py-2.5 text-xs font-semibold text-slate-200 transition-all duration-200 hover:border-slate-500 hover:text-white active:scale-[0.98]"
+                  className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 px-3 py-2.5 text-xs font-semibold text-slate-700 transition-all duration-200 hover:border-orange-300 hover:text-orange-700 active:scale-[0.98]"
                 >
                   Price Book
                 </Link>
@@ -176,7 +176,7 @@ export default function HomePage() {
                 ].map(({ icon: Icon, label, desc }) => (
                   <div
                     key={label}
-                    className="home-feature-card rounded-2xl border border-slate-800 bg-slate-900 px-3 py-2.5"
+                    className="home-feature-card rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2.5"
                   >
                     <div className="flex items-center gap-2 text-orange-600">
                       <Icon className="h-4 w-4" aria-hidden />
@@ -184,25 +184,25 @@ export default function HomePage() {
                         {label}
                       </p>
                     </div>
-                    <p className="home-detail-copy home-feature-copy mt-1 text-[11px] leading-relaxed text-slate-400">
+                    <p className="home-detail-copy home-feature-copy mt-1 text-[11px] leading-relaxed text-slate-600">
                       {desc}
                     </p>
                   </div>
                 ))}
               </div>
 
-              <div className="home-panel mt-3 rounded-2xl border border-slate-800 bg-slate-950/55 p-3.5">
+              <div className="home-panel mt-3 rounded-2xl border border-slate-200 bg-slate-50 p-3.5">
                 <p className="section-kicker">Pro tips</p>
                 <div className="mt-2.5 grid gap-2 sm:grid-cols-3">
                   {proTips.map((tip) => (
                     <div
                       key={tip.title}
-                      className="rounded-xl border border-slate-800 bg-slate-900/75 px-3 py-2.5"
+                      className="rounded-xl border border-slate-200 bg-white px-3 py-2.5"
                     >
-                      <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-white">
+                      <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-900">
                         {tip.title}
                       </p>
-                      <p className="home-detail-copy mt-1 text-[11px] leading-relaxed text-slate-400">
+                      <p className="home-detail-copy mt-1 text-[11px] leading-relaxed text-slate-500">
                         {tip.description}
                       </p>
                     </div>
@@ -215,15 +215,15 @@ export default function HomePage() {
                   ({ icon: Icon, title, description }) => (
                     <div
                       key={title}
-                      className="home-market-card rounded-2xl border border-slate-800 bg-slate-950/55 px-3 py-3"
+                      className="home-market-card rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3"
                     >
-                      <div className="flex items-center gap-2 text-orange-500">
+                      <div className="flex items-center gap-2 text-orange-600">
                         <Icon className="h-4 w-4" aria-hidden />
-                        <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-white">
+                        <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-900">
                           {title}
                         </p>
                       </div>
-                      <p className="home-detail-copy home-market-copy mt-1.5 text-[11px] leading-relaxed text-slate-400">
+                      <p className="home-detail-copy home-market-copy mt-1.5 text-[11px] leading-relaxed text-slate-600">
                         {description}
                       </p>
                     </div>
@@ -233,7 +233,7 @@ export default function HomePage() {
             </div>
 
             <div className="home-secondary-column flex min-h-0 flex-col gap-3 xl:pt-0.5">
-              <div className="home-panel rounded-2xl border border-slate-800 bg-slate-900 p-4 text-slate-100 transition-colors">
+              <div className="home-panel rounded-2xl border border-slate-200 bg-white p-4 text-slate-900 transition-colors">
                 <p className="section-kicker">Quick access</p>
                 <div className="mt-2.5 space-y-2">
                   {quickAccessLinks.map((item) => (
@@ -241,12 +241,12 @@ export default function HomePage() {
                       key={item.title}
                       href={item.href}
                       prefetch={false}
-                      className="block min-h-10 rounded-2xl border border-slate-800 bg-slate-800/80 px-3 py-2.5 transition-all duration-200 hover:border-orange-500/50 hover:bg-slate-800"
+                      className="block min-h-10 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2.5 transition-all duration-200 hover:border-orange-300 hover:bg-orange-50"
                     >
-                      <p className="font-display text-sm font-semibold uppercase tracking-wide text-white">
+                      <p className="font-display text-sm font-semibold uppercase tracking-wide text-slate-900">
                         {item.title}
                       </p>
-                      <p className="home-detail-copy mt-0.5 text-[11px] leading-relaxed text-slate-400">
+                      <p className="home-detail-copy mt-0.5 text-[11px] leading-relaxed text-slate-500">
                         {item.description}
                       </p>
                     </Link>
@@ -254,7 +254,7 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="home-panel rounded-2xl border border-slate-800 bg-slate-900 p-4 transition-colors">
+              <div className="home-panel rounded-2xl border border-slate-200 bg-white p-4 transition-colors">
                 <p className="section-kicker">Popular calculators</p>
                 <div className="mt-2.5 grid grid-cols-1 gap-2 sm:grid-cols-2">
                   {[
@@ -267,9 +267,9 @@ export default function HomePage() {
                   ].map((name) => (
                     <div
                       key={name}
-                      className="rounded-xl border border-slate-800 bg-slate-950/55 px-3 py-2.5"
+                      className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5"
                     >
-                      <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-100">
+                      <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-700">
                         {name}
                       </p>
                     </div>
@@ -281,7 +281,7 @@ export default function HomePage() {
                 </p>
               </div>
 
-              <div className="home-panel rounded-2xl border border-slate-800 bg-slate-900 p-4 transition-colors">
+              <div className="home-panel rounded-2xl border border-slate-200 bg-white p-4 transition-colors">
                 <p className="section-kicker">Need help?</p>
                 <div className="mt-2.5 space-y-2">
                   {[
@@ -308,12 +308,12 @@ export default function HomePage() {
                       key={item.title}
                       href={item.href}
                       prefetch={false}
-                      className="block rounded-2xl border border-slate-800 bg-slate-950/55 px-3 py-3 transition-all duration-200 hover:border-orange-500/50 hover:bg-slate-950"
+                      className="block rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 transition-all duration-200 hover:border-orange-300 hover:bg-orange-50"
                     >
-                      <p className="text-sm font-display font-semibold uppercase tracking-wide text-white">
+                      <p className="text-sm font-display font-semibold uppercase tracking-wide text-slate-900">
                         {item.title}
                       </p>
-                      <p className="home-detail-copy mt-1 text-[11px] leading-relaxed text-slate-400">
+                      <p className="home-detail-copy mt-1 text-[11px] leading-relaxed text-slate-600">
                         {item.description}
                       </p>
                     </Link>

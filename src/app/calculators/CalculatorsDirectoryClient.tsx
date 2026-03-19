@@ -15,6 +15,8 @@ import {
   Thermometer,
   Layout,
   BarChart3,
+  ChevronRight,
+  ArrowRight,
 } from "lucide-react";
 import {
   tradePages,
@@ -177,6 +179,8 @@ export function CalculatorsDirectoryClient() {
     ];
   }, [suggested]);
 
+  const totalCalculators = SEARCH_INDEX.length;
+
   return (
     <>
       <main
@@ -210,6 +214,11 @@ export function CalculatorsDirectoryClient() {
                 aria-label="Search construction calculators by trade, task, or name"
               />
             </div>
+          </div>
+          <div className="mx-auto mt-2 flex max-w-5xl items-center gap-1">
+            <p className="text-xs text-slate-500">
+              {totalCalculators} professional calculators across 6 trade modules
+            </p>
           </div>
         </div>
 
@@ -277,6 +286,7 @@ export function CalculatorsDirectoryClient() {
               const links = page?.relatedLinks ?? [];
               const href = page?.canonicalPath ?? `/calculators/${key}`;
               const calcCount = links.length;
+              const sampleCalcs = links.slice(0, 3);
 
               return (
                 <Link
@@ -308,9 +318,58 @@ export function CalculatorsDirectoryClient() {
                       {page.description}
                     </p>
                   )}
+                  {sampleCalcs.length > 0 && (
+                    <div className="mt-2.5 flex flex-wrap gap-1.5">
+                      {sampleCalcs.map((link) => (
+                        <span
+                          key={link.href}
+                          className="rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] text-slate-600"
+                        >
+                          {link.label}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  <div className="mt-auto flex items-center pt-2 text-[10px] font-semibold text-[--color-orange-brand]">
+                    View all
+                    <ChevronRight className="h-3 w-3" aria-hidden />
+                  </div>
                 </Link>
               );
             })}
+          </div>
+        </div>
+
+        {/* Recommended Calculators */}
+        <div className="mx-auto w-full max-w-5xl px-4 pb-6 sm:px-6 sm:pb-8">
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-600">
+            Recommended Calculators
+          </p>
+          <div className="mt-2.5 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {RECOMMENDED.slice(0, 6).map((calc) => (
+              <Link
+                key={calc.key}
+                href={calc.href as Route}
+                prefetch={false}
+                className="group flex flex-col rounded-xl border border-slate-300 bg-white p-4 shadow-sm transition-all duration-200 hover:border-orange-500/50 hover:bg-orange-50"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <p className="font-semibold text-slate-900 group-hover:text-[--color-orange-brand]">
+                    {calc.title}
+                  </p>
+                  <span className="shrink-0 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+                    {calc.categoryLabel}
+                  </span>
+                </div>
+                <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-slate-600">
+                  {calc.description}
+                </p>
+                <div className="mt-auto flex items-center pt-2 text-xs font-semibold text-[--color-orange-brand]">
+                  Open
+                  <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </main>

@@ -29,10 +29,7 @@ import { isUnauthorizedError } from "@/lib/errors/unauthorized";
 import { sendEstimateSignatureEmail } from "@/lib/email/estimates";
 import { getPostHogClient } from "@/lib/posthog-server";
 import { normalizeDollars } from "@/utils/money";
-import {
-  saveCalculation,
-  verifyEstimate,
-} from "@/app/actions/calculations";
+import { saveCalculation, verifyEstimate } from "@/app/actions/calculations";
 
 function getClientEmail(input: Record<string, unknown> | undefined) {
   const candidate = input?.client_email;
@@ -52,7 +49,10 @@ export async function POST(request: NextRequest) {
   try {
     rawBody = await request.json();
   } catch {
-    return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid request body." },
+      { status: 400 },
+    );
   }
 
   const parsed = finalizeEstimateSchema.safeParse(rawBody);
@@ -100,8 +100,30 @@ export async function POST(request: NextRequest) {
     };
 
     function buildSavedInputs(includeShareCode: boolean) {
+      const contractorSig = payload.signature?.signatureDataUrl
+        ? {
+            contractorSignatureDataUrl: payload.signature.signatureDataUrl,
+            contractorSignedAt:
+              payload.signature.signedAt ?? new Date().toISOString(),
+          }
+        : {};
+
       if (includeShareCode) {
-        return withFinalizeInputs(payload.inputs, payload, signingMeta, ownerMeta);
+        const base = withFinalizeInputs(
+          payload.inputs,
+          payload,
+          signingMeta,
+          ownerMeta,
+        );
+        return {
+          ...base,
+          signing: {
+            ...(typeof base.signing === "object" && base.signing !== null
+              ? (base.signing as Record<string, unknown>)
+              : {}),
+            ...contractorSig,
+          },
+        };
       }
 
       return {
@@ -114,6 +136,7 @@ export async function POST(request: NextRequest) {
           jobName: payload.metadata.jobName ?? payload.name,
           materialList: payload.material_list,
         },
+        signing: contractorSig,
       };
     }
 
@@ -204,7 +227,8 @@ export async function POST(request: NextRequest) {
         estimateName: payload.name,
         jobName: payload.metadata.jobName ?? payload.name,
         signUrl,
-        contractorName: contractorProfile?.business_name ?? session.user.name ?? null,
+        contractorName:
+          contractorProfile?.business_name ?? session.user.name ?? null,
         replyTo:
           contractorProfile?.business_email ?? session.user.email ?? null,
       });
@@ -252,7 +276,9 @@ export async function POST(request: NextRequest) {
 
     Sentry.captureException(error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Internal Server Error" },
+      {
+        error: error instanceof Error ? error.message : "Internal Server Error",
+      },
       { status: 500 },
     );
   }

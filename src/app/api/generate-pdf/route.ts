@@ -108,12 +108,6 @@ export async function POST(request: NextRequest) {
               left: "0.4in",
               right: "0.4in",
             },
-            // Ensure fonts and advanced CSS effects like glass have time to load
-            waitFor: {
-              timeout: 3000, // Wait up to 3 seconds for all resources to load
-              selector: "body.ready", // If we add this class to the body when fonts load
-              selectorType: "css",
-            },
             // Improve quality for glass effects and gradient rendering
             preferCSSPageSize: true,
             omitBackground: false,

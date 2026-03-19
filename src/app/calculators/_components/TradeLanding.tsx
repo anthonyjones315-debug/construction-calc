@@ -79,7 +79,7 @@ function TradeTile({ calculator }: { calculator: TradePageDefinition }) {
   return (
     <article
       ref={ref}
-      className="group relative snap-start rounded-2xl border border-white/10 bg-[radial-gradient(circle_at_20%_20%,rgba(247,148,29,0.14),transparent_55%),linear-gradient(160deg,#0d0f16,#0b101a)] p-4 text-white shadow-[0_18px_40px_rgba(0,0,0,0.35)] transition-transform duration-200 hover:-translate-y-0.5 focus-within:-translate-y-0.5"
+      className="group relative snap-start rounded-2xl border border-slate-200 bg-white p-4 text-slate-900 shadow-sm transition-all duration-200 hover:border-orange-300 hover:bg-orange-50 hover:-translate-y-0.5 focus-within:-translate-y-0.5"
       style={{ minHeight: "228px", minWidth: "18rem" }}
       onMouseEnter={handlePrefetch}
       onFocus={handlePrefetch}
@@ -87,26 +87,25 @@ function TradeTile({ calculator }: { calculator: TradePageDefinition }) {
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="relative inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-black/30 shadow-inner">
+          <div className="relative inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 shadow-inner">
             <Icon
-              className="h-6 w-6 text-[--color-orange-brand]"
+              className="h-6 w-6 text-orange-600"
               strokeWidth={2.3}
               aria-hidden
             />
-            <span className="absolute inset-0 rounded-xl bg-[radial-gradient(circle_at_30%_30%,rgba(247,148,29,0.16),transparent_60%)]" />
           </div>
           <div className="min-w-0">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[--color-nav-text]">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">
               {calculator.heroKicker}
             </p>
-            <h3 className="text-sm font-bold leading-snug text-white line-clamp-1">
+            <h3 className="text-sm font-bold leading-snug text-slate-900 line-clamp-1">
               {calculator.title}
             </h3>
           </div>
         </div>
         <Link
           href={calculatorHref}
-          className="inline-flex items-center gap-1 rounded-full border border-[--color-orange-brand]/40 bg-[--color-orange-brand]/15 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-white transition-colors hover:border-[--color-orange-brand] hover:bg-[--color-orange-brand]/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[--color-orange-brand]"
+          className="inline-flex items-center gap-1 rounded-full border border-orange-300 bg-orange-50 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-orange-700 transition-colors hover:border-orange-500 hover:bg-orange-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500"
           prefetch={false}
           onMouseEnter={handlePrefetch}
           onFocus={handlePrefetch}
@@ -116,16 +115,19 @@ function TradeTile({ calculator }: { calculator: TradePageDefinition }) {
         </Link>
       </div>
 
-      <p className="mt-2 text-sm leading-snug text-[--color-nav-text] line-clamp-1">
+      <p className="mt-2 text-sm leading-snug text-slate-600 line-clamp-1">
         {copy.summary}
       </p>
 
-      <details className="group/details mt-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs text-[--color-nav-text]">
-        <summary className="flex cursor-pointer items-center justify-between gap-2 text-[11px] font-semibold uppercase tracking-[0.15em] text-white">
+      <details className="group/details mt-3 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
+        <summary className="flex cursor-pointer items-center justify-between gap-2 text-[11px] font-semibold uppercase tracking-[0.15em] text-slate-900">
           Details
-          <ChevronDown className="h-4 w-4 transition-transform group-open/details:rotate-180" aria-hidden />
+          <ChevronDown
+            className="h-4 w-4 transition-transform group-open/details:rotate-180"
+            aria-hidden
+          />
         </summary>
-        <ul className="mt-2 space-y-1.5 text-[11px] leading-snug text-[--color-nav-text]">
+        <ul className="mt-2 space-y-1.5 text-[11px] leading-snug text-slate-600">
           <li>{copy.bullets.inputs}</li>
           <li>{copy.bullets.outputs}</li>
           <li>{copy.bullets.compliance}</li>
@@ -146,9 +148,7 @@ export function TradeLanding({ page }: TradeLandingProps) {
   );
 
   const Glyph =
-    tradeGlyphMap[
-      page.category as keyof typeof tradeGlyphMap
-    ] ?? DefaultGlyph;
+    tradeGlyphMap[page.category as keyof typeof tradeGlyphMap] ?? DefaultGlyph;
 
   const breadcrumbs = useMemo(
     (): Array<{ label: string; href: Route }> => [
@@ -160,26 +160,29 @@ export function TradeLanding({ page }: TradeLandingProps) {
   );
 
   return (
-    <main className="command-theme flex min-h-0 flex-1 flex-col overflow-hidden bg-[--color-bg] text-white">
+    <main className="light command-theme page-shell flex min-h-0 flex-1 flex-col overflow-hidden bg-[var(--color-bg)]">
       <JsonLD schema={schema} />
 
-      <header className="sticky top-10 z-30 border-b border-white/10 bg-[--color-bg]/85 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-2 text-[11px] text-[--color-nav-text]">
+      <header className="sticky top-10 z-30 border-b border-slate-200 bg-white/95 backdrop-blur-md">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-2 text-[11px] text-slate-600">
           <nav aria-label="Breadcrumb">
             <ol className="flex flex-wrap items-center gap-2">
               {breadcrumbs.map((crumb, index) => {
                 const isLast = index === breadcrumbs.length - 1;
                 return (
-                  <li key={crumb.href} className="inline-flex items-center gap-2">
+                  <li
+                    key={crumb.href}
+                    className="inline-flex items-center gap-2"
+                  >
                     {index > 0 ? (
-                      <span className="text-[--color-nav-text]/50">/</span>
+                      <span className="text-slate-400">/</span>
                     ) : null}
                     <Link
                       href={crumb.href}
                       className={`transition-colors ${
                         isLast
-                          ? "font-semibold text-white"
-                          : "text-[--color-nav-text] hover:text-[--color-orange-brand]"
+                          ? "font-semibold text-slate-900"
+                          : "text-slate-500 hover:text-orange-600"
                       }`}
                       aria-current={isLast ? "page" : undefined}
                     >
@@ -193,7 +196,7 @@ export function TradeLanding({ page }: TradeLandingProps) {
 
           <Link
             href={"/calculators" as Route}
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white transition hover:border-[--color-orange-brand]/50 hover:bg-[--color-orange-brand]/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[--color-orange-brand]"
+            className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-700 transition hover:border-orange-300 hover:bg-orange-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500"
           >
             <Home className="h-3.5 w-3.5" aria-hidden />
             All Calculators
@@ -202,30 +205,30 @@ export function TradeLanding({ page }: TradeLandingProps) {
       </header>
 
       <section className="mx-auto w-full max-w-6xl px-4 pt-4 pb-6 lg:pt-4 lg:pb-5">
-        <div className="flex items-center gap-4 rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_15%_20%,rgba(247,148,29,0.14),transparent_50%),linear-gradient(120deg,#0d1020,#0b1226)] px-4 py-4 shadow-[0_18px_40px_rgba(0,0,0,0.32)] sm:gap-6 sm:px-6">
+        <div className="flex items-center gap-4 rounded-3xl border border-slate-200 bg-white px-4 py-4 shadow-sm sm:gap-6 sm:px-6">
           <Glyph className="h-16 w-16 shrink-0 sm:h-20 sm:w-20" />
           <div className="min-w-0 flex-1 space-y-1.5">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[--color-orange-brand]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-orange-600">
               Trade Calculators
             </p>
-            <h1 className="text-[clamp(22px,3vw,30px)] font-black leading-tight text-white">
+            <h1 className="text-[clamp(22px,3vw,30px)] font-black leading-tight text-slate-900">
               {page.title}
             </h1>
-            <p className="text-sm leading-snug text-[--color-nav-text] line-clamp-2">
+            <p className="text-sm leading-snug text-slate-600 line-clamp-2">
               {page.description}
             </p>
             <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em]">
-              <span className="inline-flex items-center gap-2 rounded-full border border-[--color-orange-brand]/40 bg-[--color-orange-brand]/12 px-3 py-1 text-[--color-orange-brand]">
+              <span className="inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-orange-700">
                 <Sparkles className="h-3.5 w-3.5" aria-hidden />
                 {page.heroKicker}
               </span>
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[--color-nav-text]">
+              <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-slate-600">
                 {page.localFocus}
               </span>
             </div>
           </div>
-          <div className="hidden max-w-[220px] text-xs leading-relaxed text-[--color-nav-text]/90 sm:block">
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[--color-orange-brand]">
+          <div className="hidden max-w-[220px] text-xs leading-relaxed text-slate-600 sm:block">
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-orange-600">
               Pro Tip
             </p>
             <p className="mt-1 line-clamp-4">{page.proTip}</p>
@@ -234,10 +237,10 @@ export function TradeLanding({ page }: TradeLandingProps) {
 
         <div className="mt-4">
           <div className="mb-3 flex items-center justify-between gap-3">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[--color-nav-text]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-600">
               Pick a calculator — everything fits above the fold
             </p>
-            <p className="text-[10px] text-[--color-nav-text]/80">
+            <p className="text-[10px] text-slate-400">
               Hover or tab to prefetch · keyboard order is linear
             </p>
           </div>

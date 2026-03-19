@@ -75,34 +75,30 @@ const workflowSteps = [
 
 export default function AboutPage() {
   return (
-    <div className="public-page page-shell flex min-h-dvh flex-col">
+    <div className="light public-page page-shell flex min-h-dvh flex-col">
       <Header />
       <main id="main-content" className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-          <section className="dark-feature-panel relative overflow-hidden px-6 py-7 text-white sm:px-8 sm:py-8">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(249,115,22,0.16),transparent_34%),linear-gradient(135deg,rgba(15,23,42,0.96),rgba(2,6,23,0.98))]" />
-            <div className="absolute inset-y-0 right-0 hidden w-1/3 bg-[linear-gradient(180deg,rgba(249,115,22,0.08),transparent)] lg:block" />
+          <section className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white px-6 py-7 shadow-sm sm:px-8 sm:py-8">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(249,115,22,0.06),transparent_34%)]" />
             <div className="relative grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_320px]">
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="section-kicker">Built for the field</span>
-                  <span className="rounded-full border trim-nav-border bg-white/5 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-[--color-nav-text]">
+                  <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-600">
                     Estimating without fluff
                   </span>
                 </div>
 
                 <div className="mt-5 flex items-start gap-4">
-                  <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/5 shadow-inner">
-                    <HardHat
-                      className="h-8 w-8 text-[--color-orange-brand]"
-                      aria-hidden
-                    />
+                  <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 shadow-inner">
+                    <HardHat className="h-8 w-8 text-orange-600" aria-hidden />
                   </div>
                   <div className="min-w-0">
-                    <h1 className="font-display text-[clamp(34px,5vw,58px)] font-bold uppercase leading-[0.94] tracking-[0.02em] text-white">
+                    <h1 className="font-display text-[clamp(34px,5vw,58px)] font-bold uppercase leading-[0.94] tracking-[0.02em] text-slate-900">
                       About Pro Construction Calc
                     </h1>
-                    <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[--color-nav-text]/82 sm:text-base">
+                    <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">
                       Built for the job site first, not the boardroom. We make
                       estimating tools that stay fast, explain the math, and
                       keep real contractor workflows front and center.
@@ -113,7 +109,7 @@ export default function AboutPage() {
                 <div className="mt-6 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap">
                   <Link
                     href={routes.calculators}
-                    className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[--color-orange-brand] px-4 py-3 text-sm font-black uppercase tracking-[0.08em] text-white transition-all duration-200 hover:bg-[--color-orange-dark] active:scale-[0.98]"
+                    className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-orange-600 px-4 py-3 text-sm font-black uppercase tracking-[0.08em] text-white transition-all duration-200 hover:bg-orange-700 active:scale-[0.98]"
                   >
                     Open Calculators
                     <ArrowRight className="h-4 w-4" aria-hidden />
@@ -121,13 +117,13 @@ export default function AboutPage() {
                   <Link
                     href={routes.commandCenter}
                     prefetch={false}
-                    className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/12 bg-white/5 px-4 py-3 text-sm font-semibold uppercase tracking-[0.08em] text-[--color-nav-text] transition-all duration-200 hover:border-[--color-orange-brand]/45 hover:text-white active:scale-[0.98]"
+                    className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm font-semibold uppercase tracking-[0.08em] text-slate-700 transition-all duration-200 hover:border-orange-300 hover:text-orange-700 active:scale-[0.98]"
                   >
                     Command Center
                   </Link>
                   <Link
                     href={routes.guide}
-                    className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/12 bg-white/5 px-4 py-3 text-sm font-semibold uppercase tracking-[0.08em] text-[--color-nav-text] transition-all duration-200 hover:border-[--color-orange-brand]/45 hover:text-white active:scale-[0.98]"
+                    className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm font-semibold uppercase tracking-[0.08em] text-slate-700 transition-all duration-200 hover:border-orange-300 hover:text-orange-700 active:scale-[0.98]"
                   >
                     User Guide
                   </Link>
@@ -137,12 +133,12 @@ export default function AboutPage() {
                   {brandPillars.map((pillar) => (
                     <div
                       key={pillar.title}
-                      className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3"
+                      className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"
                     >
-                      <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[--color-orange-muted]">
+                      <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-orange-600">
                         {pillar.title}
                       </p>
-                      <p className="mt-2 text-sm leading-relaxed text-[--color-nav-text]/78">
+                      <p className="mt-2 text-sm leading-relaxed text-slate-600">
                         {pillar.detail}
                       </p>
                     </div>
@@ -150,14 +146,14 @@ export default function AboutPage() {
                 </div>
               </div>
 
-              <div className="relative overflow-hidden rounded-3xl border trim-accent-border bg-[linear-gradient(180deg,rgba(15,23,42,0.96),rgba(15,23,42,0.72))] p-5">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.18),transparent_48%)]" />
+              <div className="relative overflow-hidden rounded-3xl border border-orange-200 bg-orange-50 p-5">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.08),transparent_48%)]" />
                 <div className="relative flex h-full min-h-[280px] flex-col justify-between">
                   <div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[--color-orange-muted]">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-orange-600">
                       Brand Signal
                     </p>
-                    <p className="mt-2 max-w-[18rem] text-sm leading-relaxed text-[--color-nav-text]/80">
+                    <p className="mt-2 max-w-[18rem] text-sm leading-relaxed text-slate-700">
                       Industrial slate panels, jobsite orange action color, and
                       clear uppercase hierarchy keep the product readable under
                       pressure.
@@ -165,11 +161,11 @@ export default function AboutPage() {
                   </div>
 
                   <div className="relative flex items-center justify-center py-6">
-                    <div className="absolute h-44 w-44 rounded-full border border-[--color-orange-brand]/25" />
-                    <div className="absolute h-28 w-28 rounded-full border border-[--color-orange-brand]/18" />
-                    <div className="flex h-24 w-24 items-center justify-center rounded-full bg-[--color-orange-brand]/18 shadow-[0_0_0_1px_rgba(194,65,12,0.2)]">
+                    <div className="absolute h-44 w-44 rounded-full border border-orange-200" />
+                    <div className="absolute h-28 w-28 rounded-full border border-orange-300/50" />
+                    <div className="flex h-24 w-24 items-center justify-center rounded-full bg-orange-100 shadow-[0_0_0_1px_rgba(194,65,12,0.15)]">
                       <DraftingCompass
-                        className="h-10 w-10 text-[--color-orange-brand]"
+                        className="h-10 w-10 text-orange-600"
                         strokeWidth={2}
                         aria-hidden
                       />
@@ -177,27 +173,27 @@ export default function AboutPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] px-3 py-2">
-                      <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[--color-nav-text]/78">
+                    <div className="flex items-center justify-between rounded-2xl border border-orange-200 bg-white px-3 py-2">
+                      <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-600">
                         Core calculators
                       </span>
-                      <span className="text-sm font-black text-white">
+                      <span className="text-sm font-black text-slate-900">
                         Free
                       </span>
                     </div>
-                    <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] px-3 py-2">
-                      <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[--color-nav-text]/78">
+                    <div className="flex items-center justify-between rounded-2xl border border-orange-200 bg-white px-3 py-2">
+                      <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-600">
                         Workflow depth
                       </span>
-                      <span className="text-sm font-black text-white">
+                      <span className="text-sm font-black text-slate-900">
                         Optional
                       </span>
                     </div>
-                    <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] px-3 py-2">
-                      <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[--color-nav-text]/78">
+                    <div className="flex items-center justify-between rounded-2xl border border-orange-200 bg-white px-3 py-2">
+                      <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-600">
                         Jobsite bias
                       </span>
-                      <span className="text-sm font-black text-white">
+                      <span className="text-sm font-black text-slate-900">
                         High
                       </span>
                     </div>
@@ -234,26 +230,36 @@ export default function AboutPage() {
 
             <aside className="space-y-4">
               <div className="content-card p-5">
-                <div className="inline-flex items-center gap-2 rounded-full border border-[--color-orange-brand]/30 bg-[--color-orange-brand]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[--color-orange-brand]">
+                <div className="inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-orange-600">
                   <ShieldCheck className="h-3.5 w-3.5" aria-hidden />
                   What we optimize for
                 </div>
                 <ul className="mt-4 space-y-3 text-sm leading-relaxed text-[--color-ink-mid]">
-                  <li>Fast reads from a truck cab, job trailer, or phone on site.</li>
-                  <li>Outputs that support ordering, crew planning, and estimate reviews.</li>
-                  <li>A consistent visual system across public pages and signed-in tools.</li>
+                  <li>
+                    Fast reads from a truck cab, job trailer, or phone on site.
+                  </li>
+                  <li>
+                    Outputs that support ordering, crew planning, and estimate
+                    reviews.
+                  </li>
+                  <li>
+                    A consistent visual system across public pages and signed-in
+                    tools.
+                  </li>
                 </ul>
               </div>
 
               <div className="content-card p-5">
-                <p className="section-kicker text-[11px]">How it fits the job</p>
+                <p className="section-kicker text-[11px]">
+                  How it fits the job
+                </p>
                 <ol className="mt-4 space-y-3 text-sm text-[--color-ink-mid]">
                   {workflowSteps.map((step, index) => (
                     <li
                       key={index}
                       className="rounded-2xl border border-[--color-border] bg-[--color-surface-alt] px-4 py-3"
                     >
-                      <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[--color-orange-brand]">
+                      <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-orange-600">
                         Step {index + 1}
                       </span>
                       <p className="mt-1 leading-relaxed">{step}</p>
@@ -267,12 +273,12 @@ export default function AboutPage() {
           <section className="mt-10">
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <div>
-                <p className="section-kicker">What&apos;s included</p>
+                <p className="section-kicker">What's included</p>
                 <h2 className="mt-2 font-display text-3xl font-bold uppercase text-[--color-ink]">
                   Brand-matched tools for live estimating
                 </h2>
               </div>
-              <div className="rounded-full border trim-nav-border bg-white/5 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[--color-nav-text]">
+              <div className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-600">
                 Slate panels. Orange actions. Clear math.
               </div>
             </div>
@@ -280,11 +286,8 @@ export default function AboutPage() {
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
               {includedFeatures.map(({ icon: Icon, title, detail }) => (
                 <div key={title} className="content-card p-5">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[--color-orange-brand]/12 shadow-inner">
-                    <Icon
-                      className="h-5 w-5 text-[--color-orange-brand]"
-                      aria-hidden
-                    />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-50 shadow-inner">
+                    <Icon className="h-5 w-5 text-orange-600" aria-hidden />
                   </div>
                   <h3 className="mt-4 font-display text-xl font-bold uppercase text-[--color-ink]">
                     {title}

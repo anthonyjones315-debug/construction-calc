@@ -861,6 +861,9 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   const deviceProfile = useDeviceProfile();
   const [capitalImprovement, setCapitalImprovement] = useState(false);
 
+  // Collapsible section states
+  const [wasteFactorOpen, setWasteFactorOpen] = useState(true);
+
   const breadcrumbs = useMemo(
     () => buildBreadcrumbs(page.canonicalPath),
     [page.canonicalPath],
@@ -2894,7 +2897,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       <main
         ref={calculatorShellRef}
         id="main-content"
-        className={`command-theme flex min-h-0 flex-1 flex-col overflow-hidden animated-gradient-bg text-white ${
+        className={`command-theme page-shell flex min-h-0 flex-1 flex-col overflow-hidden text-white ${
           deviceProfile.isMobile ? "h-[100dvh]" : ""
         } ${deviceProfile.isIPhone15 ? "no-scroll-shell iphone-15:h-[100dvh]" : ""} ${
           deviceProfile.highContrastMode ? "contrast-125 saturate-110" : ""
@@ -4065,38 +4068,60 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                           )}
                         </div>
 
-                        <label className="block rounded-xl glass-panel-deep p-3">
-                          <div className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary">
-                            <span id="waste-factor-label">
-                              {isTrimRoute ? "Miter Waste %" : "Waste Factor %"}
+                        {/* Collapsible Waste Factor Section */}
+                        <details
+                          open={wasteFactorOpen}
+                          className="rounded-xl border border-slate-700/50 bg-slate-900/50 overflow-hidden"
+                        >
+                          <summary
+                            className="flex cursor-pointer items-center justify-between gap-2 px-3 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary hover:bg-slate-800/50 transition-colors list-none"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setWasteFactorOpen(!wasteFactorOpen);
+                            }}
+                          >
+                            <span className="flex items-center gap-2">
+                              <ChevronDown
+                                className={`h-4 w-4 transition-transform duration-200 ${
+                                  wasteFactorOpen ? "rotate-180" : ""
+                                }`}
+                                aria-hidden
+                              />
+                              <span id="waste-factor-label">
+                                {isTrimRoute
+                                  ? "Miter Waste %"
+                                  : "Waste Factor %"}
+                              </span>
                             </span>
                             <span className="tabular-nums">{wasteFactor}%</span>
+                          </summary>
+                          <div className="px-3 pb-3">
+                            {!effectiveProMode && (
+                              <p className="mb-2 text-field-hint">
+                                {getInlineSubLabel(
+                                  isTrimRoute ? "Miter Waste" : "Waste Factor",
+                                )}
+                              </p>
+                            )}
+                            <input
+                              type="range"
+                              aria-labelledby="waste-factor-label"
+                              min={0}
+                              max={MAX_WASTE_FACTOR}
+                              value={wasteFactor}
+                              onChange={(event) =>
+                                setWasteFactor(
+                                  clampValue(
+                                    Number(event.target.value),
+                                    0,
+                                    MAX_WASTE_FACTOR,
+                                  ),
+                                )
+                              }
+                              className="w-full accent-orange-base"
+                            />
                           </div>
-                          {!effectiveProMode && (
-                            <p className="mb-2 text-field-hint">
-                              {getInlineSubLabel(
-                                isTrimRoute ? "Miter Waste" : "Waste Factor",
-                              )}
-                            </p>
-                          )}
-                          <input
-                            type="range"
-                            aria-labelledby="waste-factor-label"
-                            min={0}
-                            max={MAX_WASTE_FACTOR}
-                            value={wasteFactor}
-                            onChange={(event) =>
-                              setWasteFactor(
-                                clampValue(
-                                  Number(event.target.value),
-                                  0,
-                                  MAX_WASTE_FACTOR,
-                                ),
-                              )
-                            }
-                            className="w-full accent-orange-base"
-                          />
-                        </label>
+                        </details>
                       </div>
                     );
                   })()}

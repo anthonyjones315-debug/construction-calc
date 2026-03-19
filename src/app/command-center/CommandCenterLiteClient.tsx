@@ -13,8 +13,11 @@ import {
   Settings,
   Users,
   Wrench,
+  BookOpen,
+  ChevronRight,
+  Lightbulb,
 } from "lucide-react";
-import { routes } from "@routes";
+import { routes, getEstimateDetailRoute } from "@routes";
 
 type TeamMember = {
   membershipId: string;
@@ -78,6 +81,36 @@ function initials(name: string) {
   return parts.map((part) => part.charAt(0).toUpperCase()).join("");
 }
 
+const POPULAR_CALCULATORS: Array<{ label: string; href: Route }> = [
+  { label: "Concrete Slab", href: "/calculators/concrete/slab" as Route },
+  { label: "Wall Studs", href: "/calculators/framing/wall-studs" as Route },
+  { label: "Roof Pitch", href: "/calculators/roofing/pitch-slope" as Route },
+  { label: "Labor Rate", href: "/calculators/business/labor-rate" as Route },
+  {
+    label: "Profit Margin",
+    href: "/calculators/business/profit-margin" as Route,
+  },
+  {
+    label: "Shingle Bundles",
+    href: "/calculators/roofing/shingle-bundles" as Route,
+  },
+];
+
+const PRO_TIPS = [
+  {
+    tip: "Always add 10–15% waste factor to material takeoffs — especially on non-rectangular slabs and irregular roof planes.",
+    href: routes.fieldNotes,
+  },
+  {
+    tip: "Lock your labor rate before building an estimate. Start with Field Notes → Labor Rate to set a solid floor.",
+    href: routes.fieldNotes,
+  },
+  {
+    tip: "Send estimates as soon as they're ready — signed estimates start at 'Sent', not 'Draft'.",
+    href: routes.guide,
+  },
+];
+
 export default function CommandCenterLiteClient({
   businessName,
   joinCode,
@@ -99,11 +132,23 @@ export default function CommandCenterLiteClient({
     [recentEstimates],
   );
 
+  const sentCount = useMemo(
+    () =>
+      recentEstimates.filter(
+        (estimate) =>
+          estimate.status === "PENDING" || estimate.status === "Sent",
+      ).length,
+    [recentEstimates],
+  );
+
   const draftCount = useMemo(
     () =>
       recentEstimates.filter(
         (estimate) =>
-          estimate.status !== "SIGNED" && estimate.status !== "Approved",
+          estimate.status !== "SIGNED" &&
+          estimate.status !== "Approved" &&
+          estimate.status !== "PENDING" &&
+          estimate.status !== "Sent",
       ).length,
     [recentEstimates],
   );
@@ -183,7 +228,7 @@ export default function CommandCenterLiteClient({
 
           <div className="flex flex-wrap gap-2">
             <Link
-              href={`${routes.commandCenter}?mode=draft`}
+              href={routes.newEstimate}
               prefetch={false}
               className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-orange-600 px-4 py-2 text-xs font-black uppercase tracking-[0.1em] text-white transition hover:bg-orange-700"
             >
@@ -193,9 +238,26 @@ export default function CommandCenterLiteClient({
             <Link
               href={routes.calculators}
               prefetch={false}
-              className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-slate-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em] text-slate-700 transition hover:border-orange-400 hover:text-orange-700"
+              className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-orange-400 hover:text-orange-700"
             >
-              Open calculators
+              <Calculator className="h-3.5 w-3.5" aria-hidden />
+              Calculators
+            </Link>
+            <Link
+              href={routes.pricebook}
+              prefetch={false}
+              className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-orange-400 hover:text-orange-700"
+            >
+              <ClipboardList className="h-3.5 w-3.5" aria-hidden />
+              Price Book
+            </Link>
+            <Link
+              href={routes.fieldNotes}
+              prefetch={false}
+              className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-orange-400 hover:text-orange-700"
+            >
+              <BookOpen className="h-3.5 w-3.5" aria-hidden />
+              Field Notes
             </Link>
           </div>
         </div>
@@ -211,10 +273,10 @@ export default function CommandCenterLiteClient({
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <article className="rounded-2xl border border-slate-300 bg-white px-4 py-3 shadow-sm">
           <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
-            Team
+            Total Estimates
           </p>
           <p className="mt-1 text-2xl font-black text-slate-900">
-            {initialMembers.length}
+            {recentEstimates.length}
           </p>
         </article>
         <article className="rounded-2xl border border-slate-300 bg-white px-4 py-3 shadow-sm">
@@ -227,18 +289,16 @@ export default function CommandCenterLiteClient({
         </article>
         <article className="rounded-2xl border border-slate-300 bg-white px-4 py-3 shadow-sm">
           <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
-            Draft / Sent
+            Sent
           </p>
-          <p className="mt-1 text-2xl font-black text-orange-700">
-            {draftCount}
-          </p>
+          <p className="mt-1 text-2xl font-black text-blue-700">{sentCount}</p>
         </article>
         <article className="rounded-2xl border border-slate-300 bg-white px-4 py-3 shadow-sm">
           <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
-            Role
+            Drafts
           </p>
-          <p className="mt-1 text-xl font-black text-slate-900">
-            {formatRole(userRole)}
+          <p className="mt-1 text-2xl font-black text-orange-700">
+            {draftCount}
           </p>
         </article>
       </div>
@@ -342,15 +402,32 @@ export default function CommandCenterLiteClient({
         </div>
 
         {recentEstimates.length === 0 ? (
-          <p className="mt-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-3 py-3 text-sm text-slate-600">
-            No estimates yet. Start from Calculators and save your first draft.
-          </p>
+          <div className="mt-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center">
+            <FileText
+              className="mx-auto mb-2 h-8 w-8 text-slate-300"
+              aria-hidden
+            />
+            <p className="text-sm font-semibold text-slate-700">
+              No estimates yet
+            </p>
+            <p className="mt-1 text-xs text-slate-500">
+              Open a calculator, run the numbers, and save your first draft.
+            </p>
+            <Link
+              href={routes.newEstimate}
+              prefetch={false}
+              className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-orange-600 px-4 py-2 text-xs font-bold text-white transition hover:bg-orange-700"
+            >
+              <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+              Start First Estimate
+            </Link>
+          </div>
         ) : (
           <div className="mt-3 grid gap-2 md:grid-cols-2 xl:grid-cols-3">
             {recentEstimates.slice(0, 6).map((estimate) => (
               <Link
                 key={estimate.id}
-                href={`${routes.saved}?id=${estimate.id}`}
+                href={getEstimateDetailRoute(estimate.id)}
                 prefetch={false}
                 className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 transition hover:border-orange-300 hover:bg-orange-50"
               >
@@ -361,6 +438,16 @@ export default function CommandCenterLiteClient({
                     </p>
                     <p className="truncate text-[11px] text-slate-600">
                       {estimate.clientName || "No client"}
+                    </p>
+                    <p className="mt-0.5 text-[10px] text-slate-400">
+                      {new Date(estimate.updatedAt).toLocaleDateString(
+                        "en-US",
+                        {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        },
+                      )}
                     </p>
                   </div>
                   <span
@@ -373,6 +460,63 @@ export default function CommandCenterLiteClient({
             ))}
           </div>
         )}
+      </article>
+
+      {/* Popular Calculators */}
+      <article className="rounded-2xl border border-slate-300 bg-white px-4 py-4 shadow-sm sm:px-5">
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-600">
+            Popular Calculators
+          </p>
+          <Link
+            href={routes.calculators}
+            prefetch={false}
+            className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500 transition hover:text-orange-700"
+          >
+            View all
+          </Link>
+        </div>
+        <div className="mt-2.5 grid grid-cols-2 gap-2 sm:grid-cols-3">
+          {POPULAR_CALCULATORS.map((calc) => (
+            <Link
+              key={calc.label}
+              href={calc.href}
+              prefetch={false}
+              className="flex items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-semibold text-slate-700 transition hover:border-orange-300 hover:bg-orange-50 hover:text-orange-700"
+            >
+              {calc.label}
+              <ChevronRight
+                className="h-3.5 w-3.5 shrink-0 text-slate-400"
+                aria-hidden
+              />
+            </Link>
+          ))}
+        </div>
+      </article>
+
+      {/* Pro Tips */}
+      <article className="rounded-2xl border border-slate-300 bg-white px-4 py-4 shadow-sm sm:px-5">
+        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-600">
+          Pro Tips
+        </p>
+        <div className="mt-2.5 space-y-2">
+          {PRO_TIPS.map((item, i) => (
+            <Link
+              key={i}
+              href={item.href}
+              prefetch={false}
+              className="flex gap-2.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 transition hover:border-orange-300 hover:bg-orange-50"
+            >
+              <Lightbulb
+                className="mt-0.5 h-4 w-4 shrink-0 text-orange-500"
+                aria-hidden
+              />
+              <p className="text-xs leading-relaxed text-slate-700">
+                {item.tip}
+              </p>
+            </Link>
+          ))}
+        </div>
       </article>
     </section>
   );
