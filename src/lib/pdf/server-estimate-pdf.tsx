@@ -131,7 +131,14 @@ const styles = StyleSheet.create({
 });
 
 function toDisplayValue(value: string | number) {
-  return typeof value === "number" ? value.toFixed(2) : String(value);
+  if (typeof value === "number") {
+    return (Math.round(value * 100) / 100).toFixed(2);
+  }
+  const parsed = parseFloat(value);
+  if (!isNaN(parsed)) {
+    return (Math.round(parsed * 100) / 100).toFixed(2);
+  }
+  return String(value);
 }
 
 function EstimateDocument(payload: EstimatePdfPayload) {

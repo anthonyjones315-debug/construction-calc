@@ -216,18 +216,21 @@ export async function POST(req: NextRequest) {
     revalidateTag(getSavedEstimatesTag(tenantId), "max");
     revalidateTag(getEstimateTag(data.id), "max");
 
-    const posthog = getPostHogClient();
-    posthog.capture({
-      distinctId: session.user.id,
-      event: "estimate_saved",
-      properties: {
-        estimate_id: data.id,
-        calculator_id: body.calculator_id ?? "unknown",
-        has_client: Boolean(body.client_name),
-        status: body.status ?? "Draft",
-      },
-    });
-    await posthog.shutdown();
+    // Fire analytics without blocking the response
+    try {
+      const posthog = getPostHogClient();
+      posthog.capture({
+        distinctId: session.user.id,
+        event: "estimate_saved",
+        properties: {
+          estimate_id: data.id,
+          calculator_id: body.calculator_id ?? "unknown",
+          has_client: Boolean(body.client_name),
+          status: body.status ?? "Draft",
+        },
+      });
+      posthog.shutdown().catch(() => {});
+    } catch {}
 
     return NextResponse.json({
       ok: true,

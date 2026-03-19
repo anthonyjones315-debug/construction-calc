@@ -250,7 +250,7 @@ export async function POST(request: NextRequest) {
         client_emailed: Boolean(clientEmail && signUrl),
       },
     });
-    await posthog.shutdown();
+    posthog.shutdown().catch(() => {});
 
     return NextResponse.json({
       ok: true,

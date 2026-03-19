@@ -27,8 +27,13 @@ export const EstimateSignaturePad = forwardRef<
 
   useImperativeHandle(ref, () => ({
     isEmpty: () => canvasRef.current?.isEmpty() ?? true,
-    getDataUrl: () =>
-      canvasRef.current?.getTrimmedCanvas().toDataURL("image/png") ?? "",
+    getDataUrl: () => {
+      const canvas = canvasRef.current?.getTrimmedCanvas();
+      if (!canvas) return "";
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      void ctx; // ensure context is created with the attribute
+      return canvas.toDataURL("image/png");
+    },
     clear: () => canvasRef.current?.clear(),
   }));
 

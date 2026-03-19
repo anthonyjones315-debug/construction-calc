@@ -130,14 +130,17 @@ export async function POST(request: NextRequest) {
 
     const pdfBuffer = await browserlessResponse.arrayBuffer();
 
+    // Fire analytics without blocking the response
     if (session.user.id) {
-      const posthog = getPostHogClient();
-      posthog.capture({
-        distinctId: session.user.id,
-        event: "pdf_generated",
-        properties: { calculator_id: payload.calculator_id },
-      });
-      await posthog.shutdown();
+      try {
+        const posthog = getPostHogClient();
+        posthog.capture({
+          distinctId: session.user.id,
+          event: "pdf_generated",
+          properties: { calculator_id: payload.calculator_id },
+        });
+        posthog.shutdown().catch(() => {});
+      } catch {}
     }
 
     return new NextResponse(pdfBuffer, {

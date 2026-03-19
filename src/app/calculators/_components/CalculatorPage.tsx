@@ -463,7 +463,8 @@ const tradeModuleGroups: TradeModuleGroup[] = [
 ];
 
 function clampValue(value: number, min: number, max: number) {
-  return Math.min(max, Math.max(min, value));
+  const n = Number.isFinite(value) ? value : min;
+  return Math.min(max, Math.max(min, n));
 }
 
 const MAX_WASTE_FACTOR = 30;

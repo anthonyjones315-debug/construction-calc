@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2, Download, ExternalLink, Loader2 } from "lucide-react";
+import { CheckCircle2, Copy, Download, ExternalLink, Loader2 } from "lucide-react";
 
 interface EstimateDetailProps {
   estimate: {
@@ -57,6 +57,7 @@ function formatDollars(n: number) {
 
 export function EstimateDetailClient({ estimate }: EstimateDetailProps) {
   const [downloadingPdf, setDownloadingPdf] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
 
   const isSigned =
     estimate.status === "SIGNED" || estimate.status === "Approved";
@@ -71,7 +72,7 @@ export function EstimateDetailClient({ estimate }: EstimateDetailProps) {
         estimate.lineItems.length > 0
           ? estimate.lineItems.map((item) => ({
               label: item.description || "Item",
-              value: item.quantity * item.unitPrice,
+              value: Math.round(item.quantity * item.unitPrice * 100) / 100,
               unit: item.unit || "ea",
             }))
           : estimate.results;
@@ -80,7 +81,7 @@ export function EstimateDetailClient({ estimate }: EstimateDetailProps) {
         estimate.lineItems.length > 0
           ? estimate.lineItems.map(
               (item) =>
-                `${item.description} — ${item.quantity} ${item.unit} × $${item.unitPrice.toFixed(2)} = $${(item.quantity * item.unitPrice).toFixed(2)}`,
+                `${item.description} — ${item.quantity} ${item.unit} × $${item.unitPrice.toFixed(2)} = $${(Math.round(item.quantity * item.unitPrice * 100) / 100).toFixed(2)}`,
             )
           : estimate.materialList;
 
@@ -201,15 +202,33 @@ export function EstimateDetailClient({ estimate }: EstimateDetailProps) {
           </button>
 
           {estimate.signUrl && !isSigned && (
-            <a
-              href={estimate.signUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-xs font-bold uppercase tracking-[0.08em] text-slate-700 transition hover:border-orange-300 hover:text-orange-700"
-            >
-              <ExternalLink className="h-4 w-4" />
-              Client Signing Link
-            </a>
+            <>
+              <a
+                href={estimate.signUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-xs font-bold uppercase tracking-[0.08em] text-slate-700 transition hover:border-orange-300 hover:text-orange-700"
+              >
+                <ExternalLink className="h-4 w-4" />
+                Open Signing Link
+              </a>
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard.writeText(estimate.signUrl!);
+                  setCopiedLink(true);
+                  setTimeout(() => setCopiedLink(false), 2000);
+                }}
+                className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-xs font-bold uppercase tracking-[0.08em] text-slate-700 transition hover:border-orange-300 hover:text-orange-700"
+              >
+                {copiedLink ? (
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                ) : (
+                  <Copy className="h-4 w-4" />
+                )}
+                {copiedLink ? "Copied!" : "Copy Link"}
+              </button>
+            </>
           )}
         </div>
       </article>

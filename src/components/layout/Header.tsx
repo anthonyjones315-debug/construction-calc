@@ -16,7 +16,6 @@ import { primaryNavigation, routes } from "@routes";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import { useClickOutside } from "@/hooks/useClickOutside";
 import { useStore } from "@/lib/store";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 export function Header() {
   const pathname = usePathname();
@@ -114,20 +113,20 @@ export function Header() {
   return (
     <header ref={headerRef} className="site-header-shell sticky top-0 z-50">
       <div className="mx-auto flex h-[--shell-header-h] max-w-7xl items-center justify-between gap-1 px-2.5 sm:gap-2 sm:px-3">
-        {/* Logo — P brand: always to Command Center dashboard */}
+        {/* Logo */}
         <Link
           href={brandHref}
           prefetch={false}
-          className="flex shrink-0 items-center gap-1 text-xs font-display font-black tracking-wide text-copy-primary transition-colors hover:text-primary sm:text-base"
+          className="flex shrink-0 items-center gap-1 text-xs font-display font-black tracking-wide text-slate-900 transition-colors hover:text-orange-600 sm:text-base"
           aria-label="Pro Construction Calc - Command Center"
         >
           <HardHat
-            className="h-4 w-4 text-orange-500 sm:h-[18px] sm:w-[18px]"
+            className="h-4 w-4 text-orange-600 sm:h-[18px] sm:w-[18px]"
             aria-hidden
           />
           <span className="hidden sm:block">Pro Construction Calc</span>
           <span className="sm:hidden">PC</span>
-          <span className="ml-1 rounded-full border border-orange-500/40 bg-orange-500/10 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-[0.14em] text-orange-400">
+          <span className="ml-1 rounded-full border border-orange-400/40 bg-orange-50 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-[0.14em] text-orange-600">
             Beta
           </span>
         </Link>
@@ -142,35 +141,35 @@ export function Header() {
               key={href}
               href={href}
               prefetch={false}
-              className="flex min-h-7 items-center rounded-lg px-2 py-1 text-[11px] transition-colors hover:text-primary"
+              className="flex min-h-7 items-center rounded-lg px-2 py-1 text-[11px] text-slate-700 transition-colors hover:text-orange-600"
             >
               {label}
             </Link>
           ))}
         </nav>
 
-        {/* Right side: command shortcut + offline badge + auth + mobile hamburger */}
+        {/* Right side */}
         <div className="flex items-center gap-1.5 sm:gap-2">
-          <ThemeToggle />
-          {/* Mobile-friendly quick jump into Command Center */}
+          {/* Command Center quick link */}
           <Link
             href={commandCenterHref}
             prefetch={false}
             className={`inline-flex h-7 min-w-[84px] items-center justify-center rounded-full border px-2 text-[9px] font-black uppercase tracking-[0.16em] ${
               isCommandCenterActive
-                ? "border-orange-500 bg-orange-600/20 text-orange-300"
-                : "border-slate-700 bg-slate-900/70 text-slate-200 hover:border-orange-500 hover:text-orange-300"
+                ? "border-orange-400 bg-orange-50 text-orange-700"
+                : "border-slate-300 bg-white text-slate-700 hover:border-orange-400 hover:text-orange-600"
             } hidden xs:inline-flex sm:hidden`}
             aria-label="Open Command Center dashboard"
           >
             <LayoutDashboard className="mr-1 h-3 w-3" aria-hidden />
             Command
           </Link>
-          {/* Estimate queue quick access: keeps estimate-to-invoice flow one tap away. */}
+
+          {/* Estimate queue */}
           <Link
             href={routes.cart}
             prefetch={false}
-            className="inline-flex min-h-7 items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.14em] text-copy-primary transition hover:border-orange-400/60 hover:text-primary sm:px-2.5"
+            className="inline-flex min-h-7 items-center gap-1 rounded-full border border-slate-300 bg-white px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.14em] text-slate-700 transition hover:border-orange-400 hover:text-orange-600 sm:px-2.5"
             aria-label={`Estimate queue ${estimateCount} item${estimateCount === 1 ? "" : "s"}`}
           >
             <ClipboardList className="h-3.5 w-3.5" aria-hidden />
@@ -179,9 +178,10 @@ export function Header() {
               {estimateCount}
             </span>
           </Link>
-          {/* Hydration-safe offline badge: render a placeholder until mounted. */}
+
+          {/* Offline badge */}
           <span
-            className={`rounded-full border border-slate-600 bg-slate-800/80 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400 ${
+            className={`rounded-full border border-slate-300 bg-white px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500 ${
               isMounted && !online ? "" : "invisible"
             }`}
             aria-live="polite"
@@ -189,16 +189,17 @@ export function Header() {
           >
             Offline
           </span>
+
           {/* Auth area */}
           {!isMounted ? (
-            <div className="h-7 w-7 rounded-full bg-slate-800 animate-pulse" />
+            <div className="h-7 w-7 rounded-full bg-slate-200 animate-pulse" />
           ) : status === "loading" ? (
-            <div className="h-7 w-7 rounded-full bg-slate-700 animate-pulse" />
+            <div className="h-7 w-7 rounded-full bg-slate-200 animate-pulse" />
           ) : session ? (
             <div className="relative" ref={menuRef}>
               <button
                 onClick={() => setMenuOpen((o) => !o)}
-                className="flex items-center gap-1 rounded-full text-sm text-copy-secondary transition-colors hover:text-copy-primary"
+                className="flex items-center gap-1 rounded-full text-sm text-slate-600 transition-colors hover:text-slate-900"
                 aria-expanded={menuOpen}
                 aria-haspopup="true"
                 aria-controls="account-menu"
@@ -208,11 +209,11 @@ export function Header() {
                   <img
                     src={session.user.image}
                     alt={`${session.user?.name ?? "User"} profile picture`}
-                    className="h-7 w-7 rounded-full border border-slate-700 object-cover"
+                    className="h-7 w-7 rounded-full border border-slate-200 object-cover"
                     referrerPolicy="no-referrer"
                   />
                 ) : (
-                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[--color-orange-brand] text-[10px] font-display font-black tracking-wide text-white">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-orange-600 text-[10px] font-display font-black tracking-wide text-white">
                     {userInitials}
                   </div>
                 )}
@@ -222,20 +223,20 @@ export function Header() {
               {menuOpen && (
                 <div
                   id="account-menu"
-                  className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 text-slate-100 shadow-[0_18px_40px_rgba(0,0,0,0.42)]"
+                  className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-2xl border border-slate-200 bg-white text-slate-900 shadow-[0_8px_24px_rgba(0,0,0,0.12)]"
                   role="menu"
                   aria-label="Account menu"
                 >
-                  <div className="border-b border-slate-800 px-4 py-3">
+                  <div className="border-b border-slate-100 px-4 py-3">
                     <p className="text-xs uppercase tracking-[0.12em] text-slate-400">
                       Signed in as
                     </p>
-                    <p className="truncate text-sm font-medium text-slate-100">
+                    <p className="truncate text-sm font-medium text-slate-900">
                       {businessName?.trim() ||
                         session.user?.name ||
                         "Pro Account"}
                     </p>
-                    <p className="truncate text-xs text-slate-400">
+                    <p className="truncate text-xs text-slate-500">
                       {session.user?.email}
                     </p>
                   </div>
@@ -243,13 +244,10 @@ export function Header() {
                     href={routes.settings}
                     prefetch={false}
                     role="menuitem"
-                    className="flex items-center gap-2 px-4 py-2 text-sm text-slate-200 transition-colors hover:bg-slate-800 hover:text-orange-500"
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 transition-colors hover:bg-orange-50 hover:text-orange-600"
                     onClick={() => setMenuOpen(false)}
                   >
-                    <span
-                      className="w-4 text-center text-slate-300"
-                      aria-hidden
-                    >
+                    <span className="w-4 text-center text-slate-400" aria-hidden>
                       ⚙
                     </span>
                     Business Profile
@@ -258,13 +256,10 @@ export function Header() {
                     href={routes.commandCenter}
                     prefetch={false}
                     role="menuitem"
-                    className="flex items-center gap-2 px-4 py-2 text-sm text-slate-200 transition-colors hover:bg-slate-800 hover:text-orange-500"
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 transition-colors hover:bg-orange-50 hover:text-orange-600"
                     onClick={() => setMenuOpen(false)}
                   >
-                    <span
-                      className="w-4 text-center text-slate-300"
-                      aria-hidden
-                    >
+                    <span className="w-4 text-center text-slate-400" aria-hidden>
                       🏠
                     </span>
                     Command Center
@@ -273,13 +268,10 @@ export function Header() {
                     href={routes.saved}
                     prefetch={false}
                     role="menuitem"
-                    className="flex items-center gap-2 px-4 py-2 text-sm text-slate-200 transition-colors hover:bg-slate-800 hover:text-orange-500"
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 transition-colors hover:bg-orange-50 hover:text-orange-600"
                     onClick={() => setMenuOpen(false)}
                   >
-                    <span
-                      className="w-4 text-center text-slate-300"
-                      aria-hidden
-                    >
+                    <span className="w-4 text-center text-slate-400" aria-hidden>
                       ▣
                     </span>
                     My Estimates
@@ -289,10 +281,10 @@ export function Header() {
                       signOut();
                       setMenuOpen(false);
                     }}
-                    className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-300 transition-colors hover:bg-red-500/10 hover:text-red-200"
+                    className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 transition-colors hover:bg-red-50 hover:text-red-700"
                     role="menuitem"
                   >
-                    <LogOut className="w-4 h-4 text-red-300" aria-hidden />
+                    <LogOut className="w-4 h-4 text-red-500" aria-hidden />
                     Sign Out
                   </button>
                 </div>
@@ -302,7 +294,7 @@ export function Header() {
             <Link
               href={routes.auth.signIn}
               prefetch={false}
-              className="btn-tactile flex min-h-7 items-center rounded-lg bg-orange-700 px-2.5 text-[11px] font-black uppercase text-white transition-all duration-200 hover:bg-orange-800 active:scale-[0.98]"
+              className="btn-tactile flex min-h-7 items-center rounded-lg bg-orange-600 px-2.5 text-[11px] font-black uppercase text-white transition-all duration-200 hover:bg-orange-700 active:scale-[0.98]"
               aria-label="Sign in to your Estimating Cockpit"
             >
               Sign In
@@ -311,7 +303,7 @@ export function Header() {
 
           {/* Mobile hamburger */}
           <button
-            className="btn-tactile flex h-8 min-h-8 w-8 items-center justify-center rounded-lg text-slate-300 transition-all duration-200 hover:bg-slate-800 hover:text-white active:scale-[0.98] md:hidden"
+            className="btn-tactile flex h-8 min-h-8 w-8 items-center justify-center rounded-lg text-slate-600 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900 active:scale-[0.98] md:hidden"
             onClick={() => setMobileNavOpen((o) => !o)}
             aria-expanded={mobileNavOpen}
             aria-controls="mobile-navigation"
@@ -330,7 +322,7 @@ export function Header() {
       {mobileNavOpen && (
         <nav
           id="mobile-navigation"
-          className="flex flex-col gap-1 border-t border-slate-800 bg-slate-900 px-4 py-2 md:hidden"
+          className="flex flex-col gap-1 border-t border-slate-200 bg-white px-4 py-2 md:hidden"
           aria-label="Mobile navigation"
         >
           {session && (
@@ -338,15 +330,15 @@ export function Header() {
               href={routes.commandCenter}
               prefetch={false}
               onClick={() => setMobileNavOpen(false)}
-              className={`flex min-h-9 items-center gap-2 rounded-lg px-4 py-1.5 text-sm transition-colors hover:bg-slate-800 hover:text-orange-500 ${
+              className={`flex min-h-9 items-center gap-2 rounded-lg px-4 py-1.5 text-sm transition-colors hover:bg-orange-50 hover:text-orange-600 ${
                 isCommandCenterActive
                   ? "text-orange-600 font-bold"
-                  : "text-slate-200"
+                  : "text-slate-700"
               }`}
             >
               <LayoutDashboard
                 className={`h-4 w-4 shrink-0 ${
-                  isCommandCenterActive ? "text-orange-600" : "text-slate-300"
+                  isCommandCenterActive ? "text-orange-600" : "text-slate-400"
                 }`}
                 aria-hidden
               />
@@ -359,7 +351,7 @@ export function Header() {
               href={href}
               prefetch={false}
               onClick={() => setMobileNavOpen(false)}
-              className="flex min-h-9 items-center rounded-lg px-4 py-1.5 text-sm text-slate-200 transition-colors hover:bg-slate-800 hover:text-orange-500"
+              className="flex min-h-9 items-center rounded-lg px-4 py-1.5 text-sm text-slate-700 transition-colors hover:bg-orange-50 hover:text-orange-600"
             >
               {label}
             </Link>
@@ -368,12 +360,9 @@ export function Header() {
             href={routes.cart}
             prefetch={false}
             onClick={() => setMobileNavOpen(false)}
-            className="flex min-h-9 items-center rounded-lg px-4 py-1.5 text-sm text-slate-200 transition-colors hover:bg-slate-800 hover:text-orange-500"
+            className="flex min-h-9 items-center rounded-lg px-4 py-1.5 text-sm text-slate-700 transition-colors hover:bg-orange-50 hover:text-orange-600"
           >
-            <ClipboardList
-              className="h-4 w-4 mr-2 text-slate-300"
-              aria-hidden
-            />
+            <ClipboardList className="h-4 w-4 mr-2 text-slate-400" aria-hidden />
             Estimates ({estimateCount})
           </Link>
         </nav>

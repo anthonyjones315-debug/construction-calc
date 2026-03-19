@@ -119,7 +119,7 @@ function serializeForSave(state: EstimateFormState, totals: EstimateTotals) {
     status: "Draft" as const,
     results: state.lineItems.map((item) => ({
       label: item.description || "Item",
-      value: item.quantity * item.unitPrice,
+      value: Math.round(item.quantity * item.unitPrice * 100) / 100,
       unit: item.unit || "ea",
     })),
     inputs: {
@@ -158,11 +158,11 @@ function serializeForFinalize(
     total_cost: totals.totalCents / 100,
     results: state.lineItems.map((item) => ({
       label: item.description || "Item",
-      value: item.quantity * item.unitPrice,
+      value: Math.round(item.quantity * item.unitPrice * 100) / 100,
       unit: item.unit || "ea",
     })),
     material_list: state.lineItems.map((item) => {
-      const lineTotal = (item.quantity * item.unitPrice).toFixed(2);
+      const lineTotal = (Math.round(item.quantity * item.unitPrice * 100) / 100).toFixed(2);
       return `${item.description} — ${item.quantity} ${item.unit} × $${item.unitPrice.toFixed(2)} = $${lineTotal}`;
     }),
     inputs: {
@@ -254,6 +254,31 @@ export function useEstimateForm(
     setSaving(true);
     setError(null);
     try {
+      // If we already saved this estimate, update instead of creating a duplicate
+      if (savedId) {
+        const payload = serializeForSave(state, totals);
+        const res = await fetch(`/api/estimates/${savedId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: payload.name,
+            total_cost: payload.total_cost,
+            client_name: payload.client_name,
+            job_site_address: payload.job_site_address,
+            status: payload.status,
+            budget_items: payload.budget_items,
+            inputs: payload.inputs,
+          }),
+        });
+        const json = (await res.json()) as { ok?: boolean; error?: string };
+        if (!res.ok || !json.ok) {
+          setError(json.error ?? "Failed to update draft.");
+          return null;
+        }
+        flashSuccess("Draft updated.");
+        return { id: savedId };
+      }
+
       const payload = serializeForSave(state, totals);
       const res = await fetch("/api/estimates/save", {
         method: "POST",
@@ -278,7 +303,7 @@ export function useEstimateForm(
     } finally {
       setSaving(false);
     }
-  }, [state, totals]);
+  }, [state, totals, savedId]);
 
   const finalize = useCallback(
     async (

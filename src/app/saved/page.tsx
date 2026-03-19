@@ -23,7 +23,7 @@ export default async function SavedPage() {
       ];
 
   return (
-    <div className="min-h-dvh grid grid-rows-[auto_1fr_auto] bg-slate-950 text-slate-100">
+    <div className="min-h-dvh grid grid-rows-[auto_1fr_auto] bg-[#f6f4ef] text-slate-900">
       <Header />
       <main className="row-start-2 overflow-hidden">
         <div className="h-full overflow-hidden px-4 py-6 sm:px-6">

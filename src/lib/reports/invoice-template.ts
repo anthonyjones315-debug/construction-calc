@@ -1,5 +1,6 @@
 /**
- * Generate white-labeled invoice HTML with Tailwind CSS CDN integration
+ * Professional estimate PDF template
+ * Clean, white-background design inspired by Jobber / HousecallPro
  * Optimized for Browserless.io PDF rendering
  */
 
@@ -12,48 +13,26 @@ type InvoiceTemplateInput = {
   contractorLogoUrl: string | null;
 };
 
-/**
- * Design tokens implementing the Liquid Orange Glass design system
- * Colors, shadows, and effects for the premium glass header
- */
-const BRAND_COLORS = {
-  primary: "#FF7A00", // Safety Orange base
-  primaryLight: "#ff9433", // Light highlight
-  primaryDark: "#cc5800", // Dark shade
-  primaryGlow: "rgb(255 122 0 / 0.3)", // Glow effect
-  primaryRim: "rgb(255 143 31 / 0.8)", // Rim light effect
-  surface: {
-    light: "#ffffff",
-    dark: "rgba(2, 6, 23, 0.95)", // Deepest background
-    base: "rgba(15, 23, 42, 0.85)", // Primary surface
-    elevated: "rgba(30, 41, 59, 0.75)", // Elevated surface
-    frost: "rgba(255, 255, 255, 0.08)", // Frosted overlay
-  },
-  border: {
-    primary: "rgba(255, 255, 255, 0.08)", // Glass container border
-    elevated: "rgba(255, 255, 255, 0.12)", // Elevated container border
-    accent: "rgb(255 122 0 / 0.3)", // Orange-tinted border
-  },
-  text: {
-    primary: "rgba(255, 255, 255, 0.95)", // Primary text
-    secondary: "rgba(255, 255, 255, 0.8)", // Secondary text
-    tertiary: "rgba(255, 255, 255, 0.6)", // Tertiary/hint text
-    accent: "rgba(255, 153, 51, 1)", // Orange accent (primaryLight)
-  },
-  shadow: {
-    glassSm:
-      "0 2px 8px 0 rgba(0, 0, 0, 0.08), inset 0 0 0 1px rgba(255, 255, 255, 0.03)",
-    glassMd:
-      "0 8px 16px 0 rgba(0, 0, 0, 0.12), inset 0 0 0 1px rgba(255, 255, 255, 0.04)",
-    glassLg:
-      "0 16px 24px 0 rgba(0, 0, 0, 0.16), inset 0 0 0 1px rgba(255, 255, 255, 0.05)",
-    glow: "0 0 12px rgba(255, 122, 0, 0.3)", // Orange glow
-    textGlow: "0 0 0.8px rgba(255, 143, 31, 0.8)", // Text glow
-  },
-} as const;
+/** Safely format a number to 2 decimal places, avoiding floating point display errors */
+function safeNumber(value: string | number): string {
+  if (typeof value === "number") {
+    return (Math.round(value * 100) / 100).toFixed(2);
+  }
+  const parsed = parseFloat(value);
+  if (!isNaN(parsed)) {
+    return (Math.round(parsed * 100) / 100).toFixed(2);
+  }
+  return value;
+}
 
-const GLASS_HEADER_GRADIENT = `linear-gradient(to bottom, rgb(255 143 31 / 0.15), rgba(2, 6, 23, 0.85))`;
-const RIM_LINE_GRADIENT = `linear-gradient(to right, rgb(255 122 0 / 0), ${BRAND_COLORS.primaryRim}, rgb(255 122 0 / 0))`;
+function formatCurrency(value: number): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(Math.round(value * 100) / 100);
+}
 
 export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
   const { payload, contractorName, contractorContact, contractorLogoUrl } =
@@ -66,7 +45,10 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
       ? payload.metadata.jobName
       : payload.name;
   const calculatorLabel = payload.metadata.calculatorLabel;
-  const generatedAt = payload.metadata.generatedAt;
+  const generatedAt = new Date(payload.metadata.generatedAt).toLocaleDateString(
+    "en-US",
+    { year: "numeric", month: "long", day: "numeric" },
+  );
   const clientName = payload.client_name ?? "";
   const jobAddress = payload.job_site_address ?? "";
   const materialList =
@@ -74,39 +56,88 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
       ? payload.material_list
       : [];
 
-  const primaryResult = payload.results[0];
-
   const dollars =
     typeof payload.total_cost === "number"
-      ? new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD",
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        }).format(payload.total_cost)
+      ? formatCurrency(payload.total_cost)
       : null;
 
-  const resultsRows = payload.results
-    .map(
-      (row: EstimateResult) => `
-      <tr class="border-b border-white/10">
-        <td class="px-3 py-2 text-sm text-white">${row.label}</td>
-        <td class="px-3 py-2 text-sm text-right font-mono text-white">
-          ${row.value} ${row.unit ?? ""}
-        </td>
-      </tr>`,
-    )
-    .join("");
+  // Build line items from budget_items (stored in inputs.line_items) if available
+  const inputs = payload.inputs as Record<string, unknown> | undefined;
+  const rawLineItems = inputs?.line_items;
+  const budgetItems: Record<string, unknown>[] = Array.isArray(rawLineItems) ? rawLineItems : [];
+  const hasBudgetItems = budgetItems.length > 0;
 
-  const materialsRows = materialList
-    .map(
-      (line: string) => `
-      <li class="flex items-start gap-2 text-sm text-white">
-        <span class="mt-1 h-1.5 w-1.5 rounded-full bg-orange-400 shadow-orange-glow"></span>
-        <span>${line}</span>
-      </li>`,
-    )
-    .join("");
+  const lineItemRows = hasBudgetItems
+    ? budgetItems
+        .map((item: Record<string, unknown>) => {
+          const desc = String(item.name ?? item.description ?? "Item");
+          const qty = Number(item.quantity ?? 1);
+          const unit = String(item.unit ?? "ea");
+          const price = Number(item.pricePerUnit ?? item.unitPrice ?? 0);
+          const total = qty * price;
+          return `
+          <tr>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; color: #111827; font-size: 13px;">${desc}</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: center; color: #374151; font-size: 13px;">${qty}</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: center; color: #6b7280; font-size: 13px;">${unit}</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: right; color: #374151; font-size: 13px;">${formatCurrency(price)}</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: 600; color: #111827; font-size: 13px;">${formatCurrency(total)}</td>
+          </tr>`;
+        })
+        .join("")
+    : payload.results
+        .map(
+          (row: EstimateResult) => `
+          <tr>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; color: #111827; font-size: 13px;">${row.label}</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: center; color: #374151; font-size: 13px;">1</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: center; color: #6b7280; font-size: 13px;">${row.unit ?? ""}</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: right; color: #374151; font-size: 13px;">${safeNumber(row.value)}</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: 600; color: #111827; font-size: 13px;">${safeNumber(row.value)}</td>
+          </tr>`,
+        )
+        .join("");
+
+  // Extract tax info from inputs if available
+  const subtotalCents = typeof inputs?.subtotal_cents === "number" ? inputs.subtotal_cents : null;
+  const taxCents = typeof inputs?.tax_cents === "number" ? inputs.tax_cents : null;
+  const totalCents = typeof inputs?.total_cents === "number" ? inputs.total_cents : null;
+
+  const hasBreakdown = subtotalCents !== null && totalCents !== null;
+  const subtotal = hasBreakdown ? formatCurrency(subtotalCents / 100) : null;
+  const tax = hasBreakdown && taxCents ? formatCurrency(taxCents / 100) : null;
+  const total = hasBreakdown ? formatCurrency(totalCents / 100) : dollars;
+
+  // Get tax label
+  const selectedCounty = inputs?.selected_county ?? inputs?.tax_county;
+  const taxLabel = selectedCounty
+    ? `Tax (${String(selectedCounty).charAt(0).toUpperCase() + String(selectedCounty).slice(1)} County)`
+    : "Tax";
+
+  // Control number
+  const controlNumber = inputs?.control_number ?? "";
+
+  // Contractor signature
+  const signature = payload.signature as
+    | { signatureDataUrl?: string; signedAt?: string; signerName?: string }
+    | undefined;
+
+  const materialsSection = materialList.length > 0
+    ? `
+      <div style="margin-top: 24px;">
+        <p style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin: 0 0 10px 0;">Material Breakdown</p>
+        <table style="width: 100%; border-collapse: collapse;">
+          ${materialList
+            .map(
+              (line: string) => `
+            <tr>
+              <td style="padding: 6px 0; border-bottom: 1px solid #f3f4f6; font-size: 12px; color: #374151;">${line}</td>
+            </tr>`,
+            )
+            .join("")}
+        </table>
+      </div>`
+    : "";
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -114,232 +145,160 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>${safeContractorName} — Estimate</title>
-    
-    <!-- Load Tailwind CSS from CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: ${JSON.stringify({ brand: BRAND_COLORS })},
-            backgroundImage: {
-              'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-              'glass-header': '${GLASS_HEADER_GRADIENT}'
-            },
-            boxShadow: {
-              'glass-sm': '0 2px 8px 0 rgba(0, 0, 0, 0.08), inset 0 0 0 1px rgba(255, 255, 255, 0.03)',
-              'glass-md': '0 8px 16px 0 rgba(0, 0, 0, 0.12), inset 0 0 0 1px rgba(255, 255, 255, 0.04)',
-              'glass-lg': '0 16px 24px 0 rgba(0, 0, 0, 0.16), inset 0 0 0 1px rgba(255, 255, 255, 0.05)',
-              'orange-glow': '0 0 12px ${BRAND_COLORS.primaryGlow}',
-              'text-glow': '0 0 0.8px rgba(255, 143, 31, 0.8)'
-            }
-          }
-        }
-      }
-    </script>
-
-    <!-- Font Loading -->
-    <script>
-      document.fonts.ready.then(function() {
-        // Add ready class when fonts are fully loaded
-        if (document.body.className.indexOf('ready') === -1) {
-          document.body.className += ' ready';
-        }
-      });
-    </script>
-    
-    <!-- Base Styles -->
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Oswald:wght@500;600;700&display=swap');
-      
-      :root {
-        --color-orange-base: ${BRAND_COLORS.primary};
-        --color-orange-light: ${BRAND_COLORS.primaryLight};
-        --color-orange-glow: ${BRAND_COLORS.primaryGlow};
-        --radius-xl: 0.75rem;
-        --radius-2xl: 1rem;
-      }
-      
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+
       html {
-        font-family: 'Inter', system-ui, sans-serif;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        font-size: 14px;
+        color: #111827;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
       }
-      
+
       body {
-        margin: 0;
+        background: #ffffff;
         padding: 0;
-        background: ${BRAND_COLORS.surface.dark};
-        color: ${BRAND_COLORS.text.primary};
       }
-      
-      .glass-header {
-        position: relative;
-        background: ${GLASS_HEADER_GRADIENT};
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: var(--radius-2xl);
-        box-shadow: ${BRAND_COLORS.shadow.glassMd}, ${BRAND_COLORS.shadow.glow};
-        overflow: hidden;
-      }
-      
-      .glass-header::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 2px;
-        background: ${RIM_LINE_GRADIENT};
-      }
-      
-      .text-glow {
-        text-shadow: ${BRAND_COLORS.shadow.textGlow};
-      }
-      
-      .glass-panel {
-        background: ${BRAND_COLORS.surface.base};
-        border: 1px solid ${BRAND_COLORS.border.primary};
-        border-radius: var(--radius-xl);
-        box-shadow: ${BRAND_COLORS.shadow.glassSm};
+
+      .page {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 32px 40px;
       }
     </style>
   </head>
-  <body class="min-h-screen text-slate-100" style="background: ${BRAND_COLORS.surface.dark}">
-    <div class="px-8 py-6">
-      <!-- Premium Glass Header with Contractor Info -->
-      <header class="glass-header p-6 mb-6">
-        <div class="flex items-start justify-between gap-4">
-          <div class="flex items-start gap-3">
-            ${
-              contractorLogoUrl
-                ? `<div class="h-12 w-12 overflow-hidden rounded-xl border border-white/10 bg-slate-900/70 backdrop-blur">
-                   <img src="${contractorLogoUrl}" alt="${safeContractorName} logo" class="h-full w-full object-contain" />
-                 </div>`
-                : `<div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-b from-orange-400 to-orange-600 text-sm font-extrabold tracking-[0.18em] text-slate-950 shadow-orange-glow">
-                   ${safeContractorName.charAt(0).toUpperCase() || "C"}
-                 </div>`
-            }
-            <div>
-              <h1 class="mt-0.5 text-xl font-extrabold text-white text-glow font-display" style="font-family: 'Oswald', sans-serif;">
-                ${safeContractorName}
-              </h1>
-              ${
-                contactLine
-                  ? `<p class="mt-0.5 text-xs text-white/80">${contactLine}</p>`
-                  : ""
-              }
+  <body>
+    <div class="page">
+      <!-- Header -->
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 20px; border-bottom: 3px solid #b85a10;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          ${
+            contractorLogoUrl
+              ? `<img src="${contractorLogoUrl}" alt="" style="width: 48px; height: 48px; border-radius: 8px; object-fit: contain; border: 1px solid #e5e7eb;" />`
+              : `<div style="width: 48px; height: 48px; border-radius: 8px; background: #b85a10; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 20px;">${safeContractorName.charAt(0).toUpperCase()}</div>`
+          }
+          <div>
+            <p style="font-size: 18px; font-weight: 800; color: #111827; line-height: 1.2;">${safeContractorName}</p>
+            ${contactLine ? `<p style="font-size: 12px; color: #6b7280; margin-top: 2px;">${contactLine}</p>` : ""}
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <p style="font-size: 22px; font-weight: 800; color: #b85a10; letter-spacing: -0.02em;">ESTIMATE</p>
+          ${controlNumber ? `<p style="font-size: 11px; color: #6b7280; margin-top: 2px;">${controlNumber}</p>` : ""}
+          <p style="font-size: 11px; color: #6b7280; margin-top: 2px;">${generatedAt}</p>
+        </div>
+      </div>
+
+      <!-- Client & Project Info -->
+      <div style="display: flex; gap: 24px; margin-top: 24px;">
+        <div style="flex: 1; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px;">
+          <p style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 6px;">Bill To</p>
+          <p style="font-size: 14px; font-weight: 700; color: #111827;">${clientName || "—"}</p>
+          ${jobAddress ? `<p style="font-size: 12px; color: #6b7280; margin-top: 4px;">${jobAddress}</p>` : ""}
+        </div>
+        <div style="flex: 1; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px;">
+          <p style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 6px;">Project</p>
+          <p style="font-size: 14px; font-weight: 700; color: #111827;">${jobName}</p>
+          <p style="font-size: 12px; color: #6b7280; margin-top: 4px;">${calculatorLabel}</p>
+        </div>
+      </div>
+
+      <!-- Line Items Table -->
+      <div style="margin-top: 28px;">
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr style="background: #f9fafb;">
+              <th style="padding: 10px 12px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #6b7280; border-bottom: 2px solid #e5e7eb;">Description</th>
+              <th style="padding: 10px 12px; text-align: center; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #6b7280; border-bottom: 2px solid #e5e7eb;">Qty</th>
+              <th style="padding: 10px 12px; text-align: center; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #6b7280; border-bottom: 2px solid #e5e7eb;">Unit</th>
+              <th style="padding: 10px 12px; text-align: right; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #6b7280; border-bottom: 2px solid #e5e7eb;">Rate</th>
+              <th style="padding: 10px 12px; text-align: right; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #6b7280; border-bottom: 2px solid #e5e7eb;">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${lineItemRows}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Totals -->
+      <div style="margin-top: 4px; display: flex; justify-content: flex-end;">
+        <div style="width: 260px;">
+          ${
+            hasBreakdown && subtotal
+              ? `
+            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f3f4f6;">
+              <span style="font-size: 13px; color: #6b7280;">Subtotal</span>
+              <span style="font-size: 13px; font-weight: 600; color: #374151;">${subtotal}</span>
             </div>
-          </div>
-          <div class="text-right text-xs text-white/80">
-            <p class="font-semibold text-sm text-white text-glow">Estimate</p>
-            <p>${calculatorLabel}</p>
-            <p class="mt-1">Generated: ${generatedAt}</p>
-          </div>
-        </div>
-
-        <!-- Client Info -->
-        <div class="mt-4 glass-panel px-5 py-4">
-          <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/80">
-            Client
-          </p>
-          <p class="mt-1 text-sm font-semibold text-white text-glow">
-            ${clientName || "Client not specified"}
-          </p>
-          ${
-            jobAddress
-              ? `<p class="mt-0.5 text-xs text-white/70">${jobAddress}</p>`
+            ${
+              tax
+                ? `
+            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f3f4f6;">
+              <span style="font-size: 13px; color: #6b7280;">${taxLabel}</span>
+              <span style="font-size: 13px; color: #374151;">${tax}</span>
+            </div>`
+                : ""
+            }`
               : ""
           }
-        </div>
-      </header>
-
-      <!-- Main Content -->
-      <main class="mt-4 space-y-4">
-        <!-- Project Info -->
-        <section class="flex gap-4">
-          <div class="flex-1 glass-panel px-5 py-4">
-            <p class="text-xs font-semibold uppercase tracking-[0.15em] text-white/80">
-              Project
-            </p>
-            <p class="mt-1 text-sm font-semibold text-white text-glow">${jobName}</p>
+          <div style="display: flex; justify-content: space-between; padding: 12px 0; border-top: 2px solid #111827; margin-top: 4px;">
+            <span style="font-size: 14px; font-weight: 800; color: #111827;">TOTAL</span>
+            <span style="font-size: 18px; font-weight: 800; color: #b85a10;">${total ?? (dollars || "—")}</span>
           </div>
-          ${
-            primaryResult
-              ? `<div class="w-64 rounded-2xl border border-orange-400/30 bg-gradient-to-br from-orange-500/20 to-slate-900/90 px-5 py-4 text-white shadow-orange-glow">
-                 <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-orange-300">
-                   Primary Result
-                 </p>
-                 <p class="mt-1 text-2xl font-extrabold text-glow font-display" style="font-family: 'Oswald', sans-serif;">
-                   ${primaryResult.value} ${primaryResult.unit ?? ""}
-                 </p>
-                 <p class="mt-1 text-xs text-orange-100">
-                   ${primaryResult.label}
-                 </p>
-               </div>`
-              : ""
-          }
-        </section>
+        </div>
+      </div>
 
-        <!-- Quote Total -->
-        ${
-          dollars
-            ? `<section class="glass-panel px-5 py-4">
-               <p class="text-xs font-semibold uppercase tracking-[0.16em] text-white/80">
-                 Quote Total
-               </p>
-               <p class="mt-1 text-3xl font-extrabold text-orange-400 text-glow font-display" style="font-family: 'Oswald', sans-serif;">
-                 ${dollars}
-               </p>
-             </section>`
-            : ""
-        }
+      ${materialsSection}
 
-        <!-- Results Table -->
-        <section class="glass-panel px-5 py-4">
-          <p class="text-xs font-semibold uppercase tracking-[0.16em] text-white/80">
-            Results
-          </p>
-          <table class="mt-2 w-full text-left text-sm border-collapse">
-            <thead>
-              <tr class="border-b border-white/10 text-xs text-white/70">
-                <th class="px-3 py-1.5 font-semibold">Item</th>
-                <th class="px-3 py-1.5 font-semibold text-right">Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${resultsRows}
-            </tbody>
-          </table>
-        </section>
+      <!-- Signature -->
+      ${
+        signature?.signatureDataUrl
+          ? `
+      <div style="margin-top: 32px; display: flex; gap: 24px;">
+        <div style="flex: 1;">
+          <p style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 8px;">Contractor Signature</p>
+          <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 8px; background: #ffffff;">
+            <img src="${signature.signatureDataUrl}" alt="Signature" style="height: 48px; object-fit: contain;" />
+          </div>
+          ${signature.signedAt ? `<p style="font-size: 10px; color: #9ca3af; margin-top: 4px;">Signed ${new Date(signature.signedAt).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}</p>` : ""}
+        </div>
+        <div style="flex: 1;">
+          <p style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 8px;">Client Signature</p>
+          <div style="border-bottom: 1px solid #111827; height: 56px;"></div>
+          <p style="font-size: 10px; color: #9ca3af; margin-top: 4px;">Date: ____________</p>
+        </div>
+      </div>`
+          : `
+      <div style="margin-top: 32px; display: flex; gap: 24px;">
+        <div style="flex: 1;">
+          <p style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 8px;">Contractor Signature</p>
+          <div style="border-bottom: 1px solid #111827; height: 56px;"></div>
+          <p style="font-size: 10px; color: #9ca3af; margin-top: 4px;">Date: ____________</p>
+        </div>
+        <div style="flex: 1;">
+          <p style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 8px;">Client Signature</p>
+          <div style="border-bottom: 1px solid #111827; height: 56px;"></div>
+          <p style="font-size: 10px; color: #9ca3af; margin-top: 4px;">Date: ____________</p>
+        </div>
+      </div>`
+      }
 
-        <!-- Material List -->
-        <section class="glass-panel px-5 py-4">
-          <p class="text-xs font-semibold uppercase tracking-[0.16em] text-white/80">
-            Material List
-          </p>
-          <ul class="mt-2 space-y-1.5">
-            ${materialsRows || `<li class="text-sm text-white/90">Order estimate for ${payload.name}.</li>`}
-          </ul>
-        </section>
+      <!-- Notes -->
+      <div style="margin-top: 24px; padding: 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;">
+        <p style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 6px;">Terms & Notes</p>
+        <p style="font-size: 11px; color: #6b7280; line-height: 1.5;">
+          This estimate is valid for 30 days from the date above. Prices are subject to change based on material availability and site conditions. Always verify on-site dimensions and substrate conditions before ordering.
+        </p>
+      </div>
 
-        <!-- Field Notes -->
-        <section class="glass-panel px-5 py-4">
-          <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/80">
-            Field Notes
-          </p>
-          <p class="mt-1 text-xs text-white/70">
-            Use this estimate as a planning tool. Always verify on-site dimensions, substrate conditions, and tax status (ST-124) before ordering or invoicing.
-          </p>
-        </section>
-
-        <!-- Footer -->
-        <footer class="pt-4 text-center text-[8pt] text-slate-500">
-          <p>Powered by Pro Construction Calc</p>
-          <p class="text-[8pt] mt-0.5">
-            <a href="https://proconstructioncalc.com/terms" class="text-slate-500 hover:text-orange-300">Terms</a>
-            <span class="mx-1">•</span>
-            <a href="https://proconstructioncalc.com/privacy" class="text-slate-500 hover:text-orange-300">Privacy</a>
-          </p>
-        </footer>
-      </main>
+      <!-- Footer -->
+      <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e5e7eb; text-align: center;">
+        <p style="font-size: 10px; color: #9ca3af;">Powered by Pro Construction Calc</p>
+      </div>
     </div>
   </body>
 </html>`;

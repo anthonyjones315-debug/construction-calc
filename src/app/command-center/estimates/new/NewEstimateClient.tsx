@@ -1480,7 +1480,10 @@ export default function NewEstimateClient() {
     setShowSignModal(false);
     setSending(true);
     try {
-      await finalize(contractorSig);
+      const result = await finalize(contractorSig);
+      if (result?.id) {
+        router.push(`/command-center/estimates/${result.id}`);
+      }
     } finally {
       setSending(false);
     }
@@ -1489,7 +1492,13 @@ export default function NewEstimateClient() {
   function handleSkipSignature() {
     setShowSignModal(false);
     setSending(true);
-    finalize().finally(() => setSending(false));
+    finalize()
+      .then((result) => {
+        if (result?.id) {
+          router.push(`/command-center/estimates/${result.id}`);
+        }
+      })
+      .finally(() => setSending(false));
   }
 
   function handleDiscard() {
@@ -1594,6 +1603,44 @@ export default function NewEstimateClient() {
         taxCounty={state.taxCounty}
         onTaxChange={handleTaxChange}
       />
+
+      {/* Terms & Customization */}
+      <article className="rounded-2xl border border-slate-300 bg-white px-4 py-4 shadow-sm sm:px-5">
+        <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.16em] text-orange-600">
+          Terms & Customization
+        </p>
+        <div>
+          <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
+            Terms & Conditions{" "}
+            <span className="font-normal normal-case text-slate-400">
+              (shown on estimate PDF)
+            </span>
+          </label>
+          <textarea
+            value={state.terms}
+            onChange={(e) =>
+              dispatch({
+                type: "SET_FIELD",
+                field: "terms",
+                value: e.target.value,
+              })
+            }
+            placeholder="e.g. This estimate is valid for 30 days. Payment due upon completion. Materials subject to availability."
+            rows={2}
+            className="w-full resize-y rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-orange-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-400/20"
+          />
+        </div>
+        <p className="mt-2 text-xs text-slate-400">
+          Your business name, phone, and logo from your{" "}
+          <Link
+            href="/command-center"
+            className="text-orange-600 hover:underline"
+          >
+            Business Profile
+          </Link>{" "}
+          will appear on the PDF automatically.
+        </p>
+      </article>
 
       {/* Action Bar */}
       <ActionBar

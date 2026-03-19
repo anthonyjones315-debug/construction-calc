@@ -258,27 +258,25 @@ export default function HomePage() {
                 <p className="section-kicker">Popular calculators</p>
                 <div className="mt-2.5 grid grid-cols-1 gap-2 sm:grid-cols-2">
                   {[
-                    "Concrete",
-                    "Framing",
-                    "Roofing",
-                    "Drywall",
-                    "Insulation",
-                    "Flooring",
-                  ].map((name) => (
-                    <div
+                    { name: "Concrete", cat: "concrete" },
+                    { name: "Framing", cat: "framing" },
+                    { name: "Roofing", cat: "roofing" },
+                    { name: "Drywall", cat: "drywall" },
+                    { name: "Insulation", cat: "insulation" },
+                    { name: "Flooring", cat: "flooring" },
+                  ].map(({ name, cat }) => (
+                    <Link
                       key={name}
-                      className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5"
+                      href={`${routes.calculators}?c=${cat}`}
+                      prefetch={false}
+                      className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 transition-all duration-200 hover:border-orange-300 hover:bg-orange-50"
                     >
-                      <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-700">
+                      <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-700 group-hover:text-orange-700">
                         {name}
                       </p>
-                    </div>
+                    </Link>
                   ))}
                 </div>
-                <p className="mt-2 text-[10px] text-slate-500">
-                  Open calculators to view full formulas and save results to
-                  estimates.
-                </p>
               </div>
 
               <div className="home-panel rounded-2xl border border-slate-200 bg-white p-4 transition-colors">

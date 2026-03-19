@@ -135,7 +135,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className="command-theme"
+      className="command-theme light"
       suppressHydrationWarning
     >
       <head>
@@ -165,16 +165,16 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               :root {
-                --color-bg: #020617;
-                --color-surface: #1e293b;
-                --color-surface-alt: #111827;
-                --color-ink: #f8fafc;
-                --color-ink-mid: #cbd5f5;
-                --color-ink-dim: #94a3b8;
-                --color-border: #1f2937;
-                --color-orange-brand: #f7941d;
-                --color-orange-dark: #d06a18;
-                --color-nav-bg: #0a0f1a;
+                --color-bg: #f6f4ef;
+                --color-surface: #ffffff;
+                --color-surface-alt: #f8f9fa;
+                --color-ink: #020617;
+                --color-ink-mid: #334155;
+                --color-ink-dim: #475569;
+                --color-border: rgb(148 163 184 / 0.45);
+                --color-orange-brand: #b85a10;
+                --color-orange-dark: #ad4f0d;
+                --color-nav-bg: rgb(255 247 237 / 0.94);
               }
               html { background: var(--color-bg); color: var(--color-ink); }
               .glass-gpu {

@@ -428,26 +428,26 @@ export default function SignInClient({
   return (
     <main
       id="main-content"
-      className="flex min-h-dvh overflow-hidden bg-slate-950 px-4 py-10 font-sans items-center justify-center"
+      className="flex min-h-dvh overflow-hidden bg-[#f6f4ef] px-4 py-10 font-sans items-center justify-center"
     >
       <WelcomeGuidePopup forceOpen={forceWelcome} />
       {(isSigningIn || isCredentialsSigningIn) && (
         <div
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-slate-950/95 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-[#f6f4ef]/95 backdrop-blur-sm"
           aria-live="polite"
           aria-busy="true"
         >
           <div className="flex h-14 w-14 items-center justify-center rounded-2xl border-2 border-[--color-orange-brand]/50 bg-[--color-orange-brand]/10">
             <Loader2 className="h-7 w-7 animate-spin text-orange-600" aria-hidden />
           </div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-slate-200">
+          <p className="text-sm font-semibold uppercase tracking-wide text-slate-700">
             {isSigningIn
               ? "Redirecting to Google…"
               : twoFactorStep
                 ? "Verifying security code…"
                 : "Signing in…"}
           </p>
-          <p className="text-xs text-slate-400">Pro Construction Calc</p>
+          <p className="text-xs text-slate-500">Pro Construction Calc</p>
         </div>
       )}
       <div className="w-full max-w-sm">
@@ -458,21 +458,21 @@ export default function SignInClient({
               className="h-10 w-10 text-orange-600 shrink-0"
               aria-hidden
             />
-            <span className="text-white font-display font-bold text-xl tracking-tight uppercase">
+            <span className="text-slate-900 font-display font-bold text-xl tracking-tight uppercase">
               Pro Construction Calc
             </span>
           </div>
-          <h1 className="text-white/70 text-sm font-medium">
+          <h1 className="text-slate-600 text-sm font-medium">
             Sign in to your Estimating Cockpit
           </h1>
-          <p className="mt-0.5 text-xs text-white/50">
+          <p className="mt-0.5 text-xs text-slate-400">
             Access your Field Notes &amp; saved estimates
           </p>
         </div>
 
         {activeError && (
           <div
-            className="mb-4 rounded-xl border border-red-500/30 bg-red-950/60 px-4 py-3 text-sm text-red-400"
+            className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
             role="alert"
             aria-live="polite"
           >
@@ -482,7 +482,7 @@ export default function SignInClient({
 
         {registered && !activeError && (
           <div
-            className="mb-4 rounded-xl border border-emerald-500/30 bg-emerald-950/60 px-4 py-3 text-sm text-emerald-300"
+            className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700"
             role="status"
             aria-live="polite"
           >
@@ -492,11 +492,11 @@ export default function SignInClient({
         )}
 
         {activeError && (
-          <div className="mb-4 rounded-xl border border-orange-500/20 bg-slate-900/70 p-4 text-sm text-slate-300">
-            <p className="font-semibold text-white">
+          <div className="mb-4 rounded-xl border border-orange-200 bg-orange-50 p-4 text-sm text-slate-700">
+            <p className="font-semibold text-slate-900">
               Need a fallback?
             </p>
-            <p className="mt-1 text-slate-400">
+            <p className="mt-1 text-slate-500">
               If Google sign-in still fails or the feedback widget does not open,
               send a backup report or contact us directly.
             </p>
@@ -511,7 +511,7 @@ export default function SignInClient({
                 href={`mailto:${BUSINESS_EMAIL}?subject=${encodeURIComponent(
                   "Google sign-in issue",
                 )}`}
-                className="inline-flex items-center justify-center rounded-xl border border-slate-700 px-4 py-2.5 text-sm font-semibold text-slate-200 transition-colors hover:bg-slate-800"
+                className="inline-flex items-center justify-center rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-white"
               >
                 Contact Us
               </a>
@@ -520,7 +520,7 @@ export default function SignInClient({
         )}
 
         <section
-          className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6 space-y-4 shadow-[0_24px_50px_rgba(0,0,0,0.6)]"
+          className="rounded-2xl border border-slate-200 bg-white p-6 space-y-4 shadow-[0_8px_24px_rgba(0,0,0,0.08)]"
           aria-labelledby="oauth-sign-in-heading"
         >
           <h2 id="oauth-sign-in-heading" className="sr-only">
@@ -531,7 +531,7 @@ export default function SignInClient({
             onClick={handleGoogleSignIn}
             disabled={isSigningIn || isCredentialsSigningIn}
             aria-busy={isSigningIn}
-            className="w-full flex items-center justify-center gap-3 rounded-lg border-2 border-white/80 bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:cursor-wait disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-3 rounded-lg border-2 border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:cursor-wait disabled:opacity-50"
           >
             <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
               <path
@@ -555,16 +555,16 @@ export default function SignInClient({
           </button>
 
           <div className="flex items-center gap-3 py-0.5">
-            <div className="flex-1 border-t border-white/10" />
-            <span className="text-xs text-white/50">or</span>
-            <div className="flex-1 border-t border-white/10" />
+            <div className="flex-1 border-t border-slate-200" />
+            <span className="text-xs text-slate-400">or</span>
+            <div className="flex-1 border-t border-slate-200" />
           </div>
 
           <form onSubmit={handleCredentialsSignIn} className="space-y-3">
             <div>
               <label
                 htmlFor="signin-email"
-                className="block text-xs font-medium text-white/80 mb-1.5"
+                className="block text-xs font-medium text-slate-700 mb-1.5"
               >
                 Email
               </label>
@@ -577,7 +577,7 @@ export default function SignInClient({
                 onChange={(event) => setEmail(event.target.value)}
                 required
                 disabled={twoFactorStep}
-                className="w-full rounded-lg border border-slate-500 bg-slate-900 px-3.5 py-2.5 text-sm text-white placeholder-white/40 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500 transition"
+                className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition"
               />
             </div>
 
@@ -586,7 +586,7 @@ export default function SignInClient({
                 <div className="flex items-center justify-between mb-1.5">
                   <label
                     htmlFor="signin-password"
-                    className="block text-xs font-medium text-white/80"
+                    className="block text-xs font-medium text-slate-700"
                   >
                     Password
                   </label>
@@ -607,13 +607,13 @@ export default function SignInClient({
                   onChange={(event) => setPassword(event.target.value)}
                   minLength={8}
                   required
-                  className="w-full rounded-lg border border-slate-500 bg-slate-900 px-3.5 py-2.5 text-sm text-white placeholder-white/40 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500 transition"
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition"
                 />
               </div>
             ) : (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <label className="block text-xs font-medium text-white/80">
+                  <label className="block text-xs font-medium text-slate-700">
                     Security code
                   </label>
                   <button
@@ -642,12 +642,12 @@ export default function SignInClient({
                       value={digit}
                       onChange={(event) => handleOtpChange(index, event.target.value)}
                       onKeyDown={(event) => handleOtpKeyDown(index, event)}
-                      className="h-12 rounded-xl border border-slate-500 bg-slate-900 text-center text-lg font-bold text-white outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
+                      className="h-12 rounded-xl border border-slate-300 bg-white text-center text-lg font-bold text-slate-900 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
                       aria-label={`Security code digit ${index + 1}`}
                     />
                   ))}
                 </div>
-                <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-800 bg-slate-950/60 px-3 py-2 text-xs text-slate-300">
+                <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
                   <span>
                     Code expires in 5 minutes.
                   </span>
@@ -674,7 +674,7 @@ export default function SignInClient({
                 isCredentialsSigningIn ||
                 (twoFactorStep && otp.join("").length !== 6)
               }
-              className="w-full rounded-lg bg-[--color-orange-brand] px-4 py-3 text-sm font-black text-white transition hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:cursor-wait disabled:opacity-60"
+              className="w-full rounded-lg bg-orange-600 px-4 py-3 text-sm font-black text-white transition hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 disabled:cursor-wait disabled:opacity-60"
             >
               {isCredentialsSigningIn
                 ? twoFactorStep
@@ -686,7 +686,7 @@ export default function SignInClient({
             </button>
           </form>
 
-          <p className="text-center text-sm text-white/70">
+          <p className="text-center text-sm text-slate-600">
             Don&apos;t have an account?{" "}
             <Link
               href={routes.register}
@@ -696,7 +696,7 @@ export default function SignInClient({
             </Link>
           </p>
 
-          <div className="rounded-lg border border-slate-800 bg-slate-950/80 p-3 text-xs leading-relaxed text-white/55">
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs leading-relaxed text-slate-500">
             Social sign-in shares your name and email with us to create and
             secure your account. We do not add your email to marketing lists
             unless you opt in separately.
@@ -709,11 +709,11 @@ export default function SignInClient({
             onClick={() =>
               router.push(session?.user?.id ? routes.commandCenter : routes.home)
             }
-            className="inline-flex w-full items-center justify-center rounded-lg border-2 border-white/80 bg-transparent px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-slate-800/50 hover:text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-slate-950"
+            className="inline-flex w-full items-center justify-center rounded-lg border-2 border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
           >
             Back to Command Center
           </button>
-          <p className="text-xs text-white/50">
+          <p className="text-xs text-slate-500">
             By signing in you agree to our{" "}
             <Link
               href={routes.terms}
@@ -730,7 +730,7 @@ export default function SignInClient({
             </Link>
             .
           </p>
-          <p className="pt-2 text-center text-[10px] font-display uppercase tracking-widest text-slate-400">
+          <p className="pt-2 text-center text-[10px] font-display uppercase tracking-widest text-slate-400 opacity-60">
             Built for the Tri-County Field
           </p>
         </div>
