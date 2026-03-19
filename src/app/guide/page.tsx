@@ -17,7 +17,7 @@ import {
 export const metadata: Metadata = getPageMetadata({
   title: "User Guide | Pro Construction Calc",
   description:
-    "Fast start guide for Pro Construction Calc with calculators, saved estimates, PDF exports, and tri-county tax-aware workflows.",
+    "Fast start guide for Pro Construction Calc with calculators, estimate-to-invoice workflow, and client-ready exports.",
   path: "/guide",
 });
 
@@ -42,16 +42,16 @@ const HOW_TO_STEPS = [
       "The primary result gives the headline quantity or bid. Supporting cards cover related quantities and material lists.",
   },
   {
-    title: "Save, email, or download",
+    title: "Finalize estimate workflow",
     detail:
-      "Finalize & Send emails the estimate, Save syncs it to Command Center, and Download creates the branded PDF.",
+      "Finalize Estimate lets you save to your estimate queue, email the client, or download a branded PDF on demand.",
     link: routes.commandCenter,
     cta: "Go to Command Center",
   },
   {
     title: "Use business math",
     detail:
-      "Margin, labor, leads, and tax tools all use the same shared terms so pricing stays consistent from quote to export.",
+      "Margin, labor, leads, and pricing tools use shared terms so estimates stay consistent from quote to invoice.",
     link: routes.glossary,
     cta: "Open Glossary",
   },
@@ -109,7 +109,7 @@ export default function GuidePage() {
               <h1 className="app-heading mt-0.5">User Guide</h1>
             </div>
             <p className="ml-auto hidden max-w-xs text-[11px] leading-relaxed text-[--color-ink-dim] sm:block">
-              Calculators → results → save/export/share. Tri-county tax-aware.
+              Calculators → estimate queue → invoice-ready output.
             </p>
           </div>
 
@@ -134,14 +134,24 @@ export default function GuidePage() {
                 {idx === 2 ? (
                   <div className="guide-mini-stack">
                     <div className="guide-mini-card public-panel-muted">
-                      <CheckCircle2 className="h-4 w-4 text-emerald-500" aria-hidden />
+                      <CheckCircle2
+                        className="h-4 w-4 text-emerald-500"
+                        aria-hidden
+                      />
                       <p className="guide-mini-title">Primary result</p>
-                      <p className="guide-mini-copy">Headline value for ordering or pricing.</p>
+                      <p className="guide-mini-copy">
+                        Headline value for ordering or pricing.
+                      </p>
                     </div>
                     <div className="guide-mini-card public-panel-muted">
-                      <Save className="h-4 w-4 text-[--color-orange-brand]" aria-hidden />
+                      <Save
+                        className="h-4 w-4 text-[--color-orange-brand]"
+                        aria-hidden
+                      />
                       <p className="guide-mini-title">Material list</p>
-                      <p className="guide-mini-copy">Order-ready line items you can copy or send.</p>
+                      <p className="guide-mini-copy">
+                        Order-ready line items you can copy or send.
+                      </p>
                     </div>
                   </div>
                 ) : null}
@@ -154,9 +164,18 @@ export default function GuidePage() {
                 Fast answers
               </div>
               <ul className="guide-list">
-                <li>Use <strong>Area</strong> and <strong>Yardage</strong> toggles on concrete, flooring, and siding tools.</li>
-                <li>Waste starts at 10%; raise it for heavy cutting or irregular layouts.</li>
-                <li>Business tools reuse glossary terms so markup, margin, burden, CAC, and tax stay aligned.</li>
+                <li>
+                  Use <strong>Area</strong> and <strong>Yardage</strong> toggles
+                  on concrete, flooring, and siding tools.
+                </li>
+                <li>
+                  Waste starts at 10%; raise it for heavy cutting or irregular
+                  layouts.
+                </li>
+                <li>
+                  Business tools reuse glossary terms so markup, margin, burden,
+                  CAC, and tax stay aligned.
+                </li>
               </ul>
             </article>
 
@@ -165,24 +184,42 @@ export default function GuidePage() {
                 Operator checks
               </div>
               <ul className="guide-list">
-                <li>Pick the right county before exporting a client-facing estimate.</li>
-                <li>Saved estimates, invoice PDFs, and the dashboard all reuse the same verified math path.</li>
-                <li>Reopen the app after updates so you are not working from a stale service worker.</li>
+                <li>
+                  Pick the right county before exporting a client-facing
+                  estimate.
+                </li>
+                <li>
+                  Saved estimates, invoice PDFs, and the dashboard all reuse the
+                  same verified math path.
+                </li>
+                <li>
+                  Reopen the app after updates so you are not working from a
+                  stale service worker.
+                </li>
               </ul>
             </article>
 
             <article className="guide-card public-panel">
               <div className="public-chip">
-                <Handshake className="h-3.5 w-3.5 text-[--color-orange-brand]" aria-hidden />
+                <Handshake
+                  className="h-3.5 w-3.5 text-[--color-orange-brand]"
+                  aria-hidden
+                />
                 Share & export
               </div>
               <div className="guide-list">
                 <p className="flex items-center gap-2">
-                  <FileDown className="h-4 w-4 shrink-0 text-[--color-orange-brand]" aria-hidden />
+                  <FileDown
+                    className="h-4 w-4 shrink-0 text-[--color-orange-brand]"
+                    aria-hidden
+                  />
                   Download branded PDFs from the Results panel.
                 </p>
                 <p className="flex items-center gap-2">
-                  <Save className="h-4 w-4 shrink-0 text-[--color-orange-brand]" aria-hidden />
+                  <Save
+                    className="h-4 w-4 shrink-0 text-[--color-orange-brand]"
+                    aria-hidden
+                  />
                   Save to Command Center to revisit inputs and outputs.
                 </p>
               </div>

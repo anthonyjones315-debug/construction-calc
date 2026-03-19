@@ -9,7 +9,7 @@ import {
   LayoutDashboard,
   Menu,
   X,
-  ShoppingCart,
+  ClipboardList,
 } from "lucide-react";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { primaryNavigation, routes } from "@routes";
@@ -27,7 +27,7 @@ export function Header() {
   const [businessName, setBusinessName] = useState<string | null>(null);
   const headerRef = useRef<HTMLElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-  const cartCount = useStore((s) => s.estimateCart.length);
+  const estimateCount = useStore((s) => s.estimateCart.length);
 
   const online = useOnlineStatus();
   const isCommandCenterActive =
@@ -37,12 +37,13 @@ export function Header() {
 
   const userDisplayName =
     session?.user?.name?.trim() || session?.user?.email?.trim() || "Pro User";
-  const userInitials = userDisplayName
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part.charAt(0).toUpperCase())
-    .join("") || "AJ";
+  const userInitials =
+    userDisplayName
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part.charAt(0).toUpperCase())
+      .join("") || "AJ";
 
   useEffect(() => {
     let cancelled = false;
@@ -61,10 +62,12 @@ export function Header() {
           return;
         }
 
-        const data:
-          | { profile?: { business_name?: string | null; company_name?: string | null } }
-          | null =
-          await res.json();
+        const data: {
+          profile?: {
+            business_name?: string | null;
+            company_name?: string | null;
+          };
+        } | null = await res.json();
         if (cancelled || !data?.profile) return;
 
         const name =
@@ -118,7 +121,10 @@ export function Header() {
           className="flex shrink-0 items-center gap-1 text-xs font-display font-black tracking-wide text-copy-primary transition-colors hover:text-primary sm:text-base"
           aria-label="Pro Construction Calc - Command Center"
         >
-          <HardHat className="h-4 w-4 text-orange-500 sm:h-[18px] sm:w-[18px]" aria-hidden />
+          <HardHat
+            className="h-4 w-4 text-orange-500 sm:h-[18px] sm:w-[18px]"
+            aria-hidden
+          />
           <span className="hidden sm:block">Pro Construction Calc</span>
           <span className="sm:hidden">PC</span>
           <span className="ml-1 rounded-full border border-orange-500/40 bg-orange-500/10 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-[0.14em] text-orange-400">
@@ -155,22 +161,22 @@ export function Header() {
                 ? "border-orange-500 bg-orange-600/20 text-orange-300"
                 : "border-slate-700 bg-slate-900/70 text-slate-200 hover:border-orange-500 hover:text-orange-300"
             } hidden xs:inline-flex sm:hidden`}
-              aria-label="Open Command Center dashboard"
+            aria-label="Open Command Center dashboard"
           >
             <LayoutDashboard className="mr-1 h-3 w-3" aria-hidden />
             Command
           </Link>
-          {/* Cart quick access: always visible so batch estimate workflows stay one tap away. */}
+          {/* Estimate queue quick access: keeps estimate-to-invoice flow one tap away. */}
           <Link
             href={routes.cart}
             prefetch={false}
             className="inline-flex min-h-7 items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.14em] text-copy-primary transition hover:border-orange-400/60 hover:text-primary sm:px-2.5"
-            aria-label={`Cart ${cartCount} item${cartCount === 1 ? "" : "s"}`}
+            aria-label={`Estimate queue ${estimateCount} item${estimateCount === 1 ? "" : "s"}`}
           >
-            <ShoppingCart className="h-3.5 w-3.5" aria-hidden />
-            <span className="hidden sm:inline">Cart</span>
+            <ClipboardList className="h-3.5 w-3.5" aria-hidden />
+            <span className="hidden sm:inline">Estimates</span>
             <span className="rounded-full bg-orange-500 px-1.5 py-[2px] text-[9px] font-black text-white">
-              {cartCount}
+              {estimateCount}
             </span>
           </Link>
           {/* Hydration-safe offline badge: render a placeholder until mounted. */}
@@ -225,9 +231,13 @@ export function Header() {
                       Signed in as
                     </p>
                     <p className="truncate text-sm font-medium text-slate-100">
-                      {businessName?.trim() || session.user?.name || "Pro Account"}
+                      {businessName?.trim() ||
+                        session.user?.name ||
+                        "Pro Account"}
                     </p>
-                    <p className="truncate text-xs text-slate-400">{session.user?.email}</p>
+                    <p className="truncate text-xs text-slate-400">
+                      {session.user?.email}
+                    </p>
                   </div>
                   <Link
                     href={routes.settings}
@@ -236,7 +246,10 @@ export function Header() {
                     className="flex items-center gap-2 px-4 py-2 text-sm text-slate-200 transition-colors hover:bg-slate-800 hover:text-orange-500"
                     onClick={() => setMenuOpen(false)}
                   >
-                    <span className="w-4 text-center text-slate-300" aria-hidden>
+                    <span
+                      className="w-4 text-center text-slate-300"
+                      aria-hidden
+                    >
                       ⚙
                     </span>
                     Business Profile
@@ -248,7 +261,10 @@ export function Header() {
                     className="flex items-center gap-2 px-4 py-2 text-sm text-slate-200 transition-colors hover:bg-slate-800 hover:text-orange-500"
                     onClick={() => setMenuOpen(false)}
                   >
-                    <span className="w-4 text-center text-slate-300" aria-hidden>
+                    <span
+                      className="w-4 text-center text-slate-300"
+                      aria-hidden
+                    >
                       🏠
                     </span>
                     Command Center
@@ -260,7 +276,10 @@ export function Header() {
                     className="flex items-center gap-2 px-4 py-2 text-sm text-slate-200 transition-colors hover:bg-slate-800 hover:text-orange-500"
                     onClick={() => setMenuOpen(false)}
                   >
-                    <span className="w-4 text-center text-slate-300" aria-hidden>
+                    <span
+                      className="w-4 text-center text-slate-300"
+                      aria-hidden
+                    >
                       ▣
                     </span>
                     My Estimates
@@ -351,8 +370,11 @@ export function Header() {
             onClick={() => setMobileNavOpen(false)}
             className="flex min-h-9 items-center rounded-lg px-4 py-1.5 text-sm text-slate-200 transition-colors hover:bg-slate-800 hover:text-orange-500"
           >
-            <ShoppingCart className="h-4 w-4 mr-2 text-slate-300" aria-hidden />
-            Cart ({cartCount})
+            <ClipboardList
+              className="h-4 w-4 mr-2 text-slate-300"
+              aria-hidden
+            />
+            Estimates ({estimateCount})
           </Link>
         </nav>
       )}

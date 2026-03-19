@@ -40,7 +40,6 @@ import {
   PenSquare,
   Search,
   Save,
-  ShoppingCart,
   ShieldCheck,
   SlidersHorizontal,
   Sparkles,
@@ -71,10 +70,7 @@ import {
 import { calculateNysSalesTax } from "@/services/taxEngine";
 import { routes } from "@routes";
 import { UnitToggle } from "./UnitToggle";
-import {
-  ProInput,
-  ProResult,
-} from "@/components/ui/glass-elements";
+import { ProInput, ProResult } from "@/components/ui/glass-elements";
 import { useProMode } from "@/hooks/useProMode";
 import { triggerHaptic } from "@/hooks/useHaptic";
 import { sanitizeFilename } from "@/utils/sanitize-filename";
@@ -101,9 +97,7 @@ const EmailEstimateModal = dynamic(
 
 const CalculatorAuditPanel = dynamic(
   () =>
-    import("./CalculatorAuditPanel").then(
-      (mod) => mod.CalculatorAuditPanel,
-    ),
+    import("./CalculatorAuditPanel").then((mod) => mod.CalculatorAuditPanel),
   {
     ssr: false,
     loading: () => (
@@ -114,10 +108,7 @@ const CalculatorAuditPanel = dynamic(
         </div>
         <div className="mt-3 space-y-2">
           {[0, 1, 2].map((index) => (
-            <div
-              key={index}
-              className="glass-panel-deep rounded-lg px-3 py-3"
-            >
+            <div key={index} className="glass-panel-deep rounded-lg px-3 py-3">
               <div className="flex items-center justify-between gap-3">
                 <div className="skeleton h-3 w-20" />
                 <div className="skeleton h-4 w-16" />
@@ -2510,7 +2501,10 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     return {
       title: "Live Audit Log",
       rows: [
-        { label: "County", value: taxRegion === "NYS" ? taxCounty : "Custom / Other" },
+        {
+          label: "County",
+          value: taxRegion === "NYS" ? taxCounty : "Custom / Other",
+        },
         { label: "Basis Points", value: basisPoints.toString() },
         { label: "Subtotal", value: formatCurrency(subtotalCents) },
         { label: "Tax", value: formatCurrency(taxCents) },
@@ -2736,7 +2730,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       quantity: 1,
       createdAt: new Date().toISOString(),
     });
-    setFinalizeSuccess("Estimate added to cart.");
+    setFinalizeSuccess("Estimate added to estimate queue.");
     setFinalizeError(null);
   }
 
@@ -4134,7 +4128,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                     materialList={displayResults.materialList}
                     onCopyOrder={handleCopyOrder}
                     onFinalize={openFinalizeModal}
-                    finalizeLabel="Finalize & Send"
+                    finalizeLabel="Finalize Estimate"
                     finalizeIcon={<PenSquare className="h-4 w-4" aria-hidden />}
                     showEmptyStateWatermark={showEmptyStateWatermark}
                   />
@@ -4250,9 +4244,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
 
               <section
                 className={`glass-container p-3 sm:p-4 transition-colors ${
-                  deviceProfile.layoutMode === "command-center"
-                    ? "xl:mt-1"
-                    : ""
+                  deviceProfile.layoutMode === "command-center" ? "xl:mt-1" : ""
                 }`}
               >
                 <h3 className="text-xs font-bold uppercase tracking-[0.14em] text-display-heading">
@@ -4340,7 +4332,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
               className="glass-nav-item inline-flex min-h-9 items-center gap-1.5 px-3 text-xs font-semibold uppercase tracking-widest transition-all duration-200 active:scale-[0.98]"
             >
               <PenSquare className="h-3.5 w-3.5" aria-hidden />
-              Finalize &amp; Send
+              Finalize Estimate
             </button>
           </nav>
         </section>
@@ -4369,7 +4361,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
               className="glass-button-primary inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-lg px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white"
             >
               <PenSquare className="h-3.5 w-3.5" aria-hidden />
-              Finalize &amp; Send
+              Finalize Estimate
             </button>
           </div>
         </div>
@@ -4397,18 +4389,19 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                   finalizeBusy ? undefined : setFinalizeOpen(false)
                 }
                 className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full glass-button text-copy-tertiary transition hover:border-orange-base hover:text-primary"
-                aria-label="Close Finalize & Send"
+                aria-label="Close Finalize Estimate"
               >
                 <X className="h-4 w-4" aria-hidden />
               </button>
               <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-light">
-                Finalize &amp; Send
+                Finalize Estimate
               </p>
               <h3 className="mt-2 text-xl font-black text-display-heading">
-                Download or send for signature
+                Estimate to invoice workflow
               </h3>
               <p className="mt-2 text-sm text-copy-tertiary">
-                Create the server PDF or email the customer a signature link.
+                Save this estimate, generate PDF, or send for signature to move
+                toward invoicing.
               </p>
 
               <div className="mt-4 grid gap-3">
@@ -4571,7 +4564,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                           Sentry.showReportDialog({
                             title: "Report this issue",
                             subtitle:
-                              "Tell us what happened during Finalize & Send.",
+                              "Tell us what happened during Finalize Estimate.",
                           });
                         } else {
                           setFinalizeSuccess("Thanks — error reported.");
@@ -4610,8 +4603,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                   disabled={finalizeBusy !== null}
                   className="glass-button inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold text-copy-primary transition hover:border-orange-base disabled:opacity-60"
                 >
-                  <ShoppingCart className="h-4 w-4" aria-hidden />
-                  Add to Cart
+                  <ClipboardList className="h-4 w-4" aria-hidden />
+                  Add to Estimate Queue
                 </button>
                 <button
                   type="button"

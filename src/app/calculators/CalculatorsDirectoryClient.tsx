@@ -118,8 +118,9 @@ const RECOMMENDED_KEYS: string[] = [
   "mechanical-btu-estimator",
 ];
 
-const RECOMMENDED: SearchablePage[] = RECOMMENDED_KEYS
-  .map((key) => tradePages[key])
+const RECOMMENDED: SearchablePage[] = RECOMMENDED_KEYS.map(
+  (key) => tradePages[key],
+)
   .filter(Boolean)
   .map((page) => ({
     key: page.key,
@@ -130,7 +131,10 @@ const RECOMMENDED: SearchablePage[] = RECOMMENDED_KEYS
     keywords: page.keywords,
   }));
 
-function suggestedFromActivity(searchIndex: SearchablePage[], limit = 4): SearchablePage[] {
+function suggestedFromActivity(
+  searchIndex: SearchablePage[],
+  limit = 4,
+): SearchablePage[] {
   const paths = getRecentPaths(limit);
   const seen = new Set<string>();
   const out: SearchablePage[] = [];
@@ -160,36 +164,47 @@ export function CalculatorsDirectoryClient() {
     const refresh = () => setSuggested(suggestedFromActivity(SEARCH_INDEX, 4));
     refresh();
     window.addEventListener(COOKIE_CONSENT_CHANGED_EVENT, refresh);
-    return () => window.removeEventListener(COOKIE_CONSENT_CHANGED_EVENT, refresh);
+    return () =>
+      window.removeEventListener(COOKIE_CONSENT_CHANGED_EVENT, refresh);
   }, []);
 
   const recommendedToShow = useMemo(() => {
     if (suggested.length === 0) return RECOMMENDED;
     const suggestedKeys = new Set(suggested.map((p) => p.key));
-    return [...suggested, ...RECOMMENDED.filter((p) => !suggestedKeys.has(p.key))];
+    return [
+      ...suggested,
+      ...RECOMMENDED.filter((p) => !suggestedKeys.has(p.key)),
+    ];
   }, [suggested]);
 
   return (
     <>
       <main
         id="main-content"
-        className="min-h-0 min-w-0 flex-1 overflow-y-auto"
+        className="scrollbar-none min-h-0 min-w-0 flex-1 overflow-y-auto bg-[--color-bg]"
         tabIndex={-1}
       >
         {/* ── Compact 1-line header: kicker + inline search ─────── */}
-        <div className="border-b border-slate-800 bg-slate-950/80 px-4 py-3 sm:px-6">
+        <div className="border-b border-slate-300 bg-white px-4 py-3 sm:px-6">
           <div className="mx-auto flex max-w-5xl items-center gap-3">
             <div className="flex items-center gap-2 shrink-0 text-[--color-orange-brand]">
               <HardHat className="h-4 w-4" aria-hidden />
-              <h1 className="font-display text-sm font-bold uppercase tracking-[0.16em]">Trade Modules</h1>
+              <h1 className="font-display text-sm font-bold uppercase tracking-[0.16em]">
+                Trade Modules
+              </h1>
             </div>
-            <div className="flex flex-1 items-center rounded-xl border border-slate-700 bg-slate-950/80 px-3 py-2 focus-within:border-[--color-orange-brand] focus-within:ring-1 focus-within:ring-[--color-orange-brand]">
-              <Search className="h-3.5 w-3.5 shrink-0 text-slate-500" aria-hidden />
+            <div className="flex flex-1 items-center rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 focus-within:border-[--color-orange-brand] focus-within:ring-1 focus-within:ring-[--color-orange-brand]">
+              <Search
+                className="h-3.5 w-3.5 shrink-0 text-slate-400"
+                aria-hidden
+              />
               <input
                 type="search"
                 autoComplete="off"
-                placeholder={'Search: "concrete slab", "roof pitch", "profit margin"\u2026'}
-                className="ml-2 flex-1 bg-transparent text-sm text-slate-100 placeholder:text-slate-500 outline-none"
+                placeholder={
+                  'Search: "concrete slab", "roof pitch", "profit margin"\u2026'
+                }
+                className="ml-2 flex-1 bg-transparent text-sm text-slate-900 placeholder:text-slate-500 outline-none"
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 aria-label="Search construction calculators by trade, task, or name"
@@ -200,15 +215,17 @@ export function CalculatorsDirectoryClient() {
 
         {/* ── Recent/suggested chip strip — 1 row max ──────────── */}
         {showRecommended && recommendedToShow.length > 0 && (
-          <div className="border-b border-slate-800/60 bg-slate-950/60 px-4 py-2 sm:px-6">
-            <div className="mx-auto flex max-w-5xl items-center gap-2 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-              <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">Recent:</span>
+          <div className="border-b border-slate-200 bg-slate-50 px-4 py-2 sm:px-6">
+            <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-2">
+              <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">
+                Recent:
+              </span>
               {recommendedToShow.slice(0, 6).map((page) => (
                 <Link
                   key={page.key}
                   href={page.href as Route}
                   prefetch={false}
-                  className="shrink-0 rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-[11px] font-semibold text-slate-300 transition hover:border-[--color-orange-brand]/60 hover:text-[--color-orange-brand]"
+                  className="rounded-full border border-slate-300 bg-white px-3 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-[--color-orange-brand]/60 hover:text-[--color-orange-brand]"
                 >
                   {page.title}
                 </Link>
@@ -221,7 +238,10 @@ export function CalculatorsDirectoryClient() {
         {!showRecommended && (
           <div className="mx-auto w-full max-w-5xl px-4 pt-4 sm:px-6">
             {results.length === 0 ? (
-              <p className="text-xs text-slate-500">No calculators match that search. Try a different trade or task name.</p>
+              <p className="text-xs text-slate-500">
+                No calculators match that search. Try a different trade or task
+                name.
+              </p>
             ) : (
               <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
                 {results.map((page) => (
@@ -229,13 +249,19 @@ export function CalculatorsDirectoryClient() {
                     key={page.key}
                     href={page.href as Route}
                     prefetch={false}
-                    className="group flex flex-col rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-2.5 text-xs text-slate-300 transition-colors hover:border-[--color-orange-brand]/60 hover:bg-slate-900"
+                    className="group flex flex-col rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-xs text-slate-700 transition-colors hover:border-[--color-orange-brand]/60 hover:bg-orange-50"
                   >
                     <div className="flex items-center justify-between gap-2">
-                      <p className="font-semibold text-slate-100 group-hover:text-[--color-orange-brand]">{page.title}</p>
-                      <span className="rounded-full bg-slate-800 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">{page.categoryLabel}</span>
+                      <p className="font-semibold text-slate-900 group-hover:text-[--color-orange-brand]">
+                        {page.title}
+                      </p>
+                      <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+                        {page.categoryLabel}
+                      </span>
                     </div>
-                    <p className="mt-1 line-clamp-1 text-[11px] text-slate-400">{page.description}</p>
+                    <p className="mt-1 line-clamp-1 text-[11px] text-slate-600">
+                      {page.description}
+                    </p>
                   </Link>
                 ))}
               </div>
@@ -257,23 +283,28 @@ export function CalculatorsDirectoryClient() {
                   key={key}
                   href={href as Route}
                   prefetch={false}
-                  className="group flex flex-col rounded-xl border border-slate-800 bg-slate-900/50 p-4 shadow-[0_8px_18px_rgba(0,0,0,0.2)] transition-all duration-200 hover:border-orange-500/50 hover:shadow-[0_10px_22px_rgba(247,148,29,0.1)]"
+                  className="group flex flex-col rounded-xl border border-slate-300 bg-white p-4 shadow-sm transition-all duration-200 hover:border-orange-500/50 hover:bg-orange-50"
                 >
                   <div className="flex items-center gap-2.5">
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[--color-orange-brand]/12">
-                      <Icon className="h-4.5 w-4.5 text-[--color-orange-brand]" aria-hidden />
+                      <Icon
+                        className="h-4.5 w-4.5 text-[--color-orange-brand]"
+                        aria-hidden
+                      />
                     </div>
                     <div className="min-w-0">
-                      <h2 className="truncate font-display text-sm font-bold uppercase tracking-wide text-white transition-colors group-hover:text-[--color-orange-brand]">
+                      <h2 className="truncate font-display text-sm font-bold uppercase tracking-wide text-slate-900 transition-colors group-hover:text-[--color-orange-brand]">
                         {label}
                       </h2>
                       {calcCount > 0 && (
-                        <p className="text-[10px] text-slate-500">{calcCount} calc{calcCount !== 1 ? "s" : ""}</p>
+                        <p className="text-[10px] text-slate-500">
+                          {calcCount} calc{calcCount !== 1 ? "s" : ""}
+                        </p>
                       )}
                     </div>
                   </div>
                   {page && (
-                    <p className="mt-2 line-clamp-2 text-[11px] leading-relaxed text-[--color-nav-text]/65">
+                    <p className="mt-2 line-clamp-2 text-[11px] leading-relaxed text-slate-600">
                       {page.description}
                     </p>
                   )}

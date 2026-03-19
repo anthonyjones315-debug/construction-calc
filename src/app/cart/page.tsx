@@ -13,7 +13,7 @@ export default function CartPage() {
 
   const hasItems = estimateCart.length > 0;
 
-  function handleCheckout() {
+  function handleCreateInvoiceBatch() {
     if (!hasItems) return;
     clearCart();
     router.push("/saved");
@@ -22,23 +22,27 @@ export default function CartPage() {
   return (
     <div className="command-theme page-shell flex min-h-dvh flex-col bg-[--color-bg] text-white">
       <Header />
-      <main id="main-content" className="min-h-0 flex-1 overflow-y-auto">
+      <main
+        id="main-content"
+        className="min-h-0 flex-1 overflow-y-auto scrollbar-none"
+      >
         <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
           <div className="mb-6">
-            <p className="section-kicker">Estimate cart</p>
+            <p className="section-kicker">Estimate workflow</p>
             <h1 className="mt-1 text-3xl font-display font-bold">
-              Checkout
+              Estimate Queue
             </h1>
             <p className="mt-2 text-sm text-[--color-nav-text]/80">
-              Review the estimates you&apos;ve added from different calculators, then
-              check out in one batch. Saved estimates appear on the Saved page.
+              Review estimate drafts from multiple calculators, then push them
+              forward into your invoice workflow in one batch.
             </p>
           </div>
 
           {!hasItems ? (
             <div className="content-card p-6 text-sm text-[--color-nav-text]/85">
-              Your cart is empty. Run a calculator and use <strong>Finalize &amp; Send → Add
-              to cart</strong> to start building a multi-calculator order.
+              Your estimate queue is empty. Run a calculator and use{" "}
+              <strong>Finalize Estimate → Add to Estimate Queue</strong> to
+              build your invoice-ready batch.
             </div>
           ) : (
             <>
@@ -85,9 +89,9 @@ export default function CartPage() {
 
               <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-sm text-[--color-nav-text]/80">
-                  {estimateCart.length} item{estimateCart.length > 1 ? "s" : ""} in cart.
-                  Checkout will save them together so you can export PDFs or send for
-                  signature later.
+                  {estimateCart.length} estimate
+                  {estimateCart.length > 1 ? "s" : ""} in queue. Creating an
+                  invoice batch saves them together for fast client delivery.
                 </p>
                 <div className="flex gap-2">
                   <button
@@ -95,14 +99,14 @@ export default function CartPage() {
                     onClick={clearCart}
                     className="rounded-xl border border-white/30 px-4 py-2 text-sm font-semibold text-white hover:bg-white/5"
                   >
-                    Clear cart
+                    Clear queue
                   </button>
                   <button
                     type="button"
-                    onClick={handleCheckout}
+                    onClick={handleCreateInvoiceBatch}
                     className="rounded-xl bg-[--color-orange-brand] px-4 py-2 text-sm font-bold text-white hover:brightness-95"
                   >
-                    Checkout
+                    Create invoice batch
                   </button>
                 </div>
               </div>

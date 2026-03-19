@@ -6,9 +6,9 @@ import {
   HardHat,
   ShieldCheck,
   FileText,
-  MapPin,
-  ClipboardCheck,
   Clock3,
+  CircleCheck,
+  Wrench,
 } from "lucide-react";
 import {
   JsonLD,
@@ -16,61 +16,84 @@ import {
   getWebAppSchema,
   getWebSiteSchema,
 } from "@/seo";
-import { HomeTaxDefaults } from "@/app/HomeTaxDefaults";
 import { routes } from "@routes";
 
 export const metadata = getPageMetadata({
   title: "Pro Construction Calc | Contractor-Grade Estimating for the Field",
   description:
-    "Contractor-grade estimating for Oneida, Madison, and Herkimer county builders. Trade-specific calculators, NYS-aware tax math, and tools that match how crews actually work in the field.",
+    "Fast, contractor-friendly estimating with trade-specific calculators, saved workflows, and practical field tips for daily jobs.",
   path: "/",
 });
 
 export default function HomePage() {
-  const localMarketHighlights = [
-    {
-      icon: MapPin,
-      title: "Tri-county fit",
-      description:
-        "Built around the jobs local crews actually quote in Oneida, Herkimer, and Madison County.",
-    },
-    {
-      icon: ClipboardCheck,
-      title: "NYS-aware paperwork",
-      description:
-        "Estimate math, saved workflows, and guidance that line up better with tax and handoff reality.",
-    },
+  const workflowHighlights = [
     {
       icon: Clock3,
-      title: "Faster field flow",
+      title: "Quote in minutes",
       description:
-        "Open calculators fast, batch cart items, and get back to the truck or customer without dashboard clutter.",
+        "Start with calculators, save the result, and move to a client-ready estimate without extra steps.",
+    },
+    {
+      icon: CircleCheck,
+      title: "Cleaner handoff",
+      description:
+        "Keep line items, notes, and totals organized so your team and clients see the same numbers.",
+    },
+    {
+      icon: Wrench,
+      title: "Built for crews",
+      description:
+        "Focus on concrete, framing, roofing, and interior jobs with tools made for field speed.",
     },
   ];
 
-  const localFastLinks = [
+  const quickAccessLinks = [
+    {
+      href: routes.calculators,
+      title: "Open Calculators",
+      description:
+        "Jump right into trade-specific calculators and start a takeoff fast.",
+    },
+    {
+      href: routes.saved,
+      title: "Saved Estimates",
+      description:
+        "Pick up where you left off without rebuilding estimates from scratch.",
+    },
+    {
+      href: routes.pricebook,
+      title: "Price Book",
+      description:
+        "Standardize labor and material pricing so every quote stays consistent.",
+    },
     {
       href: routes.fieldNotes,
       title: "Field Notes",
       description:
-        "Local tax, frost-depth, and estimating guidance for tri-county work.",
+        "Use practical pro tips and install guidance while you build each estimate.",
+    },
+  ];
+
+  const proTips = [
+    {
+      title: "Start with quantities",
+      description:
+        "Run measurements first, then add pricing—this keeps revisions simple when scope changes.",
     },
     {
-      href: routes.financialTerms,
-      title: "Tax Defaults",
+      title: "Save templates",
       description:
-        "Quick-reference Oneida, Madison, and Herkimer county sales-tax context.",
+        "Store your common jobs and duplicate them instead of rebuilding every estimate.",
     },
     {
-      href: routes.guide,
-      title: "Operator Guide",
+      title: "Use client-ready notes",
       description:
-        "The shortest path from calculator run to client-ready estimate.",
+        "Add short scope notes while calculating so exports are ready to send immediately.",
     },
   ];
 
   return (
-    <div className="page-shell grid min-h-dvh grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden">
+    <div className="light public-page page-shell grid min-h-dvh grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden">
       <JsonLD schema={getWebSiteSchema()} />
       <JsonLD schema={getWebAppSchema()} />
       <Header />
@@ -78,12 +101,12 @@ export default function HomePage() {
         id="main-content"
         className="viewport-main px-3 py-3 sm:px-4 sm:py-4 lg:px-4 lg:py-3"
       >
-        <section className="home-shell mx-auto h-full min-h-0 w-full max-w-6xl">
+        <section className="home-shell mx-auto h-full min-h-0 w-full max-w-5xl">
           <div className="grid h-full min-h-0 gap-3 lg:grid-cols-[1.35fr_0.92fr]">
             <div className="home-primary-column flex h-full flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 px-4 py-4 text-slate-100 transition-colors sm:px-5 sm:py-5 lg:px-5 lg:py-4">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="section-kicker">
-                  Industrial-grade estimating
+                  Simple estimating workflow
                 </span>
                 <span className="rounded-full border border-slate-700 bg-slate-800 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-300">
                   Built for contractors
@@ -92,14 +115,13 @@ export default function HomePage() {
               <h1 className="home-display-heading mt-2.5 max-w-2xl font-display font-bold">
                 Pro Construction Calc
                 <span className="mt-2 block text-orange-600">
-                  Industrial-grade estimating for New York contractors.
+                  Fast, easy-to-use calculators for everyday field estimates.
                 </span>
               </h1>
               <p className="home-hero-copy mt-2.5 max-w-xl text-[13px] leading-relaxed text-slate-400 sm:text-sm">
-                Trade calculators, saved estimates, price book control, and PDF
-                workflows shaped for field use instead of generic dashboards.
-                Designed for quick quoting around Utica, Rome, Herkimer, Oneida,
-                and Madison County jobs.
+                Run your quantities, apply your pricing, and move straight into
+                client-ready estimates. No bloated dashboard flow—just the tools
+                you need to quote jobs quickly.
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
                 {/* Primary CTA — full emphasis */}
@@ -138,18 +160,18 @@ export default function HomePage() {
                 {[
                   {
                     icon: HardHat,
-                    label: "Trade-Specific",
+                    label: "Trade Specific",
                     desc: "Concrete, framing, roofing, insulation, flooring, and more.",
                   },
                   {
                     icon: FileText,
-                    label: "Client-Ready PDFs",
-                    desc: "From quick checks to client-ready estimate documents you can send.",
+                    label: "Client Ready",
+                    desc: "Turn your scope and numbers into clear, sendable estimate outputs.",
                   },
                   {
                     icon: ShieldCheck,
-                    label: "Owner Controls",
-                    desc: "Price book, team access, and saved project workflows that keep jobs consistent.",
+                    label: "Consistent Pricing",
+                    desc: "Use saved pricing and estimate history so every quote stays aligned.",
                   },
                 ].map(({ icon: Icon, label, desc }) => (
                   <div
@@ -169,10 +191,27 @@ export default function HomePage() {
                 ))}
               </div>
 
-              <HomeTaxDefaults />
+              <div className="home-panel mt-3 rounded-2xl border border-slate-800 bg-slate-950/55 p-3.5">
+                <p className="section-kicker">Pro tips</p>
+                <div className="mt-2.5 grid gap-2 sm:grid-cols-3">
+                  {proTips.map((tip) => (
+                    <div
+                      key={tip.title}
+                      className="rounded-xl border border-slate-800 bg-slate-900/75 px-3 py-2.5"
+                    >
+                      <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-white">
+                        {tip.title}
+                      </p>
+                      <p className="home-detail-copy mt-1 text-[11px] leading-relaxed text-slate-400">
+                        {tip.description}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
               <div className="mt-3 grid gap-2 sm:grid-cols-3">
-                {localMarketHighlights.map(
+                {workflowHighlights.map(
                   ({ icon: Icon, title, description }) => (
                     <div
                       key={title}
@@ -195,25 +234,9 @@ export default function HomePage() {
 
             <div className="home-secondary-column flex min-h-0 flex-col gap-3 xl:pt-0.5">
               <div className="home-panel rounded-2xl border border-slate-800 bg-slate-900 p-4 text-slate-100 transition-colors">
-                <p className="section-kicker">Explore next</p>
+                <p className="section-kicker">Quick access</p>
                 <div className="mt-2.5 space-y-2">
-                  {[
-                    {
-                      href: routes.blog,
-                      title: "Guides & Recommendations",
-                      desc: "Long-form methods, planning notes, and material guidance.",
-                    },
-                    {
-                      href: routes.guide,
-                      title: "How-To Guide",
-                      desc: "Fast operational walkthroughs for estimates, exports, and field use.",
-                    },
-                    {
-                      href: routes.faq,
-                      title: "FAQ",
-                      desc: "Field questions, quick answers, and estimating context.",
-                    },
-                  ].map((item) => (
+                  {quickAccessLinks.map((item) => (
                     <Link
                       key={item.title}
                       href={item.href}
@@ -224,7 +247,7 @@ export default function HomePage() {
                         {item.title}
                       </p>
                       <p className="home-detail-copy mt-0.5 text-[11px] leading-relaxed text-slate-400">
-                        {item.desc}
+                        {item.description}
                       </p>
                     </Link>
                   ))}
@@ -232,35 +255,55 @@ export default function HomePage() {
               </div>
 
               <div className="home-panel rounded-2xl border border-slate-800 bg-slate-900 p-4 transition-colors">
-                <p className="section-kicker">Tri-County Tax Defaults</p>
-                <div className="mt-2.5 grid grid-cols-3 gap-2">
+                <p className="section-kicker">Popular calculators</p>
+                <div className="mt-2.5 grid grid-cols-1 gap-2 sm:grid-cols-2">
                   {[
-                    { county: "Oneida", rate: "8.75%" },
-                    { county: "Madison", rate: "8.00%" },
-                    { county: "Herkimer", rate: "8.25%" },
-                  ].map(({ county, rate }) => (
+                    "Concrete",
+                    "Framing",
+                    "Roofing",
+                    "Drywall",
+                    "Insulation",
+                    "Flooring",
+                  ].map((name) => (
                     <div
-                      key={county}
-                      className="rounded-xl border border-slate-800 bg-slate-950/55 px-3 py-2 text-center"
+                      key={name}
+                      className="rounded-xl border border-slate-800 bg-slate-950/55 px-3 py-2.5"
                     >
-                      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-orange-500">
-                        {county}
-                      </p>
-                      <p className="mt-0.5 text-lg font-black text-white">
-                        {rate}
+                      <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-100">
+                        {name}
                       </p>
                     </div>
                   ))}
                 </div>
                 <p className="mt-2 text-[10px] text-slate-500">
-                  Combined state + local rate · Repairs &amp; maintenance
+                  Open calculators to view full formulas and save results to
+                  estimates.
                 </p>
               </div>
 
               <div className="home-panel rounded-2xl border border-slate-800 bg-slate-900 p-4 transition-colors">
-                <p className="section-kicker">Local contractor shortcuts</p>
+                <p className="section-kicker">Need help?</p>
                 <div className="mt-2.5 space-y-2">
-                  {localFastLinks.map((item) => (
+                  {[
+                    {
+                      href: routes.guide,
+                      title: "Operator Guide",
+                      description:
+                        "See the fastest workflow from calculator run to final estimate.",
+                    },
+                    {
+                      href: routes.faq,
+                      title: "FAQ",
+                      description:
+                        "Get quick answers to common quoting and workflow questions.",
+                    },
+                    {
+                      href: routes.contact,
+                      title: "Contact",
+                      description:
+                        "Reach out when you need help tuning your estimating setup.",
+                    },
+                  ].map((item) => (
                     <Link
                       key={item.title}
                       href={item.href}

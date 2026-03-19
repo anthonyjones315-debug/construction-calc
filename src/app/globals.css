@@ -18,7 +18,7 @@
   /* Semantic design tokens.
      These literals intentionally mirror tailwind.config.ts because
      Tailwind v4 stalls when theme() is referenced inside @theme. */
-  --color-primary: #FF7A00;
+  --color-primary: #ff7a00;
   --color-primary-foreground: #ffffff;
   --color-primary-rgb: 255 122 0;
   --color-secondary-10: #e6f3ff;
@@ -34,14 +34,22 @@
   /* Legacy Brand Colors (preserved for compatibility) */
   --color-orange-brand: var(--color-primary);
   --color-orange-deep: color-mix(in srgb, var(--color-primary) 72%, black);
-  --color-orange-soft: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  --color-orange-soft: color-mix(
+    in srgb,
+    var(--color-primary) 12%,
+    transparent
+  );
   --color-orange-muted: color-mix(in srgb, var(--color-primary) 70%, white);
 
   /* Liquid Orange Glass Brand Colors */
   --color-orange-base: var(--color-primary);
   --color-orange-light: color-mix(in srgb, var(--color-primary) 84%, white);
   --color-orange-dark: color-mix(in srgb, var(--color-primary) 80%, black);
-  --color-orange-glow: color-mix(in srgb, var(--color-primary) 30%, transparent);
+  --color-orange-glow: color-mix(
+    in srgb,
+    var(--color-primary) 30%,
+    transparent
+  );
   --color-orange-rim: color-mix(in srgb, var(--color-primary) 60%, white);
 
   /* Surface Colors - Glass effect */
@@ -459,87 +467,171 @@ html.light {
   }
 
   .bg-\[--color-orange-soft\]\/35 {
-    background-color: color-mix(in srgb, var(--color-orange-soft) 35%, transparent) !important;
+    background-color: color-mix(
+      in srgb,
+      var(--color-orange-soft) 35%,
+      transparent
+    ) !important;
   }
 
   .bg-\[--color-orange-soft\]\/40 {
-    background-color: color-mix(in srgb, var(--color-orange-soft) 40%, transparent) !important;
+    background-color: color-mix(
+      in srgb,
+      var(--color-orange-soft) 40%,
+      transparent
+    ) !important;
   }
 
   .bg-\[--color-orange-soft\]\/50 {
-    background-color: color-mix(in srgb, var(--color-orange-soft) 50%, transparent) !important;
+    background-color: color-mix(
+      in srgb,
+      var(--color-orange-soft) 50%,
+      transparent
+    ) !important;
   }
 
   .bg-\[--color-orange-brand\]\/8 {
-    background-color: color-mix(in srgb, var(--color-orange-brand) 8%, transparent) !important;
+    background-color: color-mix(
+      in srgb,
+      var(--color-orange-brand) 8%,
+      transparent
+    ) !important;
   }
 
   .bg-\[--color-orange-brand\]\/10 {
-    background-color: color-mix(in srgb, var(--color-orange-brand) 10%, transparent) !important;
+    background-color: color-mix(
+      in srgb,
+      var(--color-orange-brand) 10%,
+      transparent
+    ) !important;
   }
 
   .bg-\[--color-orange-brand\]\/12 {
-    background-color: color-mix(in srgb, var(--color-orange-brand) 12%, transparent) !important;
+    background-color: color-mix(
+      in srgb,
+      var(--color-orange-brand) 12%,
+      transparent
+    ) !important;
   }
 
   .bg-\[--color-orange-brand\]\/14 {
-    background-color: color-mix(in srgb, var(--color-orange-brand) 14%, transparent) !important;
+    background-color: color-mix(
+      in srgb,
+      var(--color-orange-brand) 14%,
+      transparent
+    ) !important;
   }
 
   .bg-\[--color-orange-brand\]\/15 {
-    background-color: color-mix(in srgb, var(--color-orange-brand) 15%, transparent) !important;
+    background-color: color-mix(
+      in srgb,
+      var(--color-orange-brand) 15%,
+      transparent
+    ) !important;
   }
 
   .bg-\[--color-orange-brand\]\/18 {
-    background-color: color-mix(in srgb, var(--color-orange-brand) 18%, transparent) !important;
+    background-color: color-mix(
+      in srgb,
+      var(--color-orange-brand) 18%,
+      transparent
+    ) !important;
   }
 
   .bg-\[--color-orange-brand\]\/25 {
-    background-color: color-mix(in srgb, var(--color-orange-brand) 25%, transparent) !important;
+    background-color: color-mix(
+      in srgb,
+      var(--color-orange-brand) 25%,
+      transparent
+    ) !important;
   }
 
   .border-\[--color-orange-brand\]\/18 {
-    border-color: color-mix(in srgb, var(--color-orange-brand) 18%, transparent) !important;
+    border-color: color-mix(
+      in srgb,
+      var(--color-orange-brand) 18%,
+      transparent
+    ) !important;
   }
 
   .border-\[--color-orange-brand\]\/20 {
-    border-color: color-mix(in srgb, var(--color-orange-brand) 20%, transparent) !important;
+    border-color: color-mix(
+      in srgb,
+      var(--color-orange-brand) 20%,
+      transparent
+    ) !important;
   }
 
   .border-\[--color-orange-brand\]\/25 {
-    border-color: color-mix(in srgb, var(--color-orange-brand) 25%, transparent) !important;
+    border-color: color-mix(
+      in srgb,
+      var(--color-orange-brand) 25%,
+      transparent
+    ) !important;
   }
 
   .border-\[--color-orange-brand\]\/30 {
-    border-color: color-mix(in srgb, var(--color-orange-brand) 30%, transparent) !important;
+    border-color: color-mix(
+      in srgb,
+      var(--color-orange-brand) 30%,
+      transparent
+    ) !important;
   }
 
   .border-\[--color-orange-brand\]\/35 {
-    border-color: color-mix(in srgb, var(--color-orange-brand) 35%, transparent) !important;
+    border-color: color-mix(
+      in srgb,
+      var(--color-orange-brand) 35%,
+      transparent
+    ) !important;
   }
 
   .border-\[--color-orange-brand\]\/40 {
-    border-color: color-mix(in srgb, var(--color-orange-brand) 40%, transparent) !important;
+    border-color: color-mix(
+      in srgb,
+      var(--color-orange-brand) 40%,
+      transparent
+    ) !important;
   }
 
   .border-\[--color-orange-brand\]\/45 {
-    border-color: color-mix(in srgb, var(--color-orange-brand) 45%, transparent) !important;
+    border-color: color-mix(
+      in srgb,
+      var(--color-orange-brand) 45%,
+      transparent
+    ) !important;
   }
 
   .border-\[--color-orange-brand\]\/50 {
-    border-color: color-mix(in srgb, var(--color-orange-brand) 50%, transparent) !important;
+    border-color: color-mix(
+      in srgb,
+      var(--color-orange-brand) 50%,
+      transparent
+    ) !important;
   }
 
   .text-\[--color-orange-brand\]\/90 {
-    color: color-mix(in srgb, var(--color-orange-brand) 90%, transparent) !important;
+    color: color-mix(
+      in srgb,
+      var(--color-orange-brand) 90%,
+      transparent
+    ) !important;
   }
 
   .text-\[--color-nav-text\]\/85 {
-    color: color-mix(in srgb, var(--color-nav-text) 85%, transparent) !important;
+    color: color-mix(
+      in srgb,
+      var(--color-nav-text) 85%,
+      transparent
+    ) !important;
   }
 
   .text-\[--color-nav-text\]\/75 {
-    color: color-mix(in srgb, var(--color-nav-text) 75%, transparent) !important;
+    color: color-mix(
+      in srgb,
+      var(--color-nav-text) 75%,
+      transparent
+    ) !important;
   }
 
   .hover\:bg-\[--color-orange-dark\]:hover {
@@ -551,11 +643,19 @@ html.light {
   }
 
   .hover\:bg-\[--color-orange-brand\]\/10:hover {
-    background-color: color-mix(in srgb, var(--color-orange-brand) 10%, transparent) !important;
+    background-color: color-mix(
+      in srgb,
+      var(--color-orange-brand) 10%,
+      transparent
+    ) !important;
   }
 
   .hover\:bg-\[--color-orange-brand\]\/25:hover {
-    background-color: color-mix(in srgb, var(--color-orange-brand) 25%, transparent) !important;
+    background-color: color-mix(
+      in srgb,
+      var(--color-orange-brand) 25%,
+      transparent
+    ) !important;
   }
 
   .hover\:text-\[--color-orange-brand\]:hover {
@@ -571,11 +671,19 @@ html.light {
   }
 
   .hover\:border-\[--color-orange-brand\]\/35:hover {
-    border-color: color-mix(in srgb, var(--color-orange-brand) 35%, transparent) !important;
+    border-color: color-mix(
+      in srgb,
+      var(--color-orange-brand) 35%,
+      transparent
+    ) !important;
   }
 
   .hover\:border-\[--color-orange-brand\]\/50:hover {
-    border-color: color-mix(in srgb, var(--color-orange-brand) 50%, transparent) !important;
+    border-color: color-mix(
+      in srgb,
+      var(--color-orange-brand) 50%,
+      transparent
+    ) !important;
   }
 
   /* Dark mode: invert white cards to surface color */
@@ -687,6 +795,17 @@ html.light {
     position: relative;
   }
 
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-none::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+
   .viewport-frame {
     margin-inline: auto;
     display: flex;
@@ -721,6 +840,14 @@ html.light {
     flex: 1;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .page-container::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
   }
 
   .content-card {
@@ -805,7 +932,11 @@ html.light {
   }
 
   .public-chip-accent {
-    border-color: color-mix(in srgb, var(--color-orange-brand) 30%, transparent);
+    border-color: color-mix(
+      in srgb,
+      var(--color-orange-brand) 30%,
+      transparent
+    );
     background: color-mix(in srgb, var(--color-orange-brand) 12%, transparent);
     color: var(--color-orange-brand);
   }
@@ -831,7 +962,11 @@ html.light {
   }
 
   .public-link-chip:hover {
-    border-color: color-mix(in srgb, var(--color-orange-brand) 42%, transparent);
+    border-color: color-mix(
+      in srgb,
+      var(--color-orange-brand) 42%,
+      transparent
+    );
     color: var(--color-orange-brand);
   }
 
@@ -859,7 +994,8 @@ html.light {
     border-radius: 1rem;
     background: color-mix(in srgb, var(--color-orange-brand) 14%, transparent);
     color: var(--color-orange-brand);
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-orange-brand) 20%, transparent);
+    box-shadow: inset 0 0 0 1px
+      color-mix(in srgb, var(--color-orange-brand) 20%, transparent);
   }
 
   .guide-hero-title {
@@ -1164,7 +1300,11 @@ html.light {
     --color-orange-brand: var(--color-primary);
     --color-orange-dark: color-mix(in srgb, var(--color-primary) 78%, black);
     --color-orange-muted: color-mix(in srgb, var(--color-primary) 72%, white);
-    --command-card-border: color-mix(in srgb, var(--color-border) 86%, transparent);
+    --command-card-border: color-mix(
+      in srgb,
+      var(--color-border) 86%,
+      transparent
+    );
     --command-card-shadow: 0 10px 24px rgb(15 23 42 / 0.16);
   }
 
@@ -1177,33 +1317,33 @@ html.light {
   /* Apply .public-page to the outer page wrapper on unauthenticated pages.
      Overrides design tokens for a warm cream feel vs. post-login dark industrial. */
   .public-page {
-    --color-bg:          #F8F5F0;
-    --color-nav-bg:      #FFFFFE;
-    --color-nav-text:    #44403C;
-    --color-ink:         #1C1917;
-    --color-ink-mid:     #57534E;
-    --color-ink-dim:     #78716C;
-    --color-surface:     #FFFFFF;
-    --color-surface-alt: #F5F2ED;
-    --color-border:      #E7E2D8;
-    --color-panel-dark:  #F0EDE7;
-    --color-panel-deep:  #EAE6DF;
-    background: #F8F5F0;
+    --color-bg: #f8f5f0;
+    --color-nav-bg: #fffffe;
+    --color-nav-text: #44403c;
+    --color-ink: #1c1917;
+    --color-ink-mid: #57534e;
+    --color-ink-dim: #78716c;
+    --color-surface: #ffffff;
+    --color-surface-alt: #f5f2ed;
+    --color-border: #e7e2d8;
+    --color-panel-dark: #f0ede7;
+    --color-panel-deep: #eae6df;
+    background: #f8f5f0;
   }
 
   .public-page .page-shell {
-    background: #F8F5F0;
+    background: #f8f5f0;
   }
 
   .public-page .site-header-shell {
     background: rgba(255, 255, 254, 0.92);
-    border-bottom-color: #E7E2D8;
-    color: #1C1917;
+    border-bottom-color: #e7e2d8;
+    color: #1c1917;
     box-shadow: 0 2px 12px rgba(28, 25, 23, 0.06);
   }
 
   .public-page .site-header-nav a {
-    color: #57534E;
+    color: #57534e;
   }
 
   .public-page .site-header-nav a:hover {
@@ -1211,13 +1351,14 @@ html.light {
   }
 
   .public-page .site-footer-shell {
-    border-top-color: #E7E2D8;
-    background: #F0EDE7;
-    color: #78716C;
+    border-top-color: #e7e2d8;
+    background: #f0ede7;
+    color: #78716c;
   }
 
   .site-header-shell {
-    border-bottom: 1px solid color-mix(in srgb, var(--color-border) 88%, transparent);
+    border-bottom: 1px solid
+      color-mix(in srgb, var(--color-border) 88%, transparent);
     background: color-mix(in srgb, var(--color-nav-bg) 92%, transparent);
     color: var(--color-ink);
     box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
@@ -1230,7 +1371,8 @@ html.light {
   }
 
   .site-footer-shell {
-    border-top: 1px solid color-mix(in srgb, var(--color-border) 88%, transparent);
+    border-top: 1px solid
+      color-mix(in srgb, var(--color-border) 88%, transparent);
     background: color-mix(in srgb, var(--color-nav-bg) 94%, transparent);
     color: var(--color-ink-mid);
     backdrop-filter: blur(16px) saturate(170%);
@@ -1239,12 +1381,17 @@ html.light {
 
   .command-center-shell {
     border: 1px solid color-mix(in srgb, var(--color-border) 88%, transparent);
-    background: color-mix(in srgb, var(--color-bg) 90%, var(--color-surface) 10%);
+    background: color-mix(
+      in srgb,
+      var(--color-bg) 90%,
+      var(--color-surface) 10%
+    );
     box-shadow: 0 20px 48px rgba(0, 0, 0, 0.32);
   }
 
   .command-center-rail {
-    border-right: 1px solid color-mix(in srgb, var(--color-border) 88%, transparent);
+    border-right: 1px solid
+      color-mix(in srgb, var(--color-border) 88%, transparent);
     background: linear-gradient(
       180deg,
       color-mix(in srgb, var(--color-bg) 96%, white) 0%,
@@ -1318,7 +1465,10 @@ html.light {
     letter-spacing: 0.06em;
     text-transform: uppercase;
     white-space: nowrap;
-    transition: border-color 0.18s ease, background-color 0.18s ease, color 0.18s ease;
+    transition:
+      border-color 0.18s ease,
+      background-color 0.18s ease,
+      color 0.18s ease;
   }
   .action-bar-btn:hover {
     border-color: color-mix(in srgb, var(--color-primary) 40%, transparent);

@@ -1,0 +1,142 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e5]:
+        - link "Pro Construction Calc - Command Center" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - img [ref=e7]
+          - generic [ref=e12]: PC
+          - generic [ref=e13]: Beta
+        - generic [ref=e14]:
+          - 'button "Theme: system. Tap to switch to light." [ref=e15] [cursor=pointer]':
+            - generic [ref=e16]: Visibility preference system. Next mode light.
+            - img [ref=e17]
+          - link "Open Command Center dashboard" [ref=e20] [cursor=pointer]:
+            - /url: /auth/signin
+            - img [ref=e21]
+            - text: Command
+          - link "Estimate queue 0 items" [ref=e26] [cursor=pointer]:
+            - /url: /cart
+            - img [ref=e27]
+            - generic [ref=e30]: "0"
+          - button "Toggle navigation menu" [ref=e32] [cursor=pointer]:
+            - img [ref=e33]
+    - main [ref=e34]:
+      - generic [ref=e36]:
+        - generic [ref=e37]:
+          - generic [ref=e38]:
+            - generic [ref=e39]: Simple estimating workflow
+            - generic [ref=e40]: Built for contractors
+          - heading "Pro Construction Calc Fast, easy-to-use calculators for everyday field estimates." [level=1] [ref=e41]:
+            - text: Pro Construction Calc
+            - generic [ref=e42]: Fast, easy-to-use calculators for everyday field estimates.
+          - paragraph [ref=e43]: Run your quantities, apply your pricing, and move straight into client-ready estimates. No bloated dashboard flow—just the tools you need to quote jobs quickly.
+          - generic [ref=e44]:
+            - link "Start New Estimate" [ref=e45] [cursor=pointer]:
+              - /url: /command-center?mode=draft
+              - text: Start New Estimate
+              - img [ref=e46]
+            - link "Calculators" [ref=e48] [cursor=pointer]:
+              - /url: /calculators
+            - link "Saved" [ref=e49] [cursor=pointer]:
+              - /url: /saved
+            - link "Price Book" [ref=e50] [cursor=pointer]:
+              - /url: /pricebook
+          - generic [ref=e51]:
+            - generic [ref=e52]:
+              - generic [ref=e53]:
+                - img [ref=e54]
+                - paragraph [ref=e59]: Trade Specific
+              - paragraph [ref=e60]: Concrete, framing, roofing, insulation, flooring, and more.
+            - generic [ref=e61]:
+              - generic [ref=e62]:
+                - img [ref=e63]
+                - paragraph [ref=e66]: Client Ready
+              - paragraph [ref=e67]: Turn your scope and numbers into clear, sendable estimate outputs.
+            - generic [ref=e68]:
+              - generic [ref=e69]:
+                - img [ref=e70]
+                - paragraph [ref=e73]: Consistent Pricing
+              - paragraph [ref=e74]: Use saved pricing and estimate history so every quote stays aligned.
+          - generic [ref=e75]:
+            - paragraph [ref=e76]: Pro tips
+            - generic [ref=e77]:
+              - generic [ref=e78]:
+                - paragraph [ref=e79]: Start with quantities
+                - paragraph [ref=e80]: Run measurements first, then add pricing—this keeps revisions simple when scope changes.
+              - generic [ref=e81]:
+                - paragraph [ref=e82]: Save templates
+                - paragraph [ref=e83]: Store your common jobs and duplicate them instead of rebuilding every estimate.
+              - generic [ref=e84]:
+                - paragraph [ref=e85]: Use client-ready notes
+                - paragraph [ref=e86]: Add short scope notes while calculating so exports are ready to send immediately.
+          - generic [ref=e87]:
+            - generic [ref=e88]:
+              - generic [ref=e89]:
+                - img [ref=e90]
+                - paragraph [ref=e93]: Quote in minutes
+              - paragraph [ref=e94]: Start with calculators, save the result, and move to a client-ready estimate without extra steps.
+            - generic [ref=e95]:
+              - generic [ref=e96]:
+                - img [ref=e97]
+                - paragraph [ref=e100]: Cleaner handoff
+              - paragraph [ref=e101]: Keep line items, notes, and totals organized so your team and clients see the same numbers.
+            - generic [ref=e102]:
+              - generic [ref=e103]:
+                - img [ref=e104]
+                - paragraph [ref=e106]: Built for crews
+              - paragraph [ref=e107]: Focus on concrete, framing, roofing, and interior jobs with tools made for field speed.
+        - generic [ref=e108]:
+          - generic [ref=e109]:
+            - paragraph [ref=e110]: Quick access
+            - generic [ref=e111]:
+              - link "Open Calculators Jump right into trade-specific calculators and start a takeoff fast." [ref=e112] [cursor=pointer]:
+                - /url: /calculators
+                - paragraph [ref=e113]: Open Calculators
+                - paragraph [ref=e114]: Jump right into trade-specific calculators and start a takeoff fast.
+              - link "Saved Estimates Pick up where you left off without rebuilding estimates from scratch." [ref=e115] [cursor=pointer]:
+                - /url: /saved
+                - paragraph [ref=e116]: Saved Estimates
+                - paragraph [ref=e117]: Pick up where you left off without rebuilding estimates from scratch.
+              - link "Price Book Standardize labor and material pricing so every quote stays consistent." [ref=e118] [cursor=pointer]:
+                - /url: /pricebook
+                - paragraph [ref=e119]: Price Book
+                - paragraph [ref=e120]: Standardize labor and material pricing so every quote stays consistent.
+              - link "Field Notes Use practical pro tips and install guidance while you build each estimate." [ref=e121] [cursor=pointer]:
+                - /url: /field-notes
+                - paragraph [ref=e122]: Field Notes
+                - paragraph [ref=e123]: Use practical pro tips and install guidance while you build each estimate.
+          - generic [ref=e124]:
+            - paragraph [ref=e125]: Popular calculators
+            - generic [ref=e126]:
+              - paragraph [ref=e128]: Concrete
+              - paragraph [ref=e130]: Framing
+              - paragraph [ref=e132]: Roofing
+              - paragraph [ref=e134]: Drywall
+              - paragraph [ref=e136]: Insulation
+              - paragraph [ref=e138]: Flooring
+            - paragraph [ref=e139]: Open calculators to view full formulas and save results to estimates.
+          - generic [ref=e140]:
+            - paragraph [ref=e141]: Need help?
+            - generic [ref=e142]:
+              - link "Operator Guide See the fastest workflow from calculator run to final estimate." [ref=e143] [cursor=pointer]:
+                - /url: /guide
+                - paragraph [ref=e144]: Operator Guide
+                - paragraph [ref=e145]: See the fastest workflow from calculator run to final estimate.
+              - link "FAQ Get quick answers to common quoting and workflow questions." [ref=e146] [cursor=pointer]:
+                - /url: /faq
+                - paragraph [ref=e147]: FAQ
+                - paragraph [ref=e148]: Get quick answers to common quoting and workflow questions.
+              - link "Contact Reach out when you need help tuning your estimating setup." [ref=e149] [cursor=pointer]:
+                - /url: /contact
+                - paragraph [ref=e150]: Contact
+                - paragraph [ref=e151]: Reach out when you need help tuning your estimating setup.
+  - button "Open Next.js Dev Tools" [ref=e157] [cursor=pointer]:
+    - img [ref=e158]
+  - alert [ref=e161]
+```

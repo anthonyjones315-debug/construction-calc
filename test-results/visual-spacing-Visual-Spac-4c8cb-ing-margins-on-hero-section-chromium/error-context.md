@@ -1,0 +1,174 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e5]:
+        - link "Pro Construction Calc - Command Center" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - img [ref=e7]
+          - generic [ref=e12]: Pro Construction Calc
+          - generic [ref=e13]: Beta
+        - navigation "Main navigation" [ref=e14]:
+          - link "Calculators" [ref=e15] [cursor=pointer]:
+            - /url: /calculators
+          - link "Field Notes" [ref=e16] [cursor=pointer]:
+            - /url: /field-notes
+          - link "FAQ" [ref=e17] [cursor=pointer]:
+            - /url: /faq
+          - link "About" [ref=e18] [cursor=pointer]:
+            - /url: /about
+        - generic [ref=e19]:
+          - 'button "Theme: system. Tap to switch to light." [ref=e20] [cursor=pointer]':
+            - generic [ref=e21]: Visibility preference system. Next mode light.
+            - img [ref=e22]
+          - link "Estimate queue 0 items" [ref=e25] [cursor=pointer]:
+            - /url: /cart
+            - img [ref=e26]
+            - generic [ref=e29]: Estimates
+            - generic [ref=e30]: "0"
+          - link "Sign in to your Estimating Cockpit" [ref=e31] [cursor=pointer]:
+            - /url: /auth/signin
+            - text: Sign In
+    - main [ref=e32]:
+      - generic [ref=e34]:
+        - generic [ref=e35]:
+          - generic [ref=e36]:
+            - generic [ref=e37]: Simple estimating workflow
+            - generic [ref=e38]: Built for contractors
+          - heading "Pro Construction Calc Fast, easy-to-use calculators for everyday field estimates." [level=1] [ref=e39]:
+            - text: Pro Construction Calc
+            - generic [ref=e40]: Fast, easy-to-use calculators for everyday field estimates.
+          - paragraph [ref=e41]: Run your quantities, apply your pricing, and move straight into client-ready estimates. No bloated dashboard flow—just the tools you need to quote jobs quickly.
+          - generic [ref=e42]:
+            - link "Start New Estimate" [ref=e43] [cursor=pointer]:
+              - /url: /command-center?mode=draft
+              - text: Start New Estimate
+              - img [ref=e44]
+            - link "Calculators" [ref=e46] [cursor=pointer]:
+              - /url: /calculators
+            - link "Saved" [ref=e47] [cursor=pointer]:
+              - /url: /saved
+            - link "Price Book" [ref=e48] [cursor=pointer]:
+              - /url: /pricebook
+          - generic [ref=e49]:
+            - generic [ref=e50]:
+              - generic [ref=e51]:
+                - img [ref=e52]
+                - paragraph [ref=e57]: Trade Specific
+              - paragraph [ref=e58]: Concrete, framing, roofing, insulation, flooring, and more.
+            - generic [ref=e59]:
+              - generic [ref=e60]:
+                - img [ref=e61]
+                - paragraph [ref=e64]: Client Ready
+              - paragraph [ref=e65]: Turn your scope and numbers into clear, sendable estimate outputs.
+            - generic [ref=e66]:
+              - generic [ref=e67]:
+                - img [ref=e68]
+                - paragraph [ref=e71]: Consistent Pricing
+              - paragraph [ref=e72]: Use saved pricing and estimate history so every quote stays aligned.
+          - generic [ref=e73]:
+            - paragraph [ref=e74]: Pro tips
+            - generic [ref=e75]:
+              - generic [ref=e76]:
+                - paragraph [ref=e77]: Start with quantities
+                - paragraph [ref=e78]: Run measurements first, then add pricing—this keeps revisions simple when scope changes.
+              - generic [ref=e79]:
+                - paragraph [ref=e80]: Save templates
+                - paragraph [ref=e81]: Store your common jobs and duplicate them instead of rebuilding every estimate.
+              - generic [ref=e82]:
+                - paragraph [ref=e83]: Use client-ready notes
+                - paragraph [ref=e84]: Add short scope notes while calculating so exports are ready to send immediately.
+          - generic [ref=e85]:
+            - generic [ref=e86]:
+              - generic [ref=e87]:
+                - img [ref=e88]
+                - paragraph [ref=e91]: Quote in minutes
+              - paragraph [ref=e92]: Start with calculators, save the result, and move to a client-ready estimate without extra steps.
+            - generic [ref=e93]:
+              - generic [ref=e94]:
+                - img [ref=e95]
+                - paragraph [ref=e98]: Cleaner handoff
+              - paragraph [ref=e99]: Keep line items, notes, and totals organized so your team and clients see the same numbers.
+            - generic [ref=e100]:
+              - generic [ref=e101]:
+                - img [ref=e102]
+                - paragraph [ref=e104]: Built for crews
+              - paragraph [ref=e105]: Focus on concrete, framing, roofing, and interior jobs with tools made for field speed.
+        - generic [ref=e106]:
+          - generic [ref=e107]:
+            - paragraph [ref=e108]: Quick access
+            - generic [ref=e109]:
+              - link "Open Calculators Jump right into trade-specific calculators and start a takeoff fast." [ref=e110] [cursor=pointer]:
+                - /url: /calculators
+                - paragraph [ref=e111]: Open Calculators
+                - paragraph [ref=e112]: Jump right into trade-specific calculators and start a takeoff fast.
+              - link "Saved Estimates Pick up where you left off without rebuilding estimates from scratch." [ref=e113] [cursor=pointer]:
+                - /url: /saved
+                - paragraph [ref=e114]: Saved Estimates
+                - paragraph [ref=e115]: Pick up where you left off without rebuilding estimates from scratch.
+              - link "Price Book Standardize labor and material pricing so every quote stays consistent." [ref=e116] [cursor=pointer]:
+                - /url: /pricebook
+                - paragraph [ref=e117]: Price Book
+                - paragraph [ref=e118]: Standardize labor and material pricing so every quote stays consistent.
+              - link "Field Notes Use practical pro tips and install guidance while you build each estimate." [ref=e119] [cursor=pointer]:
+                - /url: /field-notes
+                - paragraph [ref=e120]: Field Notes
+                - paragraph [ref=e121]: Use practical pro tips and install guidance while you build each estimate.
+          - generic [ref=e122]:
+            - paragraph [ref=e123]: Popular calculators
+            - generic [ref=e124]:
+              - paragraph [ref=e126]: Concrete
+              - paragraph [ref=e128]: Framing
+              - paragraph [ref=e130]: Roofing
+              - paragraph [ref=e132]: Drywall
+              - paragraph [ref=e134]: Insulation
+              - paragraph [ref=e136]: Flooring
+            - paragraph [ref=e137]: Open calculators to view full formulas and save results to estimates.
+          - generic [ref=e138]:
+            - paragraph [ref=e139]: Need help?
+            - generic [ref=e140]:
+              - link "Operator Guide See the fastest workflow from calculator run to final estimate." [ref=e141] [cursor=pointer]:
+                - /url: /guide
+                - paragraph [ref=e142]: Operator Guide
+                - paragraph [ref=e143]: See the fastest workflow from calculator run to final estimate.
+              - link "FAQ Get quick answers to common quoting and workflow questions." [ref=e144] [cursor=pointer]:
+                - /url: /faq
+                - paragraph [ref=e145]: FAQ
+                - paragraph [ref=e146]: Get quick answers to common quoting and workflow questions.
+              - link "Contact Reach out when you need help tuning your estimating setup." [ref=e147] [cursor=pointer]:
+                - /url: /contact
+                - paragraph [ref=e148]: Contact
+                - paragraph [ref=e149]: Reach out when you need help tuning your estimating setup.
+    - contentinfo [ref=e151]:
+      - generic [ref=e153]:
+        - generic [ref=e154]:
+          - img [ref=e155]
+          - generic [ref=e160]: Pro Construction Calc
+          - generic [ref=e161]: Rome, NY
+          - generic [ref=e162]: © 2026
+        - paragraph [ref=e163]: Built for contractors working across Oneida, Herkimer, and Madison County. Verify quantities, site conditions, and local code before ordering or building.
+        - generic [ref=e164]:
+          - link "Calculators" [ref=e165] [cursor=pointer]:
+            - /url: /calculators
+          - link "Command Center" [ref=e166] [cursor=pointer]:
+            - /url: /command-center
+          - link "Field Notes" [ref=e167] [cursor=pointer]:
+            - /url: /field-notes
+          - link "Guide" [ref=e168] [cursor=pointer]:
+            - /url: /guide
+          - link "Privacy" [ref=e169] [cursor=pointer]:
+            - /url: /privacy
+          - link "Terms" [ref=e170] [cursor=pointer]:
+            - /url: /terms
+          - link "Contact" [ref=e171] [cursor=pointer]:
+            - /url: mailto:contact@proconstructioncalc.com
+          - link "Cookie Preferences" [ref=e173] [cursor=pointer]:
+            - /url: "#"
+  - button "Open Next.js Dev Tools" [ref=e179] [cursor=pointer]:
+    - img [ref=e180]
+  - alert [ref=e183]
+```

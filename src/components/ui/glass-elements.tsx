@@ -192,13 +192,7 @@ export function GlassDialogFrame({
   ...props
 }: ComponentPropsWithoutRef<"div">) {
   return (
-    <div
-      className={cx(
-        "glass-modal relative",
-        className,
-      )}
-      {...props}
-    >
+    <div className={cx("glass-modal relative", className)} {...props}>
       <div
         aria-hidden
         className="glass-decorative absolute inset-0 rounded-[inherit]"
@@ -344,7 +338,7 @@ export function ProResult({
   materialList,
   onCopyOrder,
   onFinalize,
-  finalizeLabel = "Finalize & Send",
+  finalizeLabel = "Finalize Estimate",
   finalizeIcon,
   showEmptyStateWatermark = false,
 }: ProResultProps) {
@@ -431,7 +425,10 @@ export function ProResult({
           </div>
           <ul className="mt-1.5 space-y-1 text-xs text-white/85">
             {materialList.map((line) => (
-              <li key={line} className="font-medium tabular-nums tracking-tight">
+              <li
+                key={line}
+                className="font-medium tabular-nums tracking-tight"
+              >
                 {line}
               </li>
             ))}

@@ -8,7 +8,7 @@ import { createServerClient } from "@/lib/supabase/server";
 import { getBusinessJoinCode } from "@/lib/supabase/join-code";
 import { getNoIndexMetadata } from "@/seo";
 import { routes } from "@routes";
-import CommandCenterClient from "./CommandCenterClient";
+import CommandCenterLiteClient from "./CommandCenterLiteClient";
 import WelcomeGuidePopupClient from "./WelcomeGuidePopupClient";
 
 export const metadata = getNoIndexMetadata(
@@ -123,7 +123,10 @@ async function createBusinessFromCommandCenterAction(formData: FormData) {
   const userId = session?.user?.id;
   if (!userId) {
     redirect(
-      buildCommandCenterErrorRedirect({ code: "create_business_failed", details: "Unauthorized" }),
+      buildCommandCenterErrorRedirect({
+        code: "create_business_failed",
+        details: "Unauthorized",
+      }),
     );
   }
 
@@ -281,7 +284,9 @@ function NotOwnerState() {
   );
 }
 
-async function loadCommandCenterData(userId: string): Promise<CommandCenterData> {
+async function loadCommandCenterData(
+  userId: string,
+): Promise<CommandCenterData> {
   const db = createServerClient();
 
   const { data: membership } = await db
@@ -420,8 +425,6 @@ export default async function CommandCenterPage({
     ? params.setupErrorDetails[0]
     : params.setupErrorDetails;
   const setupError = getSetupErrorMessage(setupErrorCode, setupErrorDetails);
-  const draftMode = Array.isArray(params.mode) ? params.mode[0] === "draft" : params.mode === "draft";
-  const toolParam = Array.isArray(params.tool) ? params.tool[0] : params.tool;
 
   const commandCenterData =
     userId === null ? null : await loadCommandCenterData(userId);
@@ -432,21 +435,19 @@ export default async function CommandCenterPage({
     mainContent = <CommandCenterOnboarding setupError={setupError} />;
   } else {
     mainContent = (
-      <CommandCenterClient
+      <CommandCenterLiteClient
         businessName={commandCenterData.businessName}
         joinCode={commandCenterData.joinCode}
         initialMembers={commandCenterData.members}
         recentEstimates={commandCenterData.recentEstimates}
         needsBusinessProfileSetup={commandCenterData.needsBusinessProfileSetup}
-        draftMode={draftMode}
-        initialToolSlug={toolParam ?? undefined}
         userRole={commandCenterData.userRole}
       />
     );
   }
 
   return (
-    <div className="page-shell command-center-page-shell grid min-h-dvh grid-rows-[auto_1fr] overflow-hidden">
+    <div className="light public-page page-shell command-center-page-shell grid min-h-dvh grid-rows-[auto_1fr] overflow-hidden">
       <WelcomeGuidePopupClient />
       <Header />
       <main id="main-content" className="row-start-2 viewport-main">
