@@ -20,7 +20,10 @@
     "check-colors": "node scripts/check-color-contrast.mjs",
     "check-calcs": "npm run check-calculations && npm run check-colors",
     "benchmark:frontend": "node scripts/benchmark-frontend-metrics.mjs",
-    "supabase:types": "supabase gen types typescript --project-id $SUPABASE_PROJECT_ID > src/lib/supabase/types.gen.ts"
+    "supabase:types": "supabase gen types typescript --project-id $SUPABASE_PROJECT_ID > src/lib/supabase/types.gen.ts",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test --debug"
   },
   "keywords": [],
   "author": "",
@@ -58,6 +61,7 @@
     "zustand": "^5.0.11"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "babel-plugin-react-compiler": "^1.0.0",
     "drizzle-kit": "^0.31.6",
     "eslint": "^9.39.4",
