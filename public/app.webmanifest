@@ -1,14 +1,17 @@
 {
   "name": "Pro Construction Calc",
   "short_name": "Pro Calc",
+  "lang": "en-US",
   "description": "Free construction calculators for concrete, framing, roofing, insulation, and flooring.",
   "id": "/",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
   "background_color": "#FF7A00",
   "theme_color": "#FF7A00",
   "orientation": "portrait-primary",
+  "categories": ["business", "productivity", "utilities"],
   "shortcuts": [
     {
       "name": "Command Center",

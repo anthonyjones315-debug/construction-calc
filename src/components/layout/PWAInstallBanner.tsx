@@ -9,6 +9,22 @@ interface BeforeInstallPromptEvent extends Event {
 
 const DISMISSED_KEY = "pwa_dismissed";
 
+function getDismissedFlag(): boolean {
+  try {
+    return window.localStorage.getItem(DISMISSED_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function setDismissedFlag(): void {
+  try {
+    window.localStorage.setItem(DISMISSED_KEY, "1");
+  } catch {
+    // Ignore storage write failures (private mode / blocked storage)
+  }
+}
+
 function isIOSDevice(): boolean {
   return /iphone|ipad|ipod/i.test(navigator.userAgent);
 }
@@ -23,10 +39,9 @@ function isStandaloneMode(): boolean {
   // Covers Chrome/Android standalone and iOS "Add to Home Screen"
   return (
     window.matchMedia("(display-mode: standalone)").matches ||
-    (
-      "standalone" in window.navigator &&
-      (window.navigator as Navigator & { standalone?: boolean }).standalone === true
-    )
+    ("standalone" in window.navigator &&
+      (window.navigator as Navigator & { standalone?: boolean }).standalone ===
+        true)
   );
 }
 
@@ -50,12 +65,12 @@ export function PWAInstallBanner() {
       // If the app is already running as an installed PWA, never show the banner again
       // on this device unless localStorage is cleared.
       if (standaloneNow) {
-        localStorage.setItem(DISMISSED_KEY, "1");
+        setDismissedFlag();
         setVisible(false);
         return;
       }
 
-      if (localStorage.getItem(DISMISSED_KEY)) return;
+      if (getDismissedFlag()) return;
       if (!isMobile()) return;
 
       const ios = isIOSDevice();
@@ -82,26 +97,48 @@ export function PWAInstallBanner() {
           const nowStandalone =
             mql?.matches ||
             (("standalone" in window.navigator &&
-              (window.navigator as Navigator & { standalone?: boolean }).standalone) ??
+              (window.navigator as Navigator & { standalone?: boolean })
+                .standalone) ??
               false);
           setIsStandalone(Boolean(nowStandalone));
           if (nowStandalone) {
-            localStorage.setItem(DISMISSED_KEY, "1");
+            setDismissedFlag();
             setVisible(false);
           }
         };
-        mql.addEventListener("change", mediaQueryHandler);
+        if (typeof mql.addEventListener === "function") {
+          mql.addEventListener("change", mediaQueryHandler);
+        } else {
+          mql.addListener(mediaQueryHandler);
+        }
       }
+
+      const appInstalledHandler = () => {
+        setDismissedFlag();
+        setVisible(false);
+        setDeferredPrompt(null);
+      };
+
+      window.addEventListener("appinstalled", appInstalledHandler);
+
+      return () => {
+        window.removeEventListener("appinstalled", appInstalledHandler);
+      };
     };
 
-    run();
+    const cleanup = run();
 
     return () => {
+      if (typeof cleanup === "function") cleanup();
       if (typeof frame === "number") cancelAnimationFrame(frame);
       if (handler) window.removeEventListener("beforeinstallprompt", handler);
       if (mql && mediaQueryHandler) {
         try {
-          mql.removeEventListener("change", mediaQueryHandler);
+          if (typeof mql.removeEventListener === "function") {
+            mql.removeEventListener("change", mediaQueryHandler);
+          } else {
+            mql.removeListener(mediaQueryHandler);
+          }
         } catch {
           // Older Safari may not support removeEventListener on MediaQueryList; ignore.
         }
@@ -110,7 +147,7 @@ export function PWAInstallBanner() {
   }, []);
 
   function dismiss() {
-    localStorage.setItem(DISMISSED_KEY, "1");
+    setDismissedFlag();
     setVisible(false);
   }
 
@@ -144,8 +181,10 @@ export function PWAInstallBanner() {
                   </span>
                 </strong>{" "}
                 then{" "}
-                <strong className="font-black">&ldquo;Add to Home Screen&rdquo;</strong>
-                {" "}to use this as an app.
+                <strong className="font-black">
+                  &ldquo;Add to Home Screen&rdquo;
+                </strong>{" "}
+                to use this as an app.
               </span>
             </p>
             <button

@@ -1,4 +1,4 @@
-const SERVICE_WORKER_SOURCE = `const CACHE_NAME = "pro-construction-calc-v2";
+const SERVICE_WORKER_SOURCE = `const CACHE_NAME = "pro-construction-calc-v3";
 const OFFLINE_URL = "/offline";
 const PRECACHE_URLS = [
   OFFLINE_URL,
@@ -55,11 +55,18 @@ self.addEventListener("fetch", (event) => {
         if (isNavigation) {
           return (
             (await caches.match(event.request)) ||
+            (await caches.match("/")) ||
             (await caches.match(OFFLINE_URL))
           );
         }
 
-        return (await caches.match(event.request)) || (await caches.match(OFFLINE_URL));
+        const cached = await caches.match(event.request);
+        if (cached) return cached;
+
+        return new Response("", {
+          status: 504,
+          statusText: "Offline",
+        });
       }),
   );
 });

@@ -178,9 +178,8 @@ test.describe("Home Page Layout Issues", () => {
 
     // Find tax rate cards (should be in a grid)
     const taxCards = page
-      .locator(
-        '[data-testid*="tax"], .tax-card, text=/Oneida|Madison|Herkimer/',
-      )
+      .locator('[data-testid*="tax"], .tax-card')
+      .filter({ hasText: /Oneida|Madison|Herkimer/i })
       .filter({ visible: true });
 
     if ((await taxCards.count()) >= 2) {
@@ -208,7 +207,12 @@ test.describe("Home Page Layout Issues", () => {
     const buttonCount = Math.min(await buttons.count(), 3);
 
     if (buttonCount > 1) {
-      const buttonBoxes: any[] = [];
+      const buttonBoxes: Array<{
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+      }> = [];
 
       for (let i = 0; i < buttonCount; i++) {
         const box = await buttons.nth(i).boundingBox();
@@ -220,8 +224,8 @@ test.describe("Home Page Layout Issues", () => {
         const btn1 = buttonBoxes[i];
         const btn2 = buttonBoxes[i + 1];
 
-        let hasVerticalGap = Math.abs(btn1.y - btn2.y) > btn1.height;
-        let hasHorizontalGap = Math.abs(btn1.x - btn2.x) > btn1.width;
+        const hasVerticalGap = Math.abs(btn1.y - btn2.y) > btn1.height;
+        const hasHorizontalGap = Math.abs(btn1.x - btn2.x) > btn1.width;
 
         // Either vertical or horizontal gap should exist
         expect(hasVerticalGap || hasHorizontalGap).toBeTruthy();

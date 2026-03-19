@@ -439,6 +439,9 @@ html.light {
     color-scheme: light dark;
     scroll-padding-top: 80px; /* sticky header height */
     height: 100%;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
     overflow: hidden;
   }
 
@@ -447,6 +450,10 @@ html.light {
     transition:
       background-color 0.2s,
       color 0.2s;
+    margin: 0;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
     overflow: hidden;
     height: 100vh;
     height: 100dvh;
@@ -839,9 +846,14 @@ html.light {
   }
 
   .viewport-main {
+    box-sizing: border-box;
     min-height: 0;
+    width: 100%;
+    max-width: 100%;
     flex: 1;
-    overflow: hidden;
+    overflow-x: clip;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     position: relative;
   }
 
@@ -900,6 +912,18 @@ html.light {
   .command-center-page-frame {
     max-width: 96rem;
     padding-block: 0.65rem 0.9rem;
+  }
+
+  @media (max-width: 767px) {
+    .viewport-frame {
+      padding: 0.7rem 0.75rem calc(0.9rem + env(safe-area-inset-bottom));
+      gap: 0.65rem;
+    }
+
+    .command-center-page-frame {
+      padding-top: 0.55rem;
+      padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+    }
   }
 
   .viewport-section {
@@ -1163,6 +1187,7 @@ html.light {
   .home-shell {
     height: 100%;
     min-height: 0;
+    overflow-x: clip;
   }
 
   .home-primary-column,
@@ -1170,6 +1195,7 @@ html.light {
   .home-panel,
   .home-tax-panel {
     min-height: 0;
+    min-width: 0;
   }
 
   .home-hero-copy,
@@ -1180,7 +1206,12 @@ html.light {
 
   .home-display-heading {
     font-size: clamp(2rem, 4vw, 3.4rem);
-    line-height: 0.94;
+    line-height: 1.05;
+  }
+
+  .home-hero-copy,
+  .home-detail-copy {
+    overflow-wrap: anywhere;
   }
 
   @media (min-width: 760px) {

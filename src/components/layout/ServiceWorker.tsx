@@ -9,9 +9,13 @@ import { routes } from "@routes";
  */
 export function ServiceWorker() {
   useEffect(() => {
+    const enableInDev = process.env.NEXT_PUBLIC_ENABLE_SW_DEV === "true";
+    const shouldRegister = process.env.NODE_ENV === "production" || enableInDev;
+
     if (
       typeof window === "undefined" ||
-      !("serviceWorker" in navigator)
+      !("serviceWorker" in navigator) ||
+      !shouldRegister
     ) {
       return;
     }
