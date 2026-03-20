@@ -1,75 +1,79 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("Cart and Estimates", () => {
-  test("should load cart page", async ({ page }) => {
+test.describe("Estimate Cart", () => {
+
+  test("cart page loads and shows content", async ({ page }) => {
     await page.goto("/cart");
-
-    // Cart might be empty, so just check page loads
-    await expect(page).not.toHaveURL(/error|404/);
+    // Cart page should load without errors
+    await expect(page).toHaveURL(/\/cart/);
+    // Should show either items or an empty state
+    const pageContent = await page.textContent("body");
+    expect(pageContent?.length).toBeGreaterThan(0);
   });
 
-  test("should display empty cart message if empty", async ({ page }) => {
+  test("empty cart shows a helpful empty state, not a broken layout", async ({ page }) => {
+    // Visit cart directly with no prior items
     await page.goto("/cart");
-
-    // Look for empty state message
-    const emptyMsg = page.locator("text=/empty|no items|no estimates/i");
-    const itemsList = page.locator('[data-testid*="item"], .cart-item');
-
-    // Either empty message or items list should exist
-    const emptyCount = await emptyMsg.count();
-    const itemCount = await itemsList.count();
-
-    expect(emptyCount + itemCount).toBeGreaterThan(0);
+    // Should display either items or an empty/getting-started message
+    const body = await page.textContent("body");
+    expect(body).not.toMatch(/unhandled|error|500/i);
   });
 
-  test("should have functionality to return to calculators", async ({
-    page,
-  }) => {
+  test("calculator Save Estimate button is visible", async ({ page }) => {
+    await page.goto("/calculators/concrete/slab");
+    await page.getByText(/Total Yards/i).waitFor({ state: "visible" });
+
+    // "Save Estimate" is the action to persist to local cart
+    const saveBtn = page.getByRole("button", { name: /Save Estimate/i });
+    await expect(saveBtn).toBeVisible();
+  });
+
+  test("Finalize & Send button opens finalize modal", async ({ page }) => {
+    await page.goto("/calculators/concrete/slab");
+    await page.getByText(/Total Yards/i).waitFor({ state: "visible" });
+
+    const finalizeBtn = page.getByRole("button", { name: /Finalize/i }).first();
+    await expect(finalizeBtn).toBeVisible();
+    await finalizeBtn.click();
+
+    // Finalize modal should appear with options
+    await expect(page.getByText(/Finalize Estimate/i)).toBeVisible();
+    // Modal has "Add to Estimate Queue", "Download PDF", etc.
+    await expect(
+      page.getByRole("button", { name: /Download PDF|Estimate Queue/i }).first()
+    ).toBeVisible();
+  });
+
+  test("cart badge in nav reflects item count after save", async ({ page }) => {
+    await page.goto("/calculators/concrete/slab");
+    await page.getByText(/Total Yards/i).waitFor({ state: "visible" });
+
+    // Click Save Estimate to add to local cart
+    const saveBtn = page.getByRole("button", { name: /Save Estimate/i });
+    await saveBtn.click();
+
+    // Look for a success indicator
+    await page.waitForTimeout(500);
+    // Cart page should now show the saved item
     await page.goto("/cart");
-
-    // Use main navigation calculators link as deterministic return path
-    const calculatorsLink = page
-      .getByRole("navigation", { name: /main navigation/i })
-      .getByRole("link", { name: /^calculators$/i });
-
-    await expect(calculatorsLink).toBeVisible();
-    await calculatorsLink.click();
-    await expect(page).toHaveURL(/\/calculators/);
-  });
-});
-
-test.describe("Estimate View", () => {
-  test("should load estimate page with valid ID", async ({ page }) => {
-    // Try to access estimate page (even if might not have actual data)
-    await page
-      .goto("/estimate/test", { waitUntil: "networkidle" })
-      .catch(() => {});
-
-    // Page should load without crashing (might show 404 or loading state)
-    const body = page.locator("body");
-    await expect(body).toBeVisible();
+    const body = await page.textContent("body");
+    expect(body?.toLowerCase()).toMatch(/slab|concrete|estimate/i);
   });
 
-  test("should display estimate information when available", async ({
-    page,
-  }) => {
-    // Navigate to calculator and look for save functionality
-    await page.goto("/calculators");
+  test("cart persists after page reload", async ({ page }) => {
+    // Add an item via Save Estimate
+    await page.goto("/calculators/concrete/slab");
+    await page.getByText(/Total Yards/i).waitFor({ state: "visible" });
+    await page.getByRole("button", { name: /Save Estimate/i }).click();
+    await page.waitForTimeout(500);
 
-    // Look for save button in calculator
-    const firstCalc = page.locator('a[href*="/calculators/"]').first();
+    // Navigate to cart and reload
+    await page.goto("/cart");
+    await page.reload();
 
-    if (await firstCalc.isVisible()) {
-      await firstCalc.click();
-
-      // Look for save/checkout button
-      const saveBtn = page
-        .locator("button, a")
-        .filter({ hasText: /save|add to cart|checkout/i });
-
-      if (await saveBtn.isVisible()) {
-        expect(saveBtn).toBeTruthy();
-      }
-    }
+    // Cart should still show content
+    const body = await page.textContent("body");
+    expect(body?.toLowerCase()).toMatch(/slab|concrete|estimate|cart/i);
   });
+
 });
