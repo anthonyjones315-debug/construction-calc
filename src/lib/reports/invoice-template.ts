@@ -173,12 +173,12 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
   <body>
     <div class="page">
       <!-- Header -->
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 20px; border-bottom: 3px solid #b85a10;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 20px; border-bottom: 3px solid #FF7A00;">
         <div style="display: flex; align-items: center; gap: 12px;">
           ${
             contractorLogoUrl
               ? `<img src="${contractorLogoUrl}" alt="" style="width: 48px; height: 48px; border-radius: 8px; object-fit: contain; border: 1px solid #e5e7eb;" />`
-              : `<div style="width: 48px; height: 48px; border-radius: 8px; background: #b85a10; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 20px;">${safeContractorName.charAt(0).toUpperCase()}</div>`
+              : `<div style="width: 48px; height: 48px; border-radius: 8px; background: #FF7A00; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 20px;">${safeContractorName.charAt(0).toUpperCase()}</div>`
           }
           <div>
             <p style="font-size: 18px; font-weight: 800; color: #111827; line-height: 1.2;">${safeContractorName}</p>
@@ -186,7 +186,7 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
           </div>
         </div>
         <div style="text-align: right;">
-          <p style="font-size: 22px; font-weight: 800; color: #b85a10; letter-spacing: -0.02em;">ESTIMATE</p>
+          <p style="font-size: 22px; font-weight: 800; color: #FF7A00; letter-spacing: -0.02em;">ESTIMATE</p>
           ${controlNumber ? `<p style="font-size: 11px; color: #6b7280; margin-top: 2px;">${controlNumber}</p>` : ""}
           <p style="font-size: 11px; color: #6b7280; margin-top: 2px;">${generatedAt}</p>
         </div>
@@ -247,7 +247,7 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
           }
           <div style="display: flex; justify-content: space-between; padding: 12px 0; border-top: 2px solid #111827; margin-top: 4px;">
             <span style="font-size: 14px; font-weight: 800; color: #111827;">TOTAL</span>
-            <span style="font-size: 18px; font-weight: 800; color: #b85a10;">${total ?? (dollars || "—")}</span>
+            <span style="font-size: 18px; font-weight: 800; color: #FF7A00;">${total ?? (dollars || "—")}</span>
           </div>
         </div>
       </div>
@@ -300,6 +300,7 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
         <p style="font-size: 10px; color: #9ca3af;">Powered by Pro Construction Calc</p>
       </div>
     </div>
+    <script>document.fonts.ready.then(() => { window.__fontsReady = true; });</script>
   </body>
 </html>`;
 }
