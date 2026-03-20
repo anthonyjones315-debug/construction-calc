@@ -453,6 +453,36 @@ export function getFieldNotesArticleSchema(article: {
   };
 }
 
+// ─── Breadcrumb Schema ────────────────────────────────────────────────────────
+
+export interface BreadcrumbItem {
+  name: string;
+  href: string;
+}
+
+/**
+ * Generates a Schema.org BreadcrumbList for any public page.
+ * The `items` array should start from the page AFTER the home page
+ * (home is always added automatically as position 1).
+ */
+export function getBreadcrumbSchema(items: BreadcrumbItem[]) {
+  const all = [{ name: "Home", href: BUSINESS_SITE_URL }, ...items.map((item) => ({
+    name: item.name,
+    href: item.href.startsWith("http") ? item.href : `${BUSINESS_SITE_URL}${item.href}`,
+  }))];
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: all.map((crumb, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: crumb.name,
+      item: crumb.href,
+    })),
+  };
+}
+
 // ─── JSON-LD Script Component ─────────────────────────────────────────────────
 
 export function JsonLD({ schema }: { schema: object }) {

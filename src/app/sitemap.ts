@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { FIELD_NOTES } from "@/data/field-notes";
+import { BLOG_POSTS } from "@/data/blog";
 
 const BASE = "https://proconstructioncalc.com";
 
@@ -82,11 +83,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }));
 
   const fieldNotesPages: MetadataRoute.Sitemap = FIELD_NOTES.map((note) => ({
-      url: `${BASE}/field-notes/${note.slug}`,
+    url: `${BASE}/field-notes/${note.slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
+  const blogPages: MetadataRoute.Sitemap = [
+    { url: `${BASE}/blog`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.75 },
+    ...BLOG_POSTS.map((post) => ({
+      url: `${BASE}/blog/${post.slug}`,
       lastModified: now,
       changeFrequency: "monthly" as const,
       priority: 0.7,
-    }));
+    })),
+  ];
 
-  return [...staticPages, ...calculatorPages, ...fieldNotesPages];
+  return [...staticPages, ...calculatorPages, ...fieldNotesPages, ...blogPages];
 }

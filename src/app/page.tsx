@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { AmazonAdBanner } from "@/components/layout/AmazonAdBanner";
 import {
   ArrowRight,
   HardHat,
@@ -321,6 +322,7 @@ export default function HomePage() {
                   ))}
                 </div>
               </div>
+              <AmazonAdBanner variant="home" />
             </div>
           </div>
         </section>

@@ -38,7 +38,7 @@ export function CalculatorPageHeader({ page }: { page: TradePageDefinition }) {
           <h1 className="font-display text-xl font-black leading-tight text-slate-900 sm:text-2xl">
             {page.title}
           </h1>
-          <p className="mt-0.5 text-xs text-slate-500 line-clamp-1">
+          <p className="mt-0.5 text-xs leading-relaxed text-slate-500">
             {page.description}
           </p>
         </div>
@@ -47,7 +47,7 @@ export function CalculatorPageHeader({ page }: { page: TradePageDefinition }) {
           <p className="font-bold uppercase tracking-[0.16em] text-orange-600 text-[10px]">
             Pro Tip
           </p>
-          <p className="mt-1 line-clamp-3 leading-relaxed">{page.proTip}</p>
+          <p className="mt-1 leading-relaxed">{page.proTip}</p>
         </aside>
       </div>
     </div>

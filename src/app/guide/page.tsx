@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { JsonLD, getPageMetadata } from "@/seo";
+import { JsonLD, getBreadcrumbSchema, getPageMetadata } from "@/seo";
 import { routes } from "@routes";
 import {
   Compass,
@@ -98,7 +98,14 @@ export default function GuidePage() {
       <Header />
       <main id="main-content" className="flex-1">
         <JsonLD schema={howToSchema} />
+        <JsonLD schema={getBreadcrumbSchema([{ name: "Guide", href: "/guide" }])} />
         <div className="guide-shell viewport-frame max-w-6xl">
+          {/* Breadcrumb */}
+          <nav aria-label="Breadcrumb" className="mb-3 flex items-center gap-2 text-[11px] text-slate-500">
+            <Link href="/" className="transition-colors hover:text-orange-600">Home</Link>
+            <span aria-hidden>/</span>
+            <span className="font-semibold text-slate-800">Guide</span>
+          </nav>
           {/* ── Compact inline header — no separate hero banner ── */}
           <div className="flex items-center gap-3 pb-1">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[--color-orange-brand]/12 text-[--color-orange-brand]">

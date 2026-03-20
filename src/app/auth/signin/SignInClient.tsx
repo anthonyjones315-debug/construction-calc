@@ -11,6 +11,7 @@ import posthog from "posthog-js";
 import * as Sentry from "@sentry/nextjs";
 import { ManualErrorReportButton } from "@/components/support/ManualErrorReportButton";
 import { BUSINESS_EMAIL } from "@/lib/business-identity";
+import { AmazonAdBanner } from "@/components/layout/AmazonAdBanner";
 
 const WelcomeGuidePopup = dynamic(
   () =>
@@ -702,6 +703,8 @@ export default function SignInClient({
             unless you opt in separately.
           </div>
         </section>
+
+        <AmazonAdBanner variant="signin" />
 
         <div className="mt-6 space-y-2 text-center">
           <button

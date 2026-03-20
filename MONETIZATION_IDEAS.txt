@@ -1,0 +1,122 @@
+PRO CONSTRUCTION CALC — MONETIZATION ROADMAP
+============================================
+Written: March 20, 2026
+Built for the Tri-County Field — now built to make money.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CURRENT (ALREADY IN PLACE)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Amazon Associates Affiliate Ads (proconstruct-20)
+   - Live on sign-in page + home page secondary column
+   - Targets contractor gear: laser measures, speed squares, tool belts, calc tools
+   - Earns 1–8% commission per qualifying Amazon purchase
+   - Opportunity: Add affiliate panels inside calculator result pages too — users
+     are in "buy mode" right after running a concrete or framing estimate
+
+2. Google AdSense
+   - Infrastructure is in place (env var: NEXT_PUBLIC_ADSENSE_ID)
+   - Currently requires user cookie consent before loading
+   - Opportunity: Turn on Auto Ads for public pages — FAQ, Field Notes, About,
+     Calculators directory — these have high SEO traffic potential with zero
+     login required
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TIER 2 — HIGH POTENTIAL / MEDIUM EFFORT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+3. Pro / Premium Subscription
+   - Free tier: public calculators, limited saved estimates (e.g., 5)
+   - Pro tier ($9–19/mo): unlimited saves, PDF export, price book, team/crew mode
+   - Use Stripe for billing — already have Supabase + auth wired up
+   - Contractors who quote daily will pay for reliability and saved history
+   - This is the single biggest revenue lever available
+
+4. "Powered by PCC" White-Label for Other Contractors / Small Builders
+   - Let local contractors embed your calculators on THEIR website
+   - Charge a flat monthly fee ($29–99/mo) for a white-label embed license
+   - Low support overhead since your code is already polished
+   - This is essentially a B2B SaaS product you already have built
+
+5. PDF Export Upsell (Freemium Gate)
+   - Currently behind login — gate PDF export to Pro tier only
+   - Free users see a "Upgrade to export" CTA after calculating
+   - High conversion moment: they just did the work, now they need the deliverable
+
+6. Supplier / Material Vendor Affiliate Deals
+   - Partner with local or national suppliers (lumber yards, concrete suppliers,
+     flooring distributors) to place affiliate links in calculator results
+   - Example: After a framing estimate, show "Get lumber quotes from XYZ Lumber"
+   - Negotiate flat monthly sponsorship ($100–500/mo) or CPA deals
+   - More valuable than Amazon because margins are higher in construction supply
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TIER 3 — BIGGER SWINGS / LONGER BUILD
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+7. Contractor Lead Generation (Referral Network)
+   - Homeowners use your public calculators to get rough estimates
+   - Offer them a "Find a Contractor" CTA at the end
+   - Charge local contractors a lead fee ($10–50/lead) or flat monthly listing fee
+   - Platform: a simple contractor directory with a contact form
+   - You already have the traffic from homeowners using calculators
+
+8. Sponsored Field Notes / Blog Posts
+   - Your Field Notes section is SEO-rich content territory
+   - Charge tool brands, material companies, or software companies for
+     sponsored content or "Featured Tool" callouts
+   - Disclosure required, but standard in trade publishing
+   - Rate: $200–1,000 per sponsored post depending on traffic
+
+9. AI Estimate Assistant (Premium Feature)
+   - Add an AI layer that takes a job description in plain English and generates
+     a starter estimate across multiple trades
+   - "I need to frame a 24x40 garage with a 9-foot ceiling" → auto-fills calculators
+   - Gate this as a Pro feature — high perceived value, strong upgrade driver
+   - You already have an Anthropic API key in .env
+
+10. Equipment Rental Affiliate Partnerships
+    - After large concrete or framing estimates, show a "Rent Equipment" CTA
+    - Partner with national rental chains (United Rentals, Sunbelt, Home Depot
+      Rentals) — many have affiliate/referral programs
+    - Contractors renting equipment = high ticket transactions = better commissions
+
+11. Training / Course Sales
+    - Field Notes content + calculator walkthroughs = foundation for a paid course
+    - "How to estimate like a pro" short course ($47–97 one-time)
+    - Sell via Gumroad, Teachable, or a simple checkout on your own site
+    - Low overhead, no recurring cost — pure margin
+
+12. Estimate Template Marketplace
+    - Let power users sell their custom estimate templates/setups to other users
+    - Take a 20–30% platform cut on each template sale
+    - Creates community content without you doing the work
+    - Start with your own templates to seed the marketplace
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PRIORITY RANKING (Effort vs. Revenue)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Rank  Stream                              Why
+----  ------                              ----
+  1   Pro Subscription (Stripe)           Recurring revenue, you already have the product
+  2   Amazon Affiliate in Results Pages   Zero extra build, just add links in calc outputs
+  3   Google AdSense Auto Ads             Flip the env var switch, done
+  4   Supplier Affiliate / Sponsorships   Direct outreach to local suppliers
+  5   PDF Export Gate                     One-line code change = upgrade pressure
+  6   AI Estimate Assistant               High WOW factor, API key already in place
+  7   Contractor Lead Gen                 Requires directory build but massive upside
+  8   White-Label Embed License           B2B revenue, low overhead
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+QUICK WINS YOU CAN DO THIS WEEK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[ ] Set NEXT_PUBLIC_ENABLE_ADSENSE=true in Vercel env → AdSense auto ads live
+[ ] Add Amazon affiliate panels to calculator result sections
+[ ] Set up a Stripe product + pricing page (Pro tier)
+[ ] Add "Upgrade to Pro" CTA gate on PDF export button
+
+All the hard infrastructure work is done. It's time to collect.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
