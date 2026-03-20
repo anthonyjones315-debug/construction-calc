@@ -2461,7 +2461,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     }
 
     if (deviceProfile.layoutMode === "two-column") {
-      return "grid gap-3 lg:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]";
+      // Inputs left, results right — balanced columns that use the full container width
+      return "grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]";
     }
 
     return "grid gap-2";
@@ -3020,15 +3021,21 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
           ) : null}
 
           <div
+            className={`overflow-hidden rounded-3xl border-glow glass-container-deep shadow-[0_18px_40px_rgba(0,0,0,0.38)] ${
+              deviceProfile.layoutMode === "two-column" ? "lg:flex lg:flex-col" : ""
+            } ${
             className={`rounded-3xl border-glow glass-container-deep shadow-[0_18px_40px_rgba(0,0,0,0.38)] ${
               deviceProfile.desktopTier === "tv" ? "rim-spread-tv" : ""
             } ${deviceProfile.shellScaleClass} ${deviceProfile.blurClass}`}
           >
+            {/* Hero intro — on desktop this sits below the calculator surface (order-2) */}
             <div
               className={`grid grid-cols-1 gap-2 px-4 py-4 sm:px-6 sm:py-5 ${
                 deviceProfile.layoutMode === "command-center"
                   ? "xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)] xl:items-start"
-                  : "lg:grid-cols-2 lg:items-center"
+                  : deviceProfile.layoutMode === "two-column"
+                    ? "lg:order-2 lg:border-t lg:border-white/10 lg:py-4"
+                    : ""
               } ${deviceProfile.blurClass}`}
             >
               <div className="relative z-10 max-w-xl">
@@ -3199,7 +3206,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
               </div>
             </div>
 
-            <div className="space-y-2 p-3 sm:p-4 glass-container-deep">
+            {/* Calculator surface — inputs + results. On desktop this renders first (order-1) */}
+            <div className={`space-y-2 p-3 sm:p-4 glass-container-deep ${deviceProfile.layoutMode === "two-column" ? "lg:order-1" : ""}`}>
               <aside className="mb-3 hidden glass-panel lg:block">
                 <h2 className="text-sm font-black uppercase tracking-[0.12em] text-display-heading">
                   Tool Navigator
@@ -3283,19 +3291,20 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                 <section
                   className={`glass-container transition-colors ${effectiveProMode ? "p-3" : "p-3 sm:p-4"}`}
                 >
-                  <div className="flex justify-center">
+                  {/* Compact inputs header — icon inline with label, no large centered decoration */}
+                  <div className="mb-2 flex items-center gap-2">
                     <div
-                      className={`rounded-full bg-orange-base/15 p-4 mb-3 flex items-center justify-center ${iconPulse ? "animate-pulse" : ""}`}
+                      className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-orange-base/15 ${iconPulse ? "animate-pulse" : ""}`}
                     >
                       {page.category === "roofing" ? (
-                        <RoofingGlyph className="h-[52px] w-[52px]" />
+                        <RoofingGlyph className="h-[18px] w-[18px]" />
                       ) : (
                         (() => {
                           const IconComponent = getCategoryIcon(page);
                           return (
                             <IconComponent
-                              size={52}
-                              strokeWidth={1.5}
+                              size={18}
+                              strokeWidth={1.8}
                               className="text-orange-base"
                               aria-hidden
                             />
@@ -3303,10 +3312,10 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                         })()
                       )}
                     </div>
+                    <h2 className="text-sm font-black uppercase tracking-[0.12em] text-display-heading">
+                      Inputs
+                    </h2>
                   </div>
-                  <h2 className="text-sm font-black uppercase tracking-[0.12em] text-display-heading">
-                    Inputs
-                  </h2>
 
                   {(() => {
                     const labels = getInputLabels(

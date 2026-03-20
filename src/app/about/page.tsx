@@ -12,7 +12,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { AboutContactSection } from "@/components/contact/AboutContactSection";
-import { getPageMetadata } from "@/seo";
+import { JsonLD, getBreadcrumbSchema, getPageMetadata } from "@/seo";
 import { routes } from "@routes";
 
 export const metadata: Metadata = getPageMetadata({
@@ -78,7 +78,13 @@ export default function AboutPage() {
     <div className="light public-page page-shell">
       <Header />
       <main id="main-content" className="flex-1">
+        <JsonLD schema={getBreadcrumbSchema([{ name: "About", href: "/about" }])} />
         <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+          <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-2 text-[11px] text-slate-500">
+            <Link href="/" className="transition-colors hover:text-orange-600">Home</Link>
+            <span aria-hidden>/</span>
+            <span className="font-semibold text-slate-800">About</span>
+          </nav>
           <section className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white px-6 py-7 shadow-sm sm:px-8 sm:py-8">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(249,115,22,0.06),transparent_34%)]" />
             <div className="relative grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_320px]">

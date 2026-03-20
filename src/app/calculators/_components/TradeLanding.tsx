@@ -79,58 +79,60 @@ function TradeTile({ calculator }: { calculator: TradePageDefinition }) {
   return (
     <article
       ref={ref}
-      className="group relative snap-start rounded-2xl border border-slate-200 bg-white p-4 text-slate-900 shadow-sm transition-all duration-200 hover:border-orange-300 hover:bg-orange-50 hover:-translate-y-0.5 focus-within:-translate-y-0.5"
-      style={{ minHeight: "228px", minWidth: "18rem" }}
+      className="group relative flex flex-col rounded-2xl border border-slate-200 bg-white p-4 text-slate-900 shadow-sm transition-all duration-200 hover:border-orange-300 hover:bg-orange-50 hover:-translate-y-0.5 focus-within:-translate-y-0.5"
       onMouseEnter={handlePrefetch}
       onFocus={handlePrefetch}
       aria-label={`${calculator.title} calculator tile`}
     >
+      {/* Header row: icon + kicker/title + open button */}
       <div className="flex items-start justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div className="relative inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 shadow-inner">
+        <div className="flex min-w-0 items-start gap-3">
+          <div className="relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 shadow-inner">
             <Icon
-              className="h-6 w-6 text-orange-600"
+              className="h-5 w-5 text-orange-600"
               strokeWidth={2.3}
               aria-hidden
             />
           </div>
-          <div className="min-w-0">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+          <div className="min-w-0 pt-0.5">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-400">
               {calculator.heroKicker}
             </p>
-            <h3 className="text-sm font-bold leading-snug text-slate-900 line-clamp-1">
+            <h3 className="mt-0.5 text-sm font-bold leading-snug text-slate-900">
               {calculator.title}
             </h3>
           </div>
         </div>
         <Link
           href={calculatorHref}
-          className="inline-flex items-center gap-1 rounded-full border border-orange-300 bg-orange-50 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-orange-700 transition-colors hover:border-orange-500 hover:bg-orange-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500"
+          className="shrink-0 inline-flex items-center gap-1 rounded-full border border-orange-300 bg-orange-50 px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-orange-700 transition-colors hover:border-orange-500 hover:bg-orange-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500"
           prefetch={false}
           onMouseEnter={handlePrefetch}
           onFocus={handlePrefetch}
         >
-          Open Calculator
+          Open
           <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />
         </Link>
       </div>
 
-      <p className="mt-2 text-sm leading-snug text-slate-600 line-clamp-1">
+      {/* Summary — full text, no clamp */}
+      <p className="mt-2 text-sm leading-relaxed text-slate-600">
         {copy.summary}
       </p>
 
-      <details className="group/details mt-3 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
-        <summary className="flex cursor-pointer items-center justify-between gap-2 text-[11px] font-semibold uppercase tracking-[0.15em] text-slate-900">
+      {/* Details accordion — pushed to bottom of card */}
+      <details className="group/details mt-auto pt-3">
+        <summary className="flex cursor-pointer items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.15em] text-slate-700 transition-colors hover:border-orange-200 hover:bg-orange-50 hover:text-orange-700">
           Details
           <ChevronDown
-            className="h-4 w-4 transition-transform group-open/details:rotate-180"
+            className="h-3.5 w-3.5 shrink-0 transition-transform group-open/details:rotate-180"
             aria-hidden
           />
         </summary>
-        <ul className="mt-2 space-y-1.5 text-[11px] leading-snug text-slate-600">
-          <li>{copy.bullets.inputs}</li>
-          <li>{copy.bullets.outputs}</li>
-          <li>{copy.bullets.compliance}</li>
+        <ul className="mt-2 space-y-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-[11px] leading-snug text-slate-600">
+          <li><span className="font-semibold text-slate-700">Inputs:</span> {copy.bullets.inputs}</li>
+          <li><span className="font-semibold text-slate-700">Outputs:</span> {copy.bullets.outputs}</li>
+          <li><span className="font-semibold text-slate-700">Compliance:</span> {copy.bullets.compliance}</li>
         </ul>
       </details>
     </article>
@@ -214,7 +216,7 @@ export function TradeLanding({ page }: TradeLandingProps) {
             <h1 className="text-[clamp(22px,3vw,30px)] font-black leading-tight text-slate-900">
               {page.title}
             </h1>
-            <p className="text-sm leading-snug text-slate-600 line-clamp-2">
+            <p className="text-sm leading-relaxed text-slate-600">
               {page.description}
             </p>
             <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em]">
@@ -227,28 +229,21 @@ export function TradeLanding({ page }: TradeLandingProps) {
               </span>
             </div>
           </div>
-          <div className="hidden max-w-[220px] text-xs leading-relaxed text-slate-600 sm:block">
+          <div className="hidden max-w-[220px] shrink-0 text-xs leading-relaxed text-slate-600 lg:block">
             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-orange-600">
               Pro Tip
             </p>
-            <p className="mt-1 line-clamp-4">{page.proTip}</p>
+            <p className="mt-1 leading-relaxed">{page.proTip}</p>
           </div>
         </div>
 
         <div className="mt-4">
-          <div className="mb-3 flex items-center justify-between gap-3">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-600">
-              Pick a calculator — everything fits above the fold
-            </p>
-            <p className="text-[10px] text-slate-400">
-              Hover or tab to prefetch · keyboard order is linear
-            </p>
-          </div>
+          <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+            Pick a calculator
+          </p>
 
-          <div
-            className="grid gap-3 md:grid-cols-2 lg:grid-rows-2 lg:grid-flow-col lg:overflow-x-auto lg:pb-3 lg:snap-x lg:snap-mandatory max-md:overflow-x-auto max-md:snap-x max-md:snap-mandatory"
-            style={{ gridAutoColumns: "minmax(17.5rem,1fr)" }}
-          >
+          {/* Equal-height card grid — 1 col mobile, 2 col tablet, 3 col desktop */}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {calculators.map((calculator) => (
               <TradeTile key={calculator.key} calculator={calculator} />
             ))}

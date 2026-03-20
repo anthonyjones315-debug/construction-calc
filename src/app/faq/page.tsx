@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { JsonLD, getFAQSchema, getPageMetadata } from "@/seo";
+import { JsonLD, getFAQSchema, getBreadcrumbSchema, getPageMetadata } from "@/seo";
 
 export const metadata: Metadata = getPageMetadata({
   title: "FAQ | Pro Construction Calc",
@@ -67,6 +68,38 @@ const FAQ_ITEMS = [
     q: "Is my data private?",
     a: "Yes. We collect only what's needed to run the app. See our Privacy Policy for full details. We never sell your data.",
   },
+  {
+    q: "What waste factor should I use for framing lumber?",
+    a: "For standard wall framing use 10–15%. Hip and valley roofs, complex stair framing, or layouts with lots of corners and headers push toward 15–20%. Simple gable roofs or long straight runs can use 10%. When in doubt, round up — lumber is cheaper than a second delivery.",
+  },
+  {
+    q: "How do I calculate how many sheets of drywall I need?",
+    a: "Multiply the total wall and ceiling square footage by 1.10 (10% waste). Divide by the sheet size you're using — typically 32 sq ft for a 4×8 sheet. Our drywall calculator handles this automatically and accounts for door and window deductions.",
+  },
+  {
+    q: "What is a good profit margin for a contractor estimate?",
+    a: "Most residential contractors target 15–25% gross margin (the difference between your selling price and direct job costs). Specialty and commercial work often runs 20–35%. Use the Profit Margin calculator to find the markup multiplier that gets you to your target margin — markup and margin are not the same number.",
+  },
+  {
+    q: "How do I estimate labor hours for a framing job?",
+    a: "A common starting point: one experienced framer can install roughly 300–400 linear feet of wall plate per day on a straightforward residential project. Complex rooflines, tall walls, or engineered lumber slow that number. Use the Labor Rate calculator to convert your hour estimate into a dollar figure based on your burdened rate.",
+  },
+  {
+    q: "Can I use these calculators for commercial jobs?",
+    a: "Yes — the math is the same. The calculators are built for residential field speed but the formulas (slab volumes, rafter geometry, shingle quantities) apply to light commercial work too. For large commercial projects, treat the outputs as cross-checks against your estimating software, not as the primary quantity source.",
+  },
+  {
+    q: "How do I figure out roof pitch from rise and run?",
+    a: "Pitch = rise ÷ run, expressed as X-in-12. If your roof rises 6 inches for every 12 inches of horizontal run, that is a 6/12 pitch. Use the Roof Pitch calculator to convert between pitch, slope angle, and multiplier so you can calculate rafter lengths and total roof area.",
+  },
+  {
+    q: "What is the difference between margin and markup?",
+    a: "Margin is profit as a percentage of your selling price. Markup is profit as a percentage of your cost. A 25% margin requires a 33.3% markup. They are not interchangeable — confusing them is one of the most common reasons contractors underprice jobs. Use our Profit Margin calculator to see both at once.",
+  },
+  {
+    q: "Do these calculators work offline?",
+    a: "Yes. Once the app has loaded in your browser, the core calculators continue to work without an internet connection. Saved estimates and PDF export require a connection to sync, but you can run quantities and view results offline from the job site.",
+  },
 ];
 
 export default function FAQPage() {
@@ -74,8 +107,16 @@ export default function FAQPage() {
     <div className="command-theme page-shell flex min-h-dvh flex-col">
       <Header />
       <JsonLD schema={getFAQSchema(FAQ_ITEMS)} />
+      <JsonLD schema={getBreadcrumbSchema([{ name: "FAQ", href: "/faq" }])} />
       <main id="main-content" className="viewport-main">
         <div className="viewport-frame max-w-6xl">
+          {/* Breadcrumb nav */}
+          <nav aria-label="Breadcrumb" className="mb-3 flex items-center gap-2 text-[11px] text-[--color-nav-text]/60">
+            <Link href="/" className="transition-colors hover:text-[--color-orange-brand]">Home</Link>
+            <span aria-hidden>/</span>
+            <span className="font-semibold text-[--color-nav-text]">FAQ</span>
+          </nav>
+
           <div className="dark-feature-panel p-4 text-white">
             <p className="section-kicker">Field answers</p>
             <h1 className="mt-1.5 text-2xl font-display font-bold">
