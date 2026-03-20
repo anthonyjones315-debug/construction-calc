@@ -371,13 +371,7 @@ html.light {
   color: #ea580c !important;
 }
 
-/* Dark feature panel override in light context */
-.light .dark-feature-panel {
-  background: white !important;
-  border-color: rgb(203 213 225) !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08) !important;
-  color: #111827 !important;
-}
+/* dark-feature-panel is now always light — no override needed */
 
 @layer base {
   * {
@@ -400,7 +394,7 @@ html.light {
   }
 
   html {
-    color-scheme: light dark;
+    color-scheme: light;
     scroll-padding-top: 80px; /* sticky header height */
     height: 100%;
     width: 100%;
@@ -705,40 +699,7 @@ html.light {
     ) !important;
   }
 
-  /* Dark mode: invert white cards to surface color */
-  @media (prefers-color-scheme: dark) {
-    .bg-white {
-      background-color: var(--color-surface) !important;
-    }
-    .border-gray-100 {
-      border-color: var(--color-border) !important;
-    }
-    .border-gray-200 {
-      border-color: var(--color-border) !important;
-    }
-    .border-gray-200\/80 {
-      border-color: color-mix(
-        in srgb,
-        var(--color-border) 80%,
-        transparent
-      ) !important;
-    }
-    .text-gray-900 {
-      color: var(--color-ink) !important;
-    }
-    .text-gray-700 {
-      color: var(--color-ink-mid) !important;
-    }
-    .text-gray-500 {
-      color: var(--color-ink-dim) !important;
-    }
-    .hover\:bg-gray-50:hover {
-      background-color: var(--color-surface-alt) !important;
-    }
-    .bg-\[--color-surface\] {
-      background-color: var(--color-surface) !important;
-    }
-  }
+  /* Dark mode disabled — warm light theme only */
 
   /* ADA focus rings */
   button:focus-visible,
@@ -769,26 +730,23 @@ html.light {
     opacity: 1;
   }
 
-  /* Inputs: dark mode */
-  @media (prefers-color-scheme: dark) {
-    input[type="number"],
-    input[type="text"],
-    input[type="email"],
-    select {
-      background-color: var(--color-surface-alt);
-      color: var(--color-ink);
-      border-color: var(--color-border);
-    }
-    input[type="number"]:focus,
-    input[type="text"]:focus,
-    input[type="email"]:focus,
-    select:focus {
-      border-color: var(--color-ink-mid);
-    }
-    /* Range sliders */
-    input[type="range"] {
-      accent-color: var(--color-ink-mid);
-    }
+  /* Inputs: light mode only */
+  input[type="number"],
+  input[type="text"],
+  input[type="email"],
+  select {
+    background-color: var(--color-input-bg);
+    color: var(--color-input-text);
+    border-color: var(--color-border);
+  }
+  input[type="number"]:focus,
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  select:focus {
+    border-color: var(--color-orange-brand);
+  }
+  input[type="range"] {
+    accent-color: var(--color-orange-brand);
   }
 }
 
@@ -920,12 +878,7 @@ html.light {
     transition: border-color 0.2s ease;
   }
 
-  @media (prefers-color-scheme: dark) {
-    .content-card {
-      background: rgb(15 23 42 / 0.5);
-      border-color: rgb(30 41 59);
-    }
-  }
+  /* content-card dark override removed — light mode only */
 
   .content-card-interactive:hover {
     border-color: rgb(249 115 22 / 0.5);
@@ -940,9 +893,10 @@ html.light {
 
   .dark-feature-panel {
     border: 1px solid color-mix(in srgb, var(--color-border) 78%, transparent);
-    background: linear-gradient(180deg, #172132 0%, #0f1624 100%);
-    box-shadow: 0 20px 44px rgba(8, 11, 18, 0.35);
+    background: #ffffff;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08);
     border-radius: 0.75rem; /* 12px */
+    color: #111827;
   }
 
   .public-panel {
@@ -1377,10 +1331,7 @@ html.light {
     --command-card-shadow: 0 10px 24px rgb(15 23 42 / 0.16);
   }
 
-  .dark .command-theme {
-    --command-card-border: #334155;
-    --command-card-shadow: 0 10px 24px rgba(2, 6, 23, 0.4);
-  }
+  /* .dark .command-theme removed — dark mode disabled */
 
   /* ── Public / pre-login cream theme ───────────────────────────── */
   /* Apply .public-page to the outer page wrapper on unauthenticated pages.

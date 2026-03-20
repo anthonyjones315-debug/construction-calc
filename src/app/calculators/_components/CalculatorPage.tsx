@@ -2851,10 +2851,10 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         return (
           <main
             id="main-content"
-            className="command-theme bg-[--color-bg] text-white min-h-[40vh] flex items-center justify-center p-6"
+            className="command-theme bg-[--color-bg] text-[--color-ink] min-h-[40vh] flex items-center justify-center p-6"
           >
-            <div className="rounded-2xl border border-white/20 bg-black/25 p-6 max-w-lg text-center">
-              <h2 className="text-lg font-bold text-white">
+            <div className="rounded-2xl border border-[--color-border] bg-white p-6 max-w-lg text-center shadow-[0_4px_16px_rgba(0,0,0,0.06)]">
+              <h2 className="text-lg font-bold text-[--color-ink]">
                 {userFacing.title}
               </h2>
               <p className="mt-2 text-sm text-[--color-nav-text]/90">
@@ -2963,7 +2963,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             <button
               type="button"
               onClick={() => setMobileMenuOpen((current) => !current)}
-              className="inline-flex min-h-9 items-center gap-2 rounded-xl border border-white/20 bg-black/25 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-[--color-nav-text] transition-all duration-200 hover:border-[--color-orange-brand]/45 active:scale-[0.98] lg:hidden"
+              className="inline-flex min-h-9 items-center gap-2 rounded-xl border border-[--color-border] bg-[--color-surface-alt] px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-[--color-ink-mid] transition-all duration-200 hover:border-[--color-orange-brand]/45 hover:text-[--color-orange-brand] active:scale-[0.98] lg:hidden"
             >
               {mobileMenuOpen ? (
                 <X className="h-4 w-4" aria-hidden />
@@ -2975,7 +2975,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
           </div>
 
           {mobileMenuOpen ? (
-            <section className="mb-3 rounded-2xl border border-slate-800 bg-slate-900/50 p-3 transition-colors lg:hidden">
+            <section className="mb-3 rounded-2xl border border-[--color-border] bg-[--color-surface-alt] p-3 transition-colors lg:hidden">
               <div className="relative">
                 <Search
                   className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[--color-nav-text]/60"
@@ -2985,14 +2985,14 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
                   placeholder="Search trade tools"
-                  className="h-10 w-full rounded-xl border border-slate-500 bg-slate-900 pl-9 pr-3 text-sm text-white outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
+                  className="h-10 w-full rounded-xl border border-[--color-border] bg-white pl-9 pr-3 text-sm text-[--color-ink] placeholder-[--color-ink-dim] outline-none transition focus:border-[--color-orange-brand] focus:ring-2 focus:ring-[--color-orange-brand]/20"
                 />
               </div>
               <div className="mt-3 grid gap-2 sm:grid-cols-2">
                 {filteredGroups.map((group) => (
                   <div
                     key={group.label}
-                    className="rounded-xl border border-white/10 bg-black/25 p-3"
+                    className="rounded-xl border border-[--color-border] bg-white p-3"
                   >
                     <p className="mb-2 text-xs font-bold uppercase tracking-[0.15em] text-orange-500">
                       {group.label}
@@ -3002,7 +3002,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                         <li key={module.href}>
                           <Link
                             href={module.href}
-                            className="inline-flex items-center gap-2 text-xs text-[--color-nav-text] transition-all duration-300 ease-in-out hover:text-white"
+                            className="inline-flex items-center gap-2 text-xs text-slate-700 transition-all duration-300 ease-in-out hover:text-orange-600"
                             onClick={() => setMobileMenuOpen(false)}
                           >
                             <module.icon className="h-3.5 w-3.5" aria-hidden />
@@ -3024,6 +3024,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             className={`overflow-hidden rounded-3xl border-glow glass-container-deep shadow-[0_18px_40px_rgba(0,0,0,0.38)] ${
               deviceProfile.layoutMode === "two-column" ? "lg:flex lg:flex-col" : ""
             } ${
+            className={`rounded-3xl border-glow glass-container-deep shadow-[0_18px_40px_rgba(0,0,0,0.38)] ${
               deviceProfile.desktopTier === "tv" ? "rim-spread-tv" : ""
             } ${deviceProfile.shellScaleClass} ${deviceProfile.blurClass}`}
           >
@@ -3852,8 +3853,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                   }
                                   className={`inline-flex w-full items-center justify-between gap-3 rounded-xl border px-3 py-2 text-left text-sm font-semibold transition ${
                                     staggeredStudWall
-                                      ? "border-orange-500/60 bg-orange-500/15 text-orange-200"
-                                      : "border-slate-700 bg-slate-900 text-slate-200 hover:border-slate-500"
+                                      ? "border-[--color-orange-brand]/60 bg-[--color-orange-soft] text-[--color-orange-brand]"
+                                      : "border-[--color-border] bg-[--color-surface-alt] text-[--color-ink-mid] hover:border-[--color-orange-brand]/40"
                                   }`}
                                   aria-pressed={staggeredStudWall}
                                 >
@@ -4078,10 +4079,10 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                         {/* Collapsible Waste Factor Section */}
                         <details
                           open={wasteFactorOpen}
-                          className="rounded-xl border border-slate-700/50 bg-slate-900/50 overflow-hidden"
+                          className="rounded-xl border border-[--color-border] bg-[--color-surface-alt] overflow-hidden"
                         >
                           <summary
-                            className="flex cursor-pointer items-center justify-between gap-2 px-3 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary hover:bg-slate-800/50 transition-colors list-none"
+                            className="flex cursor-pointer items-center justify-between gap-2 px-3 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-[--color-ink-mid] hover:bg-[--color-orange-soft] transition-colors list-none"
                             onClick={(e) => {
                               e.preventDefault();
                               setWasteFactorOpen(!wasteFactorOpen);
@@ -4146,7 +4147,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                       : ""
                   } ${
                     deviceProfile.tabletTier === "large"
-                      ? "tablet-bottom-tray order-3 mt-2 border-t border-white/10 pt-3"
+                      ? "tablet-bottom-tray order-3 mt-2 border-t border-[--color-border] pt-3"
                       : ""
                   }`}
                 >

@@ -143,3 +143,67 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
+
+/** PATCH — update only the supplied business profile fields (owner/admin only) */
+export async function PATCH(req: NextRequest) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id)
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    const db = createServerClient();
+    const businessContext = await getBusinessContextForSession(db, session);
+    if (!businessContext.isOwner) {
+      return NextResponse.json(
+        { error: "Only business owners can update business-wide settings." },
+        { status: 403 },
+      );
+    }
+
+    const body = await req.json().catch(() => ({}));
+    if (!body || typeof body !== "object") {
+      return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
+    }
+
+    // Build a partial update — only include keys that were sent
+    const allowed = [
+      "business_name",
+      "business_email",
+      "business_phone",
+      "business_address",
+      "business_website",
+      "business_tax_id",
+      "logo_url",
+    ] as const;
+
+    const patch: Record<string, unknown> = {};
+    for (const key of allowed) {
+      if (key in body) {
+        patch[key] = String((body as Record<string, unknown>)[key] ?? "").slice(0, 500).trim() || null;
+      }
+    }
+
+    if (Object.keys(patch).length === 0) {
+      return NextResponse.json({ error: "No valid fields provided." }, { status: 400 });
+    }
+
+    const tenantColumn = getTenantScopeColumn(businessContext);
+    const tenantId = getTenantScopeId(businessContext);
+
+    const { error } = await db
+      .from("business_profiles")
+      .update(patch)
+      .eq(tenantColumn, tenantId);
+
+    if (error) {
+      Sentry.captureException(error);
+      return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    }
+
+    revalidateTag("user", "max");
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    Sentry.captureException(error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}

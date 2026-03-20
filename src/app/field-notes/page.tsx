@@ -10,7 +10,7 @@ import { getFieldNotesRoute } from "@routes";
 export const metadata: Metadata = getPageMetadata({
   title: "Field Notes | Pro Construction Calc",
   description:
-    "Regional construction guides and contractor tips for Oneida, Madison, and Herkimer counties. Tax math, estimating workflows, insulation, and more.",
+    "Practical construction guides for Upstate NY contractors — tax math, estimating workflows, insulation codes, and trade-specific how-tos for Oneida, Madison, and Herkimer counties.",
   path: "/field-notes",
 });
 
@@ -29,11 +29,12 @@ export default function FieldNotesHubPage() {
               Field Notes
             </h1>
             <p className="mt-2 max-w-2xl text-sm text-slate-600">
-              Regional guides and contractor tips for Oneida, Madison, and
-              Herkimer counties. No fluff, just useful field guidance.
+              Practical guides built for contractors in Oneida, Madison, and
+              Herkimer counties. Trade methods, tax math, code notes, and
+              estimating tips — everything you need without leaving the app.
             </p>
             <div className="mt-3 inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-600">
-              100% on-site · No external click-aways
+              All guidance built in · No leaving to look it up
             </div>
           </div>
 

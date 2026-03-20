@@ -1696,7 +1696,7 @@ export function SavedContent({
           <button
             type="button"
             aria-label="Close delete confirmation"
-            className="absolute inset-0 bg-black/45"
+            className="absolute inset-0 bg-[--color-ink]/30"
             onClick={() => (deleting ? undefined : setDeleteTarget(null))}
           />
           <div className="relative w-full max-w-lg rounded-2xl border border-[--color-border] bg-[--color-surface] p-5 shadow-2xl">

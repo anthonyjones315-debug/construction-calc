@@ -59,7 +59,7 @@ export function SplashPopup() {
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
+        className="fixed inset-0 z-50 bg-[--color-ink]/30 backdrop-blur-sm"
         onClick={dismiss}
         aria-hidden
       />
@@ -73,12 +73,12 @@ export function SplashPopup() {
         onClick={(event) => event.stopPropagation()}
         style={{ animation: "splashUp 0.25s ease forwards" }}
       >
-        <GlassDialogFrame className="p-6 text-white shadow-[0_24px_50px_rgba(0,0,0,0.45)]">
+        <GlassDialogFrame className="p-6 shadow-[0_8px_32px_rgba(0,0,0,0.12)]">
           {/* Close */}
           <button
             type="button"
             onClick={dismiss}
-            className="absolute right-3 top-3 z-20 flex h-10 w-10 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-white/6 hover:text-white cursor-pointer"
+            className="absolute right-3 top-3 z-20 flex h-10 w-10 items-center justify-center rounded-lg text-[--color-ink-dim] transition-colors hover:bg-[--color-orange-soft] hover:text-[--color-orange-brand] cursor-pointer"
             aria-label="Close"
           >
             <X className="w-5 h-5" aria-hidden />
@@ -92,19 +92,19 @@ export function SplashPopup() {
               />
             </GlassIconBadge>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary">
+              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[--color-orange-brand]">
                 Start Here
               </p>
               <h2
                 id="splash-title"
-                className="text-lg font-display font-bold text-white"
+                className="text-lg font-display font-bold text-[--color-ink]"
               >
                 New how-to guides are live
               </h2>
             </div>
           </div>
 
-          <p className="relative mb-4 text-sm leading-relaxed text-slate-400">
+          <p className="relative mb-4 text-sm leading-relaxed text-[--color-ink-mid]">
             Learn the exact workflows behind tax checks, estimate handoff, PDF
             exports, analytics verification, and field version control.
           </p>
@@ -128,8 +128,8 @@ export function SplashPopup() {
                 label: "Latest-version device refresh routine",
               },
             ].map(({ icon: Icon, label }) => (
-              <GlassFeatureItem key={label}>
-                <Icon className="h-4 w-4 text-primary" aria-hidden />
+              <GlassFeatureItem key={label} className="text-[--color-ink-mid]">
+                <Icon className="h-4 w-4 text-[--color-orange-brand]" aria-hidden />
                 <span>{label}</span>
               </GlassFeatureItem>
             ))}
@@ -143,16 +143,16 @@ export function SplashPopup() {
             >
               Open How-To Guide
             </Link>
-            <GlassButton
+            <button
               type="button"
               onClick={dismiss}
-              className="min-h-[44px] w-full rounded-xl border-transparent bg-transparent text-xs text-slate-400 shadow-none hover:bg-white/6 hover:text-white"
+              className="min-h-[44px] w-full rounded-xl border border-[--color-border] bg-transparent px-4 py-2 text-xs text-[--color-ink-dim] transition-colors hover:bg-[--color-surface-alt] hover:text-[--color-ink-mid]"
             >
               Skip and open calculators
-            </GlassButton>
+            </button>
             <Link
               href={routes.fieldNotes}
-              className="flex min-h-[44px] w-full items-center justify-center rounded-xl text-xs text-primary transition-colors hover:bg-white/6 cursor-pointer"
+              className="flex min-h-[44px] w-full items-center justify-center rounded-xl text-xs text-[--color-orange-brand] transition-colors hover:bg-[--color-orange-soft] cursor-pointer"
               onClick={dismiss}
             >
               Browse Field Notes →

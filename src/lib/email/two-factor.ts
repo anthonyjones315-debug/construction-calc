@@ -3,7 +3,7 @@ import { Resend } from "resend";
 import { generateOtpEmailHtml } from "./templates/two-factor-otp";
 
 const FROM_EMAIL = "security@proconstructioncalc.com";
-const FROM_NAME = "Pro Construction Calc Security";
+const FROM_NAME = "Pro Construction Calc";
 const DEFAULT_SITE_URL = "https://proconstructioncalc.com";
 const TWO_FACTOR_EXPIRY_MINUTES = 5;
 

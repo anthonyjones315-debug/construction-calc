@@ -710,11 +710,11 @@ export default function SignInClient({
           <button
             type="button"
             onClick={() =>
-              router.push(session?.user?.id ? routes.commandCenter : routes.home)
+              router.push(session?.user?.id ? routes.commandCenter : routes.calculators)
             }
             className="inline-flex w-full items-center justify-center rounded-lg border-2 border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
           >
-            Back to Command Center
+            {session?.user?.id ? "Back to Command Center" : "Back to Calculators"}
           </button>
           <p className="text-xs text-slate-500">
             By signing in you agree to our{" "}

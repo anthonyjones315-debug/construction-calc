@@ -7,7 +7,7 @@ import {
   buildWelcomeEmailText,
 } from "@/lib/email/welcome-template";
 
-const FROM_EMAIL = "system@proconstructioncalc.com";
+const FROM_EMAIL = "Pro Construction Calc <owner@proconstructioncalc.com>";
 const DEFAULT_SITE_URL = "https://proconstructioncalc.com";
 const EMAIL_RE = /^[^\s@]{1,64}@[^\s@]{1,253}\.[^\s@]{2,}$/;
 

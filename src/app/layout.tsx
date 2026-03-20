@@ -150,7 +150,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href={resendOrigin} />
         <meta
           name="apple-mobile-web-app-status-bar-style"
-          content="black-translucent"
+          content="default"
         />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-title" content="Pro Calc" />

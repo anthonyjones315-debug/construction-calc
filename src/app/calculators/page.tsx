@@ -3,9 +3,9 @@ import { getPageMetadata } from "@/seo";
 import { CalculatorsDirectoryClient } from "./CalculatorsDirectoryClient";
 
 export const metadata: Metadata = getPageMetadata({
-  title: "Construction Calculators for Working Contractors | Pro Construction Calc",
+  title: "Construction Calculators for Contractors | Pro Construction Calc",
   description:
-    "Field-tested construction calculators for concrete, framing, roofing, insulation, flooring, and more. Built for working contractors; clear units and results you can use on-site.",
+    "Concrete, framing, roofing, insulation, flooring, and more — field-tested calculators that give you real numbers you can use on the job or in a quote.",
   path: "/calculators",
 });
 
