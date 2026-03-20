@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Route } from "next";
 import type { TradePageDefinition } from "../_lib/trade-pages";
 
 const CATEGORY_LABELS: Record<TradePageDefinition["category"], string> = {
@@ -14,12 +15,20 @@ const CATEGORY_LABELS: Record<TradePageDefinition["category"], string> = {
 };
 
 export function CalculatorBreadcrumb({ page }: { page: TradePageDefinition }) {
-  const crumbs = [
-    { label: "Home", href: "/" },
-    { label: "Calculators", href: "/calculators" },
-    { label: CATEGORY_LABELS[page.category], href: `/calculators/${page.category}` },
+  type Crumb = {
+    label: string;
+    href: Route;
+  };
+
+  const crumbs: Crumb[] = [
+    { label: "Home", href: "/" as Route },
+    { label: "Calculators", href: "/calculators" as Route },
+    {
+      label: CATEGORY_LABELS[page.category],
+      href: `/calculators/${page.category}` as Route,
+    },
     ...(page.type === "calculator"
-      ? [{ label: page.title, href: page.canonicalPath }]
+      ? [{ label: page.title, href: page.canonicalPath as Route }]
       : []),
   ];
 
