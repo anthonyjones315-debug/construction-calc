@@ -1,4 +1,4 @@
- "use client";
+"use client";
 
 import * as Sentry from "@sentry/nextjs";
 import { useState } from "react";
@@ -49,7 +49,9 @@ export function EmailEstimateModal({
   const [to, setTo] = useState("");
   const [subject, setSubject] = useState(DEFAULT_SUBJECT);
   const [replyToLocal, setReplyToLocal] = useState(replyTo ?? "");
-  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">(
+    "idle",
+  );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -100,7 +102,7 @@ export function EmailEstimateModal({
   return (
     <>
       <div
-        className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
+        className="fixed inset-0 z-[70] bg-black/50 backdrop-blur-sm"
         onClick={onClose}
         aria-hidden
       />
@@ -108,10 +110,10 @@ export function EmailEstimateModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="email-estimate-title"
-        className="fixed left-1/2 top-1/2 z-60 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2"
+        className="fixed inset-0 z-[80] flex items-center justify-center p-4"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="relative rounded-2xl border border-slate-800 bg-slate-900 p-6 text-white shadow-[0_24px_50px_rgba(0,0,0,0.45)]">
+        <div className="relative max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-2xl border border-slate-800 bg-slate-900 p-6 text-white shadow-[0_24px_50px_rgba(0,0,0,0.45)]">
           <button
             type="button"
             onClick={onClose}
@@ -159,7 +161,8 @@ export function EmailEstimateModal({
                   className="h-10 rounded-xl border border-slate-500 bg-slate-900 px-3 text-white placeholder:text-slate-500 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
                 <span className="text-xs text-slate-400">
-                  Replies will go to this address. Leave blank to use your default profile email.
+                  Replies will go to this address. Leave blank to use your
+                  default profile email.
                 </span>
               </label>
               <label className="flex flex-col gap-1 text-sm text-slate-300">

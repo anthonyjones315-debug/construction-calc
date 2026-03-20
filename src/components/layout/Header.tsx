@@ -112,7 +112,7 @@ export function Header() {
 
   return (
     <header ref={headerRef} className="site-header-shell sticky top-0 z-50">
-      <div className="mx-auto flex h-[--shell-header-h] min-w-0 max-w-7xl items-center justify-between gap-1 px-2 sm:gap-1.5 sm:px-3">
+      <div className="mx-auto flex h-[var(--shell-header-h)] min-w-0 max-w-7xl items-center justify-between gap-1 px-3 sm:gap-1.5 sm:px-3">
         {/* Logo */}
         <Link
           href={brandHref}
@@ -125,10 +125,7 @@ export function Header() {
             aria-hidden
           />
           <span className="hidden sm:block">Pro Construction Calc</span>
-          <span className="sm:hidden">PC</span>
-          <span className="ml-1 rounded-full border border-orange-400/40 bg-orange-50 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-[0.14em] text-orange-600">
-            Beta
-          </span>
+          <span className="sm:hidden">ProCalc</span>
         </Link>
 
         {/* Desktop nav */}
@@ -136,16 +133,23 @@ export function Header() {
           className="site-header-nav hidden items-center gap-2 text-sm md:flex"
           aria-label="Main navigation"
         >
-          {primaryNavigation.map(({ href, label }) => (
-            <Link
-              key={href}
-              href={href}
-              prefetch={false}
-              className="flex min-h-7 items-center rounded-lg px-2 py-1 text-[11px] text-slate-700 transition-colors hover:text-orange-600"
-            >
-              {label}
-            </Link>
-          ))}
+          {primaryNavigation.map(({ href, label }) => {
+            const isActive = pathname === href || pathname.startsWith(href + "/");
+            return (
+              <Link
+                key={href}
+                href={href}
+                prefetch={false}
+                className={`flex min-h-7 items-center rounded-lg px-2 py-1 text-xs transition-colors ${
+                  isActive
+                    ? "font-semibold text-orange-600 underline underline-offset-4 decoration-orange-300"
+                    : "text-slate-600 hover:text-orange-600"
+                }`}
+              >
+                {label}
+              </Link>
+            );
+          })}
         </nav>
 
         {/* Right side */}
@@ -174,9 +178,11 @@ export function Header() {
           >
             <ClipboardList className="h-3.5 w-3.5" aria-hidden />
             <span className="hidden sm:inline">Estimates</span>
-            <span className="rounded-full bg-orange-500 px-1.5 py-[2px] text-[9px] font-black text-white">
-              {estimateCount}
-            </span>
+            {estimateCount > 0 && (
+              <span className="rounded-full bg-orange-500 px-1.5 py-[2px] text-[9px] font-black text-white">
+                {estimateCount}
+              </span>
+            )}
           </Link>
 
           {/* Offline badge */}
@@ -223,7 +229,7 @@ export function Header() {
               {menuOpen && (
                 <div
                   id="account-menu"
-                  className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-2xl border border-slate-200 bg-white text-slate-900 shadow-[0_8px_24px_rgba(0,0,0,0.12)]"
+                  className="absolute right-0 top-full z-[60] mt-2 max-h-[min(75dvh,26rem)] w-56 max-w-[calc(100vw-1rem)] overflow-x-hidden overflow-y-auto rounded-2xl border border-slate-200 bg-white text-slate-900 shadow-[0_8px_24px_rgba(0,0,0,0.12)]"
                   role="menu"
                   aria-label="Account menu"
                 >
@@ -231,12 +237,12 @@ export function Header() {
                     <p className="text-xs uppercase tracking-[0.12em] text-slate-400">
                       Signed in as
                     </p>
-                    <p className="truncate text-sm font-medium text-slate-900">
+                    <p className="text-sm font-medium leading-snug break-words text-slate-900">
                       {businessName?.trim() ||
                         session.user?.name ||
                         "Pro Account"}
                     </p>
-                    <p className="truncate text-xs text-slate-500">
+                    <p className="text-xs leading-snug break-all text-slate-500">
                       {session.user?.email}
                     </p>
                   </div>
@@ -331,15 +337,21 @@ export function Header() {
       {mobileNavOpen && (
         <nav
           id="mobile-navigation"
-          className="flex flex-col gap-1 border-t border-slate-200 bg-white px-4 py-2 md:hidden"
+          className="flex flex-col gap-1 border-t-2 border-orange-500 bg-white px-4 py-2 shadow-lg backdrop-blur-sm md:hidden"
           aria-label="Mobile navigation"
         >
+          {session && businessName && (
+            <div className="border-b border-slate-100 px-4 py-2 mb-1">
+              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">Signed in</p>
+              <p className="text-sm font-semibold text-slate-800 truncate">{businessName}</p>
+            </div>
+          )}
           {session && (
             <Link
               href={routes.commandCenter}
               prefetch={false}
               onClick={() => setMobileNavOpen(false)}
-              className={`flex min-h-9 items-center gap-2 rounded-lg px-4 py-1.5 text-sm transition-colors hover:bg-orange-50 hover:text-orange-600 ${
+              className={`flex min-h-10 items-center gap-2 rounded-lg px-4 py-1.5 text-sm transition-colors hover:bg-orange-50 hover:text-orange-600 ${
                 isCommandCenterActive
                   ? "text-orange-600 font-bold"
                   : "text-slate-700"
@@ -360,7 +372,7 @@ export function Header() {
               href={href}
               prefetch={false}
               onClick={() => setMobileNavOpen(false)}
-              className="flex min-h-9 items-center rounded-lg px-4 py-1.5 text-sm text-slate-700 transition-colors hover:bg-orange-50 hover:text-orange-600"
+              className="flex min-h-10 items-center rounded-lg px-4 py-1.5 text-sm text-slate-700 transition-colors hover:bg-orange-50 hover:text-orange-600"
             >
               {label}
             </Link>
@@ -369,7 +381,7 @@ export function Header() {
             href={routes.cart}
             prefetch={false}
             onClick={() => setMobileNavOpen(false)}
-            className="flex min-h-9 items-center rounded-lg px-4 py-1.5 text-sm text-slate-700 transition-colors hover:bg-orange-50 hover:text-orange-600"
+            className="flex min-h-10 items-center rounded-lg px-4 py-1.5 text-sm text-slate-700 transition-colors hover:bg-orange-50 hover:text-orange-600"
           >
             <ClipboardList
               className="h-4 w-4 mr-2 text-slate-400"
