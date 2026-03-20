@@ -82,7 +82,7 @@ Provide tips on: material optimization, waste reduction, cost savings, and commo
       },
       body: JSON.stringify({
         // Use a stable, currently supported fast model.
-        model: 'claude-3-5-haiku-latest',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 400,
         messages: [{ role: 'user', content: prompt }],
       }),

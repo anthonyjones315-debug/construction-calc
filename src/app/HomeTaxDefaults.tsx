@@ -20,19 +20,19 @@ export function HomeTaxDefaults() {
   const setTaxRate = useStore((state) => state.setTaxRate);
 
   return (
-    <div className="home-tax-panel mt-4 rounded-2xl border border-orange-500/30 bg-[linear-gradient(135deg,rgba(249,115,22,0.16),rgba(15,23,42,0.96))] px-4 py-4 lg:mt-3.5 lg:px-3.5 lg:py-3">
+    <div className="home-tax-panel mt-4 rounded-2xl border border-[--color-orange-brand]/25 bg-[radial-gradient(circle_at_top_left,rgba(234,88,12,0.07),transparent_40%),var(--color-surface-alt)] px-4 py-4 lg:mt-3.5 lg:px-3.5 lg:py-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <p className="text-[11px] font-black uppercase tracking-[0.18em] text-orange-300">
+          <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[--color-orange-brand]">
             Tri-County Tax Defaults
           </p>
-          <p className="home-tax-copy mt-1 text-sm text-slate-200">
+          <p className="home-tax-copy mt-1 text-sm text-[--color-ink-mid]">
             Configure default regional tax rates for automatic application to new estimates and invoices.
           </p>
         </div>
         <Link
           href={routes.guide}
-          className="inline-flex min-h-10 items-center justify-center rounded-xl border border-orange-300/40 bg-slate-950/35 px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white transition hover:border-orange-300/70"
+          className="inline-flex min-h-10 items-center justify-center rounded-xl border border-[--color-orange-brand]/30 bg-white px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] text-[--color-orange-brand] transition hover:border-[--color-orange-brand]/60 hover:bg-[--color-orange-soft]"
         >
           Tax Compliance Guide
         </Link>
@@ -48,24 +48,24 @@ export function HomeTaxDefaults() {
               onClick={() => setTaxRate(entry.combinedRate)}
               className={`home-tax-card flex flex-col items-start rounded-xl border px-3 py-3 text-left transition ${
                 isActive
-                  ? "border-orange-400/70 bg-slate-950"
-                  : "border-white/10 bg-slate-950/45 hover:border-orange-300/50 hover:bg-slate-900"
+                  ? "border-[--color-orange-brand]/60 bg-[--color-orange-soft]"
+                  : "border-[--color-border] bg-white hover:border-[--color-orange-brand]/35 hover:bg-[--color-orange-soft]"
               }`}
             >
               <div className="flex items-center gap-1.5">
-                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-300">
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-ink-mid]">
                   {entry.county}
                 </p>
                 {isActive ? (
-                  <span className="rounded-full bg-orange-500/15 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.16em] text-orange-300">
+                  <span className="rounded-full bg-[--color-orange-brand]/12 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.16em] text-[--color-orange-brand]">
                     Default
                   </span>
                 ) : null}
               </div>
-              <p className="home-tax-rate mt-1 text-xl font-black text-white">
+              <p className="home-tax-rate mt-1 text-xl font-black text-[--color-ink]">
                 {entry.combinedRate.toFixed(2)}%
               </p>
-              <p className="home-tax-copy mt-1 text-xs text-slate-500">
+              <p className="home-tax-copy mt-1 text-xs text-[--color-ink-dim]">
                 Combined NYS + local sales tax
               </p>
             </button>

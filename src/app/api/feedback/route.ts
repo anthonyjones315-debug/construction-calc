@@ -3,8 +3,8 @@ import * as Sentry from "@sentry/nextjs";
 import { Resend } from "resend";
 import { z } from "zod";
 
-const SITE_ALERT_TO = "amj111394@gmail.com";
-const FROM_EMAIL = "system@proconstructioncalc.com";
+const SITE_ALERT_TO = "owner@proconstructioncalc.com";
+const FROM_EMAIL = "Pro Construction Calc <owner@proconstructioncalc.com>";
 const SUBJECT_PREFIX = "[PCC-ALERT]";
 
 const feedbackSchema = z.object({
@@ -147,7 +147,7 @@ export async function POST(req: NextRequest) {
         {
           error:
             error.message ??
-            "Failed to send. Ensure the 'from' address uses your Resend verified domain (e.g. system@proconstructioncalc.com).",
+            "Failed to send. Ensure the 'from' address uses your Resend verified domain (e.g. owner@proconstructioncalc.com).",
         },
         { status: 502 }
       );

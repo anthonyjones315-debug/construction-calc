@@ -11,7 +11,7 @@ import {
 } from "@/lib/supabase/business";
 import { multiplyDollars, normalizeDollars } from "@/utils/money";
 
-const FROM_EMAIL = "system@proconstructioncalc.com";
+const FROM_EMAIL = "Pro Construction Calc <owner@proconstructioncalc.com>";
 
 function getResend() {
   const key = process.env.RESEND_API_KEY;

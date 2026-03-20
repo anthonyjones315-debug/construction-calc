@@ -25,7 +25,7 @@ export function UnitToggle<T extends string>({
       <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[--color-nav-text]/75">
         {label}
       </p>
-      <div className="inline-flex rounded-full border border-slate-500 bg-slate-900 p-0.5">
+      <div className="inline-flex rounded-full border border-[--color-border] bg-[--color-surface-alt] p-0.5">
         {options.map((option) => {
           const active = option.value === value;
           return (
@@ -38,8 +38,8 @@ export function UnitToggle<T extends string>({
               }}
               className={`min-h-8 rounded-full border-2 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] transition-all ${
                 active
-                  ? "border-orange-400 bg-orange-500/25 text-orange-400"
-                  : "border-transparent text-[--color-nav-text]/80 hover:border-white/70 hover:text-white"
+                  ? "border-[--color-orange-brand]/60 bg-[--color-orange-soft] text-[--color-orange-brand]"
+                  : "border-transparent text-[--color-ink-mid] hover:border-[--color-orange-brand]/30 hover:text-[--color-orange-brand]"
               }`}
               aria-pressed={active}
             >

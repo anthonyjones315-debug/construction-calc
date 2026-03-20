@@ -37,6 +37,7 @@ type CommandCenterData = {
   isOwner: boolean;
   userRole: string;
   businessName: string;
+  businessEmail: string;
   joinCode: string;
   members: TeamMember[];
   recentEstimates: RecentEstimate[];
@@ -214,20 +215,20 @@ function CommandCenterOnboarding({
 }) {
   return (
     <div className="mx-auto flex min-h-[70vh] w-full max-w-xl items-center px-4 py-12 sm:px-6">
-      <section className="w-full rounded-2xl border border-slate-700 bg-slate-900 p-6 text-white shadow-[0_12px_28px_rgba(0,0,0,0.35)]">
-        <p className="text-xs font-black uppercase tracking-[0.15em] text-orange-500">
-          Command Center Setup
+      <section className="w-full rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_12px_28px_rgba(0,0,0,0.08)]">
+        <p className="text-xs font-black uppercase tracking-[0.15em] text-orange-600">
+          Welcome to Pro Construction Calc
         </p>
-        <h1 className="mt-2 text-2xl font-black uppercase text-white">
-          Create Your Business
+        <h1 className="mt-2 text-2xl font-black uppercase text-slate-900">
+          Set Up Your Business
         </h1>
-        <p className="mt-2 text-sm text-white/60">
-          Your account is signed in. Create a business to unlock the full
-          dashboard.
+        <p className="mt-2 text-sm text-slate-500">
+          Your account is ready. Create a business workspace to unlock
+          estimates, crew management, and the full calculator suite.
         </p>
 
         {setupError && (
-          <p className="mt-4 rounded-lg border border-red-400/30 bg-red-950/45 px-3 py-2 text-sm text-red-200">
+          <p className="mt-4 rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
             {setupError}
           </p>
         )}
@@ -236,22 +237,22 @@ function CommandCenterOnboarding({
           action={createBusinessFromCommandCenterAction}
           className="mt-5 space-y-4"
         >
-          <label className="flex flex-col gap-1 text-sm text-white/70">
+          <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
             Business Name
             <input
               name="businessName"
               type="text"
               required
               placeholder="Acme Construction"
-              className="h-11 rounded-lg border border-slate-500 bg-slate-900 px-3 text-white placeholder:text-white/35 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
+              className="h-11 rounded-lg border border-slate-300 bg-white px-3 text-slate-900 placeholder:text-slate-400 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
             />
           </label>
 
           <button
             type="submit"
-            className="inline-flex h-11 items-center justify-center rounded-lg bg-orange-600 px-5 text-sm font-black uppercase text-white shadow-lg transition hover:bg-orange-700"
+            className="inline-flex h-11 items-center justify-center rounded-lg bg-orange-600 px-5 text-sm font-black uppercase text-white shadow-sm transition hover:bg-orange-700"
           >
-            Create Your Business
+            Create Business &amp; Enter
           </button>
         </form>
       </section>
@@ -278,6 +279,7 @@ async function loadCommandCenterData(
       isOwner: false,
       userRole: "member",
       businessName: "",
+      businessEmail: "",
       joinCode: "",
       members: [],
       recentEstimates: [],
@@ -297,6 +299,7 @@ async function loadCommandCenterData(
       isOwner: false,
       userRole: "member",
       businessName: "",
+      businessEmail: "",
       joinCode: "",
       members: [],
       recentEstimates: [],
@@ -335,7 +338,7 @@ async function loadCommandCenterData(
 
   const { data: businessProfile } = await db
     .from("business_profiles")
-    .select("business_name")
+    .select("business_name, business_email")
     .eq("business_id", business.id)
     .maybeSingle();
 
@@ -345,6 +348,7 @@ async function loadCommandCenterData(
     isOwner: membership.role === "owner",
     userRole: membership.role,
     businessName: business.name,
+    businessEmail: String(businessProfile?.business_email ?? "").trim(),
     joinCode: canManageCrew
       ? (await getBusinessJoinCode(db, business.id)).code
       : "",
@@ -412,6 +416,7 @@ export default async function CommandCenterPage({
     mainContent = (
       <CommandCenterLiteClient
         businessName={commandCenterData.businessName}
+        businessEmail={commandCenterData.businessEmail}
         joinCode={commandCenterData.joinCode}
         initialMembers={commandCenterData.members}
         recentEstimates={commandCenterData.recentEstimates}

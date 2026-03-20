@@ -19,9 +19,9 @@ import {
 import { routes } from "@routes";
 
 export const metadata = getPageMetadata({
-  title: "Pro Construction Calc | Contractor-Grade Estimating for the Field",
+  title: "Pro Construction Calc | Estimating Built for Contractors",
   description:
-    "Fast, contractor-friendly estimating with trade-specific calculators, saved workflows, and practical field tips for daily jobs.",
+    "Trade-specific calculators, saved estimates, and practical field tips built for contractors who need accurate numbers fast.",
   path: "/",
 });
 
@@ -118,13 +118,13 @@ export default function HomePage() {
               <h1 className="home-display-heading mt-2.5 max-w-2xl font-display font-bold">
                 Pro Construction Calc
                 <span className="mt-2 block text-orange-600">
-                  Fast, easy-to-use calculators for everyday field estimates.
+                  Calculators you&apos;ll actually use in the field.
                 </span>
               </h1>
               <p className="home-hero-copy mt-2.5 max-w-xl text-[13px] leading-relaxed text-slate-600 sm:text-sm">
-                Run your quantities, apply your pricing, and move straight into
-                client-ready estimates. No bloated dashboard flow—just the tools
-                you need to quote jobs quickly.
+                Run your quantities, lock in your pricing, and get a sendable
+                estimate without extra steps. No bloated workflow — just the
+                tools you need to quote jobs and move on.
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
                 {/* Primary CTA — full emphasis */}

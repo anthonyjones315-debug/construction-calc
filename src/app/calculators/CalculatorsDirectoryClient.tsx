@@ -198,10 +198,10 @@ export function CalculatorsDirectoryClient() {
               </span>
             </div>
             <h1 className="mt-1 font-display text-2xl font-black text-slate-900 sm:text-3xl">
-              Professional Estimating Calculators
+              Calculators Built for Your Trade
             </h1>
             <p className="mt-1 text-sm text-slate-500">
-              Oneida · Madison · Herkimer County, NY
+              Serving contractors across Oneida, Madison &amp; Herkimer County, NY
             </p>
             <div className="mx-auto mt-3 max-w-2xl">
               <div className="flex items-center rounded-xl border border-slate-300 bg-slate-50 px-3 py-2.5 focus-within:border-[--color-orange-brand] focus-within:ring-1 focus-within:ring-[--color-orange-brand]">
