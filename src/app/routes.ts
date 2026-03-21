@@ -2,7 +2,7 @@ import type { Route } from "next";
 
 export const routes = {
   home: "/" as Route,
-  register: "/register" as Route,
+  register: "/sign-up" as Route,
   about: "/about" as Route,
   blog: "/blog" as Route,
   contact: "/contact" as Route,
@@ -17,6 +17,8 @@ export const routes = {
   cart: "/cart" as Route,
   saved: "/saved" as Route,
   settings: "/settings" as Route,
+  /** Hash target on Settings — Business Profile section (`ProfileSettings`). */
+  settingsBusinessProfile: "/settings#business-profile" as Route,
   financialTerms: "/financial-terms" as Route,
   glossary: "/glossary" as Route,
   guide: "/guide" as Route,
@@ -24,7 +26,8 @@ export const routes = {
   unauthorized: "/unauthorized" as Route,
   auth: {
     error: "/auth/error" as Route,
-    signIn: "/auth/signin" as Route,
+    signIn: "/sign-in" as Route,
+    signUp: "/sign-up" as Route,
     forgotPassword: "/forgot-password" as Route,
   },
   api: {
@@ -57,7 +60,7 @@ export const accountNavigation = [
   { href: routes.auth.signIn, label: "Sign In" },
   { href: routes.saved, label: "Saved Estimates" },
   { href: routes.pricebook, label: "Price Book" },
-  { href: routes.settings, label: "Business Profile" },
+  { href: routes.settingsBusinessProfile, label: "Business Profile" },
   { href: routes.commandCenter, label: "Command Center" },
 ] as const;
 

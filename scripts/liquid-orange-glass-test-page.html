@@ -28,11 +28,11 @@
       /* Define CSS variables (design tokens) */
       :root {
         /* Brand Colors - Orange */
-        --color-orange-base: rgba(255, 122, 0, 1); /* Safety Orange (base) */
-        --color-orange-light: rgba(255, 153, 51, 1); /* Light highlight */
-        --color-orange-dark: rgba(204, 88, 0, 1); /* Dark shade */
-        --color-orange-glow: rgba(255, 122, 0, 0.3); /* Glow effect */
-        --color-orange-rim: rgba(255, 143, 31, 0.8); /* Rim light */
+        --color-orange-base: rgba(234, 88, 12, 1); /* Brand orange (#ea580c) */
+        --color-orange-light: rgba(251, 146, 60, 1); /* Lighter accent */
+        --color-orange-dark: rgba(194, 65, 12, 1); /* Deep / hover */
+        --color-orange-glow: rgba(234, 88, 12, 0.3); /* Glow effect */
+        --color-orange-rim: rgba(234, 88, 12, 0.75); /* Rim light */
 
         /* Surface Colors - Glass effect */
         --color-surface-deep: rgba(2, 6, 23, 0.95); /* Deepest background */
@@ -58,7 +58,7 @@
 
         /* Input Colors */
         --color-input-bg: rgba(255, 255, 255, 0.95); /* White frosted input */
-        --color-input-border: rgba(255, 122, 0, 0.2); /* Subtle orange border */
+        --color-input-border: rgba(234, 88, 12, 0.2); /* Subtle orange border */
         --color-input-text: rgba(0, 0, 0, 0.9); /* High-contrast black text */
 
         /* Feedback Colors */
@@ -74,9 +74,9 @@
         --shadow-glass-lg:
           0 16px 24px 0 rgba(0, 0, 0, 0.16),
           inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-        --glow-orange-sm: 0 0 8px rgba(255, 122, 0, 0.2);
-        --glow-orange-md: 0 0 12px rgba(255, 122, 0, 0.3);
-        --glow-border: 0 0 5px rgba(255, 122, 0, 0.3);
+        --glow-orange-sm: 0 0 8px rgba(234, 88, 12, 0.2);
+        --glow-orange-md: 0 0 12px rgba(234, 88, 12, 0.3);
+        --glow-border: 0 0 5px rgba(234, 88, 12, 0.3);
       }
 
       /* Animated Background */
@@ -128,7 +128,7 @@
       .glass-card:hover {
         transform: translateY(-2px);
         box-shadow: var(--shadow-glass-lg), var(--glow-orange-sm);
-        border-color: rgba(255, 122, 0, 0.2);
+        border-color: rgba(234, 88, 12, 0.2);
       }
 
       .glass-input {
@@ -175,7 +175,7 @@
         background: linear-gradient(
           to bottom,
           rgba(255, 143, 31, 0.95),
-          rgba(255, 122, 0, 0.95)
+          rgba(234, 88, 12, 0.95)
         );
         color: white;
         border: 1px solid rgba(255, 255, 255, 0.2);
@@ -184,7 +184,7 @@
         box-shadow:
           0 4px 6px -1px rgba(0, 0, 0, 0.1),
           0 2px 4px -2px rgba(2, 6, 23, 0.1),
-          0 0 0 1px rgba(255, 122, 0, 0.3);
+          0 0 0 1px rgba(234, 88, 12, 0.3);
         position: relative;
         overflow: hidden;
         transition:
@@ -211,8 +211,8 @@
         left: 25%;
         width: 50%;
         height: 2px;
-        background: rgba(255, 122, 0, 0.8);
-        box-shadow: 0 0 8px 1px rgba(255, 122, 0, 0.4);
+        background: rgba(234, 88, 12, 0.8);
+        box-shadow: 0 0 8px 1px rgba(234, 88, 12, 0.4);
         animation: rimLight 0.8s infinite alternate;
       }
 
@@ -321,17 +321,17 @@
       @keyframes rimLight {
         0% {
           opacity: 0.6;
-          box-shadow: 0 0 0 1px rgba(255, 122, 0, 0.2);
+          box-shadow: 0 0 0 1px rgba(234, 88, 12, 0.2);
         }
         50% {
           opacity: 1;
           box-shadow:
-            0 0 0 1px rgba(255, 122, 0, 0.4),
-            0 0 4px rgba(255, 122, 0, 0.3);
+            0 0 0 1px rgba(234, 88, 12, 0.4),
+            0 0 4px rgba(234, 88, 12, 0.3);
         }
         100% {
           opacity: 0.6;
-          box-shadow: 0 0 0 1px rgba(255, 122, 0, 0.2);
+          box-shadow: 0 0 0 1px rgba(234, 88, 12, 0.2);
         }
       }
 
@@ -365,9 +365,9 @@
       }
 
       .tab-button.active {
-        background: rgba(255, 122, 0, 0.15);
+        background: rgba(234, 88, 12, 0.15);
         color: var(--color-orange-light);
-        border-color: rgba(255, 122, 0, 0.3);
+        border-color: rgba(234, 88, 12, 0.3);
       }
 
       .test-button {
@@ -736,7 +736,7 @@
                 card.style.transform = "translateY(-2px)";
                 card.style.boxShadow =
                   "var(--shadow-glass-lg), var(--glow-orange-sm)";
-                card.style.borderColor = "rgba(255, 122, 0, 0.2)";
+                card.style.borderColor = "rgba(234, 88, 12, 0.2)";
 
                 // Move to next card
                 currentCard = (currentCard + 1) % cards.length;
@@ -820,7 +820,7 @@
                   card.style.transform = "translateY(-2px)";
                   card.style.boxShadow =
                     "var(--shadow-glass-lg), var(--glow-orange-sm)";
-                  card.style.borderColor = "rgba(255, 122, 0, 0.2)";
+                  card.style.borderColor = "rgba(234, 88, 12, 0.2)";
 
                   // Move to next card
                   currentCard = (currentCard + 1) % cards.length;

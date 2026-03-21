@@ -102,7 +102,7 @@ export function EmailEstimateModal({
   return (
     <>
       <div
-        className="fixed inset-0 z-[70] bg-black/50 backdrop-blur-sm"
+        className="fixed inset-0 z-[70] bg-black/30"
         onClick={onClose}
         aria-hidden
       />
@@ -113,11 +113,11 @@ export function EmailEstimateModal({
         className="fixed inset-0 z-[80] flex items-center justify-center p-4"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="relative max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-2xl border border-slate-800 bg-slate-900 p-6 text-white shadow-[0_24px_50px_rgba(0,0,0,0.45)]">
+        <div className="relative max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-2xl border border-[--color-border] bg-[--color-surface] p-6 text-[--color-ink] shadow-[0_24px_50px_rgba(0,0,0,0.15)]">
           <button
             type="button"
             onClick={onClose}
-            className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-white/6 hover:text-white"
+            className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-lg text-[--color-ink-dim] transition-colors hover:bg-[--color-surface-alt] hover:text-[--color-ink]"
             aria-label="Close"
           >
             <X className="h-4 w-4" aria-hidden />
@@ -125,22 +125,25 @@ export function EmailEstimateModal({
 
           <h2
             id="email-estimate-title"
-            className="font-display text-lg font-bold text-white"
+            className="font-display text-lg font-bold text-[--color-ink]"
           >
             Email Estimate
           </h2>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-sm text-[--color-ink-mid]">
             Send this estimate to a client. Emails are sent from{" "}
-            <code>system@proconstructioncalc.com</code>.
+            <code className="rounded bg-[--color-surface-alt] px-1 text-[--color-ink]">
+              system@proconstructioncalc.com
+            </code>
+            .
           </p>
 
           {status === "sent" ? (
-            <div className="mt-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
+            <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
               Estimate sent successfully.
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="mt-4 space-y-4">
-              <label className="flex flex-col gap-1 text-sm text-slate-300">
+              <label className="flex flex-col gap-1 text-sm text-[--color-ink-mid]">
                 To (email)
                 <input
                   type="email"
@@ -148,40 +151,40 @@ export function EmailEstimateModal({
                   value={to}
                   onChange={(e) => setTo(e.target.value)}
                   placeholder="client@example.com"
-                  className="h-10 rounded-xl border border-slate-500 bg-slate-900 px-3 text-white placeholder:text-slate-500 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="h-10 rounded-xl border border-[--color-border] bg-[--color-surface] px-3 text-[--color-ink] placeholder:text-[--color-ink-dim] focus:border-[--color-orange-brand] focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/25"
                 />
               </label>
-              <label className="flex flex-col gap-1 text-sm text-slate-300">
+              <label className="flex flex-col gap-1 text-sm text-[--color-ink-mid]">
                 Reply-to (your email)
                 <input
                   type="email"
                   value={replyToLocal}
                   onChange={(e) => setReplyToLocal(e.target.value)}
                   placeholder="you@yourcompany.com"
-                  className="h-10 rounded-xl border border-slate-500 bg-slate-900 px-3 text-white placeholder:text-slate-500 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="h-10 rounded-xl border border-[--color-border] bg-[--color-surface] px-3 text-[--color-ink] placeholder:text-[--color-ink-dim] focus:border-[--color-orange-brand] focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/25"
                 />
-                <span className="text-xs text-slate-400">
+                <span className="text-xs text-[--color-ink-dim]">
                   Replies will go to this address. Leave blank to use your
                   default profile email.
                 </span>
               </label>
-              <label className="flex flex-col gap-1 text-sm text-slate-300">
+              <label className="flex flex-col gap-1 text-sm text-[--color-ink-mid]">
                 Subject
                 <input
                   type="text"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
                   maxLength={200}
-                  className="h-10 rounded-xl border border-slate-500 bg-slate-900 px-3 text-white placeholder:text-slate-500 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="h-10 rounded-xl border border-[--color-border] bg-[--color-surface] px-3 text-[--color-ink] placeholder:text-[--color-ink-dim] focus:border-[--color-orange-brand] focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/25"
                 />
               </label>
               {status === "error" && errorMessage && (
-                <p className="text-sm text-red-300">
+                <p className="text-sm text-red-600">
                   {errorMessage}{" "}
                   <button
                     type="button"
                     onClick={() => Sentry.showReportDialog()}
-                    className="ml-1 text-xs font-medium underline underline-offset-2 text-red-200 hover:text-red-100"
+                    className="ml-1 text-xs font-medium text-red-700 underline underline-offset-2 hover:text-red-800"
                   >
                     Report this issue
                   </button>
@@ -191,7 +194,7 @@ export function EmailEstimateModal({
                 <button
                   type="submit"
                   disabled={status === "sending"}
-                  className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[--color-orange-brand] px-4 text-sm font-bold text-white transition hover:brightness-95 disabled:opacity-60"
+                  className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[--color-orange-brand] px-4 text-sm font-bold text-white transition hover:bg-[--color-orange-dark] disabled:opacity-60"
                 >
                   {status === "sending" ? (
                     <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
@@ -203,7 +206,7 @@ export function EmailEstimateModal({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="rounded-xl border-2 border-white/80 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/8 hover:text-white"
+                  className="rounded-xl border border-[--color-border] bg-[--color-surface-alt] px-4 py-2 text-sm font-semibold text-[--color-ink] transition hover:bg-[--color-surface]"
                 >
                   Close
                 </button>

@@ -8,6 +8,7 @@ import { getBusinessJoinCode } from "@/lib/supabase/join-code";
 import { getNoIndexMetadata } from "@/seo";
 import { routes } from "@routes";
 import CommandCenterLiteClient from "./CommandCenterLiteClient";
+import { JoinBusinessWithCodeForm } from "./JoinBusinessWithCodeForm";
 import WelcomeGuidePopupClient from "./WelcomeGuidePopupClient";
 
 export const metadata = getNoIndexMetadata(
@@ -214,20 +215,20 @@ function CommandCenterOnboarding({
 }) {
   return (
     <div className="mx-auto flex min-h-[70vh] w-full max-w-xl items-center px-4 py-12 sm:px-6">
-      <section className="w-full rounded-2xl border border-slate-700 bg-slate-900 p-6 text-white shadow-[0_12px_28px_rgba(0,0,0,0.35)]">
-        <p className="text-xs font-black uppercase tracking-[0.15em] text-orange-500">
+      <section className="w-full rounded-2xl border border-[--color-border] bg-[--color-surface] p-6 text-[--color-ink] shadow-[0_12px_36px_rgba(15,18,27,0.08)]">
+        <p className="text-xs font-black uppercase tracking-[0.15em] text-[--color-orange-brand]">
           Command Center Setup
         </p>
-        <h1 className="mt-2 text-2xl font-black uppercase text-white">
+        <h1 className="mt-2 text-2xl font-black uppercase text-[--color-ink]">
           Create Your Business
         </h1>
-        <p className="mt-2 text-sm text-white/60">
+        <p className="mt-2 text-sm text-[--color-ink-mid]">
           Your account is signed in. Create a business to unlock the full
           dashboard.
         </p>
 
         {setupError && (
-          <p className="mt-4 rounded-lg border border-red-400/30 bg-red-950/45 px-3 py-2 text-sm text-red-200">
+          <p className="mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
             {setupError}
           </p>
         )}
@@ -236,24 +237,26 @@ function CommandCenterOnboarding({
           action={createBusinessFromCommandCenterAction}
           className="mt-5 space-y-4"
         >
-          <label className="flex flex-col gap-1 text-sm text-white/70">
+          <label className="flex flex-col gap-1 text-sm text-[--color-ink-mid]">
             Business Name
             <input
               name="businessName"
               type="text"
               required
               placeholder="Acme Construction"
-              className="h-11 rounded-lg border border-slate-500 bg-slate-900 px-3 text-white placeholder:text-white/35 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
+              className="h-11 rounded-lg border border-[--color-border] bg-[--color-surface] px-3 text-[--color-ink] placeholder:text-[--color-ink-dim] outline-none transition focus:border-[--color-orange-brand] focus:ring-2 focus:ring-[--color-orange-brand]/25"
             />
           </label>
 
           <button
             type="submit"
-            className="inline-flex h-11 items-center justify-center rounded-lg bg-orange-600 px-5 text-sm font-black uppercase text-white shadow-lg transition hover:bg-orange-700"
+            className="inline-flex h-11 items-center justify-center rounded-lg bg-[--color-orange-brand] px-5 text-sm font-black uppercase text-white shadow-md transition hover:bg-[--color-orange-dark]"
           >
             Create Your Business
           </button>
         </form>
+
+        <JoinBusinessWithCodeForm />
       </section>
     </div>
   );

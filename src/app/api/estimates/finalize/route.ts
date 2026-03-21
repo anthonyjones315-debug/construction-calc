@@ -6,8 +6,10 @@ import { createServerClient } from "@/lib/supabase/server";
 import {
   assertNoBusinessIdOverride,
   getBusinessContextForSession,
+  getTenantScopeColumn,
   getTenantScopeId,
 } from "@/lib/supabase/business";
+import { loadEstimateScope } from "@/lib/supabase/estimate-scope";
 import {
   FINANCIAL_DASHBOARD_TAG,
   SAVED_ESTIMATES_TAG,
@@ -19,6 +21,8 @@ import {
   buildSigningMeta,
   finalizeEstimateSchema,
   generateEstimateShareCode,
+  isValidShareCodeNormalized,
+  normalizeShareCode,
   withFinalizeInputs,
 } from "@/lib/estimates/finalize";
 import {
@@ -67,6 +71,7 @@ export async function POST(request: NextRequest) {
     const db = createServerClient();
     const businessContext = await getBusinessContextForSession(db, session);
     const tenantId = getTenantScopeId(businessContext);
+    const tenantColumn = getTenantScopeColumn(businessContext);
     const payload = parsed.data;
     const contractorProfileQuery = businessContext.usesLegacyUserScope
       ? db
@@ -99,6 +104,8 @@ export async function POST(request: NextRequest) {
       user_name: session.user.name ?? null,
     };
 
+    const clientEmailForInvite = getClientEmail(payload.inputs);
+
     function buildSavedInputs(includeShareCode: boolean) {
       const contractorSig = payload.signature?.signatureDataUrl
         ? {
@@ -109,6 +116,9 @@ export async function POST(request: NextRequest) {
         : {};
 
       if (includeShareCode) {
+        const inviteRecipientEmail = clientEmailForInvite
+          ? clientEmailForInvite.trim().toLowerCase()
+          : null;
         const base = withFinalizeInputs(
           payload.inputs,
           payload,
@@ -122,6 +132,9 @@ export async function POST(request: NextRequest) {
               ? (base.signing as Record<string, unknown>)
               : {}),
             ...contractorSig,
+            ...(inviteRecipientEmail
+              ? { inviteRecipientEmail }
+              : {}),
           },
         };
       }
@@ -140,69 +153,173 @@ export async function POST(request: NextRequest) {
       };
     }
 
-    for (let attempt = 0; attempt < 5; attempt += 1) {
-      shareCode = signingMeta.shareCode;
-
-      const insertPayload: Record<string, unknown> = {
-        user_id: session.user.id,
-        name: payload.name,
-        calculator_id: payload.calculator_id,
-        inputs: buildSavedInputs(shareCodeSupported),
-        results: payload.results,
-        budget_items: null,
-        client_name: payload.client_name ?? null,
-        job_site_address: payload.job_site_address ?? null,
-        total_cost:
-          payload.total_cost !== null && payload.total_cost !== undefined
-            ? normalizeDollars(payload.total_cost)
-            : null,
-        status: "PENDING",
-      };
-
-      if (shareCodeSupported) {
-        insertPayload.share_code = shareCode;
+    if (payload.saved_estimate_id) {
+      const estimateId = payload.saved_estimate_id;
+      const permission = await loadEstimateScope(db, estimateId, businessContext);
+      if (!permission.ok) {
+        return NextResponse.json(
+          { error: permission.error },
+          { status: permission.status },
+        );
       }
 
-      if (!businessContext.usesLegacyUserScope) {
-        insertPayload.business_id = businessContext.businessId;
-      }
+      const { data: existingRow, error: rowErr } = await db
+        .from("saved_estimates")
+        .select("share_code")
+        .eq("id", estimateId)
+        .maybeSingle();
 
-      const { data, error } = await saveCalculation(db, insertPayload, {
-        inputs:
-          typeof insertPayload.inputs === "object" && insertPayload.inputs
-            ? (insertPayload.inputs as Record<string, unknown>)
-            : {},
-        total_cost:
-          typeof insertPayload.total_cost === "number"
-            ? insertPayload.total_cost
-            : null,
-        county:
-          typeof payload.inputs?.selected_county === "string"
-            ? payload.inputs.selected_county
-            : null,
-      });
-
-      if (!error && data?.id) {
-        savedId = data.id;
-        insertError = null;
-        break;
-      }
-
-      insertError = error;
-      if (error && isMissingShareCodeColumnError(error)) {
-        shareCodeSupported = false;
-        continue;
-      }
-
-      if (error?.code !== "23505") {
-        break;
+      if (rowErr || !existingRow) {
+        throw new Error(rowErr?.message ?? "Estimate not found.");
       }
 
       signingMeta = buildSigningMeta(generateEstimateShareCode());
-    }
+      const existingCode =
+        typeof existingRow.share_code === "string"
+          ? existingRow.share_code.trim()
+          : "";
+      if (existingCode) {
+        const normalized = normalizeShareCode(existingCode);
+        if (isValidShareCodeNormalized(normalized)) {
+          signingMeta = buildSigningMeta(normalized);
+        }
+      }
 
-    if (!savedId) {
-      throw new Error(insertError?.message ?? "Unable to finalize estimate.");
+      savedId = estimateId;
+      insertError = null;
+
+      for (let attempt = 0; attempt < 5; attempt += 1) {
+        shareCode = signingMeta.shareCode;
+        const inputs = buildSavedInputs(shareCodeSupported);
+        const verified = verifyEstimate({
+          inputs: inputs as Record<string, unknown>,
+          total_cost:
+            payload.total_cost !== null && payload.total_cost !== undefined
+              ? normalizeDollars(payload.total_cost)
+              : null,
+          county:
+            typeof payload.inputs?.selected_county === "string"
+              ? payload.inputs.selected_county
+              : null,
+        });
+
+        const updatePayload: Record<string, unknown> = {
+          name: payload.name,
+          calculator_id: payload.calculator_id,
+          inputs,
+          results: payload.results,
+          budget_items: null,
+          client_name: payload.client_name ?? null,
+          job_site_address: payload.job_site_address ?? null,
+          total_cost:
+            payload.total_cost !== null && payload.total_cost !== undefined
+              ? normalizeDollars(payload.total_cost)
+              : null,
+          status: "PENDING",
+          subtotal_cents: verified.subtotal_cents,
+          tax_cents: verified.tax_cents,
+          total_cents: verified.total_cents,
+          tax_basis_points: verified.tax_basis_points,
+          verified_county: verified.verified_county,
+          verification_status: verified.verification_status,
+        };
+
+        if (shareCodeSupported) {
+          updatePayload.share_code = shareCode;
+        }
+
+        const { error } = await db
+          .from("saved_estimates")
+          .update(updatePayload)
+          .eq("id", estimateId)
+          .eq(tenantColumn, tenantId);
+
+        if (!error) {
+          insertError = null;
+          break;
+        }
+
+        insertError = error;
+        if (error && isMissingShareCodeColumnError(error)) {
+          shareCodeSupported = false;
+          continue;
+        }
+
+        if (error?.code !== "23505") {
+          throw new Error(error.message);
+        }
+
+        signingMeta = buildSigningMeta(generateEstimateShareCode());
+      }
+
+      if (insertError) {
+        throw new Error(insertError.message);
+      }
+    } else {
+      for (let attempt = 0; attempt < 5; attempt += 1) {
+        shareCode = signingMeta.shareCode;
+
+        const insertPayload: Record<string, unknown> = {
+          user_id: session.user.id,
+          name: payload.name,
+          calculator_id: payload.calculator_id,
+          inputs: buildSavedInputs(shareCodeSupported),
+          results: payload.results,
+          budget_items: null,
+          client_name: payload.client_name ?? null,
+          job_site_address: payload.job_site_address ?? null,
+          total_cost:
+            payload.total_cost !== null && payload.total_cost !== undefined
+              ? normalizeDollars(payload.total_cost)
+              : null,
+          status: "PENDING",
+        };
+
+        if (shareCodeSupported) {
+          insertPayload.share_code = shareCode;
+        }
+
+        if (!businessContext.usesLegacyUserScope) {
+          insertPayload.business_id = businessContext.businessId;
+        }
+
+        const { data, error } = await saveCalculation(db, insertPayload, {
+          inputs:
+            typeof insertPayload.inputs === "object" && insertPayload.inputs
+              ? (insertPayload.inputs as Record<string, unknown>)
+              : {},
+          total_cost:
+            typeof insertPayload.total_cost === "number"
+              ? insertPayload.total_cost
+              : null,
+          county:
+            typeof payload.inputs?.selected_county === "string"
+              ? payload.inputs.selected_county
+              : null,
+        });
+
+        if (!error && data?.id) {
+          savedId = data.id;
+          insertError = null;
+          break;
+        }
+
+        insertError = error;
+        if (error && isMissingShareCodeColumnError(error)) {
+          shareCodeSupported = false;
+          continue;
+        }
+
+        if (error?.code !== "23505") {
+          break;
+        }
+
+        signingMeta = buildSigningMeta(generateEstimateShareCode());
+      }
+
+      if (!savedId) {
+        throw new Error(insertError?.message ?? "Unable to finalize estimate.");
+      }
     }
 
     revalidateTag(FINANCIAL_DASHBOARD_TAG, "max");
@@ -217,7 +334,7 @@ export async function POST(request: NextRequest) {
       throw new Error(contractorProfileError.message);
     }
 
-    const clientEmail = getClientEmail(payload.inputs);
+    const clientEmail = clientEmailForInvite;
     const signUrl = shareCodeSupported ? signingMeta.signUrl : null;
 
     if (clientEmail && signUrl) {
@@ -241,6 +358,7 @@ export async function POST(request: NextRequest) {
       properties: {
         estimate_id: savedId,
         calculator_id: payload.calculator_id,
+        updated_existing: Boolean(payload.saved_estimate_id),
         trade: payload.calculator_id.split("/")[1] ?? "unknown",
         primary_total:
           payload.total_cost !== null && payload.total_cost !== undefined

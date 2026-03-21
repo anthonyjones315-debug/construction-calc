@@ -59,7 +59,7 @@ export function SplashPopup() {
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
+        className="fixed inset-0 z-50 bg-black/30"
         onClick={dismiss}
         aria-hidden
       />
@@ -73,12 +73,12 @@ export function SplashPopup() {
         onClick={(event) => event.stopPropagation()}
         style={{ animation: "splashUp 0.25s ease forwards" }}
       >
-        <GlassDialogFrame className="p-6 text-white shadow-[0_24px_50px_rgba(0,0,0,0.45)]">
+        <GlassDialogFrame className="p-6 text-[--color-ink] shadow-[0_24px_50px_rgba(0,0,0,0.12)]">
           {/* Close */}
           <button
             type="button"
             onClick={dismiss}
-            className="absolute right-3 top-3 z-20 flex h-10 w-10 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-white/6 hover:text-white cursor-pointer"
+            className="absolute right-3 top-3 z-20 flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-[--color-ink-dim] transition-colors hover:bg-[--color-surface-alt] hover:text-[--color-ink]"
             aria-label="Close"
           >
             <X className="w-5 h-5" aria-hidden />
@@ -97,14 +97,14 @@ export function SplashPopup() {
               </p>
               <h2
                 id="splash-title"
-                className="text-lg font-display font-bold text-white"
+                className="text-lg font-display font-bold text-[--color-ink]"
               >
                 New how-to guides are live
               </h2>
             </div>
           </div>
 
-          <p className="relative mb-4 text-sm leading-relaxed text-slate-400">
+          <p className="relative mb-4 text-sm leading-relaxed text-[--color-ink-mid]">
             Learn the exact workflows behind tax checks, estimate handoff, PDF
             exports, analytics verification, and field version control.
           </p>
@@ -146,13 +146,13 @@ export function SplashPopup() {
             <GlassButton
               type="button"
               onClick={dismiss}
-              className="min-h-[44px] w-full rounded-xl border-transparent bg-transparent text-xs text-slate-400 shadow-none hover:bg-white/6 hover:text-white"
+              className="min-h-[44px] w-full rounded-xl border-transparent bg-transparent text-xs text-[--color-ink-mid] shadow-none hover:bg-[--color-surface-alt] hover:text-[--color-ink]"
             >
               Skip and open calculators
             </GlassButton>
             <Link
               href={routes.fieldNotes}
-              className="flex min-h-[44px] w-full items-center justify-center rounded-xl text-xs text-primary transition-colors hover:bg-white/6 cursor-pointer"
+              className="flex min-h-[44px] w-full cursor-pointer items-center justify-center rounded-xl text-xs text-primary transition-colors hover:bg-[--color-orange-soft]"
               onClick={dismiss}
             >
               Browse Field Notes →

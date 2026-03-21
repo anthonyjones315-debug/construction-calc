@@ -17,6 +17,7 @@ import {
   Lightbulb,
 } from "lucide-react";
 import { routes, getEstimateDetailRoute } from "@routes";
+import SignedEstimatesNotificationsClient from "./SignedEstimatesNotificationsClient";
 
 type TeamMember = {
   membershipId: string;
@@ -56,7 +57,7 @@ function statusClass(status: string | null) {
   }
 
   if (status === "PENDING" || status === "Sent") {
-    return "border-orange-500/35 bg-orange-500/12 text-orange-700";
+    return "border-[--color-orange-brand]/35 bg-[--color-orange-brand]/12 text-[--color-orange-dark]";
   }
 
   return "border-slate-300 bg-slate-100 text-slate-700";
@@ -211,10 +212,11 @@ export default function CommandCenterLiteClient({
 
   return (
     <section className="mx-auto flex min-h-0 w-full max-w-6xl flex-col gap-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pb-3">
+      <SignedEstimatesNotificationsClient />
       <article className="rounded-2xl border border-slate-300 bg-white px-4 py-4 shadow-sm sm:px-5 sm:py-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-600">
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-brand">
               Command center
             </p>
             <h1 className="mt-1 font-display text-3xl font-bold leading-none text-slate-900 sm:text-4xl">
@@ -267,9 +269,16 @@ export default function CommandCenterLiteClient({
         </div>
 
         {needsBusinessProfileSetup ? (
-          <p className="mt-3 rounded-xl border border-orange-300 bg-orange-50 px-3 py-2 text-xs font-semibold text-orange-700">
-            Business profile setup is incomplete. Update it from Business
-            Settings to keep estimates client-ready.
+          <p className="mt-3 rounded-xl border border-[--color-orange-rim] bg-[--color-orange-soft] px-3 py-2 text-xs font-semibold text-[--color-orange-dark]">
+            Business profile setup is incomplete.{" "}
+            <Link
+              href={routes.settingsBusinessProfile}
+              prefetch={false}
+              className="font-bold text-[--color-orange-brand] underline-offset-2 hover:underline"
+            >
+              Complete your business profile
+            </Link>{" "}
+            to keep estimates client-ready.
           </p>
         ) : null}
       </article>
@@ -299,11 +308,11 @@ export default function CommandCenterLiteClient({
             {sentCount}
           </p>
         </article>
-        <article className="rounded-2xl border border-slate-300 border-l-4 border-l-orange-500 bg-white px-4 py-3.5 shadow-sm">
+        <article className="rounded-2xl border border-slate-300 border-l-4 border-l-[--color-orange-brand] bg-white px-4 py-3.5 shadow-sm">
           <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">
             Drafts
           </p>
-          <p className="mt-1.5 text-2xl font-black text-orange-700">
+          <p className="mt-1.5 text-2xl font-black text-[--color-orange-dark]">
             {draftCount}
           </p>
         </article>
@@ -311,7 +320,7 @@ export default function CommandCenterLiteClient({
 
       <div className="grid min-h-0 gap-3 xl:grid-cols-[1.2fr_0.8fr]">
         <article className="rounded-2xl border border-slate-300 bg-white px-4 py-4 shadow-sm sm:px-5">
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-600">
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-brand">
             Quick access
           </p>
           <div className="mt-2.5 grid gap-2 sm:grid-cols-2">
@@ -322,10 +331,10 @@ export default function CommandCenterLiteClient({
                   key={link.label}
                   href={link.href}
                   prefetch={false}
-                  className="rounded-xl border border-[--color-border] bg-white px-3 py-3.5 transition hover:border-orange-300 hover:bg-orange-50/50"
+                  className="rounded-xl border border-[--color-border] bg-white px-3 py-3.5 transition hover:border-[--color-orange-rim] hover:bg-[--color-orange-soft]/90"
                 >
                   <div className="flex items-center gap-2 text-slate-900">
-                    <Icon className="h-4 w-4 text-orange-600" aria-hidden />
+                    <Icon className="h-4 w-4 text-orange-brand" aria-hidden />
                     <p className="text-sm font-bold">{link.label}</p>
                   </div>
                   <p className="mt-1 text-xs text-slate-600">
@@ -338,21 +347,21 @@ export default function CommandCenterLiteClient({
         </article>
 
         <article className="rounded-2xl border border-slate-300 bg-white px-4 py-4 shadow-sm sm:px-5">
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-600">
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-brand">
             Crew access
           </p>
           <p className="mt-2 text-sm text-slate-600">
             Share this join code with trusted team members.
           </p>
           <div className="mt-3 flex items-center gap-2">
-            <p className="min-w-0 flex-1 break-all rounded-lg border border-orange-200 bg-orange-50 px-3 py-2.5 font-mono text-sm font-bold tracking-[0.1em] text-slate-900">
+            <p className="min-w-0 flex-1 break-all rounded-lg border border-[--color-orange-rim] bg-[--color-orange-soft] px-3 py-2.5 font-mono text-sm font-bold tracking-[0.1em] text-slate-900">
               {joinCode ? joinCode.replace(/(.{4})(?=.)/g, "$1-") : "—"}
             </p>
             <button
               type="button"
               onClick={copyJoinCode}
               disabled={!joinCode}
-              className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-orange-200 bg-orange-50 text-slate-700 transition hover:border-orange-300 hover:text-orange-700 disabled:opacity-50"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-[--color-orange-rim] bg-[--color-orange-soft] text-slate-700 transition hover:border-[--color-orange-rim] hover:text-[--color-orange-dark] disabled:opacity-50"
               aria-label="Copy join code"
             >
               <Copy className="h-4 w-4" aria-hidden />
@@ -373,7 +382,7 @@ export default function CommandCenterLiteClient({
                 key={member.membershipId}
                 className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-2"
               >
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100 text-[11px] font-bold text-orange-700">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[--color-orange-brand]/12 text-[11px] font-bold text-[--color-orange-dark]">
                   {initials(member.name)}
                 </div>
                 <div className="min-w-0">
@@ -395,13 +404,13 @@ export default function CommandCenterLiteClient({
 
       <article className="rounded-2xl border border-slate-300 bg-white px-4 py-4 shadow-sm sm:px-5">
         <div className="flex items-center justify-between gap-2">
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-600">
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-brand">
             Recent estimates
           </p>
           <Link
             href={routes.saved}
             prefetch={false}
-            className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500 transition hover:text-orange-700"
+            className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500 transition hover:text-[--color-orange-dark]"
           >
             View all
           </Link>
@@ -445,7 +454,7 @@ export default function CommandCenterLiteClient({
                 key={estimate.id}
                 href={getEstimateDetailRoute(estimate.id)}
                 prefetch={false}
-                className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3.5 transition hover:border-orange-300 hover:bg-orange-50"
+                className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3.5 transition hover:border-[--color-orange-rim] hover:bg-[--color-orange-soft]"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
@@ -481,13 +490,13 @@ export default function CommandCenterLiteClient({
       {/* Popular Calculators */}
       <article className="rounded-2xl border border-slate-300 bg-white px-4 py-4 shadow-sm sm:px-5">
         <div className="flex items-center justify-between gap-2">
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-600">
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-brand">
             Popular Calculators
           </p>
           <Link
             href={routes.calculators}
             prefetch={false}
-            className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500 transition hover:text-orange-700"
+            className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500 transition hover:text-[--color-orange-dark]"
           >
             View all
           </Link>
@@ -498,7 +507,7 @@ export default function CommandCenterLiteClient({
               key={calc.label}
               href={calc.href}
               prefetch={false}
-              className="flex min-h-11 items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-semibold text-slate-700 transition hover:border-orange-300 hover:bg-orange-50 hover:text-orange-700"
+              className="flex min-h-11 items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-semibold text-slate-700 transition hover:border-[--color-orange-rim] hover:bg-[--color-orange-soft] hover:text-[--color-orange-dark]"
             >
               {calc.label}
               <ChevronRight
@@ -512,7 +521,7 @@ export default function CommandCenterLiteClient({
 
       {/* Pro Tips */}
       <article className="rounded-2xl border border-slate-300 bg-white px-4 py-4 shadow-sm sm:px-5">
-        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-600">
+        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-brand">
           Pro Tips
         </p>
         <div className="mt-2.5 space-y-2">
@@ -521,12 +530,12 @@ export default function CommandCenterLiteClient({
               key={i}
               href={item.href}
               prefetch={false}
-              className={`relative flex min-h-12 gap-2.5 rounded-xl border border-slate-200 px-3 py-2.5 transition hover:border-orange-300 hover:bg-orange-50 ${
-                i === 0 ? "bg-orange-50/50" : "bg-slate-50"
+              className={`relative flex min-h-12 gap-2.5 rounded-xl border border-slate-200 px-3 py-2.5 transition hover:border-[--color-orange-rim] hover:bg-[--color-orange-soft] ${
+                i === 0 ? "bg-[--color-orange-soft]/50" : "bg-slate-50"
               }`}
             >
               <Lightbulb
-                className="mt-0.5 h-4 w-4 shrink-0 text-orange-500"
+                className="mt-0.5 h-4 w-4 shrink-0 text-orange-brand"
                 aria-hidden
               />
               <p className="text-xs leading-relaxed text-slate-700">

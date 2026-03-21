@@ -10,6 +10,7 @@ import {
   getTenantScopeId,
 } from "@/lib/supabase/business";
 import { multiplyDollars, normalizeDollars } from "@/utils/money";
+import { checkMemoryRateLimit } from "@/lib/rate-limit/memory";
 
 const FROM_EMAIL = "system@proconstructioncalc.com";
 
@@ -99,18 +100,20 @@ function buildEstimateEmailHtml(estimate: z.infer<typeof estimatePayloadSchema>)
   ]
     .filter(Boolean)
     .join(" &middot; ");
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="font-family:system-ui,sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#334155">
-  <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px">
-    <div style="width:36px;height:36px;background:#f97316;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px">P</div>
-    <span style="font-weight:700;font-size:20px;color:#0f172a">Pro Construction Calc</span>
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"></head><body style="margin:0;font-family:Inter,system-ui,sans-serif;background:#f6f4ef;padding:32px 20px;color:#334155;-webkit-font-smoothing:antialiased">
+  <div style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #e2e0db;border-radius:16px;padding:24px 26px;box-shadow:0 4px 24px rgba(15,23,42,0.06)">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:22px;padding-bottom:18px;border-bottom:1px solid #e2e0db">
+    <div style="width:36px;height:36px;background:#ea580c;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:15px">P</div>
+    <span style="font-weight:700;font-size:18px;color:#0f172a;letter-spacing:-0.02em">Pro Construction Calc</span>
   </div>
-  <h1 style="color:#0f172a;font-size:22px;margin:0 0 8px">${escapeHtml(estimate.title)}</h1>
-  <p style="color:#64748b;font-size:14px;margin:0 0 16px">${escapeHtml(estimate.calculatorLabel)}${meta ? ` · ${meta}` : ""}</p>
-  <table style="width:100%;border-collapse:collapse;background:#fff;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden">
+  <h1 style="color:#0f172a;font-size:20px;font-weight:700;margin:0 0 8px;letter-spacing:-0.02em">${escapeHtml(estimate.title)}</h1>
+  <p style="color:#64748b;font-size:14px;margin:0 0 18px;line-height:1.5">${escapeHtml(estimate.calculatorLabel)}${meta ? ` · ${meta}` : ""}</p>
+  <table style="width:100%;border-collapse:collapse;background:#fafaf8;border:1px solid #e2e0db;border-radius:10px;overflow:hidden">
     <thead><tr><th style="text-align:left;padding:10px 12px;background:#f8fafc;color:#475569">Result</th><th style="text-align:right;padding:10px 12px;background:#f8fafc;color:#475569">Value</th></tr></thead>
     <tbody>${rows}</tbody>
   </table>${budget}${total}
-  <p style="margin-top:24px;font-size:12px;color:#94a3b8">This estimate was sent from Pro Construction Calc. Verify all quantities and prices before ordering materials or starting work.</p>
+  <p style="margin-top:22px;font-size:12px;color:#94a3b8;line-height:1.5">Sent from Pro Construction Calc. Verify quantities and prices before ordering or starting work.</p>
+  </div>
 </body></html>`;
 }
 
@@ -127,6 +130,22 @@ export async function POST(req: NextRequest) {
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const sendRl = checkMemoryRateLimit(
+      "email-send-estimate",
+      session.user.id,
+      45,
+      3600_000,
+    );
+    if (!sendRl.ok) {
+      return NextResponse.json(
+        { error: "Email send limit reached. Try again later." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(sendRl.retryAfterSeconds) },
+        },
+      );
     }
 
     const resend = getResend();

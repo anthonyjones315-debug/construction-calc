@@ -104,11 +104,14 @@ export default async function EstimateDetailPage({ params }: PageProps) {
     <div className="mx-auto max-w-3xl px-3 py-4 sm:px-4 sm:py-6">
       <Link
         href={routes.commandCenter}
-        className="mb-4 inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 transition hover:text-orange-700"
+        className="mb-4 inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 transition hover:text-[--color-orange-dark]"
       >
         ← Command Center
       </Link>
-      <EstimateDetailClient estimate={estimate} />
+      <EstimateDetailClient
+        estimate={estimate}
+        canDelete={businessContext.canDeleteBusinessData}
+      />
     </div>
   );
 }

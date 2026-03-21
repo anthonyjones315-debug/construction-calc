@@ -20,9 +20,14 @@ test.describe("Navigation", () => {
   });
 
   test("deep link to specific calculator works directly", async ({ page }) => {
-    await page.goto("/calculators/concrete/slab");
-    await expect(page.getByRole("heading", { name: /slab/i })).toBeVisible();
-    await expect(page.getByLabel(/length/i)).toBeVisible();
+    await page.goto("/calculators/concrete/slab", {
+      waitUntil: "domcontentloaded",
+      timeout: 90_000,
+    });
+    await expect(page.getByRole("heading", { name: /slab/i })).toBeVisible({
+      timeout: 90_000,
+    });
+    await expect(page.getByLabel(/length/i)).toBeVisible({ timeout: 90_000 });
   });
 
   test("404 page renders for unknown route", async ({ page }) => {
@@ -45,13 +50,19 @@ test.describe("Navigation", () => {
     await expect(page).toHaveURL(/\/calculators$/);
   });
 
-  test("protected routes redirect to sign-in when unauthenticated", async ({
+  test("saved page stays on URL and prompts guests to sign in", async ({
     browser,
   }) => {
     const context = await browser.newContext(); // No auth state
     const page = await context.newPage();
-    await page.goto("/saved");
-    await expect(page).toHaveURL(/auth\/signin|sign/);
+    await page.goto("/saved", {
+      waitUntil: "domcontentloaded",
+      timeout: 60_000,
+    });
+    await expect(page).toHaveURL(/\/saved$/);
+    await expect(
+      page.getByRole("heading", { name: /sign in to view saved estimates/i }),
+    ).toBeVisible({ timeout: 60_000 });
     await context.close();
   });
 

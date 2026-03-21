@@ -102,7 +102,7 @@ export default function GuidePage() {
         <div className="guide-shell viewport-frame max-w-6xl">
           {/* Breadcrumb */}
           <nav aria-label="Breadcrumb" className="mb-3 flex items-center gap-2 text-[11px] text-slate-500">
-            <Link href="/" className="transition-colors hover:text-orange-600">Home</Link>
+            <Link href="/" className="transition-colors hover:text-[--color-orange-brand]">Home</Link>
             <span aria-hidden>/</span>
             <span className="font-semibold text-slate-800">Guide</span>
           </nav>

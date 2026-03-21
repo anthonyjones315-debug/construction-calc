@@ -29,7 +29,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@next/third-parties": "^16.2.0",
+    "@clerk/nextjs": "^7.0.6",
+    "@next/third-parties": "^16.2.1",
     "@react-pdf/renderer": "^4.3.2",
     "@sentry/nextjs": "^10.43.0",
     "@supabase/ssr": "^0.9.0",
@@ -41,9 +42,7 @@
     "drizzle-orm": "^0.44.5",
     "immer": "^11.1.4",
     "lucide-react": "^0.577.0",
-    "next": "^16.2.0",
-    "next-auth": "^5.0.0-beta.30",
-    "next-themes": "^0.4.6",
+    "next": "^16.2.1",
     "postcss": "^8.5.8",
     "postgres": "^3.4.7",
     "posthog-js": "^1.360.2",
@@ -54,7 +53,6 @@
     "react-signature-canvas": "^1.1.0-alpha.2",
     "resend": "^6.9.3",
     "server-only": "^0.0.1",
-
     "tailwindcss": "^4.2.1",
     "typescript": "^5.9.3",
     "zod": "^4.3.6",
@@ -65,7 +63,7 @@
     "babel-plugin-react-compiler": "^1.0.0",
     "drizzle-kit": "^0.31.6",
     "eslint": "^9.39.4",
-    "eslint-config-next": "^16.1.6",
+    "eslint-config-next": "^16.2.1",
     "puppeteer": "^24.7.1",
     "vitest": "^1.6.0"
   }

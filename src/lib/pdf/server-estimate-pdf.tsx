@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    borderBottom: "3 solid #f97316",
+    borderBottom: "2 solid #ea580c",
     paddingBottom: 12,
     gap: 10,
   },
@@ -90,19 +90,21 @@ const styles = StyleSheet.create({
   },
   hero: {
     marginTop: 10,
-    backgroundColor: "#0f172a",
-    color: "#ffffff",
+    backgroundColor: "#fafaf8",
+    border: "1 solid #e2e0db",
     borderRadius: 12,
-    padding: 12,
+    padding: 14,
     gap: 4,
   },
   heroLabel: {
     textTransform: "uppercase",
     fontSize: 9,
-    color: "#cbd5e1",
+    color: "#64748b",
     letterSpacing: 1,
+    fontWeight: 700,
   },
-  heroValue: { fontSize: 22, fontWeight: 800, color: "#fb923c" },
+  heroValue: { fontSize: 22, fontWeight: 700, color: "#ea580c" },
+  heroCaption: { fontSize: 10, color: "#64748b", marginTop: 2 },
   table: {
     width: "100%",
     border: "1 solid #cbd5e1",
@@ -112,8 +114,8 @@ const styles = StyleSheet.create({
   row: { flexDirection: "row" },
   cellHeader: {
     flex: 1,
-    backgroundColor: "#0f172a",
-    color: "#ffffff",
+    backgroundColor: "#f1f5f9",
+    color: "#0f172a",
     padding: 8,
     fontSize: 10,
     fontWeight: 700,
@@ -172,7 +174,7 @@ function EstimateDocument(payload: EstimatePdfPayload) {
                   width: 46,
                   height: 46,
                   borderRadius: 10,
-                  backgroundColor: "#f97316",
+                  backgroundColor: "#ea580c",
                   alignItems: "center",
                   justifyContent: "center",
                   color: "#fff",
@@ -219,11 +221,11 @@ function EstimateDocument(payload: EstimatePdfPayload) {
 
         {primaryResult ? (
           <View style={styles.hero}>
-            <Text style={styles.heroLabel}>Primary Result</Text>
+            <Text style={styles.heroLabel}>Primary result</Text>
             <Text style={styles.heroValue}>
               {toDisplayValue(primaryResult.value)} {primaryResult.unit}
             </Text>
-            <Text>{primaryResult.label}</Text>
+            <Text style={styles.heroCaption}>{primaryResult.label}</Text>
           </View>
         ) : null}
 

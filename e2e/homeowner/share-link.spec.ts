@@ -27,7 +27,7 @@ test.describe("Homeowner — Public Estimate Share Link", () => {
     await openShareOrSkip(page);
 
     // Should NOT redirect to auth
-    await expect(page).not.toHaveURL(/auth\/signin|register/);
+    await expect(page).not.toHaveURL(/\/sign-in|\/sign-up/);
     await expect(
       page.getByText(/estimate|proposal|quote|sign/i).first(),
     ).toBeVisible();
@@ -119,7 +119,7 @@ test.describe("Homeowner — Public Estimate Share Link", () => {
       );
     }
 
-    await expect(page).not.toHaveURL(/auth\/signin/);
+    await expect(page).not.toHaveURL(/\/sign-in/);
     await expect(
       page.getByText(/estimate|proposal|sign/i).first(),
     ).toBeVisible();

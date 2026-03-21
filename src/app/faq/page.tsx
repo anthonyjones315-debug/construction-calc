@@ -100,6 +100,34 @@ const FAQ_ITEMS = [
     q: "Do these calculators work offline?",
     a: "Yes. Once the app has loaded in your browser, the core calculators continue to work without an internet connection. Saved estimates and PDF export require a connection to sync, but you can run quantities and view results offline from the job site.",
   },
+  {
+    q: "How many cubic yards of mulch do I need?",
+    a: "Multiply your bed area (length × width in feet) by the depth in inches, then divide by 324 to get cubic yards. At 3 inches deep, 100 square feet of bed takes about 0.93 cubic yards. Order 10% extra for settling. Use our Mulch Calculator to get an exact number with waste factored in.",
+  },
+  {
+    q: "What depth should mulch be?",
+    a: "For most garden beds, 2–3 inches is standard for weed suppression and moisture retention. Tree rings should be 3–4 inches but kept 6 inches away from the trunk. Erosion control on slopes needs 4 inches minimum. Going deeper than 4 inches can smother root systems and trap excess moisture.",
+  },
+  {
+    q: "How do I estimate fence materials?",
+    a: "Divide the total linear footage by your post spacing (usually 8 feet), then add one to get your post count. Each section between posts needs 2 horizontal rails (3 for fences over 6 feet). For pickets, divide the section width in inches by 4 (3.5-inch picket plus 0.5-inch gap). Add 10% waste. Use our Fence Calculator for a complete material list.",
+  },
+  {
+    q: "How much gravel do I need for a patio base?",
+    a: "Patio bases need 4 inches of compacted crushed stone minimum (6 inches for vehicle traffic). To calculate: multiply the area in square feet by the depth in inches, divide by 324 for cubic yards, then multiply by 1.4 to convert to tons — since gravel suppliers sell by the ton. Use our Gravel & Stone Calculator for exact tonnage.",
+  },
+  {
+    q: "Asphalt vs concrete for driveways — which is better?",
+    a: "In Upstate New York, asphalt is cheaper upfront ($3–$6/sq ft) and flexes with freeze-thaw cycles, but needs seal coating every 3–5 years. Concrete costs more ($6–$12/sq ft) but lasts 20–30 years with almost no maintenance when the base is done right. Choose asphalt for budget or long driveways; choose concrete for longevity and low maintenance.",
+  },
+  {
+    q: "How do I calculate paver quantities?",
+    a: "Divide the patio area in square feet by the coverage of a single paver. A standard 4×8 inch brick paver covers 0.222 sq ft, so a 100 sq ft patio needs about 450 pavers before waste. Add 10% for running bond patterns and 15% for herringbone or diagonal patterns. Use our Paver Patio Calculator for pavers, sand, and gravel base quantities.",
+  },
+  {
+    q: "Do the outdoor calculators account for local conditions?",
+    a: "Yes. Our fence calculator uses the NYS frost line depth of 48 inches below grade for post depth in the tri-county area. Patio and driveway calculators use base depth minimums appropriate for Upstate New York freeze-thaw conditions. Always verify against site-specific soil and drainage conditions before ordering.",
+  },
 ];
 
 export default function FAQPage() {
@@ -117,28 +145,28 @@ export default function FAQPage() {
             <span className="font-semibold text-[--color-nav-text]">FAQ</span>
           </nav>
 
-          <div className="dark-feature-panel p-4 text-white">
+          <div className="dark-feature-panel p-4 text-[--color-ink]">
             <p className="section-kicker">Field answers</p>
             <h1 className="mt-1.5 text-2xl font-display font-bold">
               Frequently Asked Questions
             </h1>
-            <p className="mt-1.5 text-sm text-[--color-nav-text]/70">
+            <p className="mt-1.5 text-sm text-[--color-ink-mid]">
               Everything you need to know about Pro Construction Calc.
             </p>
-            <div className="trim-nav-border mt-3 inline-flex rounded-full border bg-white/6 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-[--color-nav-text]">
+            <div className="trim-nav-border mt-3 inline-flex rounded-full border bg-[--color-surface-alt] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-[--color-ink]">
               Practical answers for real jobs
             </div>
           </div>
 
-          <div className="grid min-h-0 gap-3 md:grid-cols-2">
+          <div className="grid min-h-0 gap-3 md:grid-cols-2 items-start">
             {FAQ_ITEMS.map((item) => (
               <details
                 key={item.q}
                 className="group content-card overflow-hidden"
               >
-                <summary className="flex items-center justify-between px-4 py-3 cursor-pointer list-none text-sm font-semibold text-[--color-ink] hover:text-[--color-orange-brand] transition-colors select-none">
+                <summary className="flex min-h-[52px] items-start justify-between px-4 py-3 cursor-pointer list-none text-sm font-semibold text-[--color-ink] hover:text-[--color-orange-brand] transition-colors select-none">
                   {item.q}
-                  <span className="ml-3 shrink-0 text-lg leading-none text-[--color-ink-dim] transition-transform group-open:rotate-45">
+                  <span className="ml-3 mt-0.5 shrink-0 text-lg leading-none text-[--color-ink-dim] transition-transform group-open:rotate-45">
                     +
                   </span>
                 </summary>

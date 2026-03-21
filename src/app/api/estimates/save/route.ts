@@ -50,7 +50,7 @@ function getSchemaMismatchHint(message: string): string | null {
     lower.includes("saved_estimates") ||
     lower.includes("foreign key")
   ) {
-    return "Database schema mismatch detected. Run src/lib/supabase/nextauth-schema-fix.sql, then src/lib/supabase/schema.sql in Supabase SQL Editor.";
+    return "Database schema mismatch detected. Run src/lib/supabase/schema.sql (and optional src/lib/supabase/clerk-supabase-migration.sql) in Supabase SQL Editor.";
   }
 
   return null;

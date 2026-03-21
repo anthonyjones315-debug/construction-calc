@@ -9,10 +9,13 @@ const ignoredDirectories = new Set([
   ".git",
   ".github",
   ".next",
+  "construction-calc",
   "dist",
   "dist-calcs",
   "node_modules",
+  "playwright-report",
   "public",
+  "test-results",
 ]);
 const approvedFiles = new Set([
   "eslint.config.mjs",

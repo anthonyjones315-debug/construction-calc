@@ -5,7 +5,7 @@ test.describe("Billing — Free Tier Paywall Behavior", () => {
     page: Parameters<typeof test>[0]["page"],
   ) => {
     await page.goto("/command-center");
-    if (/auth\/signin/.test(page.url())) {
+    if (/\/sign-in/.test(page.url())) {
       test.skip(true, "Requires authenticated free-tier test user");
     }
   };

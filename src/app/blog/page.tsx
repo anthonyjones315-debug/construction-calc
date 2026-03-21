@@ -39,16 +39,16 @@ export default function BlogPage() {
       <Header />
       <main id="main-content" className="flex-1">
         <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
-          <div className="dark-feature-panel mb-8 p-6 text-white relative">
+          <div className="dark-feature-panel mb-8 p-6 text-[--color-ink] relative">
             <p className="section-kicker">Methods and guidance</p>
             <h1 className="mt-2 text-3xl font-display font-bold">
               Construction Tips & Guides
             </h1>
-            <p className="mt-2 text-[--color-nav-text]/70">
+            <p className="mt-2 text-[--color-ink-mid]">
               How-to articles and material guides for builders and DIYers.
             </p>
 
-            <div className="trim-nav-border mt-4 inline-flex rounded-full border bg-white/6 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[--color-nav-text]">
+            <div className="trim-nav-border mt-4 inline-flex rounded-full border bg-[--color-surface-alt] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[--color-ink]">
               Field notes, not filler
             </div>
           </div>
@@ -57,7 +57,7 @@ export default function BlogPage() {
             {BLOG_POSTS.map((post, index) => (
               <article
                 key={post.slug}
-                className="content-card content-card-interactive p-6 transition-all duration-200 hover:border-orange-500/50 hover:shadow-[0_18px_38px_rgba(15,18,27,0.12)]"
+                className="content-card content-card-interactive p-6 transition-all duration-200 hover:border-[--color-orange-brand]/50 hover:shadow-[0_18px_38px_rgba(15,18,27,0.12)]"
               >
                 <JsonLD schema={getBlogPostSchema(post)} />
                 <div className="trim-border-strong mb-4 overflow-hidden rounded-xl border">

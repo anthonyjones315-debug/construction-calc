@@ -1,4 +1,6 @@
 import type { Metadata, Viewport } from "next";
+import { ClerkProvider } from "@clerk/nextjs";
+import { getClerkPublishableKey } from "@/lib/clerk/publishable-key";
 import { Oswald, Inter, JetBrains_Mono } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
@@ -10,7 +12,6 @@ import { CrispChat } from "@/components/support/CrispChat";
 import { CSPostHogProvider } from "@/components/providers/PostHogProvider";
 import { PostHogPageView } from "@/components/providers/PostHogPageView";
 import { WebVitals } from "@/components/providers/WebVitals";
-import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { Providers } from "@app/providers";
 import TermlyCMP from "@/components/TermlyCMP";
 import { JsonLD, getLocalBusinessSchema, getVerifiedReviewSchema } from "@/seo";
@@ -47,6 +48,9 @@ function getOrigin(url: string | undefined): string | null {
 const supabaseOrigin = getOrigin(process.env.NEXT_PUBLIC_SUPABASE_URL);
 const resendOrigin = "https://api.resend.com";
 
+/** Google AdSense (Auto Ads) — load when NEXT_PUBLIC_ADSENSE_ID is set */
+const ADSENSE_CLIENT_ID = process.env.NEXT_PUBLIC_ADSENSE_ID?.trim();
+
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
@@ -78,6 +82,8 @@ const jetBrainsMono = JetBrains_Mono({
 });
 
 const brandedSiteTitle = `${BUSINESS_NAME} — Construction Estimating & Cost Calculators`;
+
+const clerkPublishableKey = getClerkPublishableKey();
 
 export const metadata: Metadata = {
   metadataBase: new URL(BUSINESS_SITE_URL),
@@ -148,6 +154,13 @@ export default function RootLayout({
         ) : null}
         <link rel="preconnect" href={resendOrigin} crossOrigin="" />
         <link rel="dns-prefetch" href={resendOrigin} />
+        {ADSENSE_CLIENT_ID ? (
+          <script
+            async
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(ADSENSE_CLIENT_ID)}`}
+            crossOrigin="anonymous"
+          />
+        ) : null}
         <meta
           name="apple-mobile-web-app-status-bar-style"
           content="black-translucent"
@@ -155,7 +168,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-title" content="Pro Calc" />
         <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="theme-color" content="#FF7A00" />
+        <meta name="theme-color" content="#ea580c" />
         {/*
           Critical CSS vars injected inline so Slate & Orange theme colors
           are available before the external stylesheet or any font loads.
@@ -172,22 +185,14 @@ export default function RootLayout({
                 --color-ink-mid: #334155;
                 --color-ink-dim: #64748b;
                 --color-border: #e2e0db;
+                --color-primary: #ea580c;
+                --color-primary-rgb: 234 88 12;
                 --color-orange-brand: #ea580c;
                 --color-orange-dark: #c2410c;
                 --color-nav-bg: rgba(255, 247, 237, 0.94);
                 --shell-header-h: 52px;
               }
               html { background: var(--color-bg); color: var(--color-ink); }
-              .glass-gpu {
-                will-change: transform, opacity;
-                transform: translateZ(0);
-                backdrop-filter: blur(12px);
-                -webkit-backdrop-filter: blur(12px);
-              }
-              .glass-decorative {
-                pointer-events: none;
-                user-select: none;
-              }
             `,
           }}
         />
@@ -195,44 +200,51 @@ export default function RootLayout({
       <body
         className={`command-theme ${inter.variable} ${oswald.variable} ${jetBrainsMono.variable} min-h-dvh flex flex-col`}
       >
-        <ThemeProvider>
-          <a href="#main-content" className="skip-link" tabIndex={0}>
-            Skip to main content
-          </a>
-          <Suspense fallback={null}>
-            <CSPostHogProvider>
-              <Suspense fallback={null}>
-                <PostHogPageView />
-              </Suspense>
-              {verifiedReviewSchema ? (
-                <>
-                  <JsonLD schema={localBusinessSchema} />
-                  <JsonLD schema={verifiedReviewSchema} />
-                </>
-              ) : null}
-              <Providers>
+        <a href="#main-content" className="skip-link" tabIndex={0}>
+          Skip to main content
+        </a>
+        {/* ClerkProvider reads request auth (cookies/headers); Next.js 16 requires Suspense */}
+        <Suspense fallback={null}>
+          <ClerkProvider
+            {...(clerkPublishableKey
+              ? { publishableKey: clerkPublishableKey }
+              : {})}
+          >
+            <Suspense fallback={null}>
+              <CSPostHogProvider>
                 <Suspense fallback={null}>
-                  <ScrollToTop />
+                  <PostHogPageView />
                 </Suspense>
-                {TERMELY_WEBSITE_UUID && (
-                  <TermlyCMP
-                    websiteUUID={TERMELY_WEBSITE_UUID}
-                    autoBlock={TERMELY_AUTO_BLOCK}
-                    masterConsentsOrigin={TERMELY_MASTER_CONSENTS_ORIGIN}
-                  />
-                )}
-                <WebVitals />
-                {children}
-              </Providers>
-            </CSPostHogProvider>
-          </Suspense>
-          <ServiceWorker />
-          <OptionalTracking />
-          <PWAInstallBanner />
-          <Suspense fallback={null}>
-            <CrispChat />
-          </Suspense>
-        </ThemeProvider>
+                {verifiedReviewSchema ? (
+                  <>
+                    <JsonLD schema={localBusinessSchema} />
+                    <JsonLD schema={verifiedReviewSchema} />
+                  </>
+                ) : null}
+                <Providers>
+                  <Suspense fallback={null}>
+                    <ScrollToTop />
+                  </Suspense>
+                  {TERMELY_WEBSITE_UUID && (
+                    <TermlyCMP
+                      websiteUUID={TERMELY_WEBSITE_UUID}
+                      autoBlock={TERMELY_AUTO_BLOCK}
+                      masterConsentsOrigin={TERMELY_MASTER_CONSENTS_ORIGIN}
+                    />
+                  )}
+                  <WebVitals />
+                  {children}
+                </Providers>
+              </CSPostHogProvider>
+            </Suspense>
+            <ServiceWorker />
+            <OptionalTracking />
+            <PWAInstallBanner />
+            <Suspense fallback={null}>
+              <CrispChat />
+            </Suspense>
+          </ClerkProvider>
+        </Suspense>
       </body>
     </html>
   );

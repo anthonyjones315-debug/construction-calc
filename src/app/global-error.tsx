@@ -38,19 +38,57 @@ export default function GlobalError({
   });
 
   return (
-    <html lang="en">
-      <body className="animated-gradient-bg text-copy-primary">
+    <html lang="en" className="command-theme light">
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+              :root {
+                --color-bg: #f6f4ef;
+                --color-surface: #ffffff;
+                --color-border: #e2e0db;
+                --color-ink: #0f1117;
+                --color-ink-mid: #334155;
+                --color-ink-dim: #64748b;
+                --color-orange-brand: #ea580c;
+                --color-orange-dark: #c2410c;
+                --color-text-primary: rgba(2, 6, 23, 0.96);
+                --color-text-secondary: rgba(15, 23, 42, 0.84);
+                --color-text-tertiary: rgba(51, 65, 85, 0.78);
+              }
+              body { margin: 0; font-family: system-ui, sans-serif; background: var(--color-bg); color: var(--color-ink); }
+              .glass-container-elevated {
+                background: var(--color-surface);
+                border: 1px solid var(--color-border);
+                border-radius: 1rem;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+              }
+              .glass-button {
+                border: 1px solid var(--color-border);
+                border-radius: 0.5rem;
+                background: var(--color-surface);
+                color: var(--color-ink-mid);
+                padding: 0.5rem 1rem;
+                cursor: pointer;
+              }
+              .glass-button-primary {
+                border: 1px solid var(--color-orange-brand);
+                border-radius: 0.5rem;
+                background: var(--color-orange-brand);
+                color: #fff;
+                padding: 0.5rem 1rem;
+                cursor: pointer;
+              }
+            `,
+          }}
+        />
+      </head>
+      <body className="antialiased">
         <div className="flex min-h-screen flex-col items-center justify-center px-4 py-10">
           <div className="glass-container-elevated relative max-w-lg overflow-hidden p-8 text-center">
-            <div
-              aria-hidden
-              className="glass-decorative absolute inset-x-0 top-0 h-32"
-              style={{
-                background:
-                  "radial-gradient(circle at top, color-mix(in srgb, var(--color-primary) 18%, transparent), transparent 56%)",
-              }}
-            />
-            <div className="relative flex flex-col items-center">
+            <div className="flex flex-col items-center">
               <TriangleAlert className="mb-4 h-12 w-12 text-red-400" aria-hidden />
               <h1 className="text-xl font-black uppercase tracking-wide text-copy-primary">
                 {userFacing.title}

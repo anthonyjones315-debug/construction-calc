@@ -333,7 +333,10 @@ export function useEstimateForm(
         const res = await fetch("/api/estimates/finalize", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
+          body: JSON.stringify({
+            ...payload,
+            ...(savedId ? { saved_estimate_id: savedId } : {}),
+          }),
         });
         const json = (await res.json()) as {
           ok?: boolean;
@@ -360,7 +363,7 @@ export function useEstimateForm(
         setFinalizing(false);
       }
     },
-    [state, totals],
+    [state, totals, savedId],
   );
 
   const generatePdf = useCallback(async (): Promise<void> => {

@@ -167,7 +167,7 @@ export function PWAInstallBanner() {
       aria-label="Install Pro Construction Calc"
       className="fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom,0px)+0.5rem)] z-[55] px-3 sm:bottom-auto sm:top-[calc(env(safe-area-inset-top,0px)+2.5rem)] sm:px-4 md:top-[calc(env(safe-area-inset-top,0px)+3rem)]"
     >
-      <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 rounded-2xl border border-orange-700/60 bg-orange-600 px-4 py-3 shadow-[0_12px_28px_rgba(0,0,0,0.4)] sm:max-w-7xl sm:rounded-2xl">
+      <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 rounded-2xl border border-[--color-orange-dark]/60 bg-orange-brand px-4 py-3 shadow-[0_12px_28px_rgba(0,0,0,0.4)] sm:max-w-7xl sm:rounded-2xl">
         {isIOS ? (
           <>
             <p className="flex min-w-0 items-center gap-2 text-sm font-semibold text-white">

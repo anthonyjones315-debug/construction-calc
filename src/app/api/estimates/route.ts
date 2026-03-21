@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { unstable_noStore as noStore } from "next/cache";
-import type { Session } from "next-auth";
+import type { Session } from "@/lib/auth/session";
 import * as Sentry from "@sentry/nextjs";
 import { auth } from "@/lib/auth/config";
 import { createServerClient } from "@/lib/supabase/server";

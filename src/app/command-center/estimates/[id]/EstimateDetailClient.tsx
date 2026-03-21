@@ -1,9 +1,19 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { CheckCircle2, Copy, Download, ExternalLink, Loader2 } from "lucide-react";
+import {
+  CheckCircle2,
+  Copy,
+  Download,
+  ExternalLink,
+  Loader2,
+  Trash2,
+} from "lucide-react";
+import { routes } from "@routes";
 
 interface EstimateDetailProps {
+  canDelete?: boolean;
   estimate: {
     id: string;
     name: string;
@@ -55,9 +65,15 @@ function formatDollars(n: number) {
   }).format(n);
 }
 
-export function EstimateDetailClient({ estimate }: EstimateDetailProps) {
+export function EstimateDetailClient({
+  estimate,
+  canDelete = false,
+}: EstimateDetailProps) {
+  const router = useRouter();
   const [downloadingPdf, setDownloadingPdf] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const isSigned =
     estimate.status === "SIGNED" || estimate.status === "Approved";
@@ -132,13 +148,41 @@ export function EstimateDetailClient({ estimate }: EstimateDetailProps) {
     }
   }
 
+  async function handleDelete() {
+    if (
+      !confirm(
+        "Delete this estimate permanently? This cannot be undone.",
+      )
+    ) {
+      return;
+    }
+    setDeleteError(null);
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/estimates/${estimate.id}`, {
+        method: "DELETE",
+      });
+      const json = (await res.json().catch(() => ({}))) as { error?: string };
+      if (!res.ok) {
+        setDeleteError(
+          json.error ?? "Delete failed. You may not have permission.",
+        );
+        return;
+      }
+      router.push(routes.commandCenter);
+      router.refresh();
+    } finally {
+      setDeleting(false);
+    }
+  }
+
   return (
     <div className="space-y-4">
       {/* Header card */}
       <article className="rounded-2xl border border-slate-300 bg-white px-4 py-4 shadow-sm sm:px-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-600">
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-brand">
               Estimate
             </p>
             <h1 className="mt-1 text-xl font-black text-slate-900 sm:text-2xl">
@@ -175,23 +219,23 @@ export function EstimateDetailClient({ estimate }: EstimateDetailProps) {
 
         {/* Total */}
         {estimate.totalCost != null && (
-          <div className="mt-4 rounded-xl border border-orange-100 bg-orange-50 px-4 py-3">
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-700">
+          <div className="mt-4 rounded-xl border border-[--color-orange-soft] bg-[--color-orange-soft] px-4 py-3">
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-orange-dark]">
               Total
             </p>
-            <p className="mt-0.5 text-2xl font-black text-orange-700">
+            <p className="mt-0.5 text-2xl font-black text-[--color-orange-dark]">
               {formatDollars(estimate.totalCost)}
             </p>
           </div>
         )}
 
         {/* Actions */}
-        <div className="mt-4 flex flex-wrap gap-2">
+        <div className="mt-4 flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={handleDownloadPdf}
             disabled={downloadingPdf}
-            className="inline-flex h-10 items-center gap-2 rounded-xl bg-orange-600 px-4 text-xs font-bold uppercase tracking-[0.08em] text-white transition hover:bg-orange-700 disabled:opacity-60"
+            className="inline-flex h-10 items-center gap-2 rounded-xl bg-orange-brand px-4 text-xs font-bold uppercase tracking-[0.08em] text-white transition hover:bg-[--color-orange-dark] disabled:opacity-60"
           >
             {downloadingPdf ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -207,7 +251,7 @@ export function EstimateDetailClient({ estimate }: EstimateDetailProps) {
                 href={estimate.signUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-xs font-bold uppercase tracking-[0.08em] text-slate-700 transition hover:border-orange-300 hover:text-orange-700"
+                className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-xs font-bold uppercase tracking-[0.08em] text-slate-700 transition hover:border-[--color-orange-rim] hover:text-[--color-orange-dark]"
               >
                 <ExternalLink className="h-4 w-4" />
                 Open Signing Link
@@ -219,7 +263,7 @@ export function EstimateDetailClient({ estimate }: EstimateDetailProps) {
                   setCopiedLink(true);
                   setTimeout(() => setCopiedLink(false), 2000);
                 }}
-                className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-xs font-bold uppercase tracking-[0.08em] text-slate-700 transition hover:border-orange-300 hover:text-orange-700"
+                className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-xs font-bold uppercase tracking-[0.08em] text-slate-700 transition hover:border-[--color-orange-rim] hover:text-[--color-orange-dark]"
               >
                 {copiedLink ? (
                   <CheckCircle2 className="h-4 w-4 text-emerald-600" />
@@ -230,14 +274,35 @@ export function EstimateDetailClient({ estimate }: EstimateDetailProps) {
               </button>
             </>
           )}
+
+          {canDelete ? (
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={deleting}
+              className="ml-auto inline-flex h-10 items-center gap-2 rounded-xl border border-red-200 bg-white px-4 text-xs font-bold uppercase tracking-[0.08em] text-red-600 transition hover:bg-red-50 disabled:opacity-60"
+            >
+              {deleting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="h-4 w-4" aria-hidden />
+              )}
+              {deleting ? "Deleting…" : "Delete estimate"}
+            </button>
+          ) : null}
         </div>
+        {deleteError ? (
+          <p className="mt-2 text-sm text-red-600" role="alert">
+            {deleteError}
+          </p>
+        ) : null}
       </article>
 
       {/* Line Items */}
       {estimate.lineItems.length > 0 && (
         <article className="rounded-2xl border border-slate-300 bg-white shadow-sm">
           <div className="px-4 pt-4 sm:px-5">
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-600">
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-brand">
               Line Items
             </p>
           </div>
@@ -291,7 +356,7 @@ export function EstimateDetailClient({ estimate }: EstimateDetailProps) {
 
       {/* Signatures */}
       <article className="rounded-2xl border border-slate-300 bg-white px-4 py-4 shadow-sm sm:px-5">
-        <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.16em] text-orange-600">
+        <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.16em] text-orange-brand">
           Signatures
         </p>
 
@@ -361,7 +426,7 @@ export function EstimateDetailClient({ estimate }: EstimateDetailProps) {
                     href={estimate.signUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-2 inline-flex items-center gap-1 text-[10px] font-semibold text-orange-600 hover:text-orange-800"
+                    className="mt-2 inline-flex items-center gap-1 text-[10px] font-semibold text-orange-brand hover:text-[--color-orange-dark]"
                   >
                     <ExternalLink className="h-3 w-3" />
                     Open signing link

@@ -11,7 +11,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth/client";
 import Link from "next/link";
 import {
   FinancialDashboard,
@@ -1111,7 +1111,9 @@ export function SavedContent({
               }),
             });
           } catch (error) {
-            console.warn("Unable to save custom material to price book", error);
+            if (process.env.NODE_ENV === "development") {
+              console.warn("Unable to save custom material to price book", error);
+            }
           }
         }
       }
@@ -1696,11 +1698,11 @@ export function SavedContent({
           <button
             type="button"
             aria-label="Close delete confirmation"
-            className="absolute inset-0 bg-black/45"
+            className="absolute inset-0 bg-black/30"
             onClick={() => (deleting ? undefined : setDeleteTarget(null))}
           />
           <div className="relative w-full max-w-lg rounded-2xl border border-[--color-border] bg-[--color-surface] p-5 shadow-2xl">
-            <p className="text-xs font-bold uppercase tracking-[0.15em] text-orange-500">
+            <p className="text-xs font-bold uppercase tracking-[0.15em] text-orange-brand">
               Confirm Delete
             </p>
             <h2 className="mt-1 text-xl font-display font-bold text-[--color-ink]">

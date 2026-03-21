@@ -5,6 +5,10 @@ import SignatureCanvas from "react-signature-canvas";
 import { CheckCircle2, Mail, PencilLine, Phone, RefreshCw } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 
+function normalizeSignerEmail(value: string) {
+  return value.trim().toLowerCase();
+}
+
 type PublicEstimate = {
   id: string;
   name: string;
@@ -27,6 +31,7 @@ type PublicEstimate = {
     signerName?: string;
     signerEmail?: string;
     signatureDataUrl?: string;
+    inviteRecipientEmail?: string;
   };
   contractor: {
     name: string | null;
@@ -62,8 +67,19 @@ function toSmsHref(phone: string) {
 
 export function SignEstimateClient({ estimate }: Props) {
   const signatureRef = useRef<SignatureCanvas | null>(null);
+  const lockedInviteEmail = useMemo(() => {
+    const raw = estimate.signing.inviteRecipientEmail;
+    if (typeof raw !== "string" || !raw.includes("@")) return null;
+    return normalizeSignerEmail(raw);
+  }, [estimate.signing.inviteRecipientEmail]);
+
   const [signerName, setSignerName] = useState(estimate.signing.signerName ?? "");
-  const [signerEmail, setSignerEmail] = useState(estimate.signing.signerEmail ?? "");
+  const [signerEmail, setSignerEmail] = useState(
+    lockedInviteEmail ??
+      (estimate.signing.signerEmail
+        ? normalizeSignerEmail(estimate.signing.signerEmail)
+        : ""),
+  );
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [signedAt, setSignedAt] = useState<string | null>(
@@ -114,7 +130,7 @@ export function SignEstimateClient({ estimate }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           signerName: signerName.trim(),
-          signerEmail: signerEmail.trim(),
+          signerEmail: lockedInviteEmail ?? signerEmail.trim(),
           signatureDataUrl: nextSignature,
         }),
       });
@@ -150,7 +166,7 @@ export function SignEstimateClient({ estimate }: Props) {
                 className="h-10 w-10 rounded-lg border border-slate-200 bg-white object-contain p-1"
               />
             ) : (
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#b85a10] text-sm font-extrabold text-white">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-brand text-sm font-extrabold text-white">
                 {contractorName.charAt(0).toUpperCase()}
               </div>
             )}
@@ -163,7 +179,7 @@ export function SignEstimateClient({ estimate }: Props) {
             className={`rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-[0.12em] ${
               isSigned
                 ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-                : "border-orange-200 bg-orange-50 text-orange-700"
+                : "border-[--color-orange-rim] bg-[--color-orange-soft] text-[--color-orange-dark]"
             }`}
           >
             {isSigned ? "Signed" : "Pending"}
@@ -176,7 +192,7 @@ export function SignEstimateClient({ estimate }: Props) {
           <div className="border-b border-slate-100 px-5 py-4">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#b85a10]">
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-brand">
                   Estimate
                 </p>
                 <h1 className="mt-1 text-xl font-black text-slate-900">
@@ -244,11 +260,11 @@ export function SignEstimateClient({ estimate }: Props) {
 
             {/* Primary Total */}
             {primaryResult && (
-              <div className="mt-4 rounded-xl border border-orange-100 bg-orange-50 px-4 py-3">
-                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#b85a10]">
+              <div className="mt-4 rounded-xl border border-[--color-orange-soft] bg-[--color-orange-soft] px-4 py-3">
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-brand">
                   Total
                 </p>
-                <p className="mt-0.5 text-2xl font-black text-[#b85a10]">
+                <p className="mt-0.5 text-2xl font-black text-orange-brand">
                   {typeof primaryResult.value === "number"
                     ? formatCurrency(primaryResult.value)
                     : formatValue(primaryResult.value, primaryResult.unit)}
@@ -267,7 +283,7 @@ export function SignEstimateClient({ estimate }: Props) {
                 {canCall && (
                   <a
                     href={`tel:${estimate.contractor.phone}`}
-                    className="inline-flex h-9 items-center gap-2 rounded-lg bg-[#b85a10] px-3 text-xs font-bold text-white transition hover:bg-[#ad4f0d]"
+                    className="inline-flex h-9 items-center gap-2 rounded-lg bg-orange-brand px-3 text-xs font-bold text-white transition hover:bg-[--color-orange-dark]"
                   >
                     <Phone className="h-3.5 w-3.5" aria-hidden />
                     Call
@@ -280,7 +296,7 @@ export function SignEstimateClient({ estimate }: Props) {
                         ? toSmsHref(estimate.contractor.phone)
                         : `mailto:${estimate.contractor.email}`
                     }
-                    className="inline-flex h-9 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 transition hover:border-[#b85a10] hover:text-[#b85a10]"
+                    className="inline-flex h-9 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 transition hover:border-[--color-orange-brand] hover:text-orange-brand"
                   >
                     {estimate.contractor.phone ? (
                       <Phone className="h-3.5 w-3.5" aria-hidden />
@@ -298,7 +314,7 @@ export function SignEstimateClient({ estimate }: Props) {
         {/* Signature Section */}
         <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-center gap-2 mb-4">
-            <PencilLine className="h-4 w-4 text-[#b85a10]" aria-hidden />
+            <PencilLine className="h-4 w-4 text-orange-brand" aria-hidden />
             <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-700">
               Customer Signature
             </p>
@@ -339,18 +355,39 @@ export function SignEstimateClient({ estimate }: Props) {
                   <input
                     value={signerName}
                     onChange={(event) => setSignerName(event.target.value)}
-                    className="mt-1 h-10 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-slate-900 outline-none transition focus:border-[#b85a10] focus:ring-2 focus:ring-[#b85a10]/20"
+                    className="mt-1 h-10 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-slate-900 outline-none transition focus:border-[--color-orange-brand] focus:ring-2 focus:ring-[--color-orange-brand]/20"
                     placeholder="Enter your full name"
                   />
                 </label>
                 <label className="text-sm text-slate-700">
-                  Email (optional)
+                  {lockedInviteEmail ? (
+                    <>
+                      Email <span className="text-red-500">*</span>
+                      <span className="ml-1 font-normal text-slate-400">
+                        (from your invite)
+                      </span>
+                    </>
+                  ) : (
+                    "Email (optional)"
+                  )}
                   <input
+                    id="signer-email"
+                    data-testid="signer-email"
                     value={signerEmail}
-                    onChange={(event) => setSignerEmail(event.target.value)}
-                    className="mt-1 h-10 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-slate-900 outline-none transition focus:border-[#b85a10] focus:ring-2 focus:ring-[#b85a10]/20"
+                    onChange={(event) => {
+                      if (lockedInviteEmail) return;
+                      setSignerEmail(event.target.value);
+                    }}
+                    readOnly={Boolean(lockedInviteEmail)}
+                    aria-readonly={lockedInviteEmail ? true : undefined}
+                    className={`mt-1 h-10 w-full rounded-xl border border-slate-200 px-3 text-slate-900 outline-none transition focus:border-[--color-orange-brand] focus:ring-2 focus:ring-[--color-orange-brand]/20 ${
+                      lockedInviteEmail
+                        ? "cursor-not-allowed bg-slate-100 text-slate-600"
+                        : "bg-slate-50"
+                    }`}
                     placeholder="name@example.com"
                     type="email"
+                    autoComplete="email"
                   />
                 </label>
               </div>
@@ -385,7 +422,7 @@ export function SignEstimateClient({ estimate }: Props) {
                   type="button"
                   onClick={handleApprove}
                   disabled={submitting}
-                  className="inline-flex h-10 flex-[2] items-center justify-center rounded-xl bg-[#b85a10] px-4 text-sm font-bold text-white transition hover:bg-[#ad4f0d] disabled:opacity-60"
+                  className="inline-flex h-10 flex-[2] items-center justify-center rounded-xl bg-orange-brand px-4 text-sm font-bold text-white transition hover:bg-[--color-orange-dark] disabled:opacity-60"
                 >
                   {submitting ? "Signing..." : "Approve & Sign"}
                 </button>
@@ -403,7 +440,7 @@ export function SignEstimateClient({ estimate }: Props) {
         <p className="px-1 text-center text-xs text-slate-400">
           Need a fresh link? Contact the estimator who sent this request.
           <span className="mx-1">|</span>
-          <Link href="/" className="text-[#b85a10] hover:underline">
+          <Link href="/" className="text-orange-brand hover:underline">
             Pro Construction Calc
           </Link>
         </p>

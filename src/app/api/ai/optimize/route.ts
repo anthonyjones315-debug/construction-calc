@@ -1,23 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
-import * as Sentry from '@sentry/nextjs'
-
-// Simple in-memory rate limiter: 5 requests per IP per minute
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now()
-  const entry = rateLimitMap.get(ip)
-
-  if (!entry || now > entry.resetAt) {
-    rateLimitMap.set(ip, { count: 1, resetAt: now + 60_000 })
-    return true
-  }
-
-  if (entry.count >= 5) return false
-
-  entry.count++
-  return true
-}
+import { NextRequest, NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
+import { getClientIp } from "@/lib/http/client-ip";
+import { checkMemoryRateLimit } from "@/lib/rate-limit/memory";
 
 // Sanitize output to prevent XSS in markdown rendering
 function sanitize(text: string): string {
@@ -34,13 +18,16 @@ interface RequestBody {
 }
 
 export async function POST(req: NextRequest) {
-  const ip = req.headers.get('x-forwarded-for') ?? req.headers.get('x-real-ip') ?? 'unknown'
-
-  if (!checkRateLimit(ip)) {
+  const ip = getClientIp(req);
+  const rl = checkMemoryRateLimit("ai-optimize", ip, 5, 60_000);
+  if (!rl.ok) {
     return NextResponse.json(
-      { error: 'Too many requests. Please wait a moment before trying again.' },
-      { status: 429 }
-    )
+      { error: "Too many requests. Please wait a moment before trying again." },
+      {
+        status: 429,
+        headers: { "Retry-After": String(rl.retryAfterSeconds) },
+      },
+    );
   }
 
   if (!process.env.ANTHROPIC_API_KEY) {
@@ -89,8 +76,11 @@ Provide tips on: material optimization, waste reduction, cost savings, and commo
     })
 
     if (!response.ok) {
-      const err = await response.text()
-      console.error('Anthropic API error:', err)
+      const err = (await response.text()).slice(0, 500);
+      Sentry.captureMessage("Anthropic API error", {
+        level: "warning",
+        extra: { status: response.status, body: err },
+      });
       return NextResponse.json({ error: 'AI service temporarily unavailable.' }, { status: 502 })
     }
 

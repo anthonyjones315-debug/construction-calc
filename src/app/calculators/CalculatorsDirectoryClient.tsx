@@ -17,6 +17,8 @@ import {
   BarChart3,
   ChevronRight,
   ArrowRight,
+  Trees,
+  Fence,
 } from "lucide-react";
 import {
   tradePages,
@@ -40,6 +42,8 @@ const DIRECTORY_CATEGORIES: Array<{
   { key: "mechanical", icon: Thermometer, label: "Mechanical & Site" },
   { key: "finish", icon: Layout, label: "Finish Carpentry" },
   { key: "business", icon: BarChart3, label: "Business & Estimating" },
+  { key: "landscape", icon: Trees, label: "Lawn & Landscape" },
+  { key: "outdoor", icon: Fence, label: "Fences, Driveways & Patios" },
 ];
 
 type SearchablePage = {
@@ -62,6 +66,8 @@ function buildSearchIndex(): SearchablePage[] {
     management: "Construction Management",
     interior: "Interior Finish",
     business: "Business & Estimating",
+    landscape: "Lawn & Landscape",
+    outdoor: "Fences, Driveways & Patios",
   };
 
   return Object.values(tradePages).map((page) => ({
@@ -189,11 +195,11 @@ export function CalculatorsDirectoryClient() {
         tabIndex={-1}
       >
         {/* ── Hero strip ──────────────────────────────────────── */}
-        <div className="border-b-2 border-orange-100 bg-white px-4 py-5 sm:px-6 sm:py-6">
+        <div className="border-b-2 border-[--color-orange-soft] bg-white px-4 py-5 sm:px-6 sm:py-6">
           <div className="mx-auto max-w-5xl text-center">
             <div className="flex items-center justify-center gap-2 text-[--color-orange-brand]">
               <HardHat className="h-5 w-5" aria-hidden />
-              <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-orange-600">
+              <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-orange-brand">
                 Pro Construction Calc
               </span>
             </div>
@@ -258,13 +264,13 @@ export function CalculatorsDirectoryClient() {
                 name.
               </p>
             ) : (
-              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid items-stretch gap-2 sm:grid-cols-2 lg:grid-cols-3">
                 {results.map((page) => (
                   <Link
                     key={page.key}
                     href={page.href as Route}
                     prefetch={false}
-                    className="group flex flex-col rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-xs text-slate-700 transition-colors hover:border-[--color-orange-brand]/60 hover:bg-orange-50"
+                    className="group flex h-full min-h-0 flex-col rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-xs text-slate-700 transition-colors hover:border-[--color-orange-brand]/60 hover:bg-[--color-orange-soft]"
                   >
                     <div className="flex items-center justify-between gap-2">
                       <p className="font-semibold text-slate-900 group-hover:text-[--color-orange-brand]">
@@ -286,7 +292,7 @@ export function CalculatorsDirectoryClient() {
 
         {/* Trade Module Directory Grid */}
         <div className="safe-area-pb mx-auto w-full max-w-5xl px-4 py-4 pb-6 sm:px-6 sm:py-5 sm:pb-8 lg:py-5 lg:pb-6">
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          <div className="grid grid-cols-2 items-stretch gap-3 sm:grid-cols-3">
             {DIRECTORY_CATEGORIES.map(({ key, icon: Icon, label }) => {
               const page = getCategoryPage(key);
               const links = page?.relatedLinks ?? [];
@@ -299,7 +305,7 @@ export function CalculatorsDirectoryClient() {
                   key={key}
                   href={href as Route}
                   prefetch={false}
-                  className="group relative flex flex-col rounded-xl border border-[--color-border] bg-[--color-surface] p-4 shadow-sm transition-all duration-200 hover:border-orange-300 hover:shadow-md before:absolute before:left-0 before:top-4 before:bottom-4 before:w-[3px] before:rounded-full before:bg-orange-500/0 hover:before:bg-orange-500 before:transition-all"
+                  className="group relative flex h-full min-h-0 flex-col rounded-xl border border-[--color-border] bg-[--color-surface] p-4 shadow-sm transition-all duration-200 hover:border-[--color-orange-rim] hover:shadow-md before:absolute before:left-0 before:top-4 before:bottom-4 before:w-[3px] before:rounded-full before:bg-[--color-orange-brand]/0 hover:before:bg-[--color-orange-brand] before:transition-all"
                 >
                   <div className="flex items-center gap-2.5">
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[--color-orange-brand]/12">
@@ -348,16 +354,16 @@ export function CalculatorsDirectoryClient() {
 
         {/* Recommended Calculators */}
         <div className="mx-auto w-full max-w-5xl px-4 pb-6 sm:px-6 sm:pb-8">
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-600">
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-brand">
             Recommended Calculators
           </p>
-          <div className="mt-2.5 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-2.5 grid items-stretch gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {RECOMMENDED.slice(0, 6).map((calc) => (
               <Link
                 key={calc.key}
                 href={calc.href as Route}
                 prefetch={false}
-                className="group flex flex-col rounded-xl border border-[--color-border] bg-[--color-surface-alt] p-4 shadow-sm transition-all duration-200 hover:border-orange-300 hover:shadow-md"
+                className="group flex h-full min-h-0 flex-col rounded-xl border border-[--color-border] bg-[--color-surface-alt] p-4 shadow-sm transition-all duration-200 hover:border-[--color-orange-rim] hover:shadow-md"
               >
                 <div className="flex items-center justify-between gap-2">
                   <p className="font-semibold text-slate-900 group-hover:text-[--color-orange-brand]">

@@ -2,7 +2,7 @@
 
 import type { BusinessProfile } from "@/lib/supabase/client";
 import { useEffect, useRef, useState } from "react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth/client";
 import {
   Building2,
   Phone,
@@ -215,7 +215,10 @@ export function ProfileSettings() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
+    <div
+      id="business-profile"
+      className="mx-auto max-w-2xl scroll-mt-24 px-4 py-10 sm:px-6"
+    >
       <h1 className="mb-1 text-2xl font-display font-bold text-[--color-ink]">
         Business Profile
       </h1>
@@ -224,9 +227,9 @@ export function ProfileSettings() {
       </p>
 
       {!isOwner && (
-        <div className="mb-6 rounded-xl border border-[--color-orange-brand]/50 bg-[--color-nav-bg] px-4 py-3 text-sm font-semibold text-white">
+        <div className="mb-6 rounded-xl border border-[--color-orange-brand]/40 bg-[--color-orange-soft] px-4 py-3 text-sm font-semibold text-[--color-ink]">
           Read-Only: Team Member Access
-          <span className="ml-2 font-normal text-white/70">
+          <span className="ml-2 font-normal text-[--color-ink-mid]">
             ({membershipRole})
           </span>
         </div>
@@ -328,10 +331,10 @@ export function ProfileSettings() {
                 placeholder={placeholder}
                 disabled={!isOwner}
                 readOnly={!isOwner}
-                className={`w-full rounded-xl border border-slate-500 bg-[--color-surface-alt] px-4 py-2.5 text-sm text-[--color-ink] ${
+                className={`w-full rounded-xl border border-[--color-border] bg-[--color-surface-alt] px-4 py-2.5 text-sm text-[--color-ink] ${
                   !isOwner
                     ? "cursor-not-allowed opacity-80"
-                    : "focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    : "focus:border-[--color-orange-brand] focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/25"
                 }`}
               />
             </div>

@@ -5,7 +5,7 @@ test.describe("Office Manager — Command Center Dashboard", () => {
     page: Parameters<typeof test>[0]["page"],
   ) => {
     await page.goto("/command-center");
-    if (/auth\/signin/.test(page.url())) {
+    if (/\/sign-in/.test(page.url())) {
       test.skip(true, "Requires authenticated office-manager test user");
     }
   };
@@ -14,7 +14,7 @@ test.describe("Office Manager — Command Center Dashboard", () => {
     page,
   }) => {
     await openCommandCenterOrSkip(page);
-    await expect(page).not.toHaveURL(/auth\/signin/);
+    await expect(page).not.toHaveURL(/\/sign-in/);
     await expect(
       page.getByRole("heading", { name: /command center|dashboard/i }),
     ).toBeVisible();

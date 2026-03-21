@@ -90,7 +90,7 @@ export function WelcomeGuidePopup({
   return (
     <>
       <div
-        className="fixed inset-0 z-50 bg-slate-900/30 backdrop-blur-sm"
+        className="fixed inset-0 z-50 bg-black/30"
         onClick={dismiss}
         aria-hidden
       />
@@ -113,11 +113,11 @@ export function WelcomeGuidePopup({
           </button>
 
           <div className="relative mb-4 flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-50 text-orange-600">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[--color-orange-soft] text-orange-brand">
               <BookOpenCheck className="h-5 w-5" aria-hidden />
             </div>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-orange-600">
+              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-orange-brand">
                 Welcome
               </p>
               <h2
@@ -141,7 +141,7 @@ export function WelcomeGuidePopup({
                 key={label}
                 className="flex items-center gap-2 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 text-xs text-slate-700"
               >
-                <Icon className="h-4 w-4 shrink-0 text-orange-500" aria-hidden />
+                <Icon className="h-4 w-4 shrink-0 text-orange-brand" aria-hidden />
                 <span>{label}</span>
               </div>
             ))}
@@ -152,7 +152,7 @@ export function WelcomeGuidePopup({
               type="checkbox"
               checked={dontShowAgain}
               onChange={(event) => setDontShowAgain(event.target.checked)}
-              className="h-4 w-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500"
+              className="h-4 w-4 rounded border-slate-300 text-orange-brand focus:ring-[--color-orange-brand]/30"
             />
             Don&apos;t show this popup again
           </label>
@@ -160,7 +160,7 @@ export function WelcomeGuidePopup({
           <div className="mt-3 flex flex-col gap-2 pb-[env(safe-area-inset-bottom,0px)]">
             <Link
               href={routes.guide}
-              className="flex min-h-[44px] w-full items-center justify-center rounded-xl bg-orange-600 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-orange-700"
+              className="flex min-h-[44px] w-full items-center justify-center rounded-xl bg-orange-brand px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[--color-orange-dark]"
               onClick={dismiss}
             >
               Open Welcome Guide

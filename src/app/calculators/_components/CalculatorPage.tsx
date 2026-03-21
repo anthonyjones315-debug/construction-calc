@@ -5,7 +5,7 @@ import Link from "next/link";
 import type { Route } from "next";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { LucideIcon } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth/client";
 import * as Sentry from "@sentry/nextjs";
 import posthog from "posthog-js";
 import { RoofingGlyph } from "./TradeGlyphs";
@@ -48,7 +48,9 @@ import {
   Thermometer,
   Timer,
   Tractor,
+  Trees,
   Triangle,
+  Fence,
   Wind,
   Wrench,
   X,
@@ -460,6 +462,53 @@ const tradeModuleGroups: TradeModuleGroup[] = [
       },
     ],
   },
+  {
+    label: "Landscape",
+    icon: Trees,
+    modules: [
+      {
+        label: "Mulch",
+        href: "/calculators/landscape/mulch" as Route,
+        icon: Trees,
+      },
+      {
+        label: "Topsoil",
+        href: "/calculators/landscape/topsoil" as Route,
+        icon: Layers,
+      },
+      {
+        label: "Sod & Seed",
+        href: "/calculators/landscape/sod" as Route,
+        icon: Trees,
+      },
+      {
+        label: "Gravel & Stone",
+        href: "/calculators/landscape/gravel" as Route,
+        icon: Layers3,
+      },
+    ],
+  },
+  {
+    label: "Outdoor",
+    icon: Fence,
+    modules: [
+      {
+        label: "Fence",
+        href: "/calculators/outdoor/fence" as Route,
+        icon: Fence,
+      },
+      {
+        label: "Paver Patio",
+        href: "/calculators/outdoor/paver-patio" as Route,
+        icon: Layout,
+      },
+      {
+        label: "Asphalt Driveway",
+        href: "/calculators/outdoor/asphalt-driveway" as Route,
+        icon: Tractor,
+      },
+    ],
+  },
 ];
 
 function clampValue(value: number, min: number, max: number) {
@@ -480,6 +529,8 @@ const CATEGORY_ICON_MAP: Record<TradePageDefinition["category"], LucideIcon> = {
   interior: Layout,
   management: ClipboardList,
   business: BarChart3,
+  landscape: Trees,
+  outdoor: Fence,
 };
 
 function getCategoryIcon(page: TradePageDefinition): LucideIcon {
@@ -546,13 +597,13 @@ function getInputLabels(
     };
   if (p.includes("slab"))
     return {
-      first: "Running Lineal Feet",
+      first: "Linear Feet (LF)",
       second: "Slab Width (ft)",
       third: "Slab Depth (Inches)",
     };
   if (p.includes("footing"))
     return {
-      first: "Running Lineal Feet",
+      first: "Linear Feet (LF)",
       second: "Footing Width (ft)",
       third: "Sub-base Depth (in)",
     };
@@ -564,7 +615,7 @@ function getInputLabels(
     };
   if (p.includes("block") || p.includes("concrete"))
     return {
-      first: "Running Lineal Feet",
+      first: "Linear Feet (LF)",
       second: "Width (ft)",
       third: "Bag Yield Depth (in)",
     };
@@ -669,6 +720,38 @@ function getInputLabels(
       first: "Base Amount ($)",
       second: "Rate / Factor (%)",
       third: "Quantity / Units",
+    };
+  // Landscape calculators
+  if (p.includes("sod"))
+    return {
+      first: "Area Length (ft)",
+      second: "Area Width (ft)",
+      third: "Unused",
+    };
+  if (p.includes("mulch") || p.includes("topsoil") || p.includes("gravel"))
+    return {
+      first: "Area Length (ft)",
+      second: "Area Width (ft)",
+      third: "Depth (in)",
+    };
+  // Outdoor calculators
+  if (p.includes("fence"))
+    return {
+      first: "Total Linear Feet (LF)",
+      second: "Fence Height (ft)",
+      third: "Post Spacing (ft)",
+    };
+  if (p.includes("paver"))
+    return {
+      first: "Patio Length (ft)",
+      second: "Patio Width (ft)",
+      third: "Base Depth (in)",
+    };
+  if (p.includes("asphalt"))
+    return {
+      first: "Driveway Length (ft)",
+      second: "Driveway Width (ft)",
+      third: "Thickness (in)",
     };
   return {
     first: "Primary Measurement",
@@ -828,6 +911,10 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   const [finalizeError, setFinalizeError] = useState<string | null>(null);
   const [finalizeSuccess, setFinalizeSuccess] = useState<string | null>(null);
   const [createdSignUrl, setCreatedSignUrl] = useState<string | null>(null);
+  /** Re-finalizing updates this row instead of inserting a duplicate. */
+  const [finalizeEstimateId, setFinalizeEstimateId] = useState<string | null>(
+    null,
+  );
   const [aiOptimizeBusy, setAiOptimizeBusy] = useState(false);
   const [aiOptimizeError, setAiOptimizeError] = useState<string | null>(null);
   const [aiOptimizeContent, setAiOptimizeContent] = useState<string | null>(
@@ -1522,7 +1609,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       );
       return {
         primary: {
-          label: "Lineal Feet (LF)",
+          label: "Linear Feet (LF)",
           value: adjustedLinealFeet.toFixed(2),
           unit: "lf",
         },
@@ -1882,7 +1969,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       const estimatedWeightTons = estimatedWeightLbs / 2000;
       return {
         primary: {
-          label: "Total Yards",
+          label: "Total Cubic Yards",
           value: adjustedCubicYards.toFixed(2),
           unit: "yd^3",
         },
@@ -1904,7 +1991,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
           },
         ],
         materialList: [
-          `Order ${adjustedCubicYards.toFixed(2)} Total Yards`,
+          `Order ${adjustedCubicYards.toFixed(2)} cu yd`,
           `Order ${bags80} Bags (80lb)`,
           `Order ${bags60} Bags (60lb)`,
           `Approx payload: ${Math.round(estimatedWeightLbs).toLocaleString()} lbs`,
@@ -2066,6 +2153,148 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             : []),
         ],
       };
+    }
+
+    /* ── Landscape calculators ─────────────────────────────────── */
+    if (page.category === "landscape") {
+      const p = page.canonicalPath;
+
+      if (p.includes("sod")) {
+        // Sod: area only — rolls, pallets, seed lbs
+        const areaSqFt = dimensionsAreaSquareFeet;
+        const adjusted = areaSqFt * wasteMultiplier;
+        const rolls = Math.ceil(adjusted / 10);
+        const pallets = Math.ceil(adjusted / 450);
+        const seedLbs = Math.ceil((adjusted / 1000) * 4);
+        return {
+          primary: { label: "Sod Rolls", value: rolls.toString(), unit: "rolls" },
+          secondary: [
+            { label: "Area", value: adjusted.toFixed(0), unit: "sq ft" },
+            { label: "Pallets (~450 sq ft ea)", value: pallets.toString(), unit: "pallets" },
+            { label: "Seed Alternative", value: seedLbs.toString(), unit: "lbs" },
+          ],
+          materialList: [
+            `Order ${rolls} sod rolls (10 sq ft ea)`,
+            `Or ${pallets} pallets (~450 sq ft ea)`,
+            `Seed alternative: ${seedLbs} lbs (4 lbs/1000 sq ft)`,
+          ],
+        };
+      }
+
+      // Mulch, topsoil, gravel: area × depth → cu yd
+      const areaSqFt = dimensionsAreaSquareFeet;
+      const depthIn = clampValue(depthThickness, 1, 36);
+      const volumeCuFt = areaSqFt * (depthIn / 12);
+      const cubicYards = (volumeCuFt / 27) * wasteMultiplier;
+      const bags2CuFt = Math.ceil((volumeCuFt * wasteMultiplier) / 2);
+
+      const secondary: Array<{ label: string; value: string; unit: string }> = [
+        { label: "Volume", value: (volumeCuFt * wasteMultiplier).toFixed(1), unit: "cu ft" },
+        { label: "2 cu ft Bags", value: bags2CuFt.toString(), unit: "bags" },
+      ];
+
+      const matList: string[] = [
+        `Order ${cubicYards.toFixed(2)} cu yd bulk`,
+        `Alternate: ${bags2CuFt} bags (2 cu ft ea)`,
+      ];
+
+      if (p.includes("gravel")) {
+        const tons = cubicYards * 1.4;
+        secondary.unshift({ label: "Tons (est.)", value: tons.toFixed(2), unit: "tons" });
+        matList[0] = `Order ${tons.toFixed(2)} tons crushed stone`;
+        return {
+          primary: { label: "Tons", value: tons.toFixed(2), unit: "tons" },
+          secondary,
+          materialList: matList,
+        };
+      }
+
+      if (p.includes("topsoil")) {
+        const tonsLow = cubicYards * 1.0;
+        const tonsHigh = cubicYards * 1.3;
+        secondary.push({ label: "Tons (est.)", value: `${tonsLow.toFixed(1)}–${tonsHigh.toFixed(1)}`, unit: "tons" });
+        matList.push(`Approx ${tonsLow.toFixed(1)}–${tonsHigh.toFixed(1)} tons (varies by moisture)`);
+      }
+
+      return {
+        primary: { label: "Cubic Yards", value: cubicYards.toFixed(2), unit: "cu yd" },
+        secondary,
+        materialList: matList,
+      };
+    }
+
+    /* ── Outdoor calculators ──────────────────────────────────── */
+    if (page.category === "outdoor") {
+      const p = page.canonicalPath;
+
+      if (p.includes("fence")) {
+        const linearFeet = clampValue(baseMeasurement, 1, 10000);
+        const height = clampValue(widthSpan, 3, 12);
+        const postSpacing = clampValue(depthThickness, 4, 12);
+        const posts = Math.ceil(linearFeet / postSpacing) + 1;
+        const sections = posts - 1;
+        const railsPerSection = height > 6 ? 3 : 2;
+        const rails = sections * railsPerSection;
+        const picketsPerSection = Math.ceil((postSpacing * 12) / 4);
+        const pickets = Math.ceil(sections * picketsPerSection * wasteMultiplier);
+        return {
+          primary: { label: "Posts", value: posts.toString(), unit: "ea" },
+          secondary: [
+            { label: "Rails", value: rails.toString(), unit: "ea" },
+            { label: "Pickets", value: pickets.toString(), unit: "ea" },
+            { label: "Sections", value: sections.toString(), unit: "sections" },
+          ],
+          materialList: [
+            `Order ${posts} posts (4×4, set 48 in below grade)`,
+            `Order ${rails} rails (2×4)`,
+            `Order ${pickets} pickets (includes waste)`,
+          ],
+        };
+      }
+
+      if (p.includes("paver-patio")) {
+        const areaSqFt = dimensionsAreaSquareFeet;
+        const baseDepthIn = clampValue(depthThickness, 4, 12);
+        const paverSqFt = 0.222; // standard 4×8 brick paver
+        const pavers = Math.ceil((areaSqFt * wasteMultiplier) / paverSqFt);
+        const baseCuYd = (areaSqFt * (baseDepthIn / 12)) / 27;
+        const baseTons = baseCuYd * 1.4;
+        const sandCuYd = (areaSqFt * (1 / 12)) / 27; // 1 in sand bedding
+        const sandTons = sandCuYd * 1.4;
+        const perimeter = (baseMeasurement + widthSpan) * 2;
+        return {
+          primary: { label: "Pavers", value: pavers.toString(), unit: "ea" },
+          secondary: [
+            { label: "Gravel Base", value: baseTons.toFixed(2), unit: "tons" },
+            { label: "Sand Bedding", value: sandTons.toFixed(2), unit: "tons" },
+            { label: "Edge Restraint", value: perimeter.toFixed(0), unit: "LF" },
+          ],
+          materialList: [
+            `Order ${pavers} pavers (4×8 standard)`,
+            `Order ${baseTons.toFixed(2)} tons gravel base (${baseDepthIn} in depth)`,
+            `Order ${sandTons.toFixed(2)} tons sand (1 in bedding)`,
+            `Edge restraint: ${perimeter.toFixed(0)} LF`,
+          ],
+        };
+      }
+
+      if (p.includes("asphalt")) {
+        const areaSqFt = dimensionsAreaSquareFeet;
+        const thicknessIn = clampValue(depthThickness, 1, 6);
+        const volumeCuFt = areaSqFt * (thicknessIn / 12);
+        const tons = (volumeCuFt * 145) / 2000 * wasteMultiplier; // 145 lbs/cu ft
+        return {
+          primary: { label: "Tons", value: tons.toFixed(2), unit: "tons" },
+          secondary: [
+            { label: "Area", value: areaSqFt.toFixed(0), unit: "sq ft" },
+            { label: "Thickness", value: thicknessIn.toFixed(1), unit: "in" },
+          ],
+          materialList: [
+            `Order ${tons.toFixed(2)} tons hot mix asphalt`,
+            `Coverage: ${areaSqFt.toFixed(0)} sq ft at ${thicknessIn.toFixed(1)} in compacted`,
+          ],
+        };
+      }
     }
 
     return {
@@ -2442,7 +2671,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
 
     return [
       "mx-auto w-full px-3 py-4 pb-14 sm:px-5 sm:py-5 lg:px-7 lg:py-4 shell-content",
-      deviceProfile.layoutMode === "tablet-shell" ? tabletShell : "max-w-6xl",
+      deviceProfile.layoutMode === "tablet-shell" ? tabletShell : "max-w-7xl",
       deviceProfile.bottomBufferClass,
       deviceProfile.baseTextClass,
     ]
@@ -2462,7 +2691,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
 
     if (deviceProfile.layoutMode === "two-column") {
       // Inputs left, results right — balanced columns that use the full container width
-      return "grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]";
+      return "grid gap-0 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]";
     }
 
     return "grid gap-2";
@@ -2564,6 +2793,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         jobName:
           estimateJobName.trim() || estimateName.trim() || page.heroKicker,
       },
+      ...(finalizeEstimateId ? { saved_estimate_id: finalizeEstimateId } : {}),
     }),
     [
       calculatorResults.materialList,
@@ -2576,6 +2806,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       estimateJobAddress,
       estimateJobName,
       estimateName,
+      finalizeEstimateId,
       page.canonicalPath,
       page.heroKicker,
       page.title,
@@ -2768,6 +2999,10 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         throw new Error(payload?.error ?? "Failed to create sign link.");
       }
 
+      if (typeof payload?.id === "string") {
+        setFinalizeEstimateId(payload.id);
+      }
+
       const signUrl =
         typeof payload?.signUrl === "string" ? payload.signUrl : null;
       setCreatedSignUrl(signUrl);
@@ -2851,10 +3086,10 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         return (
           <main
             id="main-content"
-            className="command-theme bg-[--color-bg] text-white min-h-[40vh] flex items-center justify-center p-6"
+            className="command-theme bg-[--color-bg] text-[--color-ink] min-h-[40vh] flex items-center justify-center p-6"
           >
-            <div className="rounded-2xl border border-white/20 bg-black/25 p-6 max-w-lg text-center">
-              <h2 className="text-lg font-bold text-white">
+            <div className="rounded-2xl border border-[--color-border] bg-[--color-surface-alt] p-6 max-w-lg text-center">
+              <h2 className="text-lg font-bold text-[--color-ink]">
                 {userFacing.title}
               </h2>
               <p className="mt-2 text-sm text-[--color-nav-text]/90">
@@ -2877,7 +3112,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                   error={reportableError}
                   eventId={null}
                   source="calculator-sentry-boundary"
-                  className="rounded-xl border border-white/20 px-4 py-2 text-sm font-bold uppercase tracking-wide text-white"
+                  className="rounded-xl border border-[--color-border] px-4 py-2 text-sm font-bold uppercase tracking-wide text-[--color-ink]"
                 />
               </div>
             </div>
@@ -2904,19 +3139,19 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         }`}
       >
         {closeModal && (
-          <div className="sticky top-0 z-40 flex h-12 items-center justify-between border-b border-white/5 bg-surface-deep px-3 backdrop-glass-heavy">
+          <div className="sticky top-0 z-40 flex h-12 items-center justify-between border-b border-[--color-border] bg-[--color-surface-alt] px-3">
             <div className="min-w-0">
-              <p className="truncate text-[10px] font-bold uppercase tracking-[0.12em] text-orange-400">
+              <p className="truncate text-[10px] font-bold uppercase tracking-[0.12em] text-[--color-orange-brand]/90">
                 {page.heroKicker}
               </p>
-              <p className="truncate text-sm font-semibold text-white">
+              <p className="truncate text-sm font-semibold text-[--color-ink]">
                 {displayTitle(page.title)}
               </p>
             </div>
             <button
               type="button"
               onClick={closeModal}
-              className="inline-flex min-h-8 items-center gap-1 rounded-lg px-2 text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+              className="inline-flex min-h-8 items-center gap-1 rounded-lg px-2 text-[--color-ink-mid] transition-colors hover:bg-[--color-surface] hover:text-[--color-ink]"
               aria-label="Back"
             >
               <ArrowLeft className="h-4 w-4" aria-hidden />
@@ -2948,7 +3183,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                       href={crumb.href}
                       className={`transition-all duration-300 ease-in-out ${
                         isLast
-                          ? "font-semibold text-white"
+                          ? "font-semibold text-[--color-ink]"
                           : "text-[--color-nav-text]/75 hover:text-[--color-orange-brand]"
                       }`}
                       aria-current={isLast ? "page" : undefined}
@@ -2963,7 +3198,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             <button
               type="button"
               onClick={() => setMobileMenuOpen((current) => !current)}
-              className="inline-flex min-h-9 items-center gap-2 rounded-xl border border-white/20 bg-black/25 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-[--color-nav-text] transition-all duration-200 hover:border-[--color-orange-brand]/45 active:scale-[0.98] lg:hidden"
+              className="inline-flex min-h-9 items-center gap-2 rounded-xl border border-[--color-border] bg-[--color-surface-alt] px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-[--color-nav-text] transition-all duration-200 hover:border-[--color-orange-brand]/45 active:scale-[0.98] lg:hidden"
             >
               {mobileMenuOpen ? (
                 <X className="h-4 w-4" aria-hidden />
@@ -2975,7 +3210,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
           </div>
 
           {mobileMenuOpen ? (
-            <section className="mb-3 rounded-2xl border border-slate-800 bg-slate-900/50 p-3 transition-colors lg:hidden">
+            <section className="mb-3 rounded-2xl border border-[--color-border] bg-[--color-surface-alt] p-3 transition-colors lg:hidden">
               <div className="relative">
                 <Search
                   className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[--color-nav-text]/60"
@@ -2985,16 +3220,16 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
                   placeholder="Search trade tools"
-                  className="h-10 w-full rounded-xl border border-slate-500 bg-slate-900 pl-9 pr-3 text-sm text-white outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
+                  className="h-10 w-full rounded-xl border border-[--color-border] bg-[--color-surface] pl-9 pr-3 text-sm text-[--color-ink] outline-none transition focus:border-[--color-orange-brand] focus:ring-2 focus:ring-[--color-orange-brand]/25"
                 />
               </div>
               <div className="mt-3 grid gap-2 sm:grid-cols-2">
                 {filteredGroups.map((group) => (
                   <div
                     key={group.label}
-                    className="rounded-xl border border-white/10 bg-black/25 p-3"
+                    className="rounded-xl border border-[--color-border] bg-[--color-surface-alt] p-3"
                   >
-                    <p className="mb-2 text-xs font-bold uppercase tracking-[0.15em] text-orange-500">
+                    <p className="mb-2 text-xs font-bold uppercase tracking-[0.15em] text-orange-brand">
                       {group.label}
                     </p>
                     <ul className="space-y-1.5">
@@ -3002,7 +3237,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                         <li key={module.href}>
                           <Link
                             href={module.href}
-                            className="inline-flex items-center gap-2 text-xs text-[--color-nav-text] transition-all duration-300 ease-in-out hover:text-white"
+                            className="inline-flex items-center gap-2 text-xs text-[--color-nav-text] transition-all duration-300 ease-in-out hover:text-[--color-ink]"
                             onClick={() => setMobileMenuOpen(false)}
                           >
                             <module.icon className="h-3.5 w-3.5" aria-hidden />
@@ -3021,24 +3256,25 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
           ) : null}
 
           <div
-            className={`overflow-hidden rounded-3xl border-glow glass-container-deep shadow-[0_18px_40px_rgba(0,0,0,0.38)] ${
-              deviceProfile.layoutMode === "two-column" ? "lg:flex lg:flex-col" : ""
-            } ${
-              deviceProfile.desktopTier === "tv" ? "rim-spread-tv" : ""
-            } ${deviceProfile.shellScaleClass} ${deviceProfile.blurClass}`}
+            className={[
+              "overflow-hidden rounded-3xl glass-container-deep",
+              deviceProfile.layoutMode === "two-column" ? "lg:flex lg:flex-col" : "",
+              deviceProfile.desktopTier === "tv" ? "rim-spread-tv" : "",
+              deviceProfile.shellScaleClass,
+            ].filter(Boolean).join(" ")}
           >
-            {/* Hero intro — on desktop this sits below the calculator surface (order-2) */}
+            {/* Hero header bar — spans full width at top */}
             <div
               className={`grid grid-cols-1 gap-2 px-4 py-4 sm:px-6 sm:py-5 ${
                 deviceProfile.layoutMode === "command-center"
                   ? "xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)] xl:items-start"
                   : deviceProfile.layoutMode === "two-column"
-                    ? "lg:order-2 lg:border-t lg:border-white/10 lg:py-4"
+                    ? "lg:order-1 lg:border-b lg:border-[--color-border] lg:py-4"
                     : ""
-              } ${deviceProfile.blurClass}`}
+              }`}
             >
-              <div className="relative z-10 max-w-xl">
-                <div className="inline-flex items-center gap-2 rounded-full border border-orange-base/45 bg-orange-base/15 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.15em] text-orange-light">
+              <div className="relative z-10 max-w-3xl">
+                <div className="inline-flex items-center gap-2 rounded-full border border-[#fed7aa] bg-[#fff7ed] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.15em] text-[--color-orange-brand]">
                   <HardHat className="h-3.5 w-3.5" aria-hidden />
                   {page.heroKicker}
                 </div>
@@ -3078,7 +3314,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                     type="button"
                     onClick={handleSaveEstimate}
                     disabled={saveState !== "idle"}
-                    className={`glass-button inline-flex h-9 min-h-9 items-center gap-2 rounded-xl px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white transition-all duration-200 hover:text-white active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 ${saveState !== "idle" ? "scale-95" : ""} ${saveState === "corrected" ? "verified-lock-pulse border-primary text-primary" : ""}`}
+                    className={`glass-button inline-flex h-9 min-h-9 items-center gap-2 rounded-xl px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-[--color-ink] transition-all duration-200 hover:text-[--color-ink] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 ${saveState !== "idle" ? "scale-95" : ""} ${saveState === "corrected" ? "verified-lock-pulse border-primary text-primary" : ""}`}
                   >
                     {saveState === "saving" ? (
                       <>
@@ -3120,7 +3356,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
 
                 {primaryMaterialOrder ? (
                   <div className="mt-3 rounded-xl border border-orange-base/30 bg-orange-base/10 px-3 py-2">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-light">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-orange-brand]">
                       Material Order
                     </p>
                     <p className="mt-1 text-sm font-semibold text-copy-primary">
@@ -3205,90 +3441,15 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
               </div>
             </div>
 
-            {/* Calculator surface — inputs + results. On desktop this renders first (order-1) */}
-            <div className={`space-y-2 p-3 sm:p-4 glass-container-deep ${deviceProfile.layoutMode === "two-column" ? "lg:order-1" : ""}`}>
-              <aside className="mb-3 hidden glass-panel lg:block">
-                <h2 className="text-sm font-black uppercase tracking-[0.12em] text-display-heading">
-                  Tool Navigator
-                </h2>
-                <div className="relative mt-3">
-                  <Search
-                    className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-copy-tertiary"
-                    aria-hidden
-                  />
-                  <input
-                    value={search}
-                    onChange={(event) => setSearch(event.target.value)}
-                    placeholder="Search 25+ trade tools"
-                    className="glass-input h-10 w-full rounded-xl pl-9 pr-3 text-sm text-field-input tabular-nums tracking-tight outline-none"
-                  />
-                </div>
-
-                <div
-                  ref={moduleDropdownRef}
-                  className="mt-3 grid grid-cols-3 gap-2"
-                >
-                  {filteredGroups.map((group) => (
-                    <div key={group.label} className="relative">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setOpenModuleGroup((current) =>
-                            current === group.label ? null : group.label,
-                          )
-                        }
-                        aria-expanded={openModuleGroup === group.label}
-                        aria-haspopup="true"
-                        className="glass-button flex min-h-11 w-full flex-col items-center justify-center gap-1 rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-[0.09em] text-copy-secondary transition-all duration-200 ease-in-out hover:text-white active:scale-[0.98]"
-                      >
-                        <group.icon
-                          className="h-4 w-4 text-orange-base"
-                          aria-hidden
-                        />
-                        {group.label}
-                        <ChevronDown
-                          className="h-3 w-3 text-copy-tertiary"
-                          aria-hidden
-                        />
-                      </button>
-
-                      <div
-                        className={`absolute left-0 top-full z-20 mt-1 w-56 glass-panel p-2 shadow-[0_18px_40px_rgba(0,0,0,0.45)] transition-all duration-200 ease-in-out ${
-                          openModuleGroup === group.label
-                            ? "pointer-events-auto visible opacity-100"
-                            : "pointer-events-none invisible opacity-0"
-                        }`}
-                      >
-                        {group.modules.map((module) => (
-                          <Link
-                            key={module.href}
-                            href={module.href}
-                            onClick={() => setOpenModuleGroup(null)}
-                            className={`glass-nav-item mb-1 flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs transition last:mb-0 ${
-                              page.canonicalPath === module.href
-                                ? "bg-[--color-orange-brand]/25 text-[--color-orange-brand]"
-                                : "text-[--color-nav-text] hover:bg-white/7 hover:text-white"
-                            }`}
-                          >
-                            <module.icon
-                              className="h-3.5 w-3.5 text-orange-light"
-                              aria-hidden
-                            />
-                            {normalizeDisplayedLabel(
-                              module.label,
-                              page.canonicalPath,
-                            )}
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </aside>
-
+            {/* Calculator surface — inputs + results */}
+            <div className={`space-y-2 p-3 sm:p-4 ${deviceProfile.layoutMode === "two-column" ? "lg:order-2" : "glass-container-deep"}`}>
               <div className={calculatorSurfaceClassName}>
                 <section
-                  className={`glass-container transition-colors ${effectiveProMode ? "p-3" : "p-3 sm:p-4"}`}
+                  className={`transition-colors ${effectiveProMode ? "p-3" : "p-3 sm:p-4"} ${
+                    deviceProfile.layoutMode === "two-column"
+                      ? "lg:border-r lg:border-[--color-border]"
+                      : "glass-container"
+                  }`}
                 >
                   {/* Compact inputs header — icon inline with label, no large centered decoration */}
                   <div className="mb-2 flex items-center gap-2">
@@ -3406,7 +3567,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                   { value: "dimensions", label: "Dimensions" },
                                   {
                                     value: "total-cu-yd",
-                                    label: "Total Yards",
+                                    label: "Total Cubic Yards",
                                   },
                                   {
                                     value: "total-cu-ft",
@@ -3423,7 +3584,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                 options={[
                                   {
                                     value: "lineal-feet",
-                                    label: "Running Lineal Feet",
+                                    label: "Linear Feet (LF)",
                                   },
                                   {
                                     value: "total-studs",
@@ -3606,17 +3767,17 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                             <ProInput
                               label={
                                 volumeInputMode === "total-cu-yd"
-                                  ? "Total Yards"
+                                  ? "Total Cubic Yards"
                                   : "Total Cubic Feet"
                               }
                               subLabel={getInlineSubLabel(
                                 volumeInputMode === "total-cu-yd"
-                                  ? "Total Yards"
+                                  ? "Total Cubic Yards"
                                   : "Total Cubic Feet",
                               )}
                               helpText={
                                 volumeInputMode === "total-cu-yd"
-                                  ? "Total Yards: (Length x Width x Depth) divided by 27."
+                                  ? "Total Cubic Yards: (Length x Width x Depth) divided by 27."
                                   : undefined
                               }
                               type="number"
@@ -3651,9 +3812,9 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                           ) : isTrimTotalLfMode ? (
                             <>
                               <ProInput
-                                label="Total Lineal Feet (LF)"
+                                label="Total Linear Feet (LF)"
                                 subLabel={getInlineSubLabel(
-                                  "Total Lineal Feet (LF)",
+                                  "Total Linear Feet (LF)",
                                 )}
                                 type="number"
                                 min={1}
@@ -3852,8 +4013,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                   }
                                   className={`inline-flex w-full items-center justify-between gap-3 rounded-xl border px-3 py-2 text-left text-sm font-semibold transition ${
                                     staggeredStudWall
-                                      ? "border-orange-500/60 bg-orange-500/15 text-orange-200"
-                                      : "border-slate-700 bg-slate-900 text-slate-200 hover:border-slate-500"
+                                      ? "border-[--color-orange-brand]/50 bg-[--color-orange-soft] text-[--color-orange-dark]"
+                                      : "border-[--color-border] bg-[--color-surface-alt] text-[--color-ink] hover:border-[--color-border-strong]"
                                   }`}
                                   aria-pressed={staggeredStudWall}
                                 >
@@ -4078,10 +4239,10 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                         {/* Collapsible Waste Factor Section */}
                         <details
                           open={wasteFactorOpen}
-                          className="rounded-xl border border-slate-700/50 bg-slate-900/50 overflow-hidden"
+                          className="overflow-hidden rounded-xl border border-[--color-border] bg-[--color-surface-alt]"
                         >
                           <summary
-                            className="flex cursor-pointer items-center justify-between gap-2 px-3 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary hover:bg-slate-800/50 transition-colors list-none"
+                            className="flex cursor-pointer list-none items-center justify-between gap-2 px-3 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary transition-colors hover:bg-[--color-surface]"
                             onClick={(e) => {
                               e.preventDefault();
                               setWasteFactorOpen(!wasteFactorOpen);
@@ -4132,31 +4293,43 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                       </div>
                     );
                   })()}
+
+                  {deviceProfile.layoutMode === "two-column" && localTip && !effectiveProMode ? (
+                    <div className="glass-panel border-primary/25 bg-primary/10 p-3 mt-3">
+                      <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-primary">
+                        Pro Tip
+                      </h3>
+                      <p className="mt-1 text-sm text-[--color-ink]">{localTip}</p>
+                    </div>
+                  ) : null}
                 </section>
 
                 <aside
                   ref={resultsCardRef}
-                  className={`self-start pb-8 glass-container-elevated ${
+                  className={`self-start pb-8 ${
+                    deviceProfile.layoutMode === "two-column" ? "" : "glass-container-elevated"
+                  } ${
                     deviceProfile.layoutMode === "glass-stack"
                       ? ""
-                      : "lg:sticky lg:top-24 lg:self-start lg:pb-0"
+                      : "lg:sticky lg:top-[calc(var(--shell-header-h,52px)+16px)] lg:self-start lg:pb-0"
                   } ${
                     deviceProfile.layoutMode === "command-center"
                       ? "xl:col-start-2"
                       : ""
                   } ${
                     deviceProfile.tabletTier === "large"
-                      ? "tablet-bottom-tray order-3 mt-2 border-t border-white/10 pt-3"
+                      ? "tablet-bottom-tray order-3 mt-2 border-t border-[--color-border] pt-3"
                       : ""
                   }`}
                 >
                   <ProResult
+                    containerClassName={deviceProfile.layoutMode === "two-column" ? "" : undefined}
                     primary={displayResults.primary}
                     secondary={displayResults.secondary}
                     primaryUnitDisplay={getPrimaryDisplayUnit(
                       displayResults.primary,
                     )}
-                    localTip={effectiveProMode ? null : localTip}
+                    localTip={effectiveProMode || deviceProfile.layoutMode === "two-column" ? null : localTip}
                     materialList={displayResults.materialList}
                     onCopyOrder={handleCopyOrder}
                     onFinalize={openFinalizeModal}
@@ -4184,7 +4357,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                         type="button"
                         onClick={runAiOptimizer}
                         disabled={aiOptimizeBusy}
-                        className="glass-button min-h-9 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.12em] transition-all duration-200 hover:text-white active:scale-[0.98]"
+                        className="glass-button min-h-9 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.12em] transition-all duration-200 hover:text-[--color-ink] active:scale-[0.98]"
                       >
                         {aiOptimizeBusy ? "Optimizing…" : "Optimize"}
                       </button>
@@ -4287,7 +4460,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                     <Link
                       key={item.href}
                       href={item.href}
-                      className="glass-button group flex min-h-9 items-center gap-2 rounded-xl px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.08em] transition-all duration-200 hover:text-orange-light active:scale-[0.98]"
+                      className="glass-button group flex min-h-9 items-center gap-2 rounded-xl px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.08em] transition-all duration-200 hover:text-[--color-orange-brand] active:scale-[0.98]"
                     >
                       <item.icon
                         className="h-3.5 w-3.5 transition-all duration-200 group-hover:text-orange-base"
@@ -4319,7 +4492,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                 </ul>
 
                 <div className="mt-3 rounded-xl border border-orange-base/35 bg-orange-base/10 p-3">
-                  <p className="text-xs font-bold uppercase tracking-[0.15em] text-orange-light">
+                  <p className="text-xs font-bold uppercase tracking-[0.15em] text-[--color-orange-brand]">
                     Field Notes
                   </p>
                   <p className="mt-2 text-sm text-copy-secondary">
@@ -4335,11 +4508,91 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                   </Link>
                 </div>
               </section>
+
+              {/* Tool Navigator — at bottom, hidden on mobile */}
+              <aside className="hidden glass-panel lg:block">
+                <h2 className="text-sm font-black uppercase tracking-[0.12em] text-display-heading">
+                  Tool Navigator
+                </h2>
+                <div className="relative mt-3">
+                  <Search
+                    className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-copy-tertiary"
+                    aria-hidden
+                  />
+                  <input
+                    value={search}
+                    onChange={(event) => setSearch(event.target.value)}
+                    placeholder="Search 25+ trade tools"
+                    className="glass-input h-10 w-full rounded-xl pl-9 pr-3 text-sm text-field-input tabular-nums tracking-tight outline-none"
+                  />
+                </div>
+
+                <div
+                  ref={moduleDropdownRef}
+                  className="mt-3 grid grid-cols-3 gap-2"
+                >
+                  {filteredGroups.map((group) => (
+                    <div key={group.label} className="relative">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setOpenModuleGroup((current) =>
+                            current === group.label ? null : group.label,
+                          )
+                        }
+                        aria-expanded={openModuleGroup === group.label}
+                        aria-haspopup="true"
+                        className="glass-button flex min-h-11 w-full flex-col items-center justify-center gap-1 rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-[0.09em] text-copy-secondary transition-all duration-200 ease-in-out hover:text-[--color-ink] active:scale-[0.98]"
+                      >
+                        <group.icon
+                          className="h-4 w-4 text-orange-base"
+                          aria-hidden
+                        />
+                        {group.label}
+                        <ChevronDown
+                          className="h-3 w-3 text-copy-tertiary"
+                          aria-hidden
+                        />
+                      </button>
+
+                      <div
+                        className={`absolute left-0 top-full z-20 mt-1 w-56 glass-panel p-2 shadow-[0_18px_40px_rgba(0,0,0,0.45)] transition-all duration-200 ease-in-out ${
+                          openModuleGroup === group.label
+                            ? "pointer-events-auto visible opacity-100"
+                            : "pointer-events-none invisible opacity-0"
+                        }`}
+                      >
+                        {group.modules.map((module) => (
+                          <Link
+                            key={module.href}
+                            href={module.href}
+                            onClick={() => setOpenModuleGroup(null)}
+                            className={`glass-nav-item mb-1 flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs transition last:mb-0 ${
+                              page.canonicalPath === module.href
+                                ? "bg-[--color-orange-brand]/25 text-[--color-orange-brand]"
+                                : "text-[--color-nav-text] hover:bg-[--color-surface-alt] hover:text-[--color-ink]"
+                            }`}
+                          >
+                            <module.icon
+                              className="h-3.5 w-3.5 text-[--color-orange-brand]"
+                              aria-hidden
+                            />
+                            {normalizeDisplayedLabel(
+                              module.label,
+                              page.canonicalPath,
+                            )}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </aside>
             </div>
           </div>
 
           <nav
-            className="fixed bottom-14 left-0 right-0 z-40 flex min-h-10 items-center justify-between border-t border-white/5 bg-surface-deep px-4 py-1.5 backdrop-glass-heavy lg:hidden"
+            className="fixed bottom-14 left-0 right-0 z-40 flex min-h-10 items-center justify-between border-t border-[--color-border] bg-[--color-surface-alt] px-4 py-1.5 lg:hidden"
             aria-label="Mobile tool actions"
           >
             <Link
@@ -4369,7 +4622,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
           </nav>
         </section>
 
-        <div className="fixed bottom-0 left-0 w-full z-40 border-t border-white/5 bg-surface-deep backdrop-glass-heavy px-4 py-3 pb-safe keyboard-safe-pb lg:hidden critical-ui-container">
+        <div className="fixed bottom-0 left-0 z-40 w-full border-t border-[--color-border] bg-[--color-surface-alt] px-4 py-3 pb-safe keyboard-safe-pb lg:hidden critical-ui-container">
           <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-3">
             <div className="min-w-0">
               <p className="truncate text-xs font-bold uppercase tracking-[0.14em] text-copy-secondary">
@@ -4425,7 +4678,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
               >
                 <X className="h-4 w-4" aria-hidden />
               </button>
-              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-light">
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[--color-orange-brand]">
                 Finalize Estimate
               </p>
               <h3 className="mt-2 text-xl font-black text-display-heading">
@@ -4531,7 +4784,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
 
               {primaryMaterialOrder ? (
                 <div className="mt-4 rounded-2xl border border-orange-base/30 bg-orange-base/10 px-4 py-3">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-light">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-orange-brand]">
                     First Material Order
                   </p>
                   <p className="mt-1 text-sm font-semibold text-copy-primary">
@@ -4552,7 +4805,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                     <button
                       type="button"
                       onClick={handleCopySignUrl}
-                      className="glass-button inline-flex min-h-10 flex-1 items-center justify-center rounded-xl border border-orange-base/40 px-3 text-sm font-semibold text-orange-light"
+                      className="glass-button inline-flex min-h-10 flex-1 items-center justify-center rounded-xl border border-orange-base/40 px-3 text-sm font-semibold text-[--color-orange-brand]"
                     >
                       Copy Link
                     </button>

@@ -20,7 +20,12 @@ function getFirstValue(
 function getSafeNextPath(candidate: string | undefined): string {
   if (!candidate) return routes.commandCenter;
   if (!candidate.startsWith("/")) return routes.commandCenter;
-  if (candidate.startsWith("/auth/signin")) return routes.commandCenter;
+  if (
+    candidate.startsWith("/auth/signin") ||
+    candidate.startsWith("/sign-in")
+  ) {
+    return routes.commandCenter;
+  }
   return candidate;
 }
 
@@ -81,9 +86,9 @@ function getOnboardingErrorMessage(
 
 function NoBusinessFound() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-[#0F0F10] text-white">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-[--color-bg] px-4 text-[--color-ink]">
       <h2 className="mb-4 text-2xl font-black uppercase">No Business Found</h2>
-      <p className="text-white/60">
+      <p className="text-[--color-ink-mid]">
         Your account does not belong to a business yet.
       </p>
     </div>
@@ -308,21 +313,21 @@ export default async function OnboardingPage({
   }
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-xl items-center bg-[#0F0F10] px-4 py-12 sm:px-6">
-      <section className="w-full rounded-2xl border border-white/10 bg-[#1A1A1C] p-6 text-white shadow-[0_12px_28px_rgba(0,0,0,0.35)]">
-        <p className="text-xs font-black uppercase tracking-[0.15em] text-[#FF8C00]">
+    <main className="mx-auto flex min-h-screen w-full max-w-xl items-center bg-[--color-bg] px-4 py-12 sm:px-6">
+      <section className="w-full rounded-2xl border border-[--color-border] bg-[--color-surface] p-6 text-[--color-ink] shadow-[0_12px_36px_rgba(15,18,27,0.08)]">
+        <p className="text-xs font-black uppercase tracking-[0.15em] text-[--color-orange-brand]">
           Command Center Setup
         </p>
-        <h1 className="mt-2 text-2xl font-black uppercase text-white">
+        <h1 className="mt-2 text-2xl font-black uppercase text-[--color-ink]">
           Create Your Business Profile
         </h1>
-        <p className="mt-2 text-sm text-white/60">
+        <p className="mt-2 text-sm text-[--color-ink-mid]">
           Your account is authenticated. Finish setup by creating your first
           business workspace.
         </p>
 
         {setupError && (
-          <p className="mt-4 rounded-lg border border-red-400/30 bg-red-950/45 px-3 py-2 text-sm text-red-200">
+          <p className="mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
             {setupError}
           </p>
         )}
@@ -330,20 +335,20 @@ export default async function OnboardingPage({
         <form action={createBusinessProfileAction} className="mt-5 space-y-4">
           <input type="hidden" name="next" value={nextPath} />
 
-          <label className="flex flex-col gap-1 text-sm text-white/70">
+          <label className="flex flex-col gap-1 text-sm text-[--color-ink-mid]">
             Business Name
             <input
               name="businessName"
               type="text"
               required
               placeholder="Acme Construction"
-              className="h-11 rounded-lg border border-white/10 bg-[#0F0F10] px-3 text-white placeholder:text-white/35 outline-none focus:ring-2 focus:ring-[#FF8C00]"
+              className="h-11 rounded-lg border border-[--color-border] bg-[--color-surface] px-3 text-[--color-ink] placeholder:text-[--color-ink-dim] outline-none focus:ring-2 focus:ring-[--color-orange-brand]/35"
             />
           </label>
 
           <button
             type="submit"
-            className="inline-flex h-11 items-center justify-center rounded-lg bg-[#FF8C00] px-5 text-sm font-black uppercase text-white transition hover:brightness-95"
+            className="inline-flex h-11 items-center justify-center rounded-lg bg-[--color-orange-brand] px-5 text-sm font-black uppercase text-white transition hover:bg-[--color-orange-dark]"
           >
             Create Business Profile
           </button>
