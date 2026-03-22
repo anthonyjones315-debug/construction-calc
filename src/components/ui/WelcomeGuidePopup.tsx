@@ -11,6 +11,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { routes } from "@routes";
+import { GlassFeatureItem } from "@/components/ui/glass-elements";
 
 const STORAGE_KEY = "pcc_welcome_guide_dismissed_v1";
 const SESSION_KEY = "pcc_welcome_guide_seen_v1";

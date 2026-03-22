@@ -155,7 +155,7 @@ function CrewJoin({ nextPath }: { nextPath: string }) {
       }
       setState("success");
       setTimeout(() => {
-        router.push(nextPath);
+        router.push(nextPath as never);
       }, 1200);
     } catch {
       setErrorMsg("Network error. Please check your connection and try again.");
