@@ -1,0 +1,32 @@
+
+> proconstructioncalc@1.0.0 dev
+> next dev --turbopack
+
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+✓ Ready in 533ms
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+- Cache Components enabled
+- Experiments (use with caution):
+  · clientTraceMetadata
+  · optimizePackageImports
+
+○ Compiling /_not-found/page ...
+
+[35m
+[Clerk]:[0m You are running in keyless mode.
+You can [35mclaim your keys[0m by visiting https://dashboard.clerk.com/apps/claim?framework=nextjs&token=pujzuiqujpb4cb5y3mnwodiued5aj63esfqlt2kj&return_url=http%3A%2F%2Flocalhost%3A3000%2F
+
+ GET /calculators/interior/flooring 404 in 16.1s (next.js: 12.8s, proxy.ts: 540ms, application-code: 2.7s)
+[browser] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview (https://premium-colt-75.clerk.accounts.dev/npm/@clerk/clerk-js@6/dist/clerk.browser.js:12:3226)
+ GET /calculators/interior/flooring 404 in 404ms (next.js: 16ms, proxy.ts: 18ms, application-code: 369ms)
+[browser] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview (https://premium-colt-75.clerk.accounts.dev/npm/@clerk/clerk-js@6/dist/clerk.browser.js:12:3226)
+ GET /calculators/interior/flooring 404 in 357ms (next.js: 9ms, proxy.ts: 12ms, application-code: 337ms)
+[browser] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview (https://premium-colt-75.clerk.accounts.dev/npm/@clerk/clerk-js@6/dist/clerk.browser.js:12:3226)
+ GET /calculators/interior/flooring 404 in 371ms (next.js: 17ms, proxy.ts: 15ms, application-code: 339ms)
+[browser] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview (https://premium-colt-75.clerk.accounts.dev/npm/@clerk/clerk-js@6/dist/clerk.browser.js:12:3226)
