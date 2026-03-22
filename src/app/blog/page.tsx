@@ -35,9 +35,9 @@ export const metadata: Metadata = getPageMetadata({
 
 export default function BlogPage() {
   return (
-    <div className="light public-page page-shell">
+    <div className="light public-page page-shell flex min-h-dvh flex-col">
       <Header />
-      <main id="main-content" className="flex-1">
+      <main id="main-content" className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
           <div className="dark-feature-panel mb-8 p-6 text-[--color-ink] relative">
             <p className="section-kicker">Methods and guidance</p>

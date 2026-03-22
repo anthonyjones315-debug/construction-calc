@@ -225,13 +225,16 @@ export default function RootLayout({
                   <Suspense fallback={null}>
                     <ScrollToTop />
                   </Suspense>
-                  {TERMELY_WEBSITE_UUID && (
-                    <TermlyCMP
-                      websiteUUID={TERMELY_WEBSITE_UUID}
-                      autoBlock={TERMELY_AUTO_BLOCK}
-                      masterConsentsOrigin={TERMELY_MASTER_CONSENTS_ORIGIN}
-                    />
-                  )}
+                  {/* Only render TermlyCMP if not on sign-in page */}
+                  {TERMELY_WEBSITE_UUID &&
+                    typeof window !== "undefined" &&
+                    !window.location.pathname.startsWith("/sign-in") && (
+                      <TermlyCMP
+                        websiteUUID={TERMELY_WEBSITE_UUID}
+                        autoBlock={TERMELY_AUTO_BLOCK}
+                        masterConsentsOrigin={TERMELY_MASTER_CONSENTS_ORIGIN}
+                      />
+                    )}
                   <WebVitals />
                   {children}
                 </Providers>

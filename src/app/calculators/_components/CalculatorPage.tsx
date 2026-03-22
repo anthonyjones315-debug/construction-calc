@@ -73,6 +73,11 @@ import { calculateNysSalesTax } from "@/services/taxEngine";
 import { routes } from "@routes";
 import { UnitToggle } from "./UnitToggle";
 import { ProInput, ProResult } from "@/components/ui/glass-elements";
+import {
+  FeetInchesInput,
+  feetInchesToDecimal,
+  decimalToFeetInches,
+} from "@/components/ui/FeetInchesInput";
 import { useProMode } from "@/hooks/useProMode";
 import { triggerHaptic } from "@/hooks/useHaptic";
 import { sanitizeFilename } from "@/utils/sanitize-filename";
@@ -868,8 +873,13 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     );
   const [openModuleGroup, setOpenModuleGroup] = useState<string | null>(null);
   const [crmModalOpen, setCrmModalOpen] = useState(false);
+  // For feet/inches input support
   const [baseMeasurement, setBaseMeasurement] = useState(10);
+  const [baseFeet, setBaseFeet] = useState(10);
+  const [baseInches, setBaseInches] = useState(0);
   const [widthSpan, setWidthSpan] = useState(10);
+  const [widthFeet, setWidthFeet] = useState(10);
+  const [widthInches, setWidthInches] = useState(0);
   const [depthThickness, setDepthThickness] = useState(4);
   const [wasteFactor, setWasteFactor] = useState(10);
   const [saveState, setSaveState] = useState<
@@ -986,10 +996,29 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       setBaseMeasurement(financialCopy.inputs[0].defaultValue);
       setWidthSpan(financialCopy.inputs[1].defaultValue);
       setDepthThickness(financialCopy.inputs[2].defaultValue);
+      // Sync feet/inches for slab calculators
+      if (page.canonicalPath === "/calculators/concrete/slab") {
+        const { feet: bf, inches: bi } = decimalToFeetInches(
+          financialCopy.inputs[0].defaultValue,
+        );
+        setBaseFeet(bf);
+        setBaseInches(bi);
+        const { feet: wf, inches: wi } = decimalToFeetInches(
+          financialCopy.inputs[1].defaultValue,
+        );
+        setWidthFeet(wf);
+        setWidthInches(wi);
+      }
     } else {
       setBaseMeasurement(10);
       setWidthSpan(10);
       setDepthThickness(4);
+      if (page.canonicalPath === "/calculators/concrete/slab") {
+        setBaseFeet(10);
+        setBaseInches(0);
+        setWidthFeet(10);
+        setWidthInches(0);
+      }
     }
   }, [financialCopy, page.canonicalPath]);
 
@@ -2167,11 +2196,23 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         const pallets = Math.ceil(adjusted / 450);
         const seedLbs = Math.ceil((adjusted / 1000) * 4);
         return {
-          primary: { label: "Sod Rolls", value: rolls.toString(), unit: "rolls" },
+          primary: {
+            label: "Sod Rolls",
+            value: rolls.toString(),
+            unit: "rolls",
+          },
           secondary: [
             { label: "Area", value: adjusted.toFixed(0), unit: "sq ft" },
-            { label: "Pallets (~450 sq ft ea)", value: pallets.toString(), unit: "pallets" },
-            { label: "Seed Alternative", value: seedLbs.toString(), unit: "lbs" },
+            {
+              label: "Pallets (~450 sq ft ea)",
+              value: pallets.toString(),
+              unit: "pallets",
+            },
+            {
+              label: "Seed Alternative",
+              value: seedLbs.toString(),
+              unit: "lbs",
+            },
           ],
           materialList: [
             `Order ${rolls} sod rolls (10 sq ft ea)`,
@@ -2189,7 +2230,11 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       const bags2CuFt = Math.ceil((volumeCuFt * wasteMultiplier) / 2);
 
       const secondary: Array<{ label: string; value: string; unit: string }> = [
-        { label: "Volume", value: (volumeCuFt * wasteMultiplier).toFixed(1), unit: "cu ft" },
+        {
+          label: "Volume",
+          value: (volumeCuFt * wasteMultiplier).toFixed(1),
+          unit: "cu ft",
+        },
         { label: "2 cu ft Bags", value: bags2CuFt.toString(), unit: "bags" },
       ];
 
@@ -2200,7 +2245,11 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
 
       if (p.includes("gravel")) {
         const tons = cubicYards * 1.4;
-        secondary.unshift({ label: "Tons (est.)", value: tons.toFixed(2), unit: "tons" });
+        secondary.unshift({
+          label: "Tons (est.)",
+          value: tons.toFixed(2),
+          unit: "tons",
+        });
         matList[0] = `Order ${tons.toFixed(2)} tons crushed stone`;
         return {
           primary: { label: "Tons", value: tons.toFixed(2), unit: "tons" },
@@ -2212,12 +2261,22 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       if (p.includes("topsoil")) {
         const tonsLow = cubicYards * 1.0;
         const tonsHigh = cubicYards * 1.3;
-        secondary.push({ label: "Tons (est.)", value: `${tonsLow.toFixed(1)}–${tonsHigh.toFixed(1)}`, unit: "tons" });
-        matList.push(`Approx ${tonsLow.toFixed(1)}–${tonsHigh.toFixed(1)} tons (varies by moisture)`);
+        secondary.push({
+          label: "Tons (est.)",
+          value: `${tonsLow.toFixed(1)}–${tonsHigh.toFixed(1)}`,
+          unit: "tons",
+        });
+        matList.push(
+          `Approx ${tonsLow.toFixed(1)}–${tonsHigh.toFixed(1)} tons (varies by moisture)`,
+        );
       }
 
       return {
-        primary: { label: "Cubic Yards", value: cubicYards.toFixed(2), unit: "cu yd" },
+        primary: {
+          label: "Cubic Yards",
+          value: cubicYards.toFixed(2),
+          unit: "cu yd",
+        },
         secondary,
         materialList: matList,
       };
@@ -2236,7 +2295,9 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         const railsPerSection = height > 6 ? 3 : 2;
         const rails = sections * railsPerSection;
         const picketsPerSection = Math.ceil((postSpacing * 12) / 4);
-        const pickets = Math.ceil(sections * picketsPerSection * wasteMultiplier);
+        const pickets = Math.ceil(
+          sections * picketsPerSection * wasteMultiplier,
+        );
         return {
           primary: { label: "Posts", value: posts.toString(), unit: "ea" },
           secondary: [
@@ -2267,7 +2328,11 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
           secondary: [
             { label: "Gravel Base", value: baseTons.toFixed(2), unit: "tons" },
             { label: "Sand Bedding", value: sandTons.toFixed(2), unit: "tons" },
-            { label: "Edge Restraint", value: perimeter.toFixed(0), unit: "LF" },
+            {
+              label: "Edge Restraint",
+              value: perimeter.toFixed(0),
+              unit: "LF",
+            },
           ],
           materialList: [
             `Order ${pavers} pavers (4×8 standard)`,
@@ -2282,7 +2347,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         const areaSqFt = dimensionsAreaSquareFeet;
         const thicknessIn = clampValue(depthThickness, 1, 6);
         const volumeCuFt = areaSqFt * (thicknessIn / 12);
-        const tons = (volumeCuFt * 145) / 2000 * wasteMultiplier; // 145 lbs/cu ft
+        const tons = ((volumeCuFt * 145) / 2000) * wasteMultiplier; // 145 lbs/cu ft
         return {
           primary: { label: "Tons", value: tons.toFixed(2), unit: "tons" },
           secondary: [
@@ -2757,8 +2822,6 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     wasteFactor,
     widthSpan,
   ]);
-
-  const showEmptyStateWatermark = !userInteracted.current;
 
   const finalizePayload = useMemo(
     () => ({
@@ -3258,10 +3321,14 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
           <div
             className={[
               "overflow-hidden rounded-3xl glass-container-deep",
-              deviceProfile.layoutMode === "two-column" ? "lg:flex lg:flex-col" : "",
+              deviceProfile.layoutMode === "two-column"
+                ? "lg:flex lg:flex-col"
+                : "",
               deviceProfile.desktopTier === "tv" ? "rim-spread-tv" : "",
               deviceProfile.shellScaleClass,
-            ].filter(Boolean).join(" ")}
+            ]
+              .filter(Boolean)
+              .join(" ")}
           >
             {/* Hero header bar — spans full width at top */}
             <div
@@ -3442,7 +3509,9 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             </div>
 
             {/* Calculator surface — inputs + results */}
-            <div className={`space-y-2 p-3 sm:p-4 ${deviceProfile.layoutMode === "two-column" ? "lg:order-2" : "glass-container-deep"}`}>
+            <div
+              className={`space-y-2 p-3 sm:p-4 ${deviceProfile.layoutMode === "two-column" ? "lg:order-2" : "glass-container-deep"}`}
+            >
               <div className={calculatorSurfaceClassName}>
                 <section
                   className={`transition-colors ${effectiveProMode ? "p-3" : "p-3 sm:p-4"} ${
@@ -3632,7 +3701,69 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                         </div>
 
                         <div className="grid gap-3">
-                          {isRoofingShinglesCalculator ? (
+                          {/* Feet/inches input for slab calculator */}
+                          {page.canonicalPath ===
+                            "/calculators/concrete/slab" &&
+                          areaInputMode === "dimensions" ? (
+                            <>
+                              <FeetInchesInput
+                                label={labels.first}
+                                feet={baseFeet}
+                                inches={baseInches}
+                                onFeetChange={(f) => {
+                                  setBaseFeet(f === "" ? 0 : f);
+                                  setBaseMeasurement(
+                                    feetInchesToDecimal(
+                                      f === "" ? 0 : f,
+                                      baseInches,
+                                    ),
+                                  );
+                                }}
+                                onInchesChange={(i) => {
+                                  setBaseInches(i === "" ? 0 : i);
+                                  setBaseMeasurement(
+                                    feetInchesToDecimal(
+                                      baseFeet,
+                                      i === "" ? 0 : i,
+                                    ),
+                                  );
+                                }}
+                                minFeet={1}
+                                maxFeet={10000}
+                                minInches={0}
+                                maxInches={11}
+                                helpText={getInlineSubLabel(labels.first)}
+                              />
+                              <FeetInchesInput
+                                label={labels.second}
+                                feet={widthFeet}
+                                inches={widthInches}
+                                onFeetChange={(f) => {
+                                  setWidthFeet(f === "" ? 0 : f);
+                                  setWidthSpan(
+                                    feetInchesToDecimal(
+                                      f === "" ? 0 : f,
+                                      widthInches,
+                                    ),
+                                  );
+                                }}
+                                onInchesChange={(i) => {
+                                  setWidthInches(i === "" ? 0 : i);
+                                  setWidthSpan(
+                                    feetInchesToDecimal(
+                                      widthFeet,
+                                      i === "" ? 0 : i,
+                                    ),
+                                  );
+                                }}
+                                minFeet={1}
+                                maxFeet={10000}
+                                minInches={0}
+                                maxInches={11}
+                                helpText={getInlineSubLabel(labels.second)}
+                              />
+                            </>
+                          ) : isRoofingShinglesCalculator ? (
                             <>
                               <UnitToggle
                                 label="Roof Input"
@@ -4294,12 +4425,16 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                     );
                   })()}
 
-                  {deviceProfile.layoutMode === "two-column" && localTip && !effectiveProMode ? (
+                  {deviceProfile.layoutMode === "two-column" &&
+                  localTip &&
+                  !effectiveProMode ? (
                     <div className="glass-panel border-primary/25 bg-primary/10 p-3 mt-3">
                       <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-primary">
                         Pro Tip
                       </h3>
-                      <p className="mt-1 text-sm text-[--color-ink]">{localTip}</p>
+                      <p className="mt-1 text-sm text-[--color-ink]">
+                        {localTip}
+                      </p>
                     </div>
                   ) : null}
                 </section>
@@ -4307,7 +4442,9 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                 <aside
                   ref={resultsCardRef}
                   className={`self-start pb-8 ${
-                    deviceProfile.layoutMode === "two-column" ? "" : "glass-container-elevated"
+                    deviceProfile.layoutMode === "two-column"
+                      ? ""
+                      : "glass-container-elevated"
                   } ${
                     deviceProfile.layoutMode === "glass-stack"
                       ? ""
@@ -4323,19 +4460,25 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                   }`}
                 >
                   <ProResult
-                    containerClassName={deviceProfile.layoutMode === "two-column" ? "" : undefined}
+                    containerClassName={
+                      deviceProfile.layoutMode === "two-column" ? "" : undefined
+                    }
                     primary={displayResults.primary}
                     secondary={displayResults.secondary}
                     primaryUnitDisplay={getPrimaryDisplayUnit(
                       displayResults.primary,
                     )}
-                    localTip={effectiveProMode || deviceProfile.layoutMode === "two-column" ? null : localTip}
+                    localTip={
+                      effectiveProMode ||
+                      deviceProfile.layoutMode === "two-column"
+                        ? null
+                        : localTip
+                    }
                     materialList={displayResults.materialList}
                     onCopyOrder={handleCopyOrder}
                     onFinalize={openFinalizeModal}
                     finalizeLabel="Finalize Estimate"
                     finalizeIcon={<PenSquare className="h-4 w-4" aria-hidden />}
-                    showEmptyStateWatermark={showEmptyStateWatermark}
                   />
 
                   <section className="glass-panel p-3 transition-colors">
