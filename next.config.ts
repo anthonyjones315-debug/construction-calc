@@ -144,7 +144,7 @@ const nextConfig: NextConfig = {
       "media-src 'none'",
       "object-src 'none'",
       "worker-src 'self' blob:",
-      "frame-src 'self' https://googleads.g.doubleclick.net https://*.googlesyndication.com https://*.google.com https://accounts.google.com https://*.adtrafficquality.google https://challenges.cloudflare.com https://*.clerk.accounts.dev https://clerk.accounts.dev https://clerk.com https://*.clerk.com",
+      "frame-src 'self' https://googleads.g.doubleclick.net https://*.googlesyndication.com https://*.google.com https://accounts.google.com https://*.adtrafficquality.google https://challenges.cloudflare.com https://*.clerk.accounts.dev https://clerk.accounts.dev https://clerk.com https://*.clerk.com https://vercel.live",
       // frame-ancestors mirrors X-Frame-Options: DENY for CSP-aware browsers
       "frame-ancestors 'none'",
       "base-uri 'self'",
