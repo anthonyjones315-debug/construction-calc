@@ -81,7 +81,10 @@ export function WelcomeGuidePopup({
   if (!show) return null;
 
   const features = [
-    { icon: LayoutDashboard, label: "Command Center setup and first-run workflow" },
+    {
+      icon: LayoutDashboard,
+      label: "Command Center setup and first-run workflow",
+    },
     { icon: Receipt, label: "Estimate math, pricing, and audit checks" },
     { icon: FileText, label: "Client-ready PDF handoff and saved jobs" },
     { icon: ShieldCheck, label: "Best practices for secure account recovery" },
@@ -136,28 +139,17 @@ export function WelcomeGuidePopup({
           </p>
 
           <div className="relative mb-5 grid gap-2">
-            {[
-              {
-                icon: LayoutDashboard,
-                label: "Command Center: estimates, team, and price book in one place",
-              },
-              {
-                icon: Receipt,
-                label: "Estimate math, pricing, and tax audit for tri-county work",
-              },
-              {
-                icon: FileText,
-                label: "Client-ready PDF export and saved estimate management",
-              },
-              {
-                icon: ShieldCheck,
-                label: "Oneida County tax rates and ST-124 capital improvement rules",
-              },
-            ].map(({ icon: Icon, label }) => (
-              <GlassFeatureItem key={label}>
-                <Icon className="h-4 w-4 text-primary" aria-hidden />
+            {features.map(({ icon: Icon, label }) => (
+              <div
+                key={label}
+                className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700"
+              >
+                <Icon
+                  className="h-4 w-4 shrink-0 text-orange-brand"
+                  aria-hidden
+                />
                 <span>{label}</span>
-              </GlassFeatureItem>
+              </div>
             ))}
           </div>
 
