@@ -11,14 +11,14 @@ export const metadata = getNoIndexMetadata(
 export default function OfflinePage() {
   return (
     <div className="page-shell flex min-h-screen items-center justify-center px-4">
-      <div className="dark-feature-panel w-full max-w-lg p-8 text-center text-white">
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/6">
+      <div className="dark-feature-panel w-full max-w-lg p-8 text-center text-[--color-ink]">
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[--color-orange-soft]">
           <WifiOff className="w-8 h-8 text-[--color-orange-brand]" />
         </div>
-        <h1 className="mb-2 text-2xl font-display font-bold text-white">
+        <h1 className="mb-2 text-2xl font-display font-bold text-[--color-ink]">
           You&apos;re offline
         </h1>
-        <p className="mb-6 text-sm leading-relaxed text-[--color-nav-text]/72">
+        <p className="mb-6 text-sm leading-relaxed text-[--color-ink-mid]">
           No internet connection right now. Keep moving with cached pages,
           already-open calculators, and saved field inputs while the signal comes back.
         </p>
@@ -32,20 +32,20 @@ export default function OfflinePage() {
           </Link>
           <Link
             href={routes.saved}
-            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-slate-700 bg-white/5 px-5 py-3 font-semibold text-white transition hover:border-orange-400/60"
+            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-[--color-border] bg-[--color-surface-alt] px-5 py-3 font-semibold text-[--color-ink] transition hover:border-[--color-orange-brand]/40"
           >
             <FileText className="w-4 h-4" aria-hidden />
             Saved
           </Link>
           <Link
             href={routes.guide}
-            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-slate-700 bg-white/5 px-5 py-3 font-semibold text-white transition hover:border-orange-400/60"
+            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-[--color-border] bg-[--color-surface-alt] px-5 py-3 font-semibold text-[--color-ink] transition hover:border-[--color-orange-brand]/40"
           >
             <BookOpenCheck className="w-4 h-4" aria-hidden />
             Guide
           </Link>
         </div>
-        <div className="mt-5 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-xs leading-relaxed text-slate-300">
+        <div className="mt-5 rounded-2xl border border-[--color-border] bg-[--color-surface-alt] px-4 py-3 text-left text-xs leading-relaxed text-[--color-ink-mid]">
           Best use in the field:
           keep the calculator you need open before you lose service, then return
           to Command Center or Saved Estimates when signal comes back.

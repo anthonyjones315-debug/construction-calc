@@ -59,7 +59,8 @@ test.describe("Office Manager — Multi-User Data Isolation", () => {
     const is403 = await pageA
       .getByText(/unauthorized|forbidden|not found/i)
       .isVisible();
-    const isRedirected = url.includes("signin") || url.includes("unauthorized");
+    const isRedirected =
+      url.includes("sign-in") || url.includes("unauthorized");
 
     expect(is403 || isRedirected).toBe(true);
     await ctxA.close();
@@ -94,7 +95,7 @@ test.describe("Office Manager — Multi-User Data Isolation", () => {
     const page = await ctx.newPage();
 
     await page.goto(`/sign/${SHARE_CODE}`);
-    await expect(page).not.toHaveURL(/signin/);
+    await expect(page).not.toHaveURL(/\/sign-in/);
     await expect(page.getByText(/estimate|proposal/i)).toBeVisible();
     await ctx.close();
   });

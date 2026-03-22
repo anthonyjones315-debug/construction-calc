@@ -12,6 +12,8 @@ const CATEGORY_LABELS: Record<TradePageDefinition["category"], string> = {
   management: "Construction Management",
   interior: "Interior Finish",
   business: "Business & Estimating",
+  landscape: "Lawn & Landscape",
+  outdoor: "Fences, Driveways & Patios",
 };
 
 export function CalculatorBreadcrumb({ page }: { page: TradePageDefinition }) {
@@ -46,7 +48,7 @@ export function CalculatorBreadcrumb({ page }: { page: TradePageDefinition }) {
               className={
                 i === crumbs.length - 1
                   ? "font-semibold text-slate-800"
-                  : "hover:text-orange-600 transition-colors"
+                  : "hover:text-[--color-orange-brand] transition-colors"
               }
               aria-current={i === crumbs.length - 1 ? "page" : undefined}
             >

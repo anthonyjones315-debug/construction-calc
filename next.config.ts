@@ -45,6 +45,8 @@ const nextConfig: NextConfig = {
         destination: "/field-notes/:path*",
         permanent: true,
       },
+      { source: "/register", destination: "/sign-up", permanent: true },
+      { source: "/forgot-password", destination: "/sign-in", permanent: true },
     ];
   },
   async headers() {
@@ -73,6 +75,10 @@ const nextConfig: NextConfig = {
       "https://app.termly.io",
       // Crisp chat widget script
       "https://client.crisp.chat",
+      // Clerk (auth UI + bot challenge)
+      "https://*.clerk.accounts.dev",
+      "https://clerk.accounts.dev",
+      "https://challenges.cloudflare.com",
     ].join(" ");
 
     const connectSrc = [
@@ -112,6 +118,13 @@ const nextConfig: NextConfig = {
       "https://client.crisp.chat",
       "wss://client.relay.crisp.chat",
       "wss://client.crisp.chat",
+      // Clerk API + telemetry (keyless uses *.clerk.accounts.dev)
+      "https://*.clerk.accounts.dev",
+      "https://clerk.accounts.dev",
+      "https://clerk.com",
+      "https://*.clerk.com",
+      "https://clerk-telemetry.com",
+      "https://*.clerk-telemetry.com",
     ].join(" ");
 
     const ContentSecurityPolicy = [
@@ -121,13 +134,13 @@ const nextConfig: NextConfig = {
       scriptSrc,
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://client.crisp.chat",
       "font-src 'self' data: https://fonts.gstatic.com https://client.crisp.chat",
-      "img-src 'self' data: blob: https://images.unsplash.com https://www.googletagmanager.com https://*.google-analytics.com https://*.googlesyndication.com https://*.doubleclick.net https://*.supabase.co https://*.googleusercontent.com https://lh3.googleusercontent.com http://googleusercontent.com https://*.adtrafficquality.google https://ep1.adtrafficquality.google https://client.crisp.chat https://image.crisp.chat https://proconstructioncalc.com https://app.termly.io",
+      "img-src 'self' data: blob: https://images.unsplash.com https://www.googletagmanager.com https://*.google-analytics.com https://*.googlesyndication.com https://*.doubleclick.net https://*.supabase.co https://*.googleusercontent.com https://lh3.googleusercontent.com http://googleusercontent.com https://*.adtrafficquality.google https://ep1.adtrafficquality.google https://client.crisp.chat https://image.crisp.chat https://proconstructioncalc.com https://app.termly.io https://img.clerk.com",
       // Sentry ingest + Vercel + Google Analytics + ads + Supabase Auth (required for password reset / auth recovery)
       connectSrc,
       "media-src 'none'",
       "object-src 'none'",
       "worker-src 'self' blob:",
-      "frame-src 'self' https://googleads.g.doubleclick.net https://*.googlesyndication.com https://*.google.com https://accounts.google.com https://*.adtrafficquality.google",
+      "frame-src 'self' https://googleads.g.doubleclick.net https://*.googlesyndication.com https://*.google.com https://accounts.google.com https://*.adtrafficquality.google https://challenges.cloudflare.com https://*.clerk.accounts.dev https://clerk.accounts.dev",
       // frame-ancestors mirrors X-Frame-Options: DENY for CSP-aware browsers
       "frame-ancestors 'none'",
       "base-uri 'self'",
@@ -136,7 +149,7 @@ const nextConfig: NextConfig = {
 
     const securityHeaders = [
       // ── Signals canonical protocol to Cloudflare and reverse proxies ─
-      // Next.js and NextAuth read this to ensure cookies are flagged Secure.
+      // Next.js and auth cookies read this to ensure cookies are flagged Secure.
       { key: "X-Forwarded-Proto", value: "https" },
       // ── Clickjacking protection ─────────────────────────────────
       { key: "X-Frame-Options", value: "DENY" },

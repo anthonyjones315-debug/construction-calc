@@ -22,7 +22,7 @@ export default function FieldNotesHubPage() {
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-8 sm:px-6">
           {/* Hero */}
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <p className="text-xs font-bold uppercase tracking-[0.15em] text-orange-600">
+            <p className="text-xs font-bold uppercase tracking-[0.15em] text-orange-brand">
               Methods and guidance
             </p>
             <h1 className="mt-1.5 font-display text-2xl font-bold text-slate-900 sm:text-3xl">
@@ -46,11 +46,11 @@ export default function FieldNotesHubPage() {
                 className="flex min-h-0 flex-col rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
               >
                 <div className="mb-3 flex flex-wrap items-center gap-2">
-                  <span className="rounded-full bg-orange-50 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-orange-600">
+                  <span className="rounded-full bg-[--color-orange-soft] px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-orange-brand">
                     {note.category}
                   </span>
                   {note.category === "Energy" && (
-                    <span className="rounded-full bg-orange-100 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-orange-700">
+                    <span className="rounded-full bg-[--color-orange-brand]/12 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-[--color-orange-dark]">
                       2026 Update
                     </span>
                   )}
@@ -59,7 +59,7 @@ export default function FieldNotesHubPage() {
                 <h2 className="font-display text-lg font-bold text-slate-900">
                   <Link
                     href={getFieldNotesRoute(note.slug)}
-                    className="transition-colors hover:text-orange-600"
+                    className="transition-colors hover:text-[--color-orange-brand]"
                   >
                     {note.title}
                   </Link>
@@ -69,7 +69,7 @@ export default function FieldNotesHubPage() {
                 </p>
                 <Link
                   href={getFieldNotesRoute(note.slug)}
-                  className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-orange-600 transition-colors hover:text-orange-700"
+                  className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-orange-brand transition-colors hover:text-[--color-orange-dark]"
                 >
                   <FileText className="h-4 w-4 shrink-0" aria-hidden />
                   Read article →

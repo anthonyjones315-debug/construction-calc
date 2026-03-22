@@ -9,7 +9,7 @@ async function openFeedbackDialog(): Promise<boolean> {
   if (!feedback) return false;
 
   const dialog = await feedback.createForm({
-    colorScheme: "dark",
+    colorScheme: "light",
     isNameRequired: true,
     isEmailRequired: true,
     enableScreenshot: true,
@@ -82,12 +82,12 @@ export function ContactAutoOpenFeedback() {
             if (!ok) setOpenFailed(true);
           });
         }}
-        className="btn-tactile inline-flex min-h-11 items-center justify-center rounded-xl bg-orange-600 px-4 py-2 text-sm font-black uppercase text-white transition-all duration-200 hover:bg-orange-700 active:scale-[0.98]"
+        className="btn-tactile inline-flex min-h-11 items-center justify-center rounded-xl bg-orange-brand px-4 py-2 text-sm font-black uppercase text-white transition-all duration-200 hover:bg-[--color-orange-dark] active:scale-[0.98]"
       >
         Open Feedback Form
       </button>
       {openFailed && (
-        <div className="space-y-3 rounded-xl border border-amber-500/20 bg-amber-500/10 p-3 text-sm text-amber-100">
+        <div className="space-y-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-950">
           <p>
             The Sentry feedback form did not load in this browser. You can still
             send us a manual report here.
@@ -95,13 +95,13 @@ export function ContactAutoOpenFeedback() {
           <button
             type="button"
             onClick={() => setManualModalOpen(true)}
-            className="btn-tactile inline-flex min-h-11 items-center justify-center rounded-xl border border-amber-300/40 px-4 py-2 text-sm font-bold uppercase text-white transition hover:bg-white/6"
+            className="btn-tactile inline-flex min-h-11 items-center justify-center rounded-xl border border-amber-300 bg-white px-4 py-2 text-sm font-bold uppercase text-amber-900 transition hover:bg-amber-100"
           >
             Open Backup Form
           </button>
         </div>
       )}
-      <p className="text-xs text-white/60">
+      <p className="text-xs text-[--color-ink-dim]">
         Your report includes optional screenshots (if you choose) and helps us
         fix issues faster.
       </p>

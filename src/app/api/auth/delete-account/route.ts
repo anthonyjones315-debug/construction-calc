@@ -1,3 +1,4 @@
+import { clerkClient } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import { auth } from "@/lib/auth/config";
@@ -6,52 +7,36 @@ import { createServerClient } from "@/lib/supabase/server";
 export async function POST() {
   try {
     const session = await auth();
-    const userId = session?.user?.id;
+    const appUserId = session?.user?.id;
+    const clerkUserId = session?.user?.clerkUserId;
 
-    if (!userId) {
+    if (!appUserId || !clerkUserId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const db = createServerClient();
+    const scrubbedEmail = `deleted+${appUserId}@invalid.local`;
 
-    // Remove linked OAuth/credential accounts
-    const accountResult = await db
-      .schema("next_auth")
-      .from("accounts")
-      .delete()
-      .eq("userId", userId);
-
-    if (accountResult.error) {
-      throw accountResult.error;
-    }
-
-    // Clear active sessions
-    const sessionResult = await db
-      .schema("next_auth")
-      .from("sessions")
-      .delete()
-      .eq("userId", userId);
-
-    if (sessionResult.error) {
-      throw sessionResult.error;
-    }
-
-    // Soft-delete user to keep foreign key references intact
-    const scrubbedEmail = `deleted+${userId}@example.invalid`;
-    const userResult = await db
-      .schema("next_auth")
+    const { error: scrubError } = await db
+      .schema("public")
       .from("users")
       .update({
         email: scrubbedEmail,
         name: null,
         image: null,
-        updated_at: new Date().toISOString(),
       })
-      .eq("id", userId);
+      .eq("id", appUserId);
 
-    if (userResult.error) {
-      throw userResult.error;
+    if (scrubError) {
+      Sentry.captureException(scrubError);
+      return NextResponse.json(
+        { error: "Failed to update profile before deletion." },
+        { status: 500 },
+      );
     }
+
+    const client = await clerkClient();
+    await client.users.deleteUser(clerkUserId);
 
     return NextResponse.json({ ok: true });
   } catch (error) {

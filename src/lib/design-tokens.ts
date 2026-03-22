@@ -1,8 +1,8 @@
 export const designTokens = {
   brand: {
-    orange: "#b85a10",
-    orangeDark: "#ad4f0d",
-    orangeMuted: "#f9a15a",
+    orange: "#ea580c",
+    orangeDark: "#c2410c",
+    orangeMuted: "#fb923c" /* lighter accent; pair with brand orange */,
   },
   ui: {
     midnight: "#11151d",

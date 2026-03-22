@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth/client";
 import Link from "next/link";
 import type { SafeEstimateDTO } from "@/lib/dal/estimates";
 import { normalizeEstimateStatus, type EstimateStatus } from "@/lib/estimates/status";
@@ -846,7 +846,7 @@ export function EstimateDetail({ estimate }: Props) {
             <input
               value={estimateControlNumber}
               readOnly
-              className="rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-[--color-orange-brand] focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/30"
             />
           </label>
 
@@ -855,7 +855,7 @@ export function EstimateDetail({ estimate }: Props) {
             <input
               value={draft.name}
               onChange={(e) => patchDraft({ name: e.target.value })}
-              className="rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-[--color-orange-brand] focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/30"
             />
           </label>
 
@@ -866,7 +866,7 @@ export function EstimateDetail({ estimate }: Props) {
               onChange={(e) =>
                 patchDraft({ status: e.target.value as EstimateStatus })
               }
-              className="rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-[--color-orange-brand] focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/30"
             >
               <option value="Draft">Draft</option>
               <option value="Sent">Sent</option>
@@ -885,7 +885,7 @@ export function EstimateDetail({ estimate }: Props) {
               step="0.01"
               value={draft.totalCost}
               onChange={(e) => patchDraft({ totalCost: e.target.value })}
-              className="rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-[--color-orange-brand] focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/30"
             />
           </label>
 
@@ -894,7 +894,7 @@ export function EstimateDetail({ estimate }: Props) {
             <input
               value={draft.clientName}
               onChange={(e) => patchDraft({ clientName: e.target.value })}
-              className="rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-[--color-orange-brand] focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/30"
             />
           </label>
         </div>
@@ -904,7 +904,7 @@ export function EstimateDetail({ estimate }: Props) {
           <input
             value={draft.jobSiteAddress}
             onChange={(e) => patchDraft({ jobSiteAddress: e.target.value })}
-            className="rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-[--color-orange-brand] focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/30"
           />
         </label>
       </section>
@@ -944,7 +944,7 @@ export function EstimateDetail({ estimate }: Props) {
                       next[i] = { ...next[i], actualCost: e.target.value };
                       patchDraft({ budgetRows: next });
                     }}
-                    className="w-28 rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-28 rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-[--color-orange-brand] focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/30"
                   />
                 </div>
               );
@@ -962,7 +962,7 @@ export function EstimateDetail({ estimate }: Props) {
           <button
             type="button"
             onClick={addInvoice}
-            className="inline-flex items-center gap-1 rounded-lg border-2 border-slate-500 px-3 py-1.5 text-xs font-medium text-[--color-ink] transition-colors hover:border-orange-400"
+            className="inline-flex items-center gap-1 rounded-lg border-2 border-slate-500 px-3 py-1.5 text-xs font-medium text-[--color-ink] transition-colors hover:border-[--color-orange-brand]/45"
           >
             <Plus className="w-3.5 h-3.5" aria-hidden />
             Add Invoice

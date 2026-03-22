@@ -3,7 +3,6 @@
   "configurations": [
     {
       "name": "nextjs",
-      "cwd": "construction-calc",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev", "--", "-p", "3001"],
       "port": 3001,

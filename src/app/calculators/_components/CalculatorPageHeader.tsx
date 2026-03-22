@@ -6,6 +6,8 @@ import {
   Thermometer,
   Layout,
   BarChart3,
+  Trees,
+  Fence,
 } from "lucide-react";
 import type { TradePageDefinition } from "../_lib/trade-pages";
 
@@ -19,6 +21,8 @@ const TILE_ICON_MAP: Record<TradePageDefinition["category"], LucideIcon> = {
   insulation: Thermometer,
   management: BarChart3,
   interior: Layout,
+  landscape: Trees,
+  outdoor: Fence,
 };
 
 export function CalculatorPageHeader({ page }: { page: TradePageDefinition }) {
@@ -26,13 +30,13 @@ export function CalculatorPageHeader({ page }: { page: TradePageDefinition }) {
 
   return (
     <div className="border-b border-[--color-border] bg-[--color-surface]">
-      <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-4 sm:px-6">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-orange-50 border border-orange-200">
-          <Icon className="h-5 w-5 text-orange-600" />
+      <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-4 sm:px-6">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[--color-orange-soft] border border-[--color-orange-rim]">
+          <Icon className="h-5 w-5 text-orange-brand" />
         </div>
 
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-orange-600">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-orange-brand">
             {page.heroKicker}
           </p>
           <h1 className="font-display text-xl font-black leading-tight text-slate-900 sm:text-2xl">
@@ -44,7 +48,7 @@ export function CalculatorPageHeader({ page }: { page: TradePageDefinition }) {
         </div>
 
         <aside className="hidden max-w-[200px] text-xs text-slate-500 lg:block">
-          <p className="font-bold uppercase tracking-[0.16em] text-orange-600 text-[10px]">
+          <p className="font-bold uppercase tracking-[0.16em] text-orange-brand text-[10px]">
             Pro Tip
           </p>
           <p className="mt-1 leading-relaxed">{page.proTip}</p>

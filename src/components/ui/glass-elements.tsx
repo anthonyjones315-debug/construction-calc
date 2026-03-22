@@ -178,7 +178,7 @@ export function GlassFeatureItem({
   return (
     <div
       className={cx(
-        "glass-panel flex items-center gap-2 px-3 py-2 text-xs text-white/80",
+        "glass-panel flex items-center gap-2 px-3 py-2 text-xs text-[--color-ink-mid]",
         className,
       )}
       {...props}
@@ -193,15 +193,7 @@ export function GlassDialogFrame({
 }: ComponentPropsWithoutRef<"div">) {
   return (
     <div className={cx("glass-modal relative", className)} {...props}>
-      <div
-        aria-hidden
-        className="glass-decorative absolute inset-0 rounded-[inherit]"
-        style={{
-          background:
-            "radial-gradient(circle at top, color-mix(in srgb, var(--color-primary) 10%, transparent), transparent 42%)",
-        }}
-      />
-      <div className="relative">{children}</div>
+      {children}
     </div>
   );
 }
@@ -272,7 +264,7 @@ export function ProInput({
       ) : null}
       <div
         data-valid={isValid ? "true" : "false"}
-        className="glass-input-shell glass-panel-deep relative flex h-14 min-h-[56px] items-stretch overflow-hidden rounded-xl p-0"
+        className="glass-input-shell relative flex min-h-[3.5rem] items-stretch overflow-hidden rounded-xl p-0"
       >
         <input
           id={fieldId}
@@ -293,7 +285,7 @@ export function ProInput({
             aria-labelledby={labelId}
             value={unitSelectValue}
             onChange={(event) => onUnitSelectChange?.(event.target.value)}
-            className="border-l border-white/10 bg-surface-deep px-2 text-[11px] font-semibold uppercase tabular-nums tracking-tight text-copy-secondary outline-none"
+            className="border-l border-[--color-border] bg-[--color-surface-alt] px-2 text-[11px] font-semibold uppercase tabular-nums tracking-tight text-copy-secondary outline-none"
           >
             {unitSelectOptions!.map((option) => (
               <option key={option.value} value={option.value}>
@@ -302,7 +294,7 @@ export function ProInput({
             ))}
           </select>
         ) : unitSuffix ? (
-          <div className="flex items-center border-l border-white/10 bg-surface-deep px-2 text-[11px] font-semibold uppercase tabular-nums tracking-tight text-copy-secondary">
+          <div className="flex items-center border-l border-[--color-border] bg-[--color-surface-alt] px-2 text-[11px] font-semibold uppercase tabular-nums tracking-tight text-copy-secondary">
             {unitSuffix}
           </div>
         ) : null}
@@ -328,6 +320,7 @@ type ProResultProps = {
   finalizeLabel?: string;
   finalizeIcon?: ReactNode;
   showEmptyStateWatermark?: boolean;
+  containerClassName?: string;
 };
 
 export function ProResult({
@@ -341,15 +334,16 @@ export function ProResult({
   finalizeLabel = "Finalize Estimate",
   finalizeIcon,
   showEmptyStateWatermark = false,
+  containerClassName = "glass-container-elevated",
 }: ProResultProps) {
   return (
-    <section className="glass-container-elevated relative flex min-h-[180px] flex-col gap-2 p-3">
+    <section className={`${containerClassName} relative flex min-h-[180px] flex-col gap-2 p-3`}>
       {showEmptyStateWatermark ? (
         <div
           aria-hidden
-          className="glass-decorative absolute inset-0 flex items-center justify-center"
+          className="pointer-events-none absolute inset-0 flex select-none items-center justify-center"
         >
-          <div className="rounded-full border border-white/8 bg-white/[0.03] px-4 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.22em] text-white/20 shadow-[inset_0_0_24px_rgb(255_255_255_/0.03)]">
+          <div className="rounded-full border border-[--color-border] bg-[--color-surface-alt] px-4 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.22em] text-[--color-ink-dim] shadow-[inset_0_0_24px_rgb(255_255_255_/0.03)]">
             Enter Dimensions to Start Audit
           </div>
         </div>
@@ -366,13 +360,13 @@ export function ProResult({
       </div>
 
       <div className="flex flex-col gap-2">
-        <div className="glass-panel border-primary/30 bg-primary/10 shadow-[0_10px_22px_rgb(var(--color-primary-rgb)/0.16)]">
+        <div className="glass-panel border-primary/30 bg-[--color-orange-soft] shadow-[0_10px_22px_rgb(var(--color-primary-rgb)/0.16)]">
           <p className="text-xs font-bold uppercase tracking-[0.14em] text-copy-secondary">
             {primary.label}
           </p>
           <p className="mt-1 text-3xl font-extrabold tabular-nums tracking-tight text-primary">
             <AnimatedResultValue value={primary.value} />{" "}
-            <span className="font-black tabular-nums tracking-tight text-white">
+            <span className="font-black tabular-nums tracking-tight text-[--color-ink]">
               {primaryUnitDisplay}
             </span>
           </p>
@@ -384,7 +378,7 @@ export function ProResult({
         {secondary.length > 0 && (
           <div className="grid gap-2 sm:grid-cols-2">
             {secondary.map((result) => (
-              <div key={result.label} className="glass-panel bg-black/25 p-3">
+              <div key={result.label} className="glass-panel bg-[--color-surface-alt] p-3">
                 <p className="text-xs font-bold uppercase tracking-[0.14em] text-copy-secondary">
                   {result.label}
                 </p>
@@ -400,30 +394,30 @@ export function ProResult({
         )}
 
         {localTip ? (
-          <div className="glass-panel border-primary/25 bg-primary/10 p-3">
+          <div className="glass-panel border-primary/25 bg-[--color-orange-soft] p-3">
             <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-primary">
               Pro Tip
             </h3>
-            <p className="mt-1 text-sm text-white/90">{localTip}</p>
+            <p className="mt-1 text-sm text-[--color-ink-mid]">{localTip}</p>
           </div>
         ) : null}
 
-        <div className="glass-panel bg-black/15 p-3">
+        <div className="glass-panel bg-[--color-surface-alt] p-3">
           <div className="flex items-center justify-between gap-2">
-            <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-white/80">
+            <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-[--color-ink-mid]">
               Material List
             </h3>
             {onCopyOrder ? (
               <GlassButton
                 type="button"
                 onClick={onCopyOrder}
-                className="min-h-7 rounded-lg border-white/20 px-2 py-1 text-xs font-bold uppercase tracking-widest text-copy-secondary hover:border-primary/40"
+                className="min-h-7 rounded-lg border-[--color-border] px-2 py-1 text-xs font-bold uppercase tracking-widest text-copy-secondary hover:border-primary/40"
               >
                 Copy
               </GlassButton>
             ) : null}
           </div>
-          <ul className="mt-1.5 space-y-1 text-xs text-white/85">
+          <ul className="mt-1.5 space-y-1 text-xs text-[--color-ink]">
             {materialList.map((line) => (
               <li
                 key={line}

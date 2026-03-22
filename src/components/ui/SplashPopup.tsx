@@ -59,7 +59,7 @@ export function SplashPopup() {
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 z-50 bg-[--color-ink]/30 backdrop-blur-sm"
+        className="fixed inset-0 z-50 bg-black/30"
         onClick={dismiss}
         aria-hidden
       />
@@ -73,12 +73,12 @@ export function SplashPopup() {
         onClick={(event) => event.stopPropagation()}
         style={{ animation: "splashUp 0.25s ease forwards" }}
       >
-        <GlassDialogFrame className="p-6 shadow-[0_8px_32px_rgba(0,0,0,0.12)]">
+        <GlassDialogFrame className="p-6 text-[--color-ink] shadow-[0_24px_50px_rgba(0,0,0,0.12)]">
           {/* Close */}
           <button
             type="button"
             onClick={dismiss}
-            className="absolute right-3 top-3 z-20 flex h-10 w-10 items-center justify-center rounded-lg text-[--color-ink-dim] transition-colors hover:bg-[--color-orange-soft] hover:text-[--color-orange-brand] cursor-pointer"
+            className="absolute right-3 top-3 z-20 flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-[--color-ink-dim] transition-colors hover:bg-[--color-surface-alt] hover:text-[--color-ink]"
             aria-label="Close"
           >
             <X className="w-5 h-5" aria-hidden />
@@ -92,7 +92,7 @@ export function SplashPopup() {
               />
             </GlassIconBadge>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[--color-orange-brand]">
+              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary">
                 Start Here
               </p>
               <h2
@@ -128,8 +128,8 @@ export function SplashPopup() {
                 label: "Latest-version device refresh routine",
               },
             ].map(({ icon: Icon, label }) => (
-              <GlassFeatureItem key={label} className="text-[--color-ink-mid]">
-                <Icon className="h-4 w-4 text-[--color-orange-brand]" aria-hidden />
+              <GlassFeatureItem key={label}>
+                <Icon className="h-4 w-4 text-primary" aria-hidden />
                 <span>{label}</span>
               </GlassFeatureItem>
             ))}
@@ -143,16 +143,16 @@ export function SplashPopup() {
             >
               Open How-To Guide
             </Link>
-            <button
+            <GlassButton
               type="button"
               onClick={dismiss}
-              className="min-h-[44px] w-full rounded-xl border border-[--color-border] bg-transparent px-4 py-2 text-xs text-[--color-ink-dim] transition-colors hover:bg-[--color-surface-alt] hover:text-[--color-ink-mid]"
+              className="min-h-[44px] w-full rounded-xl border-transparent bg-transparent text-xs text-[--color-ink-mid] shadow-none hover:bg-[--color-surface-alt] hover:text-[--color-ink]"
             >
               Skip and open calculators
-            </button>
+            </GlassButton>
             <Link
               href={routes.fieldNotes}
-              className="flex min-h-[44px] w-full items-center justify-center rounded-xl text-xs text-[--color-orange-brand] transition-colors hover:bg-[--color-orange-soft] cursor-pointer"
+              className="flex min-h-[44px] w-full cursor-pointer items-center justify-center rounded-xl text-xs text-primary transition-colors hover:bg-[--color-orange-soft]"
               onClick={dismiss}
             >
               Browse Field Notes →

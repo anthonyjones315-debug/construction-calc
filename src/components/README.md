@@ -14,12 +14,12 @@ Complementary secondary palette:
 
 Glass system:
 - Prefer shared primitives from [`glass-elements.tsx`](/Users/anthonyjones/GitHub/construction-calc/src/components/ui/glass-elements.tsx)
-- Use `.glass-gpu` for blur-heavy surfaces or animated glass layers
+- Prefer semantic tokens (`--color-surface`, `--color-border`) and utility classes like `.glass-container` for cards (solid surfaces, no blur).
 - Use `.glass-container`, `.glass-panel`, `.glass-modal`, `.glass-button`, and `.glass-input` instead of duplicating glass CSS
 
 Composition rules:
 - Keep component styling in Tailwind classes or shared glass utilities in [`globals.css`](/Users/anthonyjones/GitHub/construction-calc/src/app/globals.css)
-- Do not introduce new orange hex or `rgba(255,122,0,*)` values
+- Do not introduce new orange hex outside the brand scale (`#ea580c` / `rgb(234 88 12 / …)`); use CSS variables (`--color-primary`, `--color-orange-brand`, etc.)
 - For copy color roles, use `text-copy-primary`, `text-copy-secondary`, `text-copy-tertiary`, and `text-copy-accent`
 - For field typography, use `text-field-input`, `text-field-label`, and `text-field-hint`
 

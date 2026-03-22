@@ -20,7 +20,7 @@ export function HomeTaxDefaults() {
   const setTaxRate = useStore((state) => state.setTaxRate);
 
   return (
-    <div className="home-tax-panel mt-4 rounded-2xl border border-[--color-orange-brand]/25 bg-[radial-gradient(circle_at_top_left,rgba(234,88,12,0.07),transparent_40%),var(--color-surface-alt)] px-4 py-4 lg:mt-3.5 lg:px-3.5 lg:py-3">
+    <div className="home-tax-panel mt-4 rounded-2xl border border-[--color-orange-rim] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--color-orange-brand)_12%,transparent),var(--color-surface)_55%)] px-4 py-4 lg:mt-3.5 lg:px-3.5 lg:py-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[--color-orange-brand]">
@@ -32,7 +32,7 @@ export function HomeTaxDefaults() {
         </div>
         <Link
           href={routes.guide}
-          className="inline-flex min-h-10 items-center justify-center rounded-xl border border-[--color-orange-brand]/30 bg-white px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] text-[--color-orange-brand] transition hover:border-[--color-orange-brand]/60 hover:bg-[--color-orange-soft]"
+          className="inline-flex min-h-10 items-center justify-center rounded-xl border border-[--color-orange-brand]/35 bg-[--color-surface] px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] text-[--color-orange-brand] transition hover:border-[--color-orange-brand]/55 hover:bg-[--color-orange-soft]"
         >
           Tax Compliance Guide
         </Link>
@@ -48,8 +48,8 @@ export function HomeTaxDefaults() {
               onClick={() => setTaxRate(entry.combinedRate)}
               className={`home-tax-card flex flex-col items-start rounded-xl border px-3 py-3 text-left transition ${
                 isActive
-                  ? "border-[--color-orange-brand]/60 bg-[--color-orange-soft]"
-                  : "border-[--color-border] bg-white hover:border-[--color-orange-brand]/35 hover:bg-[--color-orange-soft]"
+                  ? "border-[--color-orange-brand]/50 bg-[--color-orange-soft]"
+                  : "border-[--color-border] bg-[--color-surface] hover:border-[--color-orange-rim] hover:bg-[--color-surface-alt]"
               }`}
             >
               <div className="flex items-center gap-1.5">
@@ -57,7 +57,7 @@ export function HomeTaxDefaults() {
                   {entry.county}
                 </p>
                 {isActive ? (
-                  <span className="rounded-full bg-[--color-orange-brand]/12 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.16em] text-[--color-orange-brand]">
+                  <span className="rounded-full bg-[--color-orange-soft] px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.16em] text-[--color-orange-brand]">
                     Default
                   </span>
                 ) : null}

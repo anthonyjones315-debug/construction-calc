@@ -17,7 +17,7 @@ describe("deriveDeviceProfile", () => {
     expect(profile.bottomBufferClass).toBe("");
   });
 
-  it("scales small phones down and reduces blur cost", () => {
+  it("scales small phones down for compact layouts", () => {
     const profile = deriveDeviceProfile({
       viewportWidth: 375,
       viewportHeight: 667,
@@ -27,7 +27,7 @@ describe("deriveDeviceProfile", () => {
 
     expect(profile.phoneTier).toBe("small");
     expect(profile.shellScaleClass).toBe("hardware-scale-90");
-    expect(profile.blurClass).toBe("hardware-blur-8");
+    expect(profile.blurClass).toBe("");
   });
 
   it("keeps landscape phones in the mobile profile", () => {

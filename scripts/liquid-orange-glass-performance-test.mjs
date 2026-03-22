@@ -99,7 +99,7 @@ class PerformanceMetrics {
 
     console.log(
       `%c🧪 Starting test: ${name}`,
-      "font-weight: bold; font-size: 14px; color: #ff7a00;",
+      "font-weight: bold; font-size: 14px; color: #ea580c;",
     );
 
     this.isRunning = true;
@@ -208,7 +208,7 @@ class PerformanceMetrics {
 
     console.log(
       `%c===== TEST RESULTS: ${test.name.toUpperCase()} =====`,
-      "font-weight: bold; font-size: 16px; color: #ff7a00;",
+      "font-weight: bold; font-size: 16px; color: #ea580c;",
     );
 
     console.log(
@@ -272,7 +272,7 @@ class PerformanceMetrics {
 
     console.log(
       "%c=============== FINAL REPORT ===============",
-      "font-weight: bold; font-size: 16px; color: #ff7a00;",
+      "font-weight: bold; font-size: 16px; color: #ea580c;",
     );
 
     console.table(
@@ -379,7 +379,7 @@ const createBrowserTestRunner = () => {
     // Print instructions
     console.log(
       "%c🧪 Liquid Orange Glass Performance Tester",
-      "font-weight: bold; font-size: 18px; color: #ff7a00; background-color: #020617; padding: 5px;",
+      "font-weight: bold; font-size: 18px; color: #ea580c; background-color: #020617; padding: 5px;",
     );
     console.log(
       "%cTest your UI components for iPhone 15 performance (target: <16.67ms per frame)",

@@ -1,7 +1,8 @@
 import { z } from "zod";
 
 const SHARE_CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-const SHARE_CODE_LENGTH = 6;
+/** Canonical share-link length (see `generateEstimateShareCode`). */
+export const SHARE_CODE_LENGTH = 6;
 const DEFAULT_SITE_URL = "https://proconstructioncalc.com";
 
 export const estimateResultSchema = z.object({
@@ -37,6 +38,8 @@ export const finalizeEstimateSchema = z
       })
       .strict()
       .optional(),
+    /** When set, replaces this saved row instead of inserting a duplicate (same calculator session). */
+    saved_estimate_id: z.string().uuid().optional(),
   })
   .strict();
 
@@ -92,6 +95,22 @@ export function buildSignUrl(shareCode: string) {
 
 export function normalizeShareCode(value: string) {
   return value.trim().toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12);
+}
+
+/** Reject garbage paths before hitting the database (enumeration / typo noise). */
+export function isValidShareCodeNormalized(normalized: string): boolean {
+  if (
+    normalized.length < SHARE_CODE_LENGTH ||
+    normalized.length > 12
+  ) {
+    return false;
+  }
+  for (let i = 0; i < normalized.length; i += 1) {
+    if (!SHARE_CODE_CHARS.includes(normalized[i]!)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 export function buildSigningMeta(

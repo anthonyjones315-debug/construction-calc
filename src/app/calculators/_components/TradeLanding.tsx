@@ -16,6 +16,8 @@ import {
   Triangle,
   Thermometer,
   BarChart3,
+  Trees,
+  Fence,
 } from "lucide-react";
 import { JsonLD } from "@/seo";
 import {
@@ -40,6 +42,8 @@ const TILE_ICON_MAP: Record<TradePageDefinition["category"], LucideIcon> = {
   insulation: Thermometer,
   management: BarChart3,
   interior: Layout,
+  landscape: Trees,
+  outdoor: Fence,
 };
 
 function usePrefetch(href: Route) {
@@ -79,7 +83,7 @@ function TradeTile({ calculator }: { calculator: TradePageDefinition }) {
   return (
     <article
       ref={ref}
-      className="group relative flex flex-col rounded-2xl border border-slate-200 bg-white p-4 text-slate-900 shadow-sm transition-all duration-200 hover:border-orange-300 hover:bg-orange-50 hover:-translate-y-0.5 focus-within:-translate-y-0.5"
+      className="group relative z-0 flex h-full min-h-0 flex-col rounded-2xl border border-slate-200 bg-white p-4 text-slate-900 shadow-sm transition-all duration-200 hover:z-10 hover:border-[--color-orange-rim] hover:bg-[--color-orange-soft] hover:-translate-y-0.5 focus-within:z-10 focus-within:-translate-y-0.5"
       onMouseEnter={handlePrefetch}
       onFocus={handlePrefetch}
       aria-label={`${calculator.title} calculator tile`}
@@ -89,7 +93,7 @@ function TradeTile({ calculator }: { calculator: TradePageDefinition }) {
         <div className="flex min-w-0 items-start gap-3">
           <div className="relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 shadow-inner">
             <Icon
-              className="h-5 w-5 text-orange-600"
+              className="h-5 w-5 text-orange-brand"
               strokeWidth={2.3}
               aria-hidden
             />
@@ -105,7 +109,7 @@ function TradeTile({ calculator }: { calculator: TradePageDefinition }) {
         </div>
         <Link
           href={calculatorHref}
-          className="shrink-0 inline-flex items-center gap-1 rounded-full border border-orange-300 bg-orange-50 px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-orange-700 transition-colors hover:border-orange-500 hover:bg-orange-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500"
+          className="shrink-0 inline-flex items-center gap-1 rounded-full border border-[--color-orange-rim] bg-[--color-orange-soft] px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-[--color-orange-dark] transition-colors hover:border-[--color-orange-brand] hover:bg-[--color-orange-brand]/12 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[--color-orange-brand]"
           prefetch={false}
           onMouseEnter={handlePrefetch}
           onFocus={handlePrefetch}
@@ -122,7 +126,7 @@ function TradeTile({ calculator }: { calculator: TradePageDefinition }) {
 
       {/* Details accordion — pushed to bottom of card */}
       <details className="group/details mt-auto pt-3">
-        <summary className="flex cursor-pointer items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.15em] text-slate-700 transition-colors hover:border-orange-200 hover:bg-orange-50 hover:text-orange-700">
+        <summary className="flex cursor-pointer items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.15em] text-slate-700 transition-colors hover:border-[--color-orange-rim] hover:bg-[--color-orange-soft] hover:text-[--color-orange-dark]">
           Details
           <ChevronDown
             className="h-3.5 w-3.5 shrink-0 transition-transform group-open/details:rotate-180"
@@ -165,7 +169,7 @@ export function TradeLanding({ page }: TradeLandingProps) {
     <main className="light command-theme page-shell flex min-h-0 flex-1 flex-col overflow-hidden bg-[var(--color-bg)]">
       <JsonLD schema={schema} />
 
-      <header className="sticky top-10 z-30 border-b border-slate-200 bg-white/95 backdrop-blur-md">
+      <header className="sticky top-[var(--shell-header-h,52px)] z-30 border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-2 text-[11px] text-slate-600">
           <nav aria-label="Breadcrumb">
             <ol className="flex flex-wrap items-center gap-2">
@@ -184,7 +188,7 @@ export function TradeLanding({ page }: TradeLandingProps) {
                       className={`transition-colors ${
                         isLast
                           ? "font-semibold text-slate-900"
-                          : "text-slate-500 hover:text-orange-600"
+                          : "text-slate-500 hover:text-[--color-orange-brand]"
                       }`}
                       aria-current={isLast ? "page" : undefined}
                     >
@@ -198,7 +202,7 @@ export function TradeLanding({ page }: TradeLandingProps) {
 
           <Link
             href={"/calculators" as Route}
-            className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-700 transition hover:border-orange-300 hover:bg-orange-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500"
+            className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-700 transition hover:border-[--color-orange-rim] hover:bg-[--color-orange-soft] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[--color-orange-brand]"
           >
             <Home className="h-3.5 w-3.5" aria-hidden />
             All Calculators
@@ -210,7 +214,7 @@ export function TradeLanding({ page }: TradeLandingProps) {
         <div className="flex items-center gap-4 rounded-3xl border border-slate-200 bg-white px-4 py-4 shadow-sm sm:gap-6 sm:px-6">
           <Glyph className="h-16 w-16 shrink-0 sm:h-20 sm:w-20" />
           <div className="min-w-0 flex-1 space-y-1.5">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-orange-600">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-orange-brand">
               Trade Calculators
             </p>
             <h1 className="text-[clamp(22px,3vw,30px)] font-black leading-tight text-slate-900">
@@ -220,7 +224,7 @@ export function TradeLanding({ page }: TradeLandingProps) {
               {page.description}
             </p>
             <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em]">
-              <span className="inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-orange-700">
+              <span className="inline-flex items-center gap-2 rounded-full border border-[--color-orange-rim] bg-[--color-orange-soft] px-3 py-1 text-[--color-orange-dark]">
                 <Sparkles className="h-3.5 w-3.5" aria-hidden />
                 {page.heroKicker}
               </span>
@@ -230,7 +234,7 @@ export function TradeLanding({ page }: TradeLandingProps) {
             </div>
           </div>
           <div className="hidden max-w-[220px] shrink-0 text-xs leading-relaxed text-slate-600 lg:block">
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-orange-600">
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-orange-brand">
               Pro Tip
             </p>
             <p className="mt-1 leading-relaxed">{page.proTip}</p>
@@ -242,8 +246,8 @@ export function TradeLanding({ page }: TradeLandingProps) {
             Pick a calculator
           </p>
 
-          {/* Equal-height card grid — 1 col mobile, 2 col tablet, 3 col desktop */}
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {/* Card grid — equal row heights so Details aligns across each row */}
+          <div className="grid grid-cols-1 items-stretch gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {calculators.map((calculator) => (
               <TradeTile key={calculator.key} calculator={calculator} />
             ))}

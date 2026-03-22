@@ -329,6 +329,66 @@ const TILE_COPY: Record<string, TileCopy> = {
       compliance: "Compliance: Occupied-home touch-up allowance.",
     },
   },
+
+  // Lawn & Landscape
+  "landscape-mulch": {
+    summary: "Bulk mulch volume for beds, rings, and landscape areas.",
+    bullets: {
+      inputs: "Inputs: Area length, width, depth, waste %.",
+      outputs: "Outputs: Cubic yards, 2 cu ft bag count.",
+      compliance: "Compliance: 10% settling allowance recommended.",
+    },
+  },
+  "landscape-topsoil": {
+    summary: "Topsoil volume and tonnage for grading and lawn prep.",
+    bullets: {
+      inputs: "Inputs: Area length, width, depth, waste %.",
+      outputs: "Outputs: Cubic yards, approximate tons.",
+      compliance: "Compliance: Moisture variance note on tonnage.",
+    },
+  },
+  "landscape-sod": {
+    summary: "Sod rolls, pallets, and seed alternative for new lawns.",
+    bullets: {
+      inputs: "Inputs: Area length, width, waste %.",
+      outputs: "Outputs: Rolls, pallets, seed lbs alternative.",
+      compliance: "Compliance: Cool-season blend rate default.",
+    },
+  },
+  "landscape-gravel": {
+    summary: "Gravel and crushed stone in cubic yards and tons.",
+    bullets: {
+      inputs: "Inputs: Area length, width, depth, waste %.",
+      outputs: "Outputs: Cubic yards, tons (at 1.4 tons/cu yd).",
+      compliance: "Compliance: Supplier ton-based ordering.",
+    },
+  },
+
+  // Fences, Driveways & Patios
+  "outdoor-fence": {
+    summary: "Posts, rails, and pickets for wood fence runs.",
+    bullets: {
+      inputs: "Inputs: Linear feet, height, post spacing.",
+      outputs: "Outputs: Post count, rails, pickets with waste.",
+      compliance: "Compliance: NYS 48 in frost line depth.",
+    },
+  },
+  "outdoor-paver-patio": {
+    summary: "Paver count, sand bedding, and gravel base for patios.",
+    bullets: {
+      inputs: "Inputs: Area length, width, base depth, waste %.",
+      outputs: "Outputs: Pavers, tons of gravel, tons of sand.",
+      compliance: "Compliance: 4 in min base for freeze-thaw.",
+    },
+  },
+  "outdoor-asphalt-driveway": {
+    summary: "Hot mix asphalt tonnage for driveways and parking.",
+    bullets: {
+      inputs: "Inputs: Area length, width, thickness.",
+      outputs: "Outputs: Tons of asphalt.",
+      compliance: "Compliance: 2–3 in compacted residential standard.",
+    },
+  },
 };
 
 export function getTileCopy(key: string, page?: TradePageDefinition): TileCopy {

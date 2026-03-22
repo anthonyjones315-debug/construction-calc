@@ -115,7 +115,7 @@ function EstimateDetailsCard({
   return (
     <article className="rounded-2xl border border-slate-300 bg-white px-4 py-4 shadow-sm sm:px-5 sm:py-5">
       <div className="mb-4 flex items-start justify-between gap-3">
-        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-600">
+        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-brand">
           Estimate Details
         </p>
         <span className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 font-mono text-[11px] font-semibold tracking-widest text-slate-500">
@@ -133,7 +133,7 @@ function EstimateDetailsCard({
           value={estimateName}
           onChange={(e) => onChange("estimateName", e.target.value)}
           placeholder="e.g. Kitchen Remodel – Johnson Residence"
-          className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-orange-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-400/20"
+          className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[--color-orange-brand]/45 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/20"
         />
       </div>
 
@@ -148,7 +148,7 @@ function EstimateDetailsCard({
             value={clientName}
             onChange={(e) => onChange("clientName", e.target.value)}
             placeholder="John Smith"
-            className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-orange-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-400/20"
+            className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[--color-orange-brand]/45 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/20"
           />
         </div>
 
@@ -161,7 +161,7 @@ function EstimateDetailsCard({
             value={clientEmail}
             onChange={(e) => onChange("clientEmail", e.target.value)}
             placeholder="john@example.com"
-            className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-orange-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-400/20"
+            className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[--color-orange-brand]/45 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/20"
           />
         </div>
 
@@ -174,7 +174,7 @@ function EstimateDetailsCard({
             value={projectName}
             onChange={(e) => onChange("projectName", e.target.value)}
             placeholder="Kitchen Remodel"
-            className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-orange-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-400/20"
+            className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[--color-orange-brand]/45 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/20"
           />
         </div>
 
@@ -186,7 +186,7 @@ function EstimateDetailsCard({
             type="date"
             value={estimateDate}
             onChange={(e) => onChange("estimateDate", e.target.value)}
-            className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 focus:border-orange-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-400/20"
+            className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 focus:border-[--color-orange-brand]/45 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/20"
           />
         </div>
       </div>
@@ -201,7 +201,7 @@ function EstimateDetailsCard({
           value={jobSiteAddress}
           onChange={(e) => onChange("jobSiteAddress", e.target.value)}
           placeholder="123 Main St, Utica, NY 13501"
-          className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-orange-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-400/20"
+          className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[--color-orange-brand]/45 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/20"
         />
       </div>
 
@@ -218,7 +218,7 @@ function EstimateDetailsCard({
           onChange={(e) => onChange("estimateNotes", e.target.value)}
           placeholder="Add any notes for the client or your team…"
           rows={2}
-          className="w-full resize-y rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-orange-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-400/20"
+          className="w-full resize-y rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[--color-orange-brand]/45 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/20"
         />
       </div>
     </article>
@@ -282,7 +282,7 @@ function CalculatorImportPanel({
         </p>
         <Link
           href={routes.calculators}
-          className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-orange-600 px-4 py-2 text-xs font-bold uppercase tracking-[0.08em] text-white transition hover:bg-orange-700"
+          className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-orange-brand px-4 py-2 text-xs font-bold uppercase tracking-[0.08em] text-white transition hover:bg-[--color-orange-dark]"
         >
           Open Calculators
           <ExternalLink className="h-3.5 w-3.5" />
@@ -301,7 +301,7 @@ function CalculatorImportPanel({
         <button
           type="button"
           onClick={handleImportAll}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-orange-600 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.08em] text-white transition hover:bg-orange-700"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-orange-brand px-3 py-1.5 text-xs font-bold uppercase tracking-[0.08em] text-white transition hover:bg-[--color-orange-dark]"
         >
           <Plus className="h-3.5 w-3.5" />
           Import All
@@ -349,7 +349,7 @@ function CalculatorImportPanel({
                 type="button"
                 onClick={() => handleImportCart(cartItem)}
                 disabled={alreadyImported}
-                className="ml-2 shrink-0 inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-orange-400 hover:text-orange-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="ml-2 shrink-0 inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-[--color-orange-brand]/45 hover:text-[--color-orange-dark] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {alreadyImported ? (
                   <>
@@ -485,7 +485,7 @@ function PriceBookPanel({
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search materials…"
-        className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-orange-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-400/20"
+        className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[--color-orange-brand]/45 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/20"
       />
 
       {/* Material list */}
@@ -505,7 +505,7 @@ function PriceBookPanel({
               {items.map((m) => (
                 <div
                   key={m.id}
-                  className="flex items-center justify-between gap-2 border-t border-slate-100 px-3 py-2 hover:bg-orange-50"
+                  className="flex items-center justify-between gap-2 border-t border-slate-100 px-3 py-2 hover:bg-[--color-orange-soft]"
                 >
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-slate-900">
@@ -521,7 +521,7 @@ function PriceBookPanel({
                     className={`shrink-0 inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-semibold transition ${
                       justAdded.has(m.id)
                         ? "bg-emerald-100 text-emerald-700"
-                        : "bg-orange-100 text-orange-700 hover:bg-orange-200"
+                        : "bg-[--color-orange-brand]/12 text-[--color-orange-dark] hover:bg-[--color-orange-brand]/15"
                     }`}
                   >
                     {justAdded.has(m.id) ? (
@@ -542,9 +542,9 @@ function PriceBookPanel({
       {showAddForm ? (
         <form
           onSubmit={handleAddNewMaterial}
-          className="space-y-2 rounded-xl border border-orange-200 bg-orange-50 p-3"
+          className="space-y-2 rounded-xl border border-[--color-orange-rim] bg-[--color-orange-soft] p-3"
         >
-          <p className="text-xs font-bold uppercase tracking-[0.1em] text-orange-700">
+          <p className="text-xs font-bold uppercase tracking-[0.1em] text-[--color-orange-dark]">
             New Material
           </p>
           <div className="grid grid-cols-2 gap-2">
@@ -556,7 +556,7 @@ function PriceBookPanel({
               }
               placeholder="Material name"
               required
-              className="col-span-2 h-9 rounded-lg border border-slate-200 bg-white px-2.5 text-sm focus:border-orange-400 focus:outline-none"
+              className="col-span-2 h-9 rounded-lg border border-slate-200 bg-white px-2.5 text-sm focus:border-[--color-orange-brand]/45 focus:outline-none"
             />
             <input
               type="text"
@@ -565,14 +565,14 @@ function PriceBookPanel({
                 setAddForm((p) => ({ ...p, category: e.target.value }))
               }
               placeholder="Category (optional)"
-              className="h-9 rounded-lg border border-slate-200 bg-white px-2.5 text-sm focus:border-orange-400 focus:outline-none"
+              className="h-9 rounded-lg border border-slate-200 bg-white px-2.5 text-sm focus:border-[--color-orange-brand]/45 focus:outline-none"
             />
             <select
               value={addForm.unit_type}
               onChange={(e) =>
                 setAddForm((p) => ({ ...p, unit_type: e.target.value }))
               }
-              className="h-9 rounded-lg border border-slate-200 bg-white px-2.5 text-sm focus:border-orange-400 focus:outline-none"
+              className="h-9 rounded-lg border border-slate-200 bg-white px-2.5 text-sm focus:border-[--color-orange-brand]/45 focus:outline-none"
             >
               {UNIT_OPTIONS.map((u) => (
                 <option key={u} value={u}>
@@ -589,13 +589,13 @@ function PriceBookPanel({
               placeholder="Unit cost $"
               step="0.01"
               min="0"
-              className="h-9 rounded-lg border border-slate-200 bg-white px-2.5 text-sm focus:border-orange-400 focus:outline-none"
+              className="h-9 rounded-lg border border-slate-200 bg-white px-2.5 text-sm focus:border-[--color-orange-brand]/45 focus:outline-none"
             />
             <div className="flex gap-2">
               <button
                 type="submit"
                 disabled={addingMaterial || !addForm.material_name.trim()}
-                className="inline-flex h-9 flex-1 items-center justify-center gap-1 rounded-lg bg-orange-600 px-3 text-xs font-bold text-white transition hover:bg-orange-700 disabled:opacity-50"
+                className="inline-flex h-9 flex-1 items-center justify-center gap-1 rounded-lg bg-orange-brand px-3 text-xs font-bold text-white transition hover:bg-[--color-orange-dark] disabled:opacity-50"
               >
                 {addingMaterial ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -618,7 +618,7 @@ function PriceBookPanel({
         <button
           type="button"
           onClick={() => setShowAddForm(true)}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-orange-300 hover:text-orange-700"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-[--color-orange-rim] hover:text-[--color-orange-dark]"
         >
           <Plus className="h-3.5 w-3.5" />
           Add New Material to Price Book
@@ -688,7 +688,7 @@ function ManualEntryForm({ onAdd }: ManualEntryFormProps) {
           }
           onKeyDown={handleKeyDown}
           placeholder="Description"
-          className="h-10 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-orange-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-400/20"
+          className="h-10 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[--color-orange-brand]/45 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/20"
         />
         <input
           type="number"
@@ -698,12 +698,12 @@ function ManualEntryForm({ onAdd }: ManualEntryFormProps) {
           placeholder="Qty"
           min="0"
           step="any"
-          className="h-10 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-orange-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-400/20"
+          className="h-10 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[--color-orange-brand]/45 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/20"
         />
         <select
           value={form.unit}
           onChange={(e) => setForm((p) => ({ ...p, unit: e.target.value }))}
-          className="h-10 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 focus:border-orange-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-400/20"
+          className="h-10 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 focus:border-[--color-orange-brand]/45 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/20"
         >
           {UNIT_OPTIONS.map((u) => (
             <option key={u} value={u}>
@@ -725,7 +725,7 @@ function ManualEntryForm({ onAdd }: ManualEntryFormProps) {
             placeholder="Unit Price"
             min="0"
             step="0.01"
-            className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50 pl-6 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-orange-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-400/20"
+            className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50 pl-6 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[--color-orange-brand]/45 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/20"
           />
         </div>
       </div>
@@ -737,12 +737,12 @@ function ManualEntryForm({ onAdd }: ManualEntryFormProps) {
           onChange={(e) => setForm((p) => ({ ...p, notes: e.target.value }))}
           onKeyDown={handleKeyDown}
           placeholder="Notes (optional)"
-          className="h-10 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-orange-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-400/20"
+          className="h-10 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[--color-orange-brand]/45 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/20"
         />
         <button
           type="submit"
           disabled={!form.description.trim()}
-          className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-orange-600 px-4 text-xs font-bold uppercase tracking-[0.08em] text-white transition hover:bg-orange-700 disabled:opacity-50"
+          className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-orange-brand px-4 text-xs font-bold uppercase tracking-[0.08em] text-white transition hover:bg-[--color-orange-dark] disabled:opacity-50"
         >
           <Plus className="h-4 w-4" />
           Add
@@ -800,7 +800,7 @@ function AddItemPanel({
 
   return (
     <article className="rounded-2xl border border-slate-300 bg-white px-4 py-4 shadow-sm sm:px-5">
-      <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.16em] text-orange-600">
+      <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.16em] text-orange-brand">
         Add Line Items
       </p>
 
@@ -813,14 +813,14 @@ function AddItemPanel({
             onClick={() => toggleTab(id)}
             className={`relative flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-xs font-bold uppercase tracking-[0.08em] transition ${
               activeTab === id
-                ? "bg-white text-orange-700 shadow-sm"
+                ? "bg-white text-[--color-orange-dark] shadow-sm"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
             <Icon className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">{label}</span>
             {badge ? (
-              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-orange-600 text-[9px] font-black text-white">
+              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-orange-brand text-[9px] font-black text-white">
                 {badge}
               </span>
             ) : null}
@@ -874,10 +874,10 @@ function LineItemsCard({
   return (
     <article className="rounded-2xl border border-slate-300 bg-white shadow-sm">
       <div className="px-4 pt-4 sm:px-5">
-        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-600">
+        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-brand">
           Line Items{" "}
           {lineItems.length > 0 && (
-            <span className="ml-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-orange-100 px-1 text-[9px] text-orange-700">
+            <span className="ml-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-[--color-orange-brand]/12 px-1 text-[9px] text-[--color-orange-dark]">
               {lineItems.length}
             </span>
           )}
@@ -939,7 +939,7 @@ function LineItemsCard({
                           onChange={(e: ChangeEvent<HTMLInputElement>) =>
                             onUpdate(item.id, { description: e.target.value })
                           }
-                          className="w-full min-w-[140px] rounded-lg border border-transparent bg-transparent px-1.5 py-1 text-sm text-slate-900 focus:border-orange-300 focus:bg-white focus:outline-none"
+                          className="w-full min-w-[140px] rounded-lg border border-transparent bg-transparent px-1.5 py-1 text-sm text-slate-900 focus:border-[--color-orange-rim] focus:bg-white focus:outline-none"
                         />
                       </td>
                       <td className="px-2 py-2">
@@ -953,7 +953,7 @@ function LineItemsCard({
                               quantity: parseFloat(e.target.value) || 0,
                             })
                           }
-                          className="w-20 rounded-lg border border-transparent bg-transparent px-1.5 py-1 text-right text-sm text-slate-900 focus:border-orange-300 focus:bg-white focus:outline-none"
+                          className="w-20 rounded-lg border border-transparent bg-transparent px-1.5 py-1 text-right text-sm text-slate-900 focus:border-[--color-orange-rim] focus:bg-white focus:outline-none"
                         />
                       </td>
                       <td className="px-2 py-2">
@@ -962,7 +962,7 @@ function LineItemsCard({
                           onChange={(e: ChangeEvent<HTMLSelectElement>) =>
                             onUpdate(item.id, { unit: e.target.value })
                           }
-                          className="rounded-lg border border-transparent bg-transparent px-1.5 py-1 text-sm text-slate-900 focus:border-orange-300 focus:bg-white focus:outline-none"
+                          className="rounded-lg border border-transparent bg-transparent px-1.5 py-1 text-sm text-slate-900 focus:border-[--color-orange-rim] focus:bg-white focus:outline-none"
                         >
                           {UNIT_OPTIONS.includes(item.unit) ? null : (
                             <option value={item.unit}>{item.unit}</option>
@@ -989,7 +989,7 @@ function LineItemsCard({
                                 unitPrice: parseFloat(e.target.value) || 0,
                               })
                             }
-                            className="w-24 rounded-lg border border-transparent bg-transparent pl-4 pr-1.5 py-1 text-right text-sm text-slate-900 focus:border-orange-300 focus:bg-white focus:outline-none"
+                            className="w-24 rounded-lg border border-transparent bg-transparent pl-4 pr-1.5 py-1 text-right text-sm text-slate-900 focus:border-[--color-orange-rim] focus:bg-white focus:outline-none"
                           />
                         </div>
                       </td>
@@ -1056,7 +1056,7 @@ function LineItemsCard({
                     onChange={(e: ChangeEvent<HTMLInputElement>) =>
                       onUpdate(item.id, { description: e.target.value })
                     }
-                    className="mb-2 h-9 w-full rounded-lg border border-slate-200 bg-white px-2.5 text-sm text-slate-900 focus:border-orange-300 focus:outline-none"
+                    className="mb-2 h-9 w-full rounded-lg border border-slate-200 bg-white px-2.5 text-sm text-slate-900 focus:border-[--color-orange-rim] focus:outline-none"
                   />
                   <div className="grid grid-cols-3 gap-2">
                     <input
@@ -1070,14 +1070,14 @@ function LineItemsCard({
                           quantity: parseFloat(e.target.value) || 0,
                         })
                       }
-                      className="h-9 rounded-lg border border-slate-200 bg-white px-2.5 text-sm text-slate-900 focus:border-orange-300 focus:outline-none"
+                      className="h-9 rounded-lg border border-slate-200 bg-white px-2.5 text-sm text-slate-900 focus:border-[--color-orange-rim] focus:outline-none"
                     />
                     <select
                       value={item.unit}
                       onChange={(e: ChangeEvent<HTMLSelectElement>) =>
                         onUpdate(item.id, { unit: e.target.value })
                       }
-                      className="h-9 rounded-lg border border-slate-200 bg-white px-2 text-sm text-slate-900 focus:border-orange-300 focus:outline-none"
+                      className="h-9 rounded-lg border border-slate-200 bg-white px-2 text-sm text-slate-900 focus:border-[--color-orange-rim] focus:outline-none"
                     >
                       {UNIT_OPTIONS.includes(item.unit) ? null : (
                         <option value={item.unit}>{item.unit}</option>
@@ -1103,7 +1103,7 @@ function LineItemsCard({
                             unitPrice: parseFloat(e.target.value) || 0,
                           })
                         }
-                        className="h-9 w-full rounded-lg border border-slate-200 bg-white pl-5 pr-2.5 text-sm text-slate-900 focus:border-orange-300 focus:outline-none"
+                        className="h-9 w-full rounded-lg border border-slate-200 bg-white pl-5 pr-2.5 text-sm text-slate-900 focus:border-[--color-orange-rim] focus:outline-none"
                       />
                     </div>
                   </div>
@@ -1195,7 +1195,7 @@ function TotalsCard({
             <select
               value={taxCounty || ""}
               onChange={handlePresetChange}
-              className="h-9 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 focus:border-orange-400 focus:bg-white focus:outline-none"
+              className="h-9 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 focus:border-[--color-orange-brand]/45 focus:bg-white focus:outline-none"
             >
               {TAX_COUNTIES.map((t) => (
                 <option key={t.county} value={t.county}>
@@ -1214,7 +1214,7 @@ function TotalsCard({
                 min="0"
                 max="25"
                 step="0.01"
-                className="h-9 w-20 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 focus:border-orange-400 focus:outline-none"
+                className="h-9 w-20 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 focus:border-[--color-orange-brand]/45 focus:outline-none"
               />
               <span className="text-sm text-slate-500">%</span>
             </div>
@@ -1247,7 +1247,7 @@ function TotalsCard({
             <span className="text-xs font-bold uppercase tracking-[0.1em] text-slate-700">
               Total
             </span>
-            <span className="font-mono text-xl font-black text-orange-700">
+            <span className="font-mono text-xl font-black text-[--color-orange-dark]">
               {formatCents(totalCents)}
             </span>
           </div>
@@ -1281,13 +1281,13 @@ function ActionBar({
   hasClientEmail,
 }: ActionBarProps) {
   return (
-    <div className="sticky bottom-0 z-10 rounded-t-2xl border-t border-slate-200 bg-white/95 px-4 py-3 shadow-[0_-4px_12px_rgba(0,0,0,0.06)] backdrop-blur-sm sm:static sm:rounded-2xl sm:border sm:border-slate-300 sm:shadow-sm">
+    <div className="sticky bottom-0 z-10 rounded-t-2xl border-t border-slate-200 bg-white px-4 py-3 shadow-[0_-4px_12px_rgba(0,0,0,0.06)] sm:static sm:rounded-2xl sm:border sm:border-slate-300 sm:shadow-sm">
       <div className="flex flex-col gap-2 sm:flex-row">
         <button
           type="button"
           onClick={onSaveDraft}
           disabled={saving}
-          className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-orange-600 px-4 text-xs font-black uppercase tracking-[0.1em] text-white transition hover:bg-orange-700 disabled:opacity-60 sm:flex-none sm:px-6"
+          className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-orange-brand px-4 text-xs font-black uppercase tracking-[0.1em] text-white transition hover:bg-[--color-orange-dark] disabled:opacity-60 sm:flex-none sm:px-6"
         >
           {saving ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -1302,7 +1302,7 @@ function ActionBar({
           onClick={onGeneratePdf}
           disabled={generatingPdf || !hasLineItems}
           title={!hasLineItems ? "Add line items first" : undefined}
-          className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-xs font-bold uppercase tracking-[0.08em] text-slate-700 transition hover:border-orange-300 hover:text-orange-700 disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none sm:px-6"
+          className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-xs font-bold uppercase tracking-[0.08em] text-slate-700 transition hover:border-[--color-orange-rim] hover:text-[--color-orange-dark] disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none sm:px-6"
         >
           {generatingPdf ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -1323,7 +1323,7 @@ function ActionBar({
                 ? "Add line items first"
                 : undefined
           }
-          className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-xs font-bold uppercase tracking-[0.08em] text-slate-700 transition hover:border-orange-300 hover:text-orange-700 disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none sm:px-6"
+          className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-xs font-bold uppercase tracking-[0.08em] text-slate-700 transition hover:border-[--color-orange-rim] hover:text-[--color-orange-dark] disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none sm:px-6"
         >
           {sending ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -1520,13 +1520,13 @@ export default function NewEstimateClient() {
       <div className="flex items-center justify-between gap-3">
         <Link
           href={routes.commandCenter}
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 transition hover:text-orange-700"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 transition hover:text-[--color-orange-dark]"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           Command Center
         </Link>
         <div className="flex items-center gap-2">
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-600 sm:text-sm">
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-brand sm:text-sm">
             New Estimate
           </p>
           <button
@@ -1606,7 +1606,7 @@ export default function NewEstimateClient() {
 
       {/* Terms & Customization */}
       <article className="rounded-2xl border border-slate-300 bg-white px-4 py-4 shadow-sm sm:px-5">
-        <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.16em] text-orange-600">
+        <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.16em] text-orange-brand">
           Terms & Customization
         </p>
         <div>
@@ -1627,14 +1627,14 @@ export default function NewEstimateClient() {
             }
             placeholder="e.g. This estimate is valid for 30 days. Payment due upon completion. Materials subject to availability."
             rows={2}
-            className="w-full resize-y rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-orange-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-400/20"
+            className="w-full resize-y rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[--color-orange-brand]/45 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/20"
           />
         </div>
         <p className="mt-2 text-xs text-slate-400">
           Your business name, phone, and logo from your{" "}
           <Link
             href="/command-center"
-            className="text-orange-600 hover:underline"
+            className="text-orange-brand hover:underline"
           >
             Business Profile
           </Link>{" "}
@@ -1656,11 +1656,11 @@ export default function NewEstimateClient() {
 
       {/* Contractor Signature Modal */}
       {showSignModal ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4">
           <div className="w-full max-w-sm rounded-2xl border border-slate-300 bg-white p-5 shadow-2xl">
             <div className="mb-4 flex items-start justify-between gap-2">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-600">
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-brand">
                   Contractor Signature
                 </p>
                 <p className="mt-0.5 text-sm text-slate-700">
@@ -1686,7 +1686,7 @@ export default function NewEstimateClient() {
               <button
                 type="button"
                 onClick={handleSignAndSend}
-                className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-orange-600 text-xs font-black uppercase tracking-[0.1em] text-white transition hover:bg-orange-700"
+                className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-orange-brand text-xs font-black uppercase tracking-[0.1em] text-white transition hover:bg-[--color-orange-dark]"
               >
                 <Send className="h-4 w-4" />
                 Sign & Send to Client
@@ -1694,7 +1694,7 @@ export default function NewEstimateClient() {
               <button
                 type="button"
                 onClick={handleSkipSignature}
-                className="inline-flex h-9 w-full items-center justify-center rounded-xl border border-slate-300 bg-white text-xs font-semibold text-slate-600 transition hover:border-orange-300 hover:text-orange-700"
+                className="inline-flex h-9 w-full items-center justify-center rounded-xl border border-slate-300 bg-white text-xs font-semibold text-slate-600 transition hover:border-[--color-orange-rim] hover:text-[--color-orange-dark]"
               >
                 Skip Signature & Send
               </button>

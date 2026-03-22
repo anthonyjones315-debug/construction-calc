@@ -78,7 +78,8 @@ const FINANCIAL_TERMS_INTERNAL: FinancialTerm[] = [
     key: "gross-profit",
     label: "Gross Profit",
     unit: "$",
-    definition: "Selling price minus direct cost and overhead.",
+    definition:
+      "Selling price minus direct job cost and overhead recovery (same as the Profit Margin calculator row). Some accounting texts use “gross profit” for revenue minus direct cost only, before overhead—our calculators include overhead in the break-even step first.",
     aliases: ["gross profit dollars"],
   },
   {
@@ -174,8 +175,9 @@ const FINANCIAL_TERMS_INTERNAL: FinancialTerm[] = [
     key: "payback-multiple",
     label: "Payback Ratio",
     unit: "x",
-    definition: "Average job value divided by customer acquisition cost.",
-    aliases: ["roas", "return on ad spend"],
+    definition:
+      "Average job value divided by customer acquisition cost — roughly how many times each acquisition dollar is recovered per closed job (not ROAS, which is revenue ÷ ad spend).",
+    aliases: ["job value to cac ratio", "acquisition payback multiple"],
   },
   {
     key: "gross-revenue",

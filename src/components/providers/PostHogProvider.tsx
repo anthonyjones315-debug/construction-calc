@@ -85,13 +85,6 @@ export function CSPostHogProvider({ children }: Props) {
       disable_session_recording: false,
       persistence: "localStorage",
     });
-    posthog.onFeatureFlags(() => {
-      const intensity = posthog.getFeatureFlag("liquid-glass-intensity");
-      document.documentElement.dataset.glassIntensity =
-        typeof intensity === "string" && intensity
-          ? intensity
-          : "balanced";
-    });
     posthogInitialized = true;
     flags.__PH_INIT = true;
   }, [canTrack, host, isHomePage, token]);

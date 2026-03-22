@@ -36,12 +36,17 @@ for (const [, name, values] of rgbaTokenMatches) {
 // captured by the simple regex pass above, so provide canonical fallbacks for
 // the brand colors we audit directly.
 const fallbackTokens = {
-  "color-primary": "#ff7a00",
-  "color-orange-brand": "#ff7a00",
-  "color-orange-base": "#ff7a00",
-  "color-orange-light": "#ff9433",
-  "color-orange-dark": "#cc5800",
-  "color-orange-deep": "#b85700",
+  "color-primary": "#ea580c",
+  "color-orange-brand": "#ea580c",
+  "color-orange-base": "#ea580c",
+  "color-orange-light": "#fb923c",
+  "color-orange-dark": "#c2410c",
+  "color-orange-deep": "#9a3412",
+  /* Aliases in @theme (var(...) not parsed by the hex regex above) */
+  "color-nav-active": "#ea580c",
+  "color-surface-base": "#ffffff",
+  "color-surface-deep": "#fafaf8",
+  "color-surface-elevated": "#ffffff",
 };
 
 for (const [tokenKey, fallbackValue] of Object.entries(fallbackTokens)) {
@@ -82,13 +87,13 @@ const legacyCombos = [
   },
   {
     label: "Nav active text on nav background",
-    text: "--color-nav-active",
+    text: "--color-orange-deep",
     bg: "--color-nav-bg",
   },
   { label: "Brand badge text", text: INK_DARK, bg: "--color-orange-brand" },
   {
     label: "Brand badge hover text",
-    text: INK_DARK,
+    text: "#ffffff",
     bg: "--color-orange-dark",
   },
   {
@@ -209,7 +214,7 @@ const liquidOrangeGlassCombos = [
   },
   {
     label: "Ink text on orange dark",
-    text: INK_DARK,
+    text: "#ffffff",
     bg: "--color-orange-dark",
   },
 
@@ -223,7 +228,7 @@ const liquidOrangeGlassCombos = [
   },
   {
     label: "Nav item active on surface deep",
-    text: "#ffffff",
+    text: "--color-orange-deep",
     bg: "--color-surface-deep",
   },
 ];

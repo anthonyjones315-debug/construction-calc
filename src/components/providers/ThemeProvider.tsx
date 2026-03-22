@@ -1,21 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { ThemeProvider as NextThemesProvider } from "next-themes";
 
 type ThemeProviderProps = {
   children: React.ReactNode;
 };
 
+/** Light-only app: theme switching removed. Kept as a no-op wrapper for any legacy imports. */
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  return (
-    <NextThemesProvider
-      attribute="class"
-      defaultTheme="light"
-      enableSystem={false}
-      disableTransitionOnChange
-    >
-      {children}
-    </NextThemesProvider>
-  );
+  return <>{children}</>;
 }
