@@ -1,0 +1,31 @@
+
+> proconstructioncalc@1.0.0 dev
+> next dev --turbopack
+
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+✓ Ready in 545ms
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+- Cache Components enabled
+- Experiments (use with caution):
+  · clientTraceMetadata
+  · optimizePackageImports
+
+○ Compiling /pricebook ...
+
+[35m
+[Clerk]:[0m You are running in keyless mode.
+You can [35mclaim your keys[0m by visiting https://dashboard.clerk.com/apps/claim?framework=nextjs&token=wxrouw7v10df62bu7r8tddei73yplidi0m0qqdws&return_url=http%3A%2F%2Flocalhost%3A3000%2F
+
+ GET /pricebook 200 in 15.7s (next.js: 13.0s, proxy.ts: 520ms, application-code: 2.2s)
+ GET /pricebook 200 in 107ms (next.js: 5ms, proxy.ts: 27ms, application-code: 75ms)
+ POST /pricebook 303 in 201ms (next.js: 7ms, proxy.ts: 13ms, application-code: 181ms)
+  └─ ƒ syncKeylessConfigAction({"apiKeysUrl":"https://dashboard.clerk.com/apps/app_3BJCqMIkcWnMKXeo0Y9dJHQbEbr/instances/ins_3BJCqJoXnrfkZLH2aCcC2j9ScF7/api-keys","claimUrl":"https://dashboard.clerk.com/apps/claim?framework=nextjs&token=wxrouw7v10df62bu7r8tddei73yplidi0m0qqdws","...":"3 items not stringified"}) in 9ms node_modules/@clerk/nextjs/dist/esm-router/keyless-actions.js
+ GET /pricebook 200 in 32ms (next.js: 5ms, proxy.ts: 12ms, application-code: 15ms)
+[browser] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview (https://profound-krill-26.clerk.accounts.dev/npm/@clerk/clerk-js@6/dist/clerk.browser.js:12:3226)
+ GET /pricebook 200 in 66ms (next.js: 6ms, proxy.ts: 13ms, application-code: 47ms)
