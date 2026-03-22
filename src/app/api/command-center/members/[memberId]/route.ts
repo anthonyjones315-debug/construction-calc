@@ -4,6 +4,8 @@ import { auth } from "@/lib/auth/config";
 import { createServerClient } from "@/lib/supabase/server";
 import { getBusinessContextForSession } from "@/lib/supabase/business";
 
+const ALLOWED_ROLES = new Set(["owner", "admin", "editor", "member"]);
+
 type MembershipRow = {
   id: string;
   user_id: string;
@@ -71,7 +73,7 @@ export async function PATCH(
   const body = await req.json().catch(() => ({}));
   const role = typeof body?.role === "string" ? body.role : "";
 
-  if (!["owner", "admin", "editor", "member"].includes(role)) {
+  if (!ALLOWED_ROLES.has(role)) {
     return NextResponse.json(
       { error: "Invalid role. Must be owner, admin, editor, or member." },
       { status: 400 },
