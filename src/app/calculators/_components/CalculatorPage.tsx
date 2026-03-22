@@ -3119,6 +3119,24 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     }
   }
 
+  function handleReportIssue() {
+    Sentry.captureException(new Error("User reported finalize error"), {
+      tags: { route: "finalize_modal" },
+      extra: {
+        finalizeError,
+        canonicalPath: page.canonicalPath,
+      },
+    });
+    if (typeof Sentry.showReportDialog === "function") {
+      Sentry.showReportDialog({
+        title: "Report this issue",
+        subtitle: "Tell us what happened during Finalize Estimate.",
+      });
+    } else {
+      setFinalizeSuccess("Thanks — error reported.");
+    }
+  }
+
   const auditRef = getCalculatorAuditRef();
   const addCartItem = useStore((s) => s.addCartItem);
 
@@ -5102,27 +5120,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                     {finalizeError}{" "}
                     <button
                       type="button"
-                      onClick={() => {
-                        Sentry.captureException(
-                          new Error("User reported finalize error"),
-                          {
-                            tags: { route: "finalize_modal" },
-                            extra: {
-                              finalizeError,
-                              canonicalPath: page.canonicalPath,
-                            },
-                          },
-                        );
-                        if (typeof Sentry.showReportDialog === "function") {
-                          Sentry.showReportDialog({
-                            title: "Report this issue",
-                            subtitle:
-                              "Tell us what happened during Finalize Estimate.",
-                          });
-                        } else {
-                          setFinalizeSuccess("Thanks — error reported.");
-                        }
-                      }}
+                      onClick={handleReportIssue}
                       className="ml-1 text-xs font-medium underline underline-offset-2 text-copy-accent hover:text-red-50"
                     >
                       Report this issue
