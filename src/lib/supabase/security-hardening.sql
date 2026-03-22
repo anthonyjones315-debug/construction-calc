@@ -95,7 +95,7 @@ grant insert on email_signups to anon;
 -- Policy already exists but recreate cleanly
 drop policy if exists "Anyone can sign up" on email_signups;
 create policy "Anyone can sign up"
-  on email_signups for insert with check (true);
+  on email_signups for insert to anon with check (true);
 
 -- Nobody can read the list (not even authenticated) — only service_role
 alter table email_signups enable row level security;
