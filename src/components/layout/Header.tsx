@@ -83,10 +83,18 @@ export function Header() {
     };
   }, [session?.user?.id]);
 
+  const [loadingTimedOut, setLoadingTimedOut] = useState(false);
+
   useEffect(() => {
     const frame = requestAnimationFrame(() => setIsMounted(true));
     return () => cancelAnimationFrame(frame);
   }, []);
+
+  useEffect(() => {
+    if (status !== "loading") return;
+    const timer = setTimeout(() => setLoadingTimedOut(true), 2000);
+    return () => clearTimeout(timer);
+  }, [status]);
 
   const closeMobileMenu = useCallback(() => setMobileNavOpen(false), []);
   useClickOutside(headerRef, closeMobileMenu, mobileNavOpen);
@@ -190,8 +198,15 @@ export function Header() {
           {/* Auth area */}
           {!isMounted ? (
             <div className="h-7 w-7 rounded-full bg-slate-200 animate-pulse" />
-          ) : status === "loading" ? (
+          ) : status === "loading" && !loadingTimedOut ? (
             <div className="h-7 w-7 rounded-full bg-slate-200 animate-pulse" />
+          ) : status === "loading" && loadingTimedOut ? (
+            <Link
+              href={routes.auth.signIn}
+              className="btn-tactile flex min-h-7 items-center rounded-lg bg-orange-brand px-2 text-[10px] font-black uppercase text-white transition-all duration-200 hover:bg-[--color-orange-dark] active:scale-[0.98] sm:px-2.5 sm:text-[11px]"
+            >
+              Sign In
+            </Link>
           ) : session ? (
             <UserButton
               appearance={{

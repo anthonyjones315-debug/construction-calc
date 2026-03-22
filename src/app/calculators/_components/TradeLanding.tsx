@@ -246,8 +246,8 @@ export function TradeLanding({ page }: TradeLandingProps) {
             Pick a calculator
           </p>
 
-          {/* Card grid — equal row heights so Details aligns across each row */}
-          <div className="grid grid-cols-1 items-stretch gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {/* Card grid — tiles size independently, details expand in-place */}
+          <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {calculators.map((calculator) => (
               <TradeTile key={calculator.key} calculator={calculator} />
             ))}
