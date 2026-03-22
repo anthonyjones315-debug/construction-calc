@@ -65,6 +65,51 @@ function toSmsHref(phone: string) {
   return `sms:${normalized}`;
 }
 
+
+function SignerEmailInput({
+  lockedInviteEmail,
+  signerEmail,
+  setSignerEmail,
+}: {
+  lockedInviteEmail: string | null;
+  signerEmail: string;
+  setSignerEmail: (val: string) => void;
+}) {
+  return (
+    <label className="text-sm text-slate-700">
+      {lockedInviteEmail ? (
+        <>
+          Email <span className="text-red-500">*</span>
+          <span className="ml-1 font-normal text-slate-400">
+            (from your invite)
+          </span>
+        </>
+      ) : (
+        "Email (optional)"
+      )}
+      <input
+        id="signer-email"
+        data-testid="signer-email"
+        value={signerEmail}
+        onChange={(event) => {
+          if (lockedInviteEmail) return;
+          setSignerEmail(event.target.value);
+        }}
+        readOnly={Boolean(lockedInviteEmail)}
+        aria-readonly={lockedInviteEmail ? true : undefined}
+        className={`mt-1 h-10 w-full rounded-xl border border-slate-200 px-3 text-slate-900 outline-none transition focus:border-[--color-orange-brand] focus:ring-2 focus:ring-[--color-orange-brand]/20 ${
+          lockedInviteEmail
+            ? "cursor-not-allowed bg-slate-100 text-slate-600"
+            : "bg-slate-50"
+        }`}
+        placeholder="name@example.com"
+        type="email"
+        autoComplete="email"
+      />
+    </label>
+  );
+}
+
 export function SignEstimateClient({ estimate }: Props) {
   const signatureRef = useRef<SignatureCanvas | null>(null);
   const lockedInviteEmail = useMemo(() => {
@@ -359,37 +404,11 @@ export function SignEstimateClient({ estimate }: Props) {
                     placeholder="Enter your full name"
                   />
                 </label>
-                <label className="text-sm text-slate-700">
-                  {lockedInviteEmail ? (
-                    <>
-                      Email <span className="text-red-500">*</span>
-                      <span className="ml-1 font-normal text-slate-400">
-                        (from your invite)
-                      </span>
-                    </>
-                  ) : (
-                    "Email (optional)"
-                  )}
-                  <input
-                    id="signer-email"
-                    data-testid="signer-email"
-                    value={signerEmail}
-                    onChange={(event) => {
-                      if (lockedInviteEmail) return;
-                      setSignerEmail(event.target.value);
-                    }}
-                    readOnly={Boolean(lockedInviteEmail)}
-                    aria-readonly={lockedInviteEmail ? true : undefined}
-                    className={`mt-1 h-10 w-full rounded-xl border border-slate-200 px-3 text-slate-900 outline-none transition focus:border-[--color-orange-brand] focus:ring-2 focus:ring-[--color-orange-brand]/20 ${
-                      lockedInviteEmail
-                        ? "cursor-not-allowed bg-slate-100 text-slate-600"
-                        : "bg-slate-50"
-                    }`}
-                    placeholder="name@example.com"
-                    type="email"
-                    autoComplete="email"
-                  />
-                </label>
+                <SignerEmailInput
+                  lockedInviteEmail={lockedInviteEmail}
+                  signerEmail={signerEmail}
+                  setSignerEmail={setSignerEmail}
+                />
               </div>
 
               <div className="mt-4">
