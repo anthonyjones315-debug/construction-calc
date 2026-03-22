@@ -43,7 +43,7 @@ describe("generateInvoiceHtml", () => {
     expect(html).toContain("Jane Contractor");
     expect(html).toContain("145 sq ft flooring");
     expect(html).toContain("Flooring Waste Calculator");
-    expect(html).toContain("#ea580c");
+    expect(html).toContain("#FF7A00");
     expect(html).toContain("Kitchen Remodel");
   });
 });
