@@ -1,4 +1,4 @@
-const SERVICE_WORKER_SOURCE = `const CACHE_NAME = "pro-construction-calc-v3";
+const SERVICE_WORKER_SOURCE = `const CACHE_NAME = "pro-construction-calc-v4";
 const OFFLINE_URL = "/offline";
 const PRECACHE_URLS = [
   OFFLINE_URL,
@@ -35,6 +35,18 @@ self.addEventListener("fetch", (event) => {
   const requestUrl = new URL(event.request.url);
   const sameOrigin = requestUrl.origin === self.location.origin;
   const isNavigation = event.request.mode === "navigate";
+
+  // Next.js App Router RSC fetches and build assets must not be cached or answered
+  // with synthetic offline responses — that breaks client navigations and can serve
+  // stale flight payloads.
+  if (
+    sameOrigin &&
+    (requestUrl.pathname.startsWith("/_next/") ||
+      requestUrl.searchParams.has("_rsc"))
+  ) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
 
   event.respondWith(
     fetch(event.request)
