@@ -126,6 +126,9 @@ const nextConfig: NextConfig = {
       "https://*.clerk.com",
       "https://clerk-telemetry.com",
       "https://*.clerk-telemetry.com",
+      // Cloudflare Insights
+      "https://static.cloudflareinsights.com",
+      "https://cloudflareinsights.com",
     ].join(" ");
 
     const ContentSecurityPolicy = [
