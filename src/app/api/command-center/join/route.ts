@@ -14,6 +14,113 @@ function isValidCodeFormat(code: string): boolean {
   return /^[A-HJ-NP-Z2-9]{6,12}$/.test(normalizeBusinessJoinCode(code));
 }
 
+async function checkExistingMembership(
+  db: ReturnType<typeof createServerClient>,
+  userId: string,
+): Promise<NextResponse | null> {
+  const { data: existingMembership, error: existingError } = await db
+    .from("memberships")
+    .select("business_id, role")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (existingError) {
+    Sentry.captureException(existingError, {
+      tags: { route: "join-by-code", step: "check-existing-membership" },
+      extra: { userId },
+    });
+    return NextResponse.json(
+      { error: "Unable to verify your current team status. Try again." },
+      { status: 500 },
+    );
+  }
+
+  if (existingMembership?.business_id) {
+    return NextResponse.json(
+      {
+        error:
+          "You are already a member of a business. Leave your current team before joining another.",
+      },
+      { status: 409 },
+    );
+  }
+
+  return null;
+}
+
+async function handleSeatClaim(
+  db: ReturnType<typeof createServerClient>,
+  userId: string,
+  matchedBusiness: { id: string; name: string },
+): Promise<NextResponse> {
+  const { data: claimResult, error: claimError } = await db.rpc(
+    "claim_business_seat",
+    {
+      p_business_id: matchedBusiness.id,
+      p_user_id: userId,
+      p_seat_limit: SEAT_LIMIT,
+    },
+  );
+
+  if (claimError) {
+    if (
+      claimError.code === "PGRST202" ||
+      claimError.message?.toLowerCase().includes("could not find the function")
+    ) {
+      return legacyJoin(db, userId, matchedBusiness);
+    }
+
+    Sentry.captureException(claimError, {
+      tags: { route: "join-by-code", step: "claim-seat-rpc" },
+      extra: { userId, businessId: matchedBusiness.id },
+    });
+    return NextResponse.json(
+      { error: "Unable to claim a seat. Try again." },
+      { status: 500 },
+    );
+  }
+
+  const result = claimResult as {
+    ok: boolean;
+    error?: string;
+    code?: string;
+    business_name?: string;
+  } | null;
+
+  if (!result?.ok) {
+    const serverError = result?.error ?? "Unable to join. Try again.";
+    const serverCode = result?.code ?? "";
+
+    if (serverError === "already_member") {
+      return NextResponse.json(
+        { error: "You are already a member of this business." },
+        { status: 409 },
+      );
+    }
+
+    if (serverCode === "seat_limit_reached") {
+      return NextResponse.json({ error: serverError }, { status: 403 });
+    }
+
+    return NextResponse.json({ error: serverError }, { status: 400 });
+  }
+
+  try {
+    await rotateBusinessJoinCode(db, matchedBusiness.id);
+  } catch (rotateError) {
+    Sentry.captureException(rotateError, {
+      tags: { route: "join-by-code", step: "rotate-join-code" },
+      extra: { userId, businessId: matchedBusiness.id },
+    });
+  }
+
+  return NextResponse.json({
+    ok: true,
+    businessName: result.business_name ?? matchedBusiness.name,
+    message: `You have joined ${result.business_name ?? matchedBusiness.name}.`,
+  });
+}
+
 export async function POST(req: NextRequest) {
   try {
     const session = await auth();
@@ -52,35 +159,11 @@ export async function POST(req: NextRequest) {
 
     const db = createServerClient();
 
-    // ── Guard: user must not already belong to a business ───────────────────
-    const { data: existingMembership, error: existingError } = await db
-      .from("memberships")
-      .select("business_id, role")
-      .eq("user_id", userId)
-      .maybeSingle();
-
-    if (existingError) {
-      Sentry.captureException(existingError, {
-        tags: { route: "join-by-code", step: "check-existing-membership" },
-        extra: { userId },
-      });
-      return NextResponse.json(
-        { error: "Unable to verify your current team status. Try again." },
-        { status: 500 },
-      );
+    const existingMembershipErrorResponse = await checkExistingMembership(db, userId);
+    if (existingMembershipErrorResponse) {
+      return existingMembershipErrorResponse;
     }
 
-    if (existingMembership?.business_id) {
-      return NextResponse.json(
-        {
-          error:
-            "You are already a member of a business. Leave your current team before joining another.",
-        },
-        { status: 409 },
-      );
-    }
-
-    // ── Resolve the business by join code ────────────────────────────────────
     let matchedBusiness: { id: string; name: string } | null = null;
     try {
       matchedBusiness = await findBusinessByJoinCode(db, rawCode);
@@ -107,79 +190,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // ── Atomic seat claim via DB RPC (eliminates TOCTOU race) ────────────────
-    // The claim_business_seat function acquires an advisory lock, counts seats,
-    // and inserts the membership row — all inside one serialized transaction.
-    const { data: claimResult, error: claimError } = await db.rpc(
-      "claim_business_seat",
-      {
-        p_business_id: matchedBusiness.id,
-        p_user_id: userId,
-        p_seat_limit: SEAT_LIMIT,
-      },
-    );
-
-    if (claimError) {
-      // RPC may not exist yet if the migration hasn't been applied.
-      // Fall through to the legacy path so the join still works.
-      if (
-        claimError.code === "PGRST202" ||
-        claimError.message?.toLowerCase().includes("could not find the function")
-      ) {
-        return legacyJoin(db, userId, matchedBusiness);
-      }
-
-      Sentry.captureException(claimError, {
-        tags: { route: "join-by-code", step: "claim-seat-rpc" },
-        extra: { userId, businessId: matchedBusiness.id },
-      });
-      return NextResponse.json(
-        { error: "Unable to claim a seat. Try again." },
-        { status: 500 },
-      );
-    }
-
-    const result = claimResult as {
-      ok: boolean;
-      error?: string;
-      code?: string;
-      business_name?: string;
-    } | null;
-
-    if (!result?.ok) {
-      const serverError = result?.error ?? "Unable to join. Try again.";
-      const serverCode = result?.code ?? "";
-
-      if (serverError === "already_member") {
-        return NextResponse.json(
-          { error: "You are already a member of this business." },
-          { status: 409 },
-        );
-      }
-
-      if (serverCode === "seat_limit_reached") {
-        return NextResponse.json({ error: serverError }, { status: 403 });
-      }
-
-      return NextResponse.json({ error: serverError }, { status: 400 });
-    }
-
-    // ── Rotate the join code so the same code cannot be reused ───────────────
-    try {
-      await rotateBusinessJoinCode(db, matchedBusiness.id);
-    } catch (rotateError) {
-      // Non-fatal: log but do not fail the join itself.
-      Sentry.captureException(rotateError, {
-        tags: { route: "join-by-code", step: "rotate-join-code" },
-        extra: { userId, businessId: matchedBusiness.id },
-      });
-    }
-
-    return NextResponse.json({
-      ok: true,
-      businessName: result.business_name ?? matchedBusiness.name,
-      message: `You have joined ${result.business_name ?? matchedBusiness.name}.`,
-    });
+    return handleSeatClaim(db, userId, matchedBusiness);
   } catch (error) {
     Sentry.captureException(error, { tags: { route: "join-by-code" } });
     return NextResponse.json(
