@@ -157,7 +157,19 @@ function PriceBookContent() {
     setSaving(false);
   }
 
+  function handleEditStart(mat: UserMaterial) {
+    if (String(mat.id).startsWith("pending-")) return;
+    setEditId(mat.id);
+    setEditRow({
+      material_name: mat.material_name,
+      category: mat.category ?? "Other",
+      unit_type: mat.unit_type ?? "each",
+      unit_cost: mat.unit_cost,
+    });
+  }
+
   async function handleDelete(id: string) {
+    if (String(id).startsWith("pending-")) return;
     await fetch(`/api/materials/${id}`, { method: "DELETE" });
     setMaterials((m) => (m ?? []).filter((r) => r.id !== id));
   }
@@ -444,27 +456,13 @@ function PriceBookContent() {
                               <td className="px-3 py-3">
                                 <div className="flex gap-1">
                                   <button
-                                    onClick={() => {
-                                      if (String(mat.id).startsWith("pending-"))
-                                        return;
-                                      setEditId(mat.id);
-                                      setEditRow({
-                                        material_name: mat.material_name,
-                                        category: mat.category ?? "Other",
-                                        unit_type: mat.unit_type ?? "each",
-                                        unit_cost: mat.unit_cost,
-                                      });
-                                    }}
+                                    onClick={() => handleEditStart(mat)}
                                     className="rounded p-1.5 text-[--color-ink-dim] transition-all hover:bg-[--color-orange-soft] hover:text-[--color-orange-brand]"
                                   >
                                     <Pencil className="w-3.5 h-3.5" />
                                   </button>
                                   <button
-                                    onClick={() => {
-                                      if (String(mat.id).startsWith("pending-"))
-                                        return;
-                                      handleDelete(mat.id);
-                                    }}
+                                    onClick={() => handleDelete(mat.id)}
                                     className="rounded p-1.5 text-[--color-ink-dim] transition-all hover:bg-red-500/10 hover:text-red-500"
                                   >
                                     <Trash2 className="w-3.5 h-3.5" />
