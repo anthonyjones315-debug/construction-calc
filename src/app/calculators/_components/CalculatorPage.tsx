@@ -1276,6 +1276,14 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     if (nextMode === "30") setDepthThickness(30);
   }
 
+  function handleRoofPitchPresetChange(nextPreset: RoofingPitchPreset) {
+    setRoofPitchPreset(nextPreset);
+    if (nextPreset !== "custom") {
+      const nextRise = nextPreset === "flat" ? 0 : Number(nextPreset);
+      setRoofPitchRiseCustom(nextRise);
+    }
+  }
+
   const calculatorResults: CalculatorResultsBundle = useMemo(() => {
     const isFlooringCalculator = page.canonicalPath.includes("flooring");
     const isSidingCalculator = page.canonicalPath.includes("siding");
@@ -3885,16 +3893,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                   { value: "12", label: "12/12" },
                                   { value: "custom", label: "Custom" },
                                 ]}
-                                onChange={(nextPreset: RoofingPitchPreset) => {
-                                  setRoofPitchPreset(nextPreset);
-                                  if (nextPreset !== "custom") {
-                                    const nextRise =
-                                      nextPreset === "flat"
-                                        ? 0
-                                        : Number(nextPreset);
-                                    setRoofPitchRiseCustom(nextRise);
-                                  }
-                                }}
+                                onChange={handleRoofPitchPresetChange}
                               />
                               {roofPitchPreset === "custom" ? (
                                 <ProInput
