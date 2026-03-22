@@ -1,0 +1,27 @@
+
+> proconstructioncalc@1.0.0 dev
+> next dev --turbopack
+
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+✓ Ready in 558ms
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+- Cache Components enabled
+- Experiments (use with caution):
+  · clientTraceMetadata
+  · optimizePackageImports
+
+○ Compiling /calculators/framing/wall ...
+
+[35m
+[Clerk]:[0m You are running in keyless mode.
+You can [35mclaim your keys[0m by visiting https://dashboard.clerk.com/apps/claim?framework=nextjs&token=b4oo3gsettf9wrushn9crduwjj9jpa1ocwumrfn8&return_url=http%3A%2F%2Flocalhost%3A3000%2F
+
+ GET /calculators/framing/wall 404 in 22.2s (next.js: 18.7s, proxy.ts: 569ms, application-code: 2.9s)
+[browser] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview (https://lasting-sunbeam-13.clerk.accounts.dev/npm/@clerk/clerk-js@6/dist/clerk.browser.js:12:3226)
+ GET /calculators/framing/wall 404 in 416ms (next.js: 14ms, proxy.ts: 19ms, application-code: 382ms)

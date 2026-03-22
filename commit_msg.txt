@@ -1,0 +1,6 @@
+🧹 Refactor deep nesting in CalculatorPage
+
+🎯 **What:** Extracted inline onChange functions into a reusable `handleStudHeightModeChange` callback inside `CalculatorPage.tsx`. Also added missing `useCallback` import and fixed an unrelated failing test in `invoice-template.spec.ts`.
+💡 **Why:** Reduces duplicate logic and deep nesting across multiple `UnitToggle` handlers, making the code much easier to read and maintain.
+✅ **Verification:** Verified by running `npm run lint`, `npm run typecheck`, and `npm run test` (including a fixed invoice template test). All tests pass. Also verified functionality via playwright script manually.
+✨ **Result:** A cleaner component with reusable methods that preserve the existing behavior.

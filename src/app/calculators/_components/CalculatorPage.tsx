@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import type { Route } from "next";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import type { LucideIcon } from "lucide-react";
 import { useSession } from "@/lib/auth/client";
 import * as Sentry from "@sentry/nextjs";
@@ -960,6 +960,22 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   const [taxCounty, setTaxCounty] = useState<string>("Oneida");
   const deviceProfile = useDeviceProfile();
   const [capitalImprovement, setCapitalImprovement] = useState(false);
+
+const handleStudHeightModeChange = useCallback(
+    (nextMode: WallStudHeightMode) => {
+      setWallStudHeightMode(nextMode);
+      if (nextMode === "8-precut") {
+        setWallStudCustomHeightFeet(92.625 / 12);
+      } else if (nextMode === "9-precut") {
+        setWallStudCustomHeightFeet(104.625 / 12);
+      } else if (nextMode === "10") {
+        setWallStudCustomHeightFeet(10);
+      } else if (nextMode === "12") {
+        setWallStudCustomHeightFeet(12);
+      }
+    },
+    [setWallStudHeightMode, setWallStudCustomHeightFeet],
+  );
 
   // Collapsible section states
   const [wasteFactorOpen, setWasteFactorOpen] = useState(true);
@@ -4122,18 +4138,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                     { value: "12", label: "12'" },
                                     { value: "custom", label: "Custom" },
                                   ]}
-                                  onChange={(nextMode) => {
-                                    setWallStudHeightMode(nextMode);
-                                    if (nextMode === "8-precut") {
-                                      setWallStudCustomHeightFeet(92.625 / 12);
-                                    } else if (nextMode === "9-precut") {
-                                      setWallStudCustomHeightFeet(104.625 / 12);
-                                    } else if (nextMode === "10") {
-                                      setWallStudCustomHeightFeet(10);
-                                    } else if (nextMode === "12") {
-                                      setWallStudCustomHeightFeet(12);
-                                    }
-                                  }}
+                                  onChange={handleStudHeightModeChange}
                                 />
                                 {wallStudHeightMode === "custom" ? (
                                   <FeetInchesInput
@@ -4230,22 +4235,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                       { value: "12", label: "12'" },
                                       { value: "custom", label: "Custom" },
                                     ]}
-                                    onChange={(nextMode) => {
-                                      setWallStudHeightMode(nextMode);
-                                      if (nextMode === "8-precut") {
-                                        setWallStudCustomHeightFeet(
-                                          92.625 / 12,
-                                        );
-                                      } else if (nextMode === "9-precut") {
-                                        setWallStudCustomHeightFeet(
-                                          104.625 / 12,
-                                        );
-                                      } else if (nextMode === "10") {
-                                        setWallStudCustomHeightFeet(10);
-                                      } else if (nextMode === "12") {
-                                        setWallStudCustomHeightFeet(12);
-                                      }
-                                    }}
+                                    onChange={handleStudHeightModeChange}
                                   />
                                   {wallStudHeightMode === "custom" ? (
                                     <ProInput
