@@ -78,6 +78,102 @@ function generateEstimateControlNumber(): string {
   return `PC-${stamp}-${suffix}`;
 }
 
+
+async function parseRequestBody(req: NextRequest) {
+  let rawBody: unknown;
+  try {
+    rawBody = await req.json();
+  } catch {
+    return { ok: false as const, error: "Invalid request.", status: 400, rawBody: null };
+  }
+
+  const parsed = saveEstimateSchema.safeParse(rawBody);
+  if (!parsed.success) {
+    return {
+      ok: false as const,
+      error: parsed.error.issues[0]?.message ?? "Invalid estimate payload.",
+      status: 400,
+      rawBody
+    };
+  }
+
+  return { ok: true as const, parsedBody: parsed.data, rawBody };
+}
+
+function buildInsertPayload(
+  body: z.infer<typeof saveEstimateSchema>,
+  session: NonNullable<Awaited<ReturnType<typeof auth>>>,
+  businessContext: { usesLegacyUserScope: boolean; businessId?: string | null }
+) {
+  const inputObject = body.inputs ?? {};
+  const existingControlNumber = normalizeControlNumber(
+    inputObject.control_number,
+  );
+  const controlNumber =
+    existingControlNumber ?? generateEstimateControlNumber();
+
+  const ownerMeta = {
+    user_id: session.user.id,
+    user_email: session.user.email ?? null,
+    user_name: session.user.name ?? null,
+  };
+
+  const insertPayload: Record<string, unknown> = {
+    user_id: session.user.id,
+    name: body.name || "Untitled Estimate",
+    calculator_id: body.calculator_id || "unknown",
+    inputs: {
+      ...inputObject,
+      control_number: controlNumber,
+      owner: ownerMeta,
+    },
+    results: body.results ?? [],
+    budget_items: body.budget_items ?? null,
+    client_name: body.client_name ?? null,
+    job_site_address: body.job_site_address ?? null,
+    total_cost:
+      body.total_cost !== null && body.total_cost !== undefined
+        ? normalizeDollars(body.total_cost)
+        : null,
+    status: body.status ?? "Draft",
+  };
+
+  if (!businessContext.usesLegacyUserScope) {
+    insertPayload.business_id = businessContext.businessId;
+  }
+
+  return insertPayload;
+}
+
+function revalidateEstimateCaches(tenantId: string, estimateId: string) {
+  revalidateTag(FINANCIAL_DASHBOARD_TAG, "max");
+  revalidateTag(getFinancialDashboardTag(tenantId), "max");
+  revalidateTag(SAVED_ESTIMATES_TAG, "max");
+  revalidateTag(getSavedEstimatesTag(tenantId), "max");
+  revalidateTag(getEstimateTag(estimateId), "max");
+}
+
+function recordAnalytics(
+  userId: string,
+  estimateId: string,
+  body: z.infer<typeof saveEstimateSchema>
+) {
+  try {
+    const posthog = getPostHogClient();
+    posthog.capture({
+      distinctId: userId,
+      event: "estimate_saved",
+      properties: {
+        estimate_id: estimateId,
+        calculator_id: body.calculator_id ?? "unknown",
+        has_client: Boolean(body.client_name),
+        status: body.status ?? "Draft",
+      },
+    });
+    posthog.shutdown().catch(() => {});
+  } catch {}
+}
+
 export async function POST(req: NextRequest) {
   const requestId = newErrorId();
   const session = await auth();
@@ -85,22 +181,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  let rawBody: unknown;
-  try {
-    rawBody = await req.json();
-  } catch {
-    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+  const parseResult = await parseRequestBody(req);
+  if (!parseResult.ok) {
+    return NextResponse.json({ error: parseResult.error }, { status: parseResult.status });
   }
+  const { parsedBody: body, rawBody } = parseResult;
 
-  const parsed = saveEstimateSchema.safeParse(rawBody);
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: parsed.error.issues[0]?.message ?? "Invalid estimate payload." },
-      { status: 400 },
-    );
-  }
-
-  const body = parsed.data;
   const projectUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "unknown";
 
   try {
@@ -115,41 +201,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const inputObject = body.inputs ?? {};
-    const existingControlNumber = normalizeControlNumber(
-      inputObject.control_number,
-    );
-    const controlNumber =
-      existingControlNumber ?? generateEstimateControlNumber();
-
-    const ownerMeta = {
-      user_id: session.user.id,
-      user_email: session.user.email ?? null,
-      user_name: session.user.name ?? null,
-    };
-
-    const insertPayload: Record<string, unknown> = {
-      user_id: session.user.id,
-      name: body.name || "Untitled Estimate",
-      calculator_id: body.calculator_id || "unknown",
-      inputs: {
-        ...inputObject,
-        control_number: controlNumber,
-        owner: ownerMeta,
-      },
-      results: body.results ?? [],
-      budget_items: body.budget_items ?? null,
-      client_name: body.client_name ?? null,
-      job_site_address: body.job_site_address ?? null,
-      total_cost:
-        body.total_cost !== null && body.total_cost !== undefined
-          ? normalizeDollars(body.total_cost)
-          : null,
-      status: body.status ?? "Draft",
-    };
-    if (!businessContext.usesLegacyUserScope) {
-      insertPayload.business_id = businessContext.businessId;
-    }
+    const insertPayload = buildInsertPayload(body, session, businessContext);
 
     const verification = verifyEstimate({
       inputs: {
@@ -210,27 +262,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    revalidateTag(FINANCIAL_DASHBOARD_TAG, "max");
-    revalidateTag(getFinancialDashboardTag(tenantId), "max");
-    revalidateTag(SAVED_ESTIMATES_TAG, "max");
-    revalidateTag(getSavedEstimatesTag(tenantId), "max");
-    revalidateTag(getEstimateTag(data.id), "max");
-
-    // Fire analytics without blocking the response
-    try {
-      const posthog = getPostHogClient();
-      posthog.capture({
-        distinctId: session.user.id,
-        event: "estimate_saved",
-        properties: {
-          estimate_id: data.id,
-          calculator_id: body.calculator_id ?? "unknown",
-          has_client: Boolean(body.client_name),
-          status: body.status ?? "Draft",
-        },
-      });
-      posthog.shutdown().catch(() => {});
-    } catch {}
+    revalidateEstimateCaches(tenantId, data.id);
+    recordAnalytics(session.user.id, data.id, body);
 
     return NextResponse.json({
       ok: true,
