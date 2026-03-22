@@ -73,6 +73,11 @@ import { calculateNysSalesTax } from "@/services/taxEngine";
 import { routes } from "@routes";
 import { UnitToggle } from "./UnitToggle";
 import { ProInput, ProResult } from "@/components/ui/glass-elements";
+import {
+  FeetInchesInput,
+  feetInchesToDecimal,
+  decimalToFeetInches,
+} from "@/components/ui/FeetInchesInput";
 import { useProMode } from "@/hooks/useProMode";
 import { triggerHaptic } from "@/hooks/useHaptic";
 import { sanitizeFilename } from "@/utils/sanitize-filename";
@@ -868,8 +873,13 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     );
   const [openModuleGroup, setOpenModuleGroup] = useState<string | null>(null);
   const [crmModalOpen, setCrmModalOpen] = useState(false);
+  // For feet/inches input support
   const [baseMeasurement, setBaseMeasurement] = useState(10);
+  const [baseFeet, setBaseFeet] = useState(10);
+  const [baseInches, setBaseInches] = useState(0);
   const [widthSpan, setWidthSpan] = useState(10);
+  const [widthFeet, setWidthFeet] = useState(10);
+  const [widthInches, setWidthInches] = useState(0);
   const [depthThickness, setDepthThickness] = useState(4);
   const [wasteFactor, setWasteFactor] = useState(10);
   const [saveState, setSaveState] = useState<
@@ -988,10 +998,29 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       setBaseMeasurement(financialCopy.inputs[0].defaultValue);
       setWidthSpan(financialCopy.inputs[1].defaultValue);
       setDepthThickness(financialCopy.inputs[2].defaultValue);
+      // Sync feet/inches for slab calculators
+      if (page.canonicalPath === "/calculators/concrete/slab") {
+        const { feet: bf, inches: bi } = decimalToFeetInches(
+          financialCopy.inputs[0].defaultValue,
+        );
+        setBaseFeet(bf);
+        setBaseInches(bi);
+        const { feet: wf, inches: wi } = decimalToFeetInches(
+          financialCopy.inputs[1].defaultValue,
+        );
+        setWidthFeet(wf);
+        setWidthInches(wi);
+      }
     } else {
       setBaseMeasurement(10);
       setWidthSpan(10);
       setDepthThickness(4);
+      if (page.canonicalPath === "/calculators/concrete/slab") {
+        setBaseFeet(10);
+        setBaseInches(0);
+        setWidthFeet(10);
+        setWidthInches(0);
+      }
     }
   }, [financialCopy, page.canonicalPath]);
 
@@ -2810,8 +2839,6 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     widthSpan,
   ]);
 
-  const showEmptyStateWatermark = !userInteracted.current;
-
   const finalizePayload = useMemo(
     () => ({
       name: estimateName.trim() || `${displayTitle(page.title)} Estimate`,
@@ -3700,7 +3727,69 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                         </div>
 
                         <div className="grid gap-3">
-                          {isRoofingShinglesCalculator ? (
+                          {/* Feet/inches input for slab calculator */}
+                          {page.canonicalPath ===
+                            "/calculators/concrete/slab" &&
+                          areaInputMode === "dimensions" ? (
+                            <>
+                              <FeetInchesInput
+                                label={labels.first}
+                                feet={baseFeet}
+                                inches={baseInches}
+                                onFeetChange={(f) => {
+                                  setBaseFeet(f === "" ? 0 : f);
+                                  setBaseMeasurement(
+                                    feetInchesToDecimal(
+                                      f === "" ? 0 : f,
+                                      baseInches,
+                                    ),
+                                  );
+                                }}
+                                onInchesChange={(i) => {
+                                  setBaseInches(i === "" ? 0 : i);
+                                  setBaseMeasurement(
+                                    feetInchesToDecimal(
+                                      baseFeet,
+                                      i === "" ? 0 : i,
+                                    ),
+                                  );
+                                }}
+                                minFeet={1}
+                                maxFeet={10000}
+                                minInches={0}
+                                maxInches={11}
+                                helpText={getInlineSubLabel(labels.first)}
+                              />
+                              <FeetInchesInput
+                                label={labels.second}
+                                feet={widthFeet}
+                                inches={widthInches}
+                                onFeetChange={(f) => {
+                                  setWidthFeet(f === "" ? 0 : f);
+                                  setWidthSpan(
+                                    feetInchesToDecimal(
+                                      f === "" ? 0 : f,
+                                      widthInches,
+                                    ),
+                                  );
+                                }}
+                                onInchesChange={(i) => {
+                                  setWidthInches(i === "" ? 0 : i);
+                                  setWidthSpan(
+                                    feetInchesToDecimal(
+                                      widthFeet,
+                                      i === "" ? 0 : i,
+                                    ),
+                                  );
+                                }}
+                                minFeet={1}
+                                maxFeet={10000}
+                                minInches={0}
+                                maxInches={11}
+                                helpText={getInlineSubLabel(labels.second)}
+                              />
+                            </>
+                          ) : isRoofingShinglesCalculator ? (
                             <>
                               <UnitToggle
                                 label="Roof Input"
@@ -4413,7 +4502,6 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                     onFinalize={openFinalizeModal}
                     finalizeLabel="Finalize Estimate"
                     finalizeIcon={<PenSquare className="h-4 w-4" aria-hidden />}
-                    showEmptyStateWatermark={showEmptyStateWatermark}
                   />
 
                   <section className="glass-panel p-3 transition-colors">

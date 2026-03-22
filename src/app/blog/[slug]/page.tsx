@@ -35,10 +35,10 @@ export default async function BlogPost({ params }: Props) {
   if (!post) notFound();
 
   return (
-    <div className="light public-page page-shell">
+    <div className="light public-page page-shell flex min-h-dvh flex-col">
       <Header />
       <JsonLD schema={getBlogPostSchema(post)} />
-      <main id="main-content" className="flex-1">
+      <main id="main-content" className="min-h-0 flex-1 overflow-y-auto">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
           <Link
             href={routes.blog}

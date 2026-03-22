@@ -319,7 +319,6 @@ type ProResultProps = {
   onFinalize?: () => void;
   finalizeLabel?: string;
   finalizeIcon?: ReactNode;
-  showEmptyStateWatermark?: boolean;
   containerClassName?: string;
 };
 
@@ -333,21 +332,12 @@ export function ProResult({
   onFinalize,
   finalizeLabel = "Finalize Estimate",
   finalizeIcon,
-  showEmptyStateWatermark = false,
   containerClassName = "glass-container-elevated",
 }: ProResultProps) {
   return (
-    <section className={`${containerClassName} relative flex min-h-[180px] flex-col gap-2 p-3`}>
-      {showEmptyStateWatermark ? (
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 flex select-none items-center justify-center"
-        >
-          <div className="rounded-full border border-[--color-border] bg-[--color-surface-alt] px-4 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.22em] text-[--color-ink-dim] shadow-[inset_0_0_24px_rgb(255_255_255_/0.03)]">
-            Enter Dimensions to Start Audit
-          </div>
-        </div>
-      ) : null}
+    <section
+      className={`${containerClassName} relative flex min-h-[180px] flex-col gap-2 p-3`}
+    >
       <div className="flex items-center justify-between gap-2">
         <h2 className="text-sm font-black uppercase tracking-[0.12em] text-display-heading">
           Results
@@ -378,7 +368,10 @@ export function ProResult({
         {secondary.length > 0 && (
           <div className="grid gap-2 sm:grid-cols-2">
             {secondary.map((result) => (
-              <div key={result.label} className="glass-panel bg-[--color-surface-alt] p-3">
+              <div
+                key={result.label}
+                className="glass-panel bg-[--color-surface-alt] p-3"
+              >
                 <p className="text-xs font-bold uppercase tracking-[0.14em] text-copy-secondary">
                   {result.label}
                 </p>
