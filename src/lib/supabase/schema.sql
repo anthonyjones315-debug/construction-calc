@@ -196,7 +196,7 @@ alter table email_signups enable row level security;
 alter table email_signups force row level security;
 drop policy if exists "Anyone can sign up" on email_signups;
 create policy "Anyone can sign up"
-  on email_signups for insert with check (true);
+  on email_signups for insert to anon with check (true);
 
 revoke all on email_signups from anon;
 revoke all on email_signups from authenticated;
