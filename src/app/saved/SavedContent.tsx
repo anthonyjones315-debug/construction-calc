@@ -1249,6 +1249,15 @@ export function SavedContent({
     }
   }
 
+  function openEstimateInNewWindow(estimateId: string) {
+    if (typeof window === "undefined") return;
+    window.open(
+      `/saved/estimates/${estimateId}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
+  }
+
   async function downloadPDF(estimate: SavedEstimate) {
     try {
       const inputs =
@@ -1850,14 +1859,7 @@ export function SavedContent({
                       Open
                     </Link>
                     <button
-                      onClick={() => {
-                        if (typeof window === "undefined") return;
-                        window.open(
-                          `/saved/estimates/${est.id}`,
-                          "_blank",
-                          "noopener,noreferrer",
-                        );
-                      }}
+                      onClick={() => openEstimateInNewWindow(est.id)}
                       className="flex items-center gap-1.5 rounded-lg border border-[--color-border] px-2.5 py-1.5 text-xs font-medium text-[--color-ink] transition-all hover:border-[--color-orange-brand]"
                       title="Open in new window"
                     >
