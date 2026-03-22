@@ -50,6 +50,130 @@ const emptyRow = {
   unit_cost: 0,
 };
 
+
+function MaterialRow({
+  mat,
+  isEditing,
+  editRow,
+  setEditRow,
+  onUpdate,
+  onCancelEdit,
+  onEdit,
+  onDelete,
+}: {
+  mat: UserMaterial;
+  isEditing: boolean;
+  editRow: typeof emptyRow;
+  setEditRow: React.Dispatch<React.SetStateAction<typeof emptyRow>>;
+  onUpdate: (id: string) => void;
+  onCancelEdit: () => void;
+  onEdit: (mat: UserMaterial) => void;
+  onDelete: (id: string) => void;
+}) {
+  return (
+    <tr className="border-b border-[--color-border]/45 last:border-0">
+      {isEditing ? (
+        <>
+          <td className="px-3 py-2">
+            <input
+              value={editRow.material_name}
+              onChange={(e) =>
+                setEditRow((r) => ({
+                  ...r,
+                  material_name: e.target.value,
+                }))
+              }
+              className="input-base w-full text-xs"
+            />
+          </td>
+          <td className="px-3 py-2 hidden sm:table-cell">
+            <select
+              value={editRow.unit_type}
+              onChange={(e) =>
+                setEditRow((r) => ({
+                  ...r,
+                  unit_type: e.target.value,
+                }))
+              }
+              className="input-base text-xs"
+            >
+              {UNIT_TYPES.map((u) => (
+                <option key={u}>{u}</option>
+              ))}
+            </select>
+          </td>
+          <td className="px-3 py-2 text-right">
+            <input
+              type="number"
+              inputMode="decimal"
+              min={0}
+              step={0.01}
+              value={editRow.unit_cost}
+              onChange={(e) =>
+                setEditRow((r) => ({
+                  ...r,
+                  unit_cost: parseFloat(e.target.value) || 0,
+                }))
+              }
+              className="input-base w-24 text-right text-xs ml-auto"
+            />
+          </td>
+          <td className="px-3 py-2">
+            <div className="flex gap-1">
+              <button
+                onClick={() => onUpdate(mat.id)}
+                className="rounded p-1.5 text-emerald-600 transition-colors hover:bg-emerald-500/10"
+              >
+                <Check className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={onCancelEdit}
+                className="rounded p-1.5 text-[--color-ink-dim] transition-colors hover:bg-[--color-surface-alt]"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </td>
+        </>
+      ) : (
+        <>
+          <td className="px-4 py-3 font-medium text-[--color-ink]">
+            {mat.material_name}
+          </td>
+          <td className="px-4 py-3 text-[--color-ink-dim] hidden sm:table-cell">
+            {mat.unit_type}
+          </td>
+          <td className="px-4 py-3 text-right font-mono font-semibold text-[--color-orange-brand]">
+            ${Number(mat.unit_cost).toFixed(2)}
+          </td>
+          <td className="px-3 py-3">
+            <div className="flex gap-1">
+              <button
+                onClick={() => {
+                  if (String(mat.id).startsWith("pending-")) return;
+                  onEdit(mat);
+                }}
+                className="rounded p-1.5 text-[--color-ink-dim] transition-all hover:bg-[--color-orange-soft] hover:text-[--color-orange-brand]"
+              >
+                <Pencil className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={() => {
+                  if (String(mat.id).startsWith("pending-")) return;
+                  onDelete(mat.id);
+                }}
+                className="rounded p-1.5 text-[--color-ink-dim] transition-all hover:bg-red-500/10 hover:text-red-500"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </td>
+        </>
+      )}
+    </tr>
+  );
+}
+
 function PriceBookContent() {
   const { data: session, status } = useSession();
   const [materials, setMaterials] = useState<UserMaterial[] | null>(null);
@@ -362,118 +486,25 @@ function PriceBookContent() {
                     </thead>
                     <tbody>
                       {rows.map((mat) => (
-                        <tr
+                        <MaterialRow
                           key={mat.id}
-                          className="border-b border-[--color-border]/45 last:border-0"
-                        >
-                          {editId === mat.id ? (
-                            <>
-                              <td className="px-3 py-2">
-                                <input
-                                  value={editRow.material_name}
-                                  onChange={(e) =>
-                                    setEditRow((r) => ({
-                                      ...r,
-                                      material_name: e.target.value,
-                                    }))
-                                  }
-                                  className="input-base w-full text-xs"
-                                />
-                              </td>
-                              <td className="px-3 py-2 hidden sm:table-cell">
-                                <select
-                                  value={editRow.unit_type}
-                                  onChange={(e) =>
-                                    setEditRow((r) => ({
-                                      ...r,
-                                      unit_type: e.target.value,
-                                    }))
-                                  }
-                                  className="input-base text-xs"
-                                >
-                                  {UNIT_TYPES.map((u) => (
-                                    <option key={u}>{u}</option>
-                                  ))}
-                                </select>
-                              </td>
-                              <td className="px-3 py-2 text-right">
-                                <input
-                                  type="number"
-                                  inputMode="decimal"
-                                  min={0}
-                                  step={0.01}
-                                  value={editRow.unit_cost}
-                                  onChange={(e) =>
-                                    setEditRow((r) => ({
-                                      ...r,
-                                      unit_cost:
-                                        parseFloat(e.target.value) || 0,
-                                    }))
-                                  }
-                                  className="input-base w-24 text-right text-xs ml-auto"
-                                />
-                              </td>
-                              <td className="px-3 py-2">
-                                <div className="flex gap-1">
-                                  <button
-                                    onClick={() => handleUpdate(mat.id)}
-                                    className="rounded p-1.5 text-emerald-600 transition-colors hover:bg-emerald-500/10"
-                                  >
-                                    <Check className="w-3.5 h-3.5" />
-                                  </button>
-                                  <button
-                                    onClick={() => setEditId(null)}
-                                    className="rounded p-1.5 text-[--color-ink-dim] transition-colors hover:bg-[--color-surface-alt]"
-                                  >
-                                    <X className="w-3.5 h-3.5" />
-                                  </button>
-                                </div>
-                              </td>
-                            </>
-                          ) : (
-                            <>
-                              <td className="px-4 py-3 font-medium text-[--color-ink]">
-                                {mat.material_name}
-                              </td>
-                              <td className="px-4 py-3 text-[--color-ink-dim] hidden sm:table-cell">
-                                {mat.unit_type}
-                              </td>
-                              <td className="px-4 py-3 text-right font-mono font-semibold text-[--color-orange-brand]">
-                                ${Number(mat.unit_cost).toFixed(2)}
-                              </td>
-                              <td className="px-3 py-3">
-                                <div className="flex gap-1">
-                                  <button
-                                    onClick={() => {
-                                      if (String(mat.id).startsWith("pending-"))
-                                        return;
-                                      setEditId(mat.id);
-                                      setEditRow({
-                                        material_name: mat.material_name,
-                                        category: mat.category ?? "Other",
-                                        unit_type: mat.unit_type ?? "each",
-                                        unit_cost: mat.unit_cost,
-                                      });
-                                    }}
-                                    className="rounded p-1.5 text-[--color-ink-dim] transition-all hover:bg-[--color-orange-soft] hover:text-[--color-orange-brand]"
-                                  >
-                                    <Pencil className="w-3.5 h-3.5" />
-                                  </button>
-                                  <button
-                                    onClick={() => {
-                                      if (String(mat.id).startsWith("pending-"))
-                                        return;
-                                      handleDelete(mat.id);
-                                    }}
-                                    className="rounded p-1.5 text-[--color-ink-dim] transition-all hover:bg-red-500/10 hover:text-red-500"
-                                  >
-                                    <Trash2 className="w-3.5 h-3.5" />
-                                  </button>
-                                </div>
-                              </td>
-                            </>
-                          )}
-                        </tr>
+                          mat={mat}
+                          isEditing={editId === mat.id}
+                          editRow={editRow}
+                          setEditRow={setEditRow}
+                          onUpdate={handleUpdate}
+                          onCancelEdit={() => setEditId(null)}
+                          onEdit={(m) => {
+                            setEditId(m.id);
+                            setEditRow({
+                              material_name: m.material_name,
+                              category: m.category ?? "Other",
+                              unit_type: m.unit_type ?? "each",
+                              unit_cost: m.unit_cost,
+                            });
+                          }}
+                          onDelete={handleDelete}
+                        />
                       ))}
                     </tbody>
                   </table>
