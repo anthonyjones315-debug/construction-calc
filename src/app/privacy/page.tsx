@@ -1,5 +1,6 @@
-import fs from "fs";
+import { promises as fs } from "fs";
 import path from "path";
+import { cache } from "react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import type { Metadata } from "next";
@@ -12,15 +13,18 @@ export const metadata: Metadata = getPageMetadata({
   path: "/privacy",
 });
 
-const privacyHtmlPath = path.join(
-  process.cwd(),
-  "public",
-  "termly-privacy.html",
-);
+const getPrivacyHtml = cache(async () => {
+  const privacyHtmlPath = path.join(
+    process.cwd(),
+    "public",
+    "termly-privacy.html",
+  );
+  return await fs.readFile(privacyHtmlPath, "utf8");
+});
 
-const privacyHtml = fs.readFileSync(privacyHtmlPath, "utf8");
+export default async function PrivacyPage() {
+  const privacyHtml = await getPrivacyHtml();
 
-export default function PrivacyPage() {
   return (
     <div className="light public-page page-shell">
       <Header />
