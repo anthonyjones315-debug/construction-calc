@@ -571,6 +571,39 @@ function inferUnitFromLabel(
   return fallback;
 }
 
+
+const STATIC_LABEL_MAPPINGS = [
+  { keywords: ["header"], labels: { first: "Span Width (ft)", second: "Plate Count", third: "Header Depth (in)" } },
+  { keywords: ["slab"], labels: { first: "Linear Feet (LF)", second: "Slab Width (ft)", third: "Slab Depth (Inches)" } },
+  { keywords: ["footing"], labels: { first: "Linear Feet (LF)", second: "Footing Width (ft)", third: "Sub-base Depth (in)" } },
+  { keywords: ["block-wall"], labels: { first: "Wall Length (ft)", second: "Wall Height (ft)", third: "Block Size (in, face height)" } },
+  { keywords: ["block", "concrete"], labels: { first: "Linear Feet (LF)", second: "Width (ft)", third: "Bag Yield Depth (in)" } },
+  { keywords: ["shingle"], labels: { first: "Squares (Roof Area)", second: "Bundle Overlap Factor", third: "Pitch Ratio" } },
+  { keywords: ["pitch"], labels: { first: "Roof Run (ft)", second: "Roof Rise (ft)", third: "Pitch Ratio" } },
+  { keywords: ["siding"], labels: { first: "Wall Length (ft)", second: "Wall Height (ft)", third: "Piece Coverage (sq ft)" } },
+  { keywords: ["roofing"], labels: { first: "Roof Area (sq ft)", second: 'Pitch (rise per 12")', third: "Unused" } },
+  { keywords: ["trim", "baseboard"], labels: { first: "Room Length (ft)", second: "Room Width (ft)", third: "Stock Length (ft)" } },
+  { keywords: ["flooring"], labels: { first: "Floor Length (ft)", second: "Floor Width (ft)", third: "Sq Ft per Box" } },
+  { keywords: ["drywall"], labels: { first: "Total Area (sq ft)", second: "Unused", third: "Unused" } },
+  { keywords: ["r-value", "insulation"], labels: { first: "Total Square Footage", second: "Cavity Depth (in)", third: "R-Value Target" } },
+  { keywords: ["btu"], labels: { first: "BTU Load (sq ft)", second: "Ceiling Height (ft)", third: "Climate Zone Factor" } },
+  { keywords: ["ventilation"], labels: { first: "Ventilation CFM Area (sq ft)", second: "Ceiling Height (ft)", third: "Duct Static Pressure" } },
+  { keywords: ["duct"], labels: { first: "Duct Static Pressure (in w.c.)", second: "Ventilation CFM", third: "Duct Run (ft)" } },
+  { keywords: ["mechanical"], labels: { first: "BTU Load (sq ft)", second: "Ventilation CFM", third: "Duct Static Pressure" } },
+  { keywords: ["profit", "margin"], labels: { first: "Job Cost ($)", second: "Markup Rate (%)", third: "Overhead (%)" } },
+  { keywords: ["labor"], labels: { first: "Hourly Rate ($)", second: "Burden Rate (%)", third: "Crew Size" } },
+  { keywords: ["lead"], labels: { first: "Cost Per Lead ($)", second: "Close Rate (%)", third: "Monthly Leads" } },
+  { keywords: ["tax"], labels: { first: "Gross Revenue ($)", second: "Tax Rate (%)", third: "Deductions ($)" } },
+  { keywords: ["business"], labels: { first: "Base Amount ($)", second: "Rate / Factor (%)", third: "Quantity / Units" } },
+  // Landscape calculators
+  { keywords: ["sod"], labels: { first: "Area Length (ft)", second: "Area Width (ft)", third: "Unused" } },
+  { keywords: ["mulch", "topsoil", "gravel"], labels: { first: "Area Length (ft)", second: "Area Width (ft)", third: "Depth (in)" } },
+  // Outdoor calculators
+  { keywords: ["fence"], labels: { first: "Total Linear Feet (LF)", second: "Fence Height (ft)", third: "Post Spacing (ft)" } },
+  { keywords: ["paver"], labels: { first: "Patio Length (ft)", second: "Patio Width (ft)", third: "Base Depth (in)" } },
+  { keywords: ["asphalt"], labels: { first: "Driveway Length (ft)", second: "Driveway Width (ft)", third: "Thickness (in)" } },
+];
+
 /** Trade-specific input labels using professional field terminology. */
 function getInputLabels(
   path: string,
@@ -594,170 +627,12 @@ function getInputLabels(
   if (p.includes("framing") || p.includes("decking")) {
     return getFramingInputLabels(selectedFramingMaterial);
   }
-  if (p.includes("header"))
-    return {
-      first: "Span Width (ft)",
-      second: "Plate Count",
-      third: "Header Depth (in)",
-    };
-  if (p.includes("slab"))
-    return {
-      first: "Linear Feet (LF)",
-      second: "Slab Width (ft)",
-      third: "Slab Depth (Inches)",
-    };
-  if (p.includes("footing"))
-    return {
-      first: "Linear Feet (LF)",
-      second: "Footing Width (ft)",
-      third: "Sub-base Depth (in)",
-    };
-  if (p.includes("block-wall"))
-    return {
-      first: "Wall Length (ft)",
-      second: "Wall Height (ft)",
-      third: "Block Size (in, face height)",
-    };
-  if (p.includes("block") || p.includes("concrete"))
-    return {
-      first: "Linear Feet (LF)",
-      second: "Width (ft)",
-      third: "Bag Yield Depth (in)",
-    };
-  if (p.includes("shingle"))
-    return {
-      first: "Squares (Roof Area)",
-      second: "Bundle Overlap Factor",
-      third: "Pitch Ratio",
-    };
-  if (p.includes("pitch"))
-    return {
-      first: "Roof Run (ft)",
-      second: "Roof Rise (ft)",
-      third: "Pitch Ratio",
-    };
-  if (p.includes("siding"))
-    return {
-      first: "Wall Length (ft)",
-      second: "Wall Height (ft)",
-      third: "Piece Coverage (sq ft)",
-    };
-  if (p.includes("roofing"))
-    return {
-      first: "Roof Area (sq ft)",
-      second: 'Pitch (rise per 12")',
-      third: "Unused",
-    };
-  if (p.includes("trim") || p.includes("baseboard"))
-    return {
-      first: "Room Length (ft)",
-      second: "Room Width (ft)",
-      third: "Stock Length (ft)",
-    };
-  if (p.includes("flooring"))
-    return {
-      first: "Floor Length (ft)",
-      second: "Floor Width (ft)",
-      third: "Sq Ft per Box",
-    };
-  if (p.includes("drywall"))
-    return {
-      first: "Total Area (sq ft)",
-      second: "Unused",
-      third: "Unused",
-    };
-  if (p.includes("r-value") || p.includes("insulation"))
-    return {
-      first: "Total Square Footage",
-      second: "Cavity Depth (in)",
-      third: "R-Value Target",
-    };
-  if (p.includes("btu"))
-    return {
-      first: "BTU Load (sq ft)",
-      second: "Ceiling Height (ft)",
-      third: "Climate Zone Factor",
-    };
-  if (p.includes("ventilation"))
-    return {
-      first: "Ventilation CFM Area (sq ft)",
-      second: "Ceiling Height (ft)",
-      third: "Duct Static Pressure",
-    };
-  if (p.includes("duct"))
-    return {
-      first: "Duct Static Pressure (in w.c.)",
-      second: "Ventilation CFM",
-      third: "Duct Run (ft)",
-    };
-  if (p.includes("mechanical"))
-    return {
-      first: "BTU Load (sq ft)",
-      second: "Ventilation CFM",
-      third: "Duct Static Pressure",
-    };
-  if (p.includes("profit") || p.includes("margin"))
-    return {
-      first: "Job Cost ($)",
-      second: "Markup Rate (%)",
-      third: "Overhead (%)",
-    };
-  if (p.includes("labor"))
-    return {
-      first: "Hourly Rate ($)",
-      second: "Burden Rate (%)",
-      third: "Crew Size",
-    };
-  if (p.includes("lead"))
-    return {
-      first: "Cost Per Lead ($)",
-      second: "Close Rate (%)",
-      third: "Monthly Leads",
-    };
-  if (p.includes("tax"))
-    return {
-      first: "Gross Revenue ($)",
-      second: "Tax Rate (%)",
-      third: "Deductions ($)",
-    };
-  if (p.includes("business"))
-    return {
-      first: "Base Amount ($)",
-      second: "Rate / Factor (%)",
-      third: "Quantity / Units",
-    };
-  // Landscape calculators
-  if (p.includes("sod"))
-    return {
-      first: "Area Length (ft)",
-      second: "Area Width (ft)",
-      third: "Unused",
-    };
-  if (p.includes("mulch") || p.includes("topsoil") || p.includes("gravel"))
-    return {
-      first: "Area Length (ft)",
-      second: "Area Width (ft)",
-      third: "Depth (in)",
-    };
-  // Outdoor calculators
-  if (p.includes("fence"))
-    return {
-      first: "Total Linear Feet (LF)",
-      second: "Fence Height (ft)",
-      third: "Post Spacing (ft)",
-    };
-  if (p.includes("paver"))
-    return {
-      first: "Patio Length (ft)",
-      second: "Patio Width (ft)",
-      third: "Base Depth (in)",
-    };
-  if (p.includes("asphalt"))
-    return {
-      first: "Driveway Length (ft)",
-      second: "Driveway Width (ft)",
-      third: "Thickness (in)",
-    };
+
+  const staticMatch = STATIC_LABEL_MAPPINGS.find(mapping =>
+    mapping.keywords.some(keyword => p.includes(keyword))
+  );
+  if (staticMatch) return staticMatch.labels;
+
   return {
     first: "Primary Measurement",
     second: "Secondary Measurement",
