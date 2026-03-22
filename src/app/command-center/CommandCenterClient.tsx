@@ -92,6 +92,10 @@ type SentryFeedbackWidget = {
   removeFromDom: () => void;
 };
 
+
+const SIGNED_STATUSES = new Set(["SIGNED", "Approved"]);
+const SENT_STATUSES = new Set(["PENDING", "Sent"]);
+
 const workspaceTabs: Array<{
   slug: WorkspaceSlug;
   label: string;
@@ -571,10 +575,10 @@ export default function CommandCenterClient({
   const latestCartItems = estimateCart.slice(-3).reverse();
   const cartItemCount = estimateCart.length;
   const signedEstimateCount = recentEstimates.filter((estimate) =>
-    ["SIGNED", "Approved"].includes(estimate.status ?? ""),
+    SIGNED_STATUSES.has(estimate.status ?? ""),
   ).length;
   const sentEstimateCount = recentEstimates.filter((estimate) =>
-    ["PENDING", "Sent"].includes(estimate.status ?? ""),
+    SENT_STATUSES.has(estimate.status ?? ""),
   ).length;
   const draftEstimateCount = Math.max(
     recentEstimates.length - signedEstimateCount - sentEstimateCount,
