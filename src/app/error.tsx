@@ -1,6 +1,7 @@
 "use client";
 
 import * as Sentry from "@sentry/nextjs";
+import Link from "next/link";
 import { TriangleAlert } from "lucide-react";
 import { useEffect } from "react";
 import { ManualErrorReportButton } from "@/components/support/ManualErrorReportButton";
@@ -55,12 +56,12 @@ export default function ErrorBoundary({
             />
           </div>
         </div>
-        <a
+        <Link
           href="/"
           className="mt-4 rounded-lg border border-slate-700 px-4 py-2 text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-slate-200 transition"
         >
           Go to Home
-        </a>
+        </Link>
       </div>
     </div>
   );

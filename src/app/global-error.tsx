@@ -1,6 +1,7 @@
 "use client";
 
 import * as Sentry from "@sentry/nextjs";
+import Link from "next/link";
 import { TriangleAlert } from "lucide-react";
 import { useEffect } from "react";
 import { ManualErrorReportButton } from "@/components/support/ManualErrorReportButton";
@@ -89,7 +90,10 @@ export default function GlobalError({
         <div className="flex min-h-screen flex-col items-center justify-center px-4 py-10">
           <div className="glass-container-elevated relative max-w-lg overflow-hidden p-8 text-center">
             <div className="flex flex-col items-center">
-              <TriangleAlert className="mb-4 h-12 w-12 text-red-400" aria-hidden />
+              <TriangleAlert
+                className="mb-4 h-12 w-12 text-red-400"
+                aria-hidden
+              />
               <h1 className="text-xl font-black uppercase tracking-wide text-copy-primary">
                 {userFacing.title}
               </h1>
@@ -117,12 +121,12 @@ export default function GlobalError({
                 />
               </div>
             </div>
-            <a
+            <Link
               href="/"
               className="mt-4 rounded-lg border border-slate-700 px-4 py-2 text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-slate-200 transition"
             >
               Go to Home
-            </a>
+            </Link>
           </div>
         </div>
       </body>

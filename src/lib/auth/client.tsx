@@ -44,6 +44,19 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<AuthSession>(null);
   const [status, setStatus] = useState<SessionStatus>("loading");
 
+  const getFallbackSession = useCallback((): AuthSession => {
+    if (!user || !userId) {
+      return null;
+    }
+
+    return buildFallbackSession({
+      clerkUserId: userId,
+      email: user.primaryEmailAddress?.emailAddress ?? null,
+      name: user.fullName ?? user.username ?? null,
+      image: user.imageUrl ?? null,
+    });
+  }, [user, userId]);
+
   const refresh = useCallback(async () => {
     if (!isLoaded) {
       setStatus("loading");
@@ -69,22 +82,22 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
       }
 
       const session = (await response.json()) as AuthSession;
-      setData(session);
-      setStatus(session?.user?.id ? "authenticated" : "unauthenticated");
+
+      if (session?.user?.id) {
+        setData(session);
+        setStatus("authenticated");
+        return;
+      }
+
+      const fallbackSession = getFallbackSession();
+      setData(fallbackSession);
+      setStatus(fallbackSession ? "authenticated" : "unauthenticated");
     } catch {
-      setData(
-        user
-          ? buildFallbackSession({
-              clerkUserId: userId,
-              email: user.primaryEmailAddress?.emailAddress ?? null,
-              name: user.fullName ?? user.username ?? null,
-              image: user.imageUrl ?? null,
-            })
-          : null,
-      );
-      setStatus("authenticated");
+      const fallbackSession = getFallbackSession();
+      setData(fallbackSession);
+      setStatus(fallbackSession ? "authenticated" : "unauthenticated");
     }
-  }, [isLoaded, userId, user]);
+  }, [getFallbackSession, isLoaded, userId]);
 
   useEffect(() => {
     void refresh();

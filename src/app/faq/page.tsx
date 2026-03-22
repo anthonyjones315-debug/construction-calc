@@ -2,7 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { JsonLD, getFAQSchema, getBreadcrumbSchema, getPageMetadata } from "@/seo";
+import {
+  JsonLD,
+  getFAQSchema,
+  getBreadcrumbSchema,
+  getPageMetadata,
+} from "@/seo";
+import { FAQAccordion } from "./FaqAccordion";
 
 export const metadata: Metadata = getPageMetadata({
   title: "FAQ | Pro Construction Calc",
@@ -139,8 +145,16 @@ export default function FAQPage() {
       <main id="main-content" className="viewport-main">
         <div className="viewport-frame max-w-6xl">
           {/* Breadcrumb nav */}
-          <nav aria-label="Breadcrumb" className="mb-3 flex items-center gap-2 text-[11px] text-[--color-nav-text]/60">
-            <Link href="/" className="transition-colors hover:text-[--color-orange-brand]">Home</Link>
+          <nav
+            aria-label="Breadcrumb"
+            className="mb-3 flex items-center gap-2 text-[11px] text-[--color-nav-text]/60"
+          >
+            <Link
+              href="/"
+              className="transition-colors hover:text-[--color-orange-brand]"
+            >
+              Home
+            </Link>
             <span aria-hidden>/</span>
             <span className="font-semibold text-[--color-nav-text]">FAQ</span>
           </nav>
@@ -158,24 +172,7 @@ export default function FAQPage() {
             </div>
           </div>
 
-          <div className="grid min-h-0 gap-3 md:grid-cols-2 items-start">
-            {FAQ_ITEMS.map((item) => (
-              <details
-                key={item.q}
-                className="group content-card overflow-hidden"
-              >
-                <summary className="flex min-h-[52px] items-start justify-between px-4 py-3 cursor-pointer list-none text-sm font-semibold text-[--color-ink] hover:text-[--color-orange-brand] transition-colors select-none">
-                  {item.q}
-                  <span className="ml-3 mt-0.5 shrink-0 text-lg leading-none text-[--color-ink-dim] transition-transform group-open:rotate-45">
-                    +
-                  </span>
-                </summary>
-                <div className="trim-border-strong border-t px-4 pb-4 pt-3 text-[13px] leading-relaxed text-[--color-ink-mid]">
-                  {item.a}
-                </div>
-              </details>
-            ))}
-          </div>
+          <FAQAccordion items={FAQ_ITEMS} />
         </div>
       </main>
       <Footer />

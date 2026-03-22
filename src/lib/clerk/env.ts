@@ -1,6 +1,6 @@
 /**
  * Returns true when Clerk middleware should run:
- * - **Keyless**: both publishable and secret env vars are unset/empty (Clerk dev keyless).
+ * - **Keyless (development only)**: both publishable and secret env vars are unset/empty.
  * - **Explicit**: both are set and use valid prefixes for the same mode (test vs live).
  *
  * Returns false for partial env (only one set) or invalid strings so we can avoid
@@ -11,10 +11,18 @@ export function shouldUseClerkMiddleware(): boolean {
   const sk = process.env.CLERK_SECRET_KEY?.trim() ?? "";
 
   const keyless = !pk && !sk;
-  if (keyless) return true;
+  if (keyless) return process.env.NODE_ENV === "development";
 
-  const pkValid = pk.startsWith("pk_test_") || pk.startsWith("pk_live_");
-  const skValid = sk.startsWith("sk_test_") || sk.startsWith("sk_live_");
+  const pkMode = pk.startsWith("pk_test_")
+    ? "test"
+    : pk.startsWith("pk_live_")
+      ? "live"
+      : null;
+  const skMode = sk.startsWith("sk_test_")
+    ? "test"
+    : sk.startsWith("sk_live_")
+      ? "live"
+      : null;
 
-  return pkValid && skValid && !!pk && !!sk;
+  return !!pkMode && !!skMode && pkMode === skMode;
 }

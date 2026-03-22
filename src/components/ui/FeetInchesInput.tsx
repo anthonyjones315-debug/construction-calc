@@ -1,125 +1,97 @@
-"use client";
+import React from "react";
 
-import * as React from "react";
-
-type FeetInchesInputProps = {
+export interface FeetInchesInputProps {
   label: string;
-  subLabel?: string;
+  feet: number | "";
+  inches: number | "";
+  onFeetChange: (feet: number | "") => void;
+  onInchesChange: (inches: number | "") => void;
+  minFeet?: number;
+  maxFeet?: number;
+  minInches?: number;
+  maxInches?: number;
   helpText?: string;
-  value: string | number;
-  onChange: (next: string) => void;
-  min?: number;
-  max?: number;
   id?: string;
-  autoFocus?: boolean;
-};
-
-function decimalToFeetInches(decimal: number): { feet: number; inches: number } {
-  if (!Number.isFinite(decimal) || decimal <= 0) return { feet: 0, inches: 0 };
-  const feet = Math.floor(decimal);
-  const inches = Math.round((decimal - feet) * 12 * 10) / 10;
-  // Handle rounding to 12 inches
-  if (inches >= 12) return { feet: feet + 1, inches: 0 };
-  return { feet, inches };
 }
 
 export function FeetInchesInput({
   label,
-  subLabel,
+  feet,
+  inches,
+  onFeetChange,
+  onInchesChange,
+  minFeet = 0,
+  maxFeet = 1000,
+  minInches = 0,
+  maxInches = 11,
   helpText,
-  value,
-  onChange,
-  min,
-  max,
   id,
-  autoFocus,
 }: FeetInchesInputProps) {
-  const reactGeneratedId = React.useId();
-  const fieldId = id ?? reactGeneratedId;
-  const labelId = `${fieldId}-label`;
-
-  const numericValue =
-    typeof value === "number" ? value : Number.parseFloat(String(value));
-  const { feet, inches } = decimalToFeetInches(numericValue);
-  const isValid = Number.isFinite(numericValue) && numericValue > 0;
-
-  function emitCombined(nextFeet: number, nextInches: number) {
-    const clampedInches = Math.min(Math.max(0, nextInches), 11.99);
-    let total = Math.max(0, nextFeet) + clampedInches / 12;
-    if (min != null && total < min) total = min;
-    if (max != null && total > max) total = max;
-    // Round to avoid floating point noise
-    onChange(String(Math.round(total * 10000) / 10000));
-  }
-
+  const feetId = id ? `${id}-feet` : undefined;
+  const inchesId = id ? `${id}-inches` : undefined;
   return (
-    <label
-      className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary"
-      htmlFor={`${fieldId}-ft`}
-    >
-      <span className="flex items-center justify-between gap-2">
-        <span id={labelId} className="truncate">
-          {label}
-        </span>
-        {subLabel ? (
-          <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
-            {subLabel}
-          </span>
-        ) : null}
-      </span>
+    <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary">
+      <span>{label}</span>
       {helpText ? (
-        <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
+        <span className="text-[10px] font-normal normal-case text-copy-tertiary">
           {helpText}
         </span>
       ) : null}
-      <div
-        data-valid={isValid ? "true" : "false"}
-        className="glass-input-shell relative flex min-h-[3.5rem] items-stretch overflow-hidden rounded-xl p-0"
-      >
-        {/* Feet input */}
+      <div className="flex gap-2 items-center">
         <input
-          id={`${fieldId}-ft`}
           type="number"
+          id={feetId}
+          min={minFeet}
+          max={maxFeet}
           value={feet}
           onChange={(e) => {
-            const nextFeet = Number.parseInt(e.target.value, 10) || 0;
-            emitCombined(nextFeet, inches);
+            const val =
+              e.target.value === "" ? "" : parseInt(e.target.value, 10);
+            onFeetChange(val);
           }}
-          min={0}
-          step={1}
-          autoFocus={autoFocus}
-          inputMode="numeric"
-          enterKeyHint="next"
-          aria-labelledby={labelId}
-          aria-label={`${label} feet`}
-          className="glass-input flex-1 rounded-none border-0 bg-transparent px-3 text-sm tabular-nums tracking-tight text-field-input shadow-none"
+          className="glass-input w-16 rounded-xl border border-[--color-border] bg-transparent px-2 text-sm tabular-nums tracking-tight text-field-input"
+          placeholder="ft"
+          aria-label="Feet"
         />
-        <div className="flex items-center border-l border-[--color-border] bg-[--color-surface-alt] px-2 text-[11px] font-semibold uppercase tabular-nums tracking-tight text-copy-secondary">
-          ft
-        </div>
-
-        {/* Inches input */}
+        <span className="text-xs">ft</span>
         <input
-          id={`${fieldId}-in`}
           type="number"
+          id={inchesId}
+          min={minInches}
+          max={maxInches}
           value={inches}
           onChange={(e) => {
-            const nextInches = Number.parseFloat(e.target.value) || 0;
-            emitCombined(feet, nextInches);
+            const val =
+              e.target.value === "" ? "" : parseInt(e.target.value, 10);
+            if (
+              val !== "" &&
+              typeof val === "number" &&
+              (val < minInches || val > maxInches)
+            )
+              return;
+            onInchesChange(val);
           }}
-          min={0}
-          max={11.99}
-          step={0.5}
-          inputMode="decimal"
-          enterKeyHint="done"
-          aria-labelledby={labelId}
-          aria-label={`${label} inches`}
-          className="glass-input flex-1 rounded-none border-0 border-l border-[--color-border] bg-transparent px-3 text-sm tabular-nums tracking-tight text-field-input shadow-none"
+          className="glass-input w-12 rounded-xl border border-[--color-border] bg-transparent px-2 text-sm tabular-nums tracking-tight text-field-input"
+          placeholder="in"
+          aria-label="Inches"
         />
-        <div className="flex items-center border-l border-[--color-border] bg-[--color-surface-alt] px-2 text-[11px] font-semibold uppercase tabular-nums tracking-tight text-copy-secondary">
-          in
-        </div>
+        <span className="text-xs">in</span>
       </div>
     </label>
   );
+}
+
+// Utility to convert feet/inches to decimal feet
+export function feetInchesToDecimal(feet: number, inches: number): number {
+  return feet + inches / 12;
+}
+
+// Utility to split decimal feet to feet/inches
+export function decimalToFeetInches(decimal: number): {
+  feet: number;
+  inches: number;
+} {
+  const feet = Math.floor(decimal);
+  const inches = Math.round((decimal - feet) * 12);
+  return { feet, inches };
 }

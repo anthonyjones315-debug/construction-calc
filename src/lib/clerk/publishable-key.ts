@@ -11,25 +11,38 @@ import { isPublishableKey } from "@clerk/shared/keys";
  * CSP + script load — `isPublishableKey` catches that.
  */
 export function getClerkPublishableKey(): string | undefined {
-  const raw = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+  const raw =
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ??
+    process.env.CLERK_PUBLISHABLE_KEY;
+
   if (raw == null) return undefined;
+
   const trimmed = raw.trim();
   if (trimmed === "") return undefined;
+
+  const isDevelopment = process.env.NODE_ENV === "development";
+
   if (!trimmed.startsWith("pk_test_") && !trimmed.startsWith("pk_live_")) {
-    if (process.env.NODE_ENV === "development") {
+    if (isDevelopment) {
       console.warn(
-        "[Clerk] NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY must start with pk_test_ or pk_live_. Fix or remove it in .env.local (see src/lib/supabase/CLERK_SETUP.md).",
+        "[Clerk] NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY should start with pk_test_ or pk_live_. Fix or remove it in .env.local (see src/lib/supabase/CLERK_SETUP.md).",
       );
+      return undefined;
     }
-    return undefined;
+
+    return trimmed;
   }
+
   if (!isPublishableKey(trimmed)) {
-    if (process.env.NODE_ENV === "development") {
+    if (isDevelopment) {
       console.warn(
         "[Clerk] NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY is not a valid Clerk key (copy the full key from Dashboard → API keys). Remove or fix it — see src/lib/supabase/CLERK_SETUP.md.",
       );
+      return undefined;
     }
-    return undefined;
+
+    return trimmed;
   }
+
   return trimmed;
 }

@@ -24,7 +24,7 @@ export default function SignedEstimatesNotificationsClient() {
 
     const since =
       typeof window !== "undefined"
-        ? localStorage.getItem(ACK_KEY) ?? "1970-01-01T00:00:00.000Z"
+        ? (localStorage.getItem(ACK_KEY) ?? "1970-01-01T00:00:00.000Z")
         : "1970-01-01T00:00:00.000Z";
 
     async function run() {
@@ -73,78 +73,86 @@ export default function SignedEstimatesNotificationsClient() {
 
   return (
     <>
-      {popupOpen ? (
-        <>
-          <div
-            className="fixed inset-0 z-[85] bg-black/40"
-            aria-hidden
+      {/* Modal overlay and dialog, only when popupOpen is true */}
+      <div
+        className={`fixed inset-0 z-[85] bg-black/40 transition-opacity duration-200${popupOpen ? "" : " pointer-events-none opacity-0"}`}
+        aria-hidden
+        onClick={popupOpen ? dismissPopupOnly : undefined}
+      >
+        {/* Add a close button in the top-right corner for accessibility */}
+        {popupOpen && (
+          <button
+            aria-label="Close notification overlay"
             onClick={dismissPopupOnly}
-          />
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="signed-estimates-popup-title"
-            className="fixed left-1/2 top-1/2 z-[90] w-[min(100%,22rem)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-slate-200 bg-white p-5 shadow-xl"
+            className="absolute top-4 right-4 z-[91] rounded-full bg-white/80 p-2 shadow hover:bg-white"
+            type="button"
           >
-            <div className="flex items-start gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-700">
-                <FileSignature className="h-5 w-5" aria-hidden />
-              </div>
-              <div className="min-w-0 flex-1">
-                <h2
-                  id="signed-estimates-popup-title"
-                  className="text-base font-bold text-slate-900"
-                >
-                  {count === 1
-                    ? "An estimate was signed"
-                    : `${count} estimates were signed`}
-                </h2>
-                <p className="mt-1 text-sm text-slate-600">
-                  While you were away, client signature(s) came back. Review
-                  them in your workspace.
+            <X className="h-5 w-5 text-slate-700" />
+          </button>
+        )}
+      </div>
+      {popupOpen ? (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="signed-estimates-popup-title"
+          className="fixed left-1/2 top-1/2 z-[90] w-[min(100%,22rem)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-slate-200 bg-white p-5 shadow-xl"
+        >
+          <div className="flex items-start gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-700">
+              <FileSignature className="h-5 w-5" aria-hidden />
+            </div>
+            <div className="min-w-0 flex-1">
+              <h2
+                id="signed-estimates-popup-title"
+                className="text-base font-bold text-slate-900"
+              >
+                {count === 1
+                  ? "An estimate was signed"
+                  : `${count} estimates were signed`}
+              </h2>
+              <p className="mt-1 text-sm text-slate-600">
+                While you were away, client signature(s) came back. Review them
+                in your workspace.
+              </p>
+              <ul className="mt-3 space-y-1.5 text-sm text-slate-700">
+                {preview.map((e) => (
+                  <li key={e.id} className="truncate">
+                    <Link
+                      href={getEstimateDetailRoute(e.id)}
+                      className="font-medium text-[--color-orange-brand] underline-offset-2 hover:underline"
+                    >
+                      {e.name}
+                    </Link>
+                    {e.client_name ? (
+                      <span className="text-slate-500"> · {e.client_name}</span>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+              {count > 3 ? (
+                <p className="mt-2 text-xs text-slate-500">
+                  +{count - 3} more in Saved Estimates
                 </p>
-                <ul className="mt-3 space-y-1.5 text-sm text-slate-700">
-                  {preview.map((e) => (
-                    <li key={e.id} className="truncate">
-                      <Link
-                        href={getEstimateDetailRoute(e.id)}
-                        className="font-medium text-[--color-orange-brand] underline-offset-2 hover:underline"
-                      >
-                        {e.name}
-                      </Link>
-                      {e.client_name ? (
-                        <span className="text-slate-500">
-                          {" "}
-                          · {e.client_name}
-                        </span>
-                      ) : null}
-                    </li>
-                  ))}
-                </ul>
-                {count > 3 ? (
-                  <p className="mt-2 text-xs text-slate-500">
-                    +{count - 3} more in Saved Estimates
-                  </p>
-                ) : null}
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <Link
-                    href={routes.saved}
-                    className="inline-flex h-9 items-center justify-center rounded-lg bg-[--color-orange-brand] px-3 text-sm font-semibold text-white transition hover:bg-[--color-orange-dark]"
-                  >
-                    View saved estimates
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={dismissPopupOnly}
-                    className="inline-flex h-9 items-center justify-center rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-                  >
-                    Close
-                  </button>
-                </div>
+              ) : null}
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Link
+                  href={routes.saved}
+                  className="inline-flex h-9 items-center justify-center rounded-lg bg-[--color-orange-brand] px-3 text-sm font-semibold text-white transition hover:bg-[--color-orange-dark]"
+                >
+                  View saved estimates
+                </Link>
+                <button
+                  type="button"
+                  onClick={dismissPopupOnly}
+                  className="inline-flex h-9 items-center justify-center rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                >
+                  Close
+                </button>
               </div>
             </div>
           </div>
-        </>
+        </div>
       ) : null}
 
       <div className="mb-4 flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50/90 px-4 py-3 text-emerald-950 shadow-sm">
