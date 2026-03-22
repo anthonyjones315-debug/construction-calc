@@ -1,0 +1,76 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - main [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - img [ref=e7]
+          - generic [ref=e12]: Pro Construction Calc
+        - heading "Sign in to your Estimating Cockpit" [level=1] [ref=e13]
+        - paragraph [ref=e14]: Access your Field Notes & saved estimates
+      - region "OAuth sign-in" [ref=e15]:
+        - heading "OAuth sign-in" [level=2] [ref=e16]
+        - button "Continue with Google" [ref=e17] [cursor=pointer]:
+          - img [ref=e18]
+          - text: Continue with Google
+        - generic [ref=e25]: or
+        - generic [ref=e27]:
+          - generic [ref=e28]:
+            - generic [ref=e29] [cursor=pointer]: Email
+            - textbox "Email" [ref=e30]
+          - generic [ref=e31]:
+            - generic [ref=e32]:
+              - generic [ref=e33] [cursor=pointer]: Password
+              - link "Send a password reset link to your email" [ref=e34] [cursor=pointer]:
+                - /url: /forgot-password
+                - text: Forgot password?
+            - textbox "Password" [ref=e35]
+          - button "Continue with Email" [ref=e36] [cursor=pointer]
+        - paragraph [ref=e37]:
+          - text: Don't have an account?
+          - link "Sign Up" [ref=e38] [cursor=pointer]:
+            - /url: /register
+        - generic [ref=e39]: Social sign-in shares your name and email with us to create and secure your account. We do not add your email to marketing lists unless you opt in separately.
+      - generic [ref=e40]:
+        - generic [ref=e41]:
+          - img [ref=e42]
+          - paragraph [ref=e46]: Contractor Gear
+        - generic [ref=e47]:
+          - link "Laser Measures Instant room & span dims" [ref=e48] [cursor=pointer]:
+            - /url: https://www.amazon.com/s?tag=proconstruct-20&ref=pcc_nav&k=laser%2Bdistance%2Bmeasurer%2Bcontractor%2B400ft&i=tools
+            - paragraph [ref=e49]: Laser Measures
+            - paragraph [ref=e50]: Instant room & span dims
+          - link "Framing Squares Layout, rafters & stair stringers" [ref=e51] [cursor=pointer]:
+            - /url: https://www.amazon.com/s?tag=proconstruct-20&ref=pcc_nav&k=framing%2Bspeed%2Bsquare%2Brafter%2Blayout&i=tools
+            - paragraph [ref=e52]: Framing Squares
+            - paragraph [ref=e53]: Layout, rafters & stair stringers
+          - link "Concrete Mixers Portable electric & drum mixers" [ref=e54] [cursor=pointer]:
+            - /url: https://www.amazon.com/s?tag=proconstruct-20&ref=pcc_nav&k=portable%2Bconcrete%2Bmixer%2Belectric&i=tools
+            - paragraph [ref=e55]: Concrete Mixers
+            - paragraph [ref=e56]: Portable electric & drum mixers
+          - link "Roofing Nailers Pneumatic coil nailers" [ref=e57] [cursor=pointer]:
+            - /url: https://www.amazon.com/s?tag=proconstruct-20&ref=pcc_nav&k=roofing%2Bcoil%2Bnailer%2Bpneumatic&i=tools
+            - paragraph [ref=e58]: Roofing Nailers
+            - paragraph [ref=e59]: Pneumatic coil nailers
+        - link "Browse All Tools on Amazon" [ref=e60] [cursor=pointer]:
+          - /url: https://www.amazon.com/b?tag=proconstruct-20&ref=pcc_browse&node=512152011
+          - text: Browse All Tools on Amazon
+          - img [ref=e61]
+        - paragraph [ref=e65]: Amazon Associate — we earn from qualifying purchases. Sponsored
+      - generic [ref=e66]:
+        - button "Back to Calculators" [ref=e67] [cursor=pointer]
+        - paragraph [ref=e68]:
+          - text: By signing in you agree to our
+          - link "Terms" [ref=e69] [cursor=pointer]:
+            - /url: /terms
+          - text: and
+          - link "Privacy Policy" [ref=e70] [cursor=pointer]:
+            - /url: /privacy
+          - text: .
+        - paragraph [ref=e71]: Built for the Tri-County Field
+  - alert [ref=e72]
+```
