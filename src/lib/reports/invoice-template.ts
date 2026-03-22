@@ -55,6 +55,10 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
     Array.isArray(payload.material_list) && payload.material_list.length
       ? payload.material_list
       : [];
+  const quoteNote =
+    typeof payload.quote_note === "string" && payload.quote_note.trim()
+      ? payload.quote_note.trim()
+      : null;
 
   const dollars =
     typeof payload.total_cost === "number"
@@ -295,10 +299,38 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
         </p>
       </div>
 
-      <!-- Footer -->
-      <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e5e7eb; text-align: center;">
-        <p style="font-size: 10px; color: #9ca3af;">Powered by Pro Construction Calc</p>
-      </div>
+        <!-- Quote Note (customer-facing) -->
+        ${
+          quoteNote
+            ? `<section class="glass-panel px-5 py-4">
+               <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/80">
+                 Note
+               </p>
+               <p class="mt-1 text-sm text-white/90 whitespace-pre-line">${quoteNote}</p>
+             </section>`
+            : ""
+        }
+
+        <!-- Field Notes -->
+        <section class="glass-panel px-5 py-4">
+          <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/80">
+            Field Notes
+          </p>
+          <p class="mt-1 text-xs text-white/70">
+            Use this estimate as a planning tool. Always verify on-site dimensions, substrate conditions, and tax status (ST-124) before ordering or invoicing.
+          </p>
+        </section>
+
+        <!-- Footer -->
+        <footer class="pt-4 text-center text-[8pt] text-slate-500">
+          <p>Powered by Pro Construction Calc</p>
+          <p class="text-[8pt] mt-0.5">
+            <a href="https://proconstructioncalc.com/terms" class="text-slate-500 hover:text-orange-300">Terms</a>
+            <span class="mx-1">•</span>
+            <a href="https://proconstructioncalc.com/privacy" class="text-slate-500 hover:text-orange-300">Privacy</a>
+          </p>
+        </footer>
+      </main>
     </div>
   </body>
 </html>`;

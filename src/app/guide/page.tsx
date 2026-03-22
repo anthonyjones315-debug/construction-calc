@@ -186,9 +186,15 @@ export default function GuidePage() {
               </ul>
             </article>
 
-            <article className="guide-card public-panel">
-              <div className="public-chip public-chip-accent">
-                Operator checks
+              <div className="content-card p-3.5">
+                <div className="inline-flex items-center gap-2 rounded-full border border-[--color-orange-brand]/30 bg-[--color-orange-brand]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[--color-orange-brand]">
+                  Estimating checklist
+                </div>
+                <ul className="mt-3 space-y-2 text-[13px] text-[--color-ink-mid]">
+                  <li>Use Tax Save with the correct county and ST-124 setting before you export a client-facing estimate.</li>
+                  <li>Saved estimates, invoice PDFs, and the financial dashboard reuse the same math so you can audit one workflow against another.</li>
+                  <li>Keep a signed ST-124 in the job file for every capital improvement to stay protected at audit time.</li>
+                </ul>
               </div>
               <ul className="guide-list">
                 <li>
