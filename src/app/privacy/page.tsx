@@ -4,6 +4,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import type { Metadata } from "next";
 import { getPageMetadata } from "@/seo";
+import DOMPurify from 'isomorphic-dompurify';
 
 export const metadata: Metadata = getPageMetadata({
   title: "Privacy Policy — Pro Construction Calc",
@@ -19,6 +20,7 @@ const privacyHtmlPath = path.join(
 );
 
 const privacyHtml = fs.readFileSync(privacyHtmlPath, "utf8");
+const sanitizedHtml = DOMPurify.sanitize(privacyHtml);
 
 export default function PrivacyPage() {
   return (
@@ -28,7 +30,7 @@ export default function PrivacyPage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
           <div
             className="prose prose-sm max-w-none bg-white text-black shadow-md rounded-xl p-4"
-            dangerouslySetInnerHTML={{ __html: privacyHtml }}
+            dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
           />
         </div>
       </main>
