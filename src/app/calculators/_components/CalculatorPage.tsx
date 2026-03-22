@@ -1276,6 +1276,17 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     if (nextMode === "30") setDepthThickness(30);
   }
 
+  function handleTaxCountyChange(event: React.ChangeEvent<HTMLSelectElement>) {
+    const nextCounty = event.target.value;
+    setTaxCounty(nextCounty);
+    const match = NYS_COUNTY_TAX_RATES.find(
+      (entry) => entry.county === nextCounty,
+    );
+    if (match) {
+      setWidthSpan(match.combinedRate);
+    }
+  }
+
   const calculatorResults: CalculatorResultsBundle = useMemo(() => {
     const isFlooringCalculator = page.canonicalPath.includes("flooring");
     const isSidingCalculator = page.canonicalPath.includes("siding");
@@ -3504,16 +3515,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                         </p>
                         <select
                           value={taxCounty}
-                          onChange={(event) => {
-                            const nextCounty = event.target.value;
-                            setTaxCounty(nextCounty);
-                            const match = NYS_COUNTY_TAX_RATES.find(
-                              (entry) => entry.county === nextCounty,
-                            );
-                            if (match) {
-                              setWidthSpan(match.combinedRate);
-                            }
-                          }}
+                          onChange={handleTaxCountyChange}
                           className="glass-input h-9 w-full px-2 text-xs outline-none transition sm:text-sm"
                         >
                           {NYS_COUNTY_TAX_RATES.map((entry) => (
