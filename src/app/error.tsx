@@ -1,6 +1,7 @@
 "use client";
 
 import * as Sentry from "@sentry/nextjs";
+import Link from "next/link";
 import { TriangleAlert } from "lucide-react";
 import { useEffect } from "react";
 import { ManualErrorReportButton } from "@/components/support/ManualErrorReportButton";
@@ -24,17 +25,9 @@ export default function ErrorBoundary({
   });
 
   return (
-    <div className="animated-gradient-bg flex min-h-[70vh] flex-col items-center justify-center px-4 py-10 text-copy-primary">
+    <div className="bg-[--color-bg] flex min-h-[70vh] flex-col items-center justify-center px-4 py-10 text-copy-primary">
       <div className="glass-container-elevated relative max-w-lg overflow-hidden p-8 text-center">
-        <div
-          aria-hidden
-          className="glass-decorative absolute inset-x-0 top-0 h-32"
-          style={{
-            background:
-              "radial-gradient(circle at top, color-mix(in srgb, var(--color-primary) 18%, transparent), transparent 56%)",
-          }}
-        />
-        <div className="relative flex flex-col items-center">
+        <div className="flex flex-col items-center">
           <TriangleAlert className="mb-4 h-12 w-12 text-red-400" aria-hidden />
           <h1 className="text-xl font-black uppercase tracking-wide text-copy-primary">
             {userFacing.title}
@@ -63,6 +56,12 @@ export default function ErrorBoundary({
             />
           </div>
         </div>
+        <Link
+          href="/"
+          className="mt-4 rounded-lg border border-slate-700 px-4 py-2 text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-slate-200 transition"
+        >
+          Go to Home
+        </Link>
       </div>
     </div>
   );

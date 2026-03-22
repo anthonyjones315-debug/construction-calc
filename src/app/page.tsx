@@ -11,6 +11,7 @@ import {
   CircleCheck,
   Wrench,
 } from "lucide-react";
+import type { Route } from "next";
 import {
   JsonLD,
   getPageMetadata,
@@ -19,10 +20,20 @@ import {
 } from "@/seo";
 import { routes } from "@routes";
 
+/** Canonical trade landing or spotlight calculator paths (not ?c= — directory ignores query today). */
+const PICK_CALCULATOR_LINKS: Array<{ name: string; href: Route }> = [
+  { name: "Concrete", href: "/calculators/concrete" },
+  { name: "Framing", href: "/calculators/framing" },
+  { name: "Roofing", href: "/calculators/roofing" },
+  { name: "Drywall", href: "/calculators/insulation/drywall" },
+  { name: "Insulation", href: "/calculators/insulation" },
+  { name: "Flooring", href: "/calculators/finish/flooring" },
+];
+
 export const metadata = getPageMetadata({
-  title: "Pro Construction Calc | Estimating Built for Contractors",
+  title: "Pro Construction Calc | Contractor-Grade Estimating for the Field",
   description:
-    "Trade-specific calculators, saved estimates, and practical field tips built for contractors who need accurate numbers fast.",
+    "Fast, contractor-friendly estimating with trade-specific calculators, saved workflows, and practical field tips for daily jobs.",
   path: "/",
 });
 
@@ -118,21 +129,21 @@ export default function HomePage() {
               </div>
               <h1 className="home-display-heading mt-2.5 max-w-2xl font-display font-bold">
                 Pro Construction Calc
-                <span className="mt-2 block text-orange-600">
-                  Calculators you&apos;ll actually use in the field.
+                <span className="mt-2 block text-orange-brand">
+                  Fast, easy-to-use calculators for everyday field estimates.
                 </span>
               </h1>
               <p className="home-hero-copy mt-2.5 max-w-xl text-[13px] leading-relaxed text-slate-600 sm:text-sm">
-                Run your quantities, lock in your pricing, and get a sendable
-                estimate without extra steps. No bloated workflow — just the
-                tools you need to quote jobs and move on.
+                Run your quantities, apply your pricing, and move straight into
+                client-ready estimates. No bloated dashboard flow—just the tools
+                you need to quote jobs quickly.
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
                 {/* Primary CTA — full emphasis */}
                 <Link
                   href={`${routes.commandCenter}?mode=draft`}
                   prefetch={false}
-                  className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-orange-600 px-4 py-2.5 text-xs font-black text-white transition-all duration-200 hover:bg-orange-700 active:scale-[0.98]"
+                  className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-orange-brand px-4 py-2.5 text-xs font-black text-white transition-all duration-200 hover:bg-[--color-orange-dark] active:scale-[0.98]"
                 >
                   Start New Estimate{" "}
                   <ArrowRight className="h-4 w-4" aria-hidden />
@@ -140,21 +151,21 @@ export default function HomePage() {
                 {/* Secondary CTAs — ghost/outline, compact */}
                 <Link
                   href={routes.calculators}
-                  className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 px-3 py-2.5 text-xs font-semibold text-slate-700 transition-all duration-200 hover:border-orange-300 hover:text-orange-700 active:scale-[0.98]"
+                  className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 px-3 py-2.5 text-xs font-semibold text-slate-700 transition-all duration-200 hover:border-[--color-orange-rim] hover:text-[--color-orange-dark] active:scale-[0.98]"
                 >
                   Calculators
                 </Link>
                 <Link
                   href={routes.saved}
                   prefetch={false}
-                  className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 px-3 py-2.5 text-xs font-semibold text-slate-700 transition-all duration-200 hover:border-orange-300 hover:text-orange-700 active:scale-[0.98]"
+                  className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 px-3 py-2.5 text-xs font-semibold text-slate-700 transition-all duration-200 hover:border-[--color-orange-rim] hover:text-[--color-orange-dark] active:scale-[0.98]"
                 >
                   Saved
                 </Link>
                 <Link
                   href={routes.pricebook}
                   prefetch={false}
-                  className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 px-3 py-2.5 text-xs font-semibold text-slate-700 transition-all duration-200 hover:border-orange-300 hover:text-orange-700 active:scale-[0.98]"
+                  className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 px-3 py-2.5 text-xs font-semibold text-slate-700 transition-all duration-200 hover:border-[--color-orange-rim] hover:text-[--color-orange-dark] active:scale-[0.98]"
                 >
                   Price Book
                 </Link>
@@ -182,9 +193,9 @@ export default function HomePage() {
                     key={label}
                     className="home-feature-card rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2.5"
                   >
-                    <div className="flex items-center gap-2 text-orange-600">
+                    <div className="flex items-center gap-2 text-orange-brand">
                       <Icon className="h-4 w-4" aria-hidden />
-                      <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-orange-600">
+                      <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-orange-brand">
                         {label}
                       </p>
                     </div>
@@ -221,7 +232,7 @@ export default function HomePage() {
                       key={title}
                       className="home-market-card rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3"
                     >
-                      <div className="flex items-center gap-2 text-orange-600">
+                      <div className="flex items-center gap-2 text-orange-brand">
                         <Icon className="h-4 w-4" aria-hidden />
                         <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-900">
                           {title}
@@ -245,7 +256,7 @@ export default function HomePage() {
                       key={item.title}
                       href={item.href}
                       prefetch={false}
-                      className="block min-h-10 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2.5 transition-all duration-200 hover:border-orange-300 hover:bg-orange-50"
+                      className="block min-h-10 rounded-2xl border border-slate-200 bg-white px-3 py-2.5 transition-all duration-200 hover:border-[--color-orange-rim] hover:bg-[--color-orange-soft]"
                     >
                       <p className="font-display text-sm font-semibold uppercase tracking-wide text-slate-900">
                         {item.title}
@@ -259,25 +270,22 @@ export default function HomePage() {
               </div>
 
               <div className="home-panel rounded-2xl border border-slate-200 bg-white p-4 transition-colors">
-                <p className="section-kicker">Popular calculators</p>
-                <div className="mt-2.5 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                  {[
-                    { name: "Concrete", cat: "concrete" },
-                    { name: "Framing", cat: "framing" },
-                    { name: "Roofing", cat: "roofing" },
-                    { name: "Drywall", cat: "drywall" },
-                    { name: "Insulation", cat: "insulation" },
-                    { name: "Flooring", cat: "flooring" },
-                  ].map(({ name, cat }) => (
+                <p className="section-kicker">Pick a calculator</p>
+                <div className="mt-2.5 flex flex-col gap-2">
+                  {PICK_CALCULATOR_LINKS.map(({ name, href }) => (
                     <Link
                       key={name}
-                      href={`${routes.calculators}?c=${cat}`}
+                      href={href}
                       prefetch={false}
-                      className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 transition-all duration-200 hover:border-orange-300 hover:bg-orange-50"
+                      className="group flex min-h-10 items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 transition-all duration-200 hover:border-[--color-orange-rim] hover:bg-[--color-orange-soft]"
                     >
-                      <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-700 group-hover:text-orange-700">
+                      <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-700 group-hover:text-[--color-orange-dark]">
                         {name}
                       </p>
+                      <ArrowRight
+                        className="h-4 w-4 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-[--color-orange-brand]"
+                        aria-hidden
+                      />
                     </Link>
                   ))}
                 </div>
@@ -310,7 +318,7 @@ export default function HomePage() {
                       key={item.title}
                       href={item.href}
                       prefetch={false}
-                      className="block rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 transition-all duration-200 hover:border-orange-300 hover:bg-orange-50"
+                      className="block rounded-2xl border border-slate-200 bg-white px-3 py-3 transition-all duration-200 hover:border-[--color-orange-rim] hover:bg-[--color-orange-soft]"
                     >
                       <p className="text-sm font-display font-semibold uppercase tracking-wide text-slate-900">
                         {item.title}

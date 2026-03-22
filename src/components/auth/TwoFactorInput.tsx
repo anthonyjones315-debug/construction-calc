@@ -31,11 +31,13 @@ export function TwoFactorInput({
     }
   }, []);
 
-  // Prevent page scrolling while dialog is open
+  // Prevent page scrolling while dialog is open (scroll container is <html>)
   useEffect(() => {
-    document.body.style.overflow = "hidden";
+    const html = document.documentElement;
+    const prev = html.style.overflow;
+    html.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = "unset";
+      html.style.overflow = prev;
     };
   }, []);
 
@@ -78,17 +80,17 @@ export function TwoFactorInput({
               <ShieldCheck className="w-6 h-6" />
             </GlassIconBadge>
             <div>
-              <h2 className="text-xl font-semibold text-white">
+              <h2 className="text-xl font-semibold text-[--color-ink]">
                 Enter verification code
               </h2>
-              <p className="text-sm text-[rgba(255,255,255,0.8)]">
+              <p className="text-sm text-[--color-ink-mid]">
                 We sent a code to {email}
               </p>
             </div>
           </div>
           <button
             onClick={onCancel}
-            className="text-[rgba(255,255,255,0.6)] hover:text-white transition-colors"
+            className="text-[--color-ink-dim] transition-colors hover:text-[--color-ink]"
             aria-label="Close"
           >
             <XCircle className="w-6 h-6" />
@@ -109,7 +111,7 @@ export function TwoFactorInput({
               maxLength={TWO_FACTOR_CODE_LENGTH}
               value={code}
               onChange={(e) => setCode(e.target.value.replace(/[^0-9]/g, ""))}
-              className="glass-input w-full rounded-lg px-4 py-3 text-center font-mono text-2xl tracking-[0.35em] text-black"
+              className="glass-input w-full rounded-lg px-4 py-3 text-center font-mono text-2xl tracking-[0.35em] text-[--color-ink]"
               placeholder="000000"
               disabled={isSubmitting}
               aria-invalid={!!submitError}

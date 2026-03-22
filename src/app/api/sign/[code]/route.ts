@@ -5,7 +5,12 @@ import { z } from "zod";
 import { getPublicEstimateByShareCode } from "@/lib/dal/public-estimates";
 import { ShareCodeColumnMissingError } from "@/lib/estimates/share-code-support";
 import { createServerClient } from "@/lib/supabase/server";
-import { normalizeShareCode } from "@/lib/estimates/finalize";
+import {
+  isValidShareCodeNormalized,
+  normalizeShareCode,
+} from "@/lib/estimates/finalize";
+import { getClientIp } from "@/lib/http/client-ip";
+import { checkMemoryRateLimit } from "@/lib/rate-limit/memory";
 import {
   FINANCIAL_DASHBOARD_TAG,
   SAVED_ESTIMATES_TAG,
@@ -21,16 +26,34 @@ const signEstimateSchema = z.object({
   signatureDataUrl: z
     .string()
     .trim()
+    .max(750_000, "Signature image is too large.")
     .regex(/^data:image\/png;base64,/, "Signature image must be a PNG data URL."),
 });
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ code: string }> },
 ) {
   try {
+    const ip = getClientIp(request);
+    const burst = checkMemoryRateLimit("sign-estimate-get", ip, 90, 60_000);
+    if (!burst.ok) {
+      return NextResponse.json(
+        { error: "Too many requests. Try again shortly." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(burst.retryAfterSeconds) },
+        },
+      );
+    }
+
     const { code } = await params;
-    const estimate = await getPublicEstimateByShareCode(code);
+    const normalized = normalizeShareCode(code);
+    if (!isValidShareCodeNormalized(normalized)) {
+      return NextResponse.json({ error: "Invalid sign link." }, { status: 400 });
+    }
+
+    const estimate = await getPublicEstimateByShareCode(normalized);
 
     if (!estimate) {
       return NextResponse.json({ error: "Estimate not found." }, { status: 404 });
@@ -50,6 +73,18 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ code: string }> },
 ) {
+  const ip = getClientIp(request);
+  const postBurst = checkMemoryRateLimit("sign-estimate-post-ip", ip, 25, 60_000);
+  if (!postBurst.ok) {
+    return NextResponse.json(
+      { error: "Too many requests. Try again shortly." },
+      {
+        status: 429,
+        headers: { "Retry-After": String(postBurst.retryAfterSeconds) },
+      },
+    );
+  }
+
   let rawBody: unknown;
 
   try {
@@ -69,8 +104,24 @@ export async function POST(
   try {
     const { code } = await params;
     const normalizedCode = normalizeShareCode(code);
-    if (!normalizedCode) {
-      return NextResponse.json({ error: "Invalid sign code." }, { status: 400 });
+    if (!isValidShareCodeNormalized(normalizedCode)) {
+      return NextResponse.json({ error: "Invalid sign link." }, { status: 400 });
+    }
+
+    const perCode = checkMemoryRateLimit(
+      "sign-estimate-post-code",
+      `${ip}:${normalizedCode}`,
+      12,
+      3600_000,
+    );
+    if (!perCode.ok) {
+      return NextResponse.json(
+        { error: "Too many signing attempts for this link. Try again later." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(perCode.retryAfterSeconds) },
+        },
+      );
     }
 
     const estimate = await getPublicEstimateByShareCode(normalizedCode);
@@ -103,6 +154,18 @@ export async function POST(
         ? (inputs.signing as Record<string, unknown>)
         : {};
 
+    const inviteRecipientRaw = existingSigning.inviteRecipientEmail;
+    const inviteRecipientEmail =
+      typeof inviteRecipientRaw === "string" && inviteRecipientRaw.includes("@")
+        ? inviteRecipientRaw.trim().toLowerCase()
+        : null;
+
+    const signerEmailResolved = inviteRecipientEmail
+      ? inviteRecipientEmail
+      : parsed.data.signerEmail?.trim()
+        ? parsed.data.signerEmail.trim()
+        : null;
+
     const nextInputs = {
       ...inputs,
       signing: {
@@ -111,7 +174,7 @@ export async function POST(
         status: "signed",
         signedAt,
         signerName: parsed.data.signerName,
-        signerEmail: parsed.data.signerEmail || null,
+        signerEmail: signerEmailResolved,
         signatureDataUrl: parsed.data.signatureDataUrl,
       },
     };
@@ -141,7 +204,7 @@ export async function POST(
       event: "estimate_signed",
       properties: {
         estimate_id: currentRow.id,
-        signer_provided_email: Boolean(parsed.data.signerEmail),
+        signer_provided_email: Boolean(signerEmailResolved),
         signed_at: signedAt,
       },
     });
@@ -154,7 +217,7 @@ export async function POST(
       return NextResponse.json({ error: error.message }, { status: 503 });
     }
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Internal Server Error" },
+      { error: "Unable to save your signature. Please try again." },
       { status: 500 },
     );
   }

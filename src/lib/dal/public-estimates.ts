@@ -5,7 +5,10 @@ import {
   isMissingShareCodeColumnError,
 } from "@/lib/estimates/share-code-support";
 import { createServerClient } from "@/lib/supabase/server";
-import { normalizeShareCode } from "@/lib/estimates/finalize";
+import {
+  isValidShareCodeNormalized,
+  normalizeShareCode,
+} from "@/lib/estimates/finalize";
 import {
   normalizeEstimateStatus,
   type EstimateStatus,
@@ -50,6 +53,8 @@ type SigningInputShape = {
   signerName?: string;
   signerEmail?: string;
   signatureDataUrl?: string;
+  /** Normalized email the sign link was emailed to; locks the sign form when set. */
+  inviteRecipientEmail?: string;
 };
 
 export type PublicEstimateForSigning = {
@@ -119,7 +124,7 @@ function toPublicEstimate(
 
 export async function getPublicEstimateByShareCode(shareCode: string) {
   const normalized = normalizeShareCode(shareCode);
-  if (!normalized) return null;
+  if (!normalized || !isValidShareCodeNormalized(normalized)) return null;
 
   const db = createServerClient();
   const { data, error } = await db

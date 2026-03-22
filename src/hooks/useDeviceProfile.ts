@@ -56,7 +56,7 @@ function createDefaultDeviceProfile(): DeviceProfile {
     viewportWidth: 0,
     shellMaxWidth: null,
     shellScaleClass: "",
-    blurClass: "backdrop-glass",
+    blurClass: "",
     bottomBufferClass: "",
     baseTextClass: "",
     highContrastMode: false,
@@ -97,7 +97,7 @@ export function deriveDeviceProfile({
   let layoutMode: LayoutMode = "glass-stack";
   let shellMaxWidth: number | null = null;
   let shellScaleClass = "";
-  let blurClass = "backdrop-glass";
+  let blurClass = "";
   let bottomBufferClass = "";
   let baseTextClass = "";
   let highContrastMode = false;
@@ -116,7 +116,7 @@ export function deriveDeviceProfile({
         : phoneTier === "large"
           ? "hardware-scale-105"
           : "";
-    blurClass = phoneTier === "small" ? "hardware-blur-8" : "backdrop-glass";
+    blurClass = "";
     bottomBufferClass = phoneTier === "large" ? "hardware-bottom-buffer" : "";
   } else if (isTablet) {
     tabletTier = isIPadPro ? "large" : "standard";
@@ -168,7 +168,10 @@ function readProfile(): DeviceProfile {
 }
 
 export function useDeviceProfile() {
-  const [profile, setProfile] = useState<DeviceProfile>(() => readProfile());
+  // Match SSR and first client render (no `window` on server); sync real profile in useEffect to avoid hydration mismatches from viewport/UA-derived classes.
+  const [profile, setProfile] = useState<DeviceProfile>(() =>
+    createDefaultDeviceProfile(),
+  );
 
   useEffect(() => {
     const syncProfile = () => {

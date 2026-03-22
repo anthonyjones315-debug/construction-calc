@@ -23,40 +23,7 @@ import {
 import { isEstimateStatus, type EstimateStatus } from "@/lib/estimates/status";
 import { normalizeDollars } from "@/utils/money";
 import { verifyEstimate } from "@/app/actions/calculations";
-
-async function loadEstimateScope(
-  db: ReturnType<typeof createServerClient>,
-  estimateId: string,
-  tenantColumn: "business_id" | "user_id",
-  tenantId: string,
-): Promise<{ ok: true } | { ok: false; status: number; error: string }> {
-  const { data, error } = await db
-    .from("saved_estimates")
-    .select("id, business_id, user_id")
-    .eq("id", estimateId)
-    .maybeSingle();
-
-  if (error) {
-    return { ok: false, status: 500, error: error.message };
-  }
-
-  if (!data) {
-    return { ok: false, status: 404, error: "Estimate not found." };
-  }
-
-  const scopedTenantId =
-    tenantColumn === "business_id" ? data.business_id : data.user_id;
-
-  if (scopedTenantId !== tenantId) {
-    return {
-      ok: false,
-      status: 403,
-      error: "This estimate belongs to a different business workspace.",
-    };
-  }
-
-  return { ok: true };
-}
+import { loadEstimateScope } from "@/lib/supabase/estimate-scope";
 
 export async function DELETE(
   _req: NextRequest,
@@ -79,7 +46,7 @@ export async function DELETE(
     }
     const tenantColumn = getTenantScopeColumn(businessContext);
     const tenantId = getTenantScopeId(businessContext);
-    const permission = await loadEstimateScope(db, id, tenantColumn, tenantId);
+    const permission = await loadEstimateScope(db, id, businessContext);
     if (!permission.ok) {
       return NextResponse.json(
         { error: permission.error },
@@ -237,7 +204,7 @@ export async function PATCH(
     }
     const tenantColumn = getTenantScopeColumn(businessContext);
     const tenantId = getTenantScopeId(businessContext);
-    const permission = await loadEstimateScope(db, id, tenantColumn, tenantId);
+    const permission = await loadEstimateScope(db, id, businessContext);
     if (!permission.ok) {
       return NextResponse.json(
         { error: permission.error },

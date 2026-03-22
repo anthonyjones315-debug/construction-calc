@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import { Resend } from "resend";
 import { z } from "zod";
+import { getClientIp } from "@/lib/http/client-ip";
+import { checkMemoryRateLimit } from "@/lib/rate-limit/memory";
 
 const SITE_ALERT_TO = "owner@proconstructioncalc.com";
 const FROM_EMAIL = "Pro Construction Calc <owner@proconstructioncalc.com>";
@@ -46,6 +48,18 @@ function normalizeString(value?: string): string | undefined {
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = getClientIp(req);
+    const rl = checkMemoryRateLimit("feedback-post", ip, 12, 3600_000);
+    if (!rl.ok) {
+      return NextResponse.json(
+        { error: "Too many submissions. Please try again later." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(rl.retryAfterSeconds) },
+        },
+      );
+    }
+
     const resend = getResend();
     if (!resend) {
       return NextResponse.json(
@@ -123,14 +137,17 @@ export async function POST(req: NextRequest) {
       .filter(Boolean)
       .join("");
 
-    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="font-family:system-ui,sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#334155">
-  <p><strong>Report Type:</strong> ${isErrorReport ? "Manual error report" : "General feedback"}</p>
+    const html = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="color-scheme" content="light"></head><body style="margin:0;font-family:Inter,system-ui,sans-serif;background:#f6f4ef;padding:28px 20px;color:#334155;-webkit-font-smoothing:antialiased">
+  <div style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #e2e0db;border-radius:16px;padding:24px 26px;box-shadow:0 4px 24px rgba(15,23,42,0.06)">
+  <p style="margin:0 0 12px;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#ea580c">Pro Construction Calc · Inbox</p>
+  <p><strong>Report type:</strong> ${isErrorReport ? "Manual error report" : "General feedback"}</p>
   <p><strong>From:</strong> ${escapeHtml(email)}${name ? ` (${escapeHtml(name)})` : ""}</p>
   <p><strong>Subject:</strong> ${escapeHtml(subjectLine)}</p>
   ${contextRows}
-  <hr style="border:none;border-top:1px solid #e2e8f0;margin:16px 0">
-  <div>${escapeHtml(message)}</div>
-  <p style="margin-top:24px;font-size:12px;color:#94a3b8">Sent via Pro Construction Calc contact/feedback form.</p>
+  <hr style="border:none;border-top:1px solid #e2e0db;margin:18px 0">
+  <div style="font-size:14px;line-height:1.6">${escapeHtml(message)}</div>
+  <p style="margin-top:22px;font-size:12px;color:#94a3b8;line-height:1.5">Sent via the site contact / feedback form.</p>
+  </div>
 </body></html>`;
 
     const { data, error } = await resend.emails.send({

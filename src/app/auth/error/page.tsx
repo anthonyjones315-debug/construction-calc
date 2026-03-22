@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo } from "react";
 import { HardHat } from "lucide-react";
 import { routes } from "@routes";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth/client";
 import * as Sentry from "@sentry/nextjs";
 import { ManualErrorReportButton } from "@/components/support/ManualErrorReportButton";
 import { BUSINESS_EMAIL } from "@/lib/business-identity";
@@ -124,7 +124,7 @@ function AuthErrorContent() {
   return (
     <main
       id="main-content"
-      className="animated-gradient-bg flex min-h-screen items-center justify-center px-4 py-10 font-sans text-copy-primary"
+      className="bg-[--color-bg] flex min-h-screen items-center justify-center px-4 py-10 font-sans text-copy-primary"
     >
       <div className="w-full max-w-sm text-center">
         <div className="inline-flex items-center gap-2 mb-8">
@@ -138,22 +138,14 @@ function AuthErrorContent() {
         </div>
 
         <section
-          className="glass-container-elevated relative overflow-hidden p-6"
+          className="glass-container-elevated overflow-hidden p-6"
           aria-labelledby="auth-error-heading"
           aria-live="polite"
         >
-          <div
-            aria-hidden
-            className="glass-decorative absolute inset-x-0 top-0 h-28"
-            style={{
-              background:
-                "radial-gradient(circle at top, color-mix(in srgb, var(--color-primary) 16%, transparent), transparent 54%)",
-            }}
-          />
-          <div className="relative">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-red-400/25 bg-red-500/10">
+          <div>
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-red-200 bg-red-50">
               <svg
-                className="w-6 h-6 text-red-300"
+                className="w-6 h-6 text-red-500"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -235,7 +227,7 @@ export default function AuthErrorPage() {
       fallback={
         <main
           id="main-content"
-          className="animated-gradient-bg flex min-h-screen items-center justify-center text-copy-primary"
+          className="bg-[--color-bg] flex min-h-screen items-center justify-center text-copy-primary"
         >
           <div
             className="glass-panel flex items-center gap-3 text-copy-secondary"

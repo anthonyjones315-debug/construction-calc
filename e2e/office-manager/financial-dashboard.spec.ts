@@ -5,7 +5,7 @@ test.describe("Office Manager — Financial Dashboard", () => {
     page: Parameters<typeof test>[0]["page"],
   ) => {
     await page.goto("/command-center");
-    if (/auth\/signin/.test(page.url())) {
+    if (/\/sign-in/.test(page.url())) {
       test.skip(true, "Requires authenticated office-manager test user");
     }
   };
@@ -20,7 +20,7 @@ test.describe("Office Manager — Financial Dashboard", () => {
     });
     if (await finTab.isVisible()) {
       await finTab.click();
-      await expect(page).not.toHaveURL(/signin/);
+      await expect(page).not.toHaveURL(/\/sign-in/);
     }
   });
 

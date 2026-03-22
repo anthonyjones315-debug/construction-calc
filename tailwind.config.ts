@@ -53,7 +53,7 @@ function buildComplementaryPalette(baseHex: string) {
   };
 }
 
-const primary = "#FF7A00";
+const primary = "#ea580c";
 const secondary = buildComplementaryPalette(primary);
 
 const config = {
@@ -78,14 +78,14 @@ const config = {
           base: primary,
           light: mixHex(primary, "#ffffff", 0.12),
           dark: mixHex(primary, "#0f172a", 0.18),
-          glow: "rgb(255 122 0 / 0.3)",
-          rim: "rgb(255 160 102 / 0.75)",
+          glow: "rgb(234 88 12 / 0.3)",
+          rim: mixHex(primary, "#ffffff", 0.42),
         },
         surface: {
-          deep: "rgb(2 6 23 / 0.95)",
-          base: "rgb(15 23 42 / 0.85)",
-          elevated: "rgb(30 41 59 / 0.75)",
-          frost: "rgb(255 255 255 / 0.08)",
+          deep: "#fafaf8",
+          base: "#ffffff",
+          elevated: "#fafaf8",
+          frost: "#f1f5f9",
         },
       },
       screens: {
@@ -99,33 +99,6 @@ const config = {
   plugins: [
     plugin(function ({ addUtilities }) {
       addUtilities({
-        ".backdrop-glass": {
-          "@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))":
-            {
-              backdropFilter: "blur(24px) saturate(180%)",
-              "-webkit-backdrop-filter": "blur(24px) saturate(180%)",
-            },
-        },
-        ".backdrop-glass-light": {
-          "@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))":
-            {
-              backdropFilter: "blur(12px) saturate(160%)",
-              "-webkit-backdrop-filter": "blur(12px) saturate(160%)",
-            },
-        },
-        ".backdrop-glass-heavy": {
-          "@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))":
-            {
-              backdropFilter: "blur(36px) saturate(200%)",
-              "-webkit-backdrop-filter": "blur(36px) saturate(200%)",
-            },
-        },
-        ".glass-gpu": {
-          willChange: "transform, opacity",
-          transform: "translateZ(0)",
-          backdropFilter: "blur(12px)",
-          "-webkit-backdrop-filter": "blur(12px)",
-        },
         ".no-scroll-shell": {
           height: "844px",
           overflow: "hidden",

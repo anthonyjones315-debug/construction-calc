@@ -11,11 +11,14 @@ import { sanitizeFilename } from "@/utils/sanitize-filename";
 import { getPostHogClient } from "@/lib/posthog-server";
 import * as Sentry from "@sentry/nextjs";
 import { generateInvoiceHtml } from "@/lib/reports/invoice-template";
-import type { Session } from "next-auth";
+import type { AuthSession } from "@/lib/auth/session";
+import { checkMemoryRateLimit } from "@/lib/rate-limit/memory";
+
+/** Requires `BROWSERLESS_API_TOKEN` in env (Browserless.io). Without it, POST returns 503 "PDF service not configured." */
 
 async function resolvePdfBranding(
   payload: ReturnType<typeof finalizeEstimateSchema.parse>,
-  session: Session,
+  session: NonNullable<AuthSession>,
 ) {
   const db = createServerClient();
   const fallbackName = session.user?.name?.trim() || null;
@@ -74,6 +77,23 @@ export async function POST(request: NextRequest) {
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const pdfRl = checkMemoryRateLimit(
+      "generate-pdf",
+      session.user.id,
+      35,
+      3600_000,
+    );
+    if (!pdfRl.ok) {
+      return NextResponse.json(
+        { error: "PDF generation limit reached. Try again later." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(pdfRl.retryAfterSeconds) },
+        },
+      );
+    }
+
     const branding = await resolvePdfBranding(payload, session);
     const browserlessToken = process.env.BROWSERLESS_API_TOKEN;
     if (!browserlessToken) {

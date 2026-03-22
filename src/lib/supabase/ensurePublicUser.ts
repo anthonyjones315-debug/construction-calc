@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Session } from "next-auth";
+import type { Session } from "@/lib/auth/session";
 
 type PublicUserSeed = {
   id: string;
@@ -271,9 +271,11 @@ export async function ensurePublicUserRecord(
 
   if (error) {
     if (isMissingPublicUsersTableError(error.message)) {
-      console.warn(
-        `ensurePublicUserRecord skipped [uid:${user.id}]: public.users table not found in this environment`,
-      );
+      if (process.env.NODE_ENV === "development") {
+        console.warn(
+          `ensurePublicUserRecord skipped [uid:${user.id}]: public.users table not found in this environment`,
+        );
+      }
       return user.id;
     }
 
@@ -298,8 +300,8 @@ export async function ensurePublicUserRecord(
  * the trigger was set up may be missing from public.users.
  */
 export async function ensurePublicUser(db: SupabaseClient, session: Session) {
+  if (!session?.user?.id) return;
   const { user } = session;
-  if (!user?.id) return;
 
   return ensurePublicUserRecord(db, {
     id: user.id,

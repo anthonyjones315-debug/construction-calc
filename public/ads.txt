@@ -1,0 +1,6 @@
+# Google AdSense — https://support.google.com/adsense/answer/7532444
+google.com, pub-9267885260213830, DIRECT, f08c47fec0942fa0
+
+# Amazon Associates (affiliate links in-app): no standard third-party ads.txt line is
+# required for link-only placements. If you add Amazon Native Shopping Ads or APS scripts,
+# add the lines Amazon gives you in Associates / Advertising here.

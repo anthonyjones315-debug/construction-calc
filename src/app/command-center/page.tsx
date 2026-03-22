@@ -8,6 +8,7 @@ import { getBusinessJoinCode } from "@/lib/supabase/join-code";
 import { getNoIndexMetadata } from "@/seo";
 import { routes } from "@routes";
 import CommandCenterLiteClient from "./CommandCenterLiteClient";
+import { JoinBusinessWithCodeForm } from "./JoinBusinessWithCodeForm";
 import WelcomeGuidePopupClient from "./WelcomeGuidePopupClient";
 
 export const metadata = getNoIndexMetadata(
@@ -37,7 +38,6 @@ type CommandCenterData = {
   isOwner: boolean;
   userRole: string;
   businessName: string;
-  businessEmail: string;
   joinCode: string;
   members: TeamMember[];
   recentEstimates: RecentEstimate[];
@@ -215,20 +215,20 @@ function CommandCenterOnboarding({
 }) {
   return (
     <div className="mx-auto flex min-h-[70vh] w-full max-w-xl items-center px-4 py-12 sm:px-6">
-      <section className="w-full rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_12px_28px_rgba(0,0,0,0.08)]">
-        <p className="text-xs font-black uppercase tracking-[0.15em] text-orange-600">
-          Welcome to Pro Construction Calc
+      <section className="w-full rounded-2xl border border-[--color-border] bg-[--color-surface] p-6 text-[--color-ink] shadow-[0_12px_36px_rgba(15,18,27,0.08)]">
+        <p className="text-xs font-black uppercase tracking-[0.15em] text-[--color-orange-brand]">
+          Command Center Setup
         </p>
-        <h1 className="mt-2 text-2xl font-black uppercase text-slate-900">
-          Set Up Your Business
+        <h1 className="mt-2 text-2xl font-black uppercase text-[--color-ink]">
+          Create Your Business
         </h1>
-        <p className="mt-2 text-sm text-slate-500">
-          Your account is ready. Create a business workspace to unlock
-          estimates, crew management, and the full calculator suite.
+        <p className="mt-2 text-sm text-[--color-ink-mid]">
+          Your account is signed in. Create a business to unlock the full
+          dashboard.
         </p>
 
         {setupError && (
-          <p className="mt-4 rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+          <p className="mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
             {setupError}
           </p>
         )}
@@ -237,24 +237,26 @@ function CommandCenterOnboarding({
           action={createBusinessFromCommandCenterAction}
           className="mt-5 space-y-4"
         >
-          <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
+          <label className="flex flex-col gap-1 text-sm text-[--color-ink-mid]">
             Business Name
             <input
               name="businessName"
               type="text"
               required
               placeholder="Acme Construction"
-              className="h-11 rounded-lg border border-slate-300 bg-white px-3 text-slate-900 placeholder:text-slate-400 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+              className="h-11 rounded-lg border border-[--color-border] bg-[--color-surface] px-3 text-[--color-ink] placeholder:text-[--color-ink-dim] outline-none transition focus:border-[--color-orange-brand] focus:ring-2 focus:ring-[--color-orange-brand]/25"
             />
           </label>
 
           <button
             type="submit"
-            className="inline-flex h-11 items-center justify-center rounded-lg bg-orange-600 px-5 text-sm font-black uppercase text-white shadow-sm transition hover:bg-orange-700"
+            className="inline-flex h-11 items-center justify-center rounded-lg bg-[--color-orange-brand] px-5 text-sm font-black uppercase text-white shadow-md transition hover:bg-[--color-orange-dark]"
           >
-            Create Business &amp; Enter
+            Create Your Business
           </button>
         </form>
+
+        <JoinBusinessWithCodeForm />
       </section>
     </div>
   );
@@ -279,7 +281,6 @@ async function loadCommandCenterData(
       isOwner: false,
       userRole: "member",
       businessName: "",
-      businessEmail: "",
       joinCode: "",
       members: [],
       recentEstimates: [],
@@ -299,7 +300,6 @@ async function loadCommandCenterData(
       isOwner: false,
       userRole: "member",
       businessName: "",
-      businessEmail: "",
       joinCode: "",
       members: [],
       recentEstimates: [],
@@ -338,7 +338,7 @@ async function loadCommandCenterData(
 
   const { data: businessProfile } = await db
     .from("business_profiles")
-    .select("business_name, business_email")
+    .select("business_name")
     .eq("business_id", business.id)
     .maybeSingle();
 
@@ -348,7 +348,6 @@ async function loadCommandCenterData(
     isOwner: membership.role === "owner",
     userRole: membership.role,
     businessName: business.name,
-    businessEmail: String(businessProfile?.business_email ?? "").trim(),
     joinCode: canManageCrew
       ? (await getBusinessJoinCode(db, business.id)).code
       : "",
@@ -416,7 +415,6 @@ export default async function CommandCenterPage({
     mainContent = (
       <CommandCenterLiteClient
         businessName={commandCenterData.businessName}
-        businessEmail={commandCenterData.businessEmail}
         joinCode={commandCenterData.joinCode}
         initialMembers={commandCenterData.members}
         recentEstimates={commandCenterData.recentEstimates}

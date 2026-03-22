@@ -102,7 +102,7 @@ export function EmailEstimateModal({
   return (
     <>
       <div
-        className="fixed inset-0 z-[70] bg-[--color-ink]/25 backdrop-blur-sm"
+        className="fixed inset-0 z-[70] bg-black/30"
         onClick={onClose}
         aria-hidden
       />
@@ -113,7 +113,7 @@ export function EmailEstimateModal({
         className="fixed inset-0 z-[80] flex items-center justify-center p-4"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="relative max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-2xl border border-[--color-border] bg-white p-6 shadow-[0_8px_32px_rgba(0,0,0,0.10)]">
+        <div className="relative max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-2xl border border-[--color-border] bg-[--color-surface] p-6 text-[--color-ink] shadow-[0_24px_50px_rgba(0,0,0,0.15)]">
           <button
             type="button"
             onClick={onClose}
@@ -129,13 +129,16 @@ export function EmailEstimateModal({
           >
             Email Estimate
           </h2>
-          <p className="mt-1 text-sm text-[--color-ink-dim]">
+          <p className="mt-1 text-sm text-[--color-ink-mid]">
             Send this estimate to a client. Emails are sent from{" "}
-            <code className="rounded bg-[--color-surface-alt] px-1 text-[--color-ink-mid]">owner@proconstructioncalc.com</code>.
+            <code className="rounded bg-[--color-surface-alt] px-1 text-[--color-ink]">
+              system@proconstructioncalc.com
+            </code>
+            .
           </p>
 
           {status === "sent" ? (
-            <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+            <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
               Estimate sent successfully.
             </div>
           ) : (
@@ -148,7 +151,7 @@ export function EmailEstimateModal({
                   value={to}
                   onChange={(e) => setTo(e.target.value)}
                   placeholder="client@example.com"
-                  className="h-10 rounded-xl border border-[--color-border] bg-white px-3 text-[--color-ink] placeholder:text-[--color-ink-dim] focus:border-[--color-orange-brand] focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/20"
+                  className="h-10 rounded-xl border border-[--color-border] bg-[--color-surface] px-3 text-[--color-ink] placeholder:text-[--color-ink-dim] focus:border-[--color-orange-brand] focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/25"
                 />
               </label>
               <label className="flex flex-col gap-1 text-sm text-[--color-ink-mid]">
@@ -158,7 +161,7 @@ export function EmailEstimateModal({
                   value={replyToLocal}
                   onChange={(e) => setReplyToLocal(e.target.value)}
                   placeholder="you@yourcompany.com"
-                  className="h-10 rounded-xl border border-[--color-border] bg-white px-3 text-[--color-ink] placeholder:text-[--color-ink-dim] focus:border-[--color-orange-brand] focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/20"
+                  className="h-10 rounded-xl border border-[--color-border] bg-[--color-surface] px-3 text-[--color-ink] placeholder:text-[--color-ink-dim] focus:border-[--color-orange-brand] focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/25"
                 />
                 <span className="text-xs text-[--color-ink-dim]">
                   Replies will go to this address. Leave blank to use your
@@ -172,7 +175,7 @@ export function EmailEstimateModal({
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
                   maxLength={200}
-                  className="h-10 rounded-xl border border-[--color-border] bg-white px-3 text-[--color-ink] placeholder:text-[--color-ink-dim] focus:border-[--color-orange-brand] focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/20"
+                  className="h-10 rounded-xl border border-[--color-border] bg-[--color-surface] px-3 text-[--color-ink] placeholder:text-[--color-ink-dim] focus:border-[--color-orange-brand] focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/25"
                 />
               </label>
               {status === "error" && errorMessage && (
@@ -181,7 +184,7 @@ export function EmailEstimateModal({
                   <button
                     type="button"
                     onClick={() => Sentry.showReportDialog()}
-                    className="ml-1 text-xs font-medium underline underline-offset-2 text-red-500 hover:text-red-700"
+                    className="ml-1 text-xs font-medium text-red-700 underline underline-offset-2 hover:text-red-800"
                   >
                     Report this issue
                   </button>
@@ -203,7 +206,7 @@ export function EmailEstimateModal({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="rounded-xl border-2 border-[--color-border] px-4 py-2 text-sm font-semibold text-[--color-ink-mid] transition hover:border-[--color-orange-brand]/30 hover:bg-[--color-surface-alt]"
+                  className="rounded-xl border border-[--color-border] bg-[--color-surface-alt] px-4 py-2 text-sm font-semibold text-[--color-ink] transition hover:bg-[--color-surface]"
                 >
                   Close
                 </button>

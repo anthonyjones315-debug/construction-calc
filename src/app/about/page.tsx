@@ -81,7 +81,7 @@ export default function AboutPage() {
         <JsonLD schema={getBreadcrumbSchema([{ name: "About", href: "/about" }])} />
         <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
           <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-2 text-[11px] text-slate-500">
-            <Link href="/" className="transition-colors hover:text-orange-600">Home</Link>
+            <Link href="/" className="transition-colors hover:text-[--color-orange-brand]">Home</Link>
             <span aria-hidden>/</span>
             <span className="font-semibold text-slate-800">About</span>
           </nav>
@@ -98,7 +98,7 @@ export default function AboutPage() {
 
                 <div className="mt-5 flex items-start gap-4">
                   <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 shadow-inner">
-                    <HardHat className="h-8 w-8 text-orange-600" aria-hidden />
+                    <HardHat className="h-8 w-8 text-orange-brand" aria-hidden />
                   </div>
                   <div className="min-w-0">
                     <h1 className="font-display text-[clamp(34px,5vw,58px)] font-bold uppercase leading-[0.94] tracking-[0.02em] text-slate-900">
@@ -115,7 +115,7 @@ export default function AboutPage() {
                 <div className="mt-6 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap">
                   <Link
                     href={routes.calculators}
-                    className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-orange-600 px-4 py-3 text-sm font-black uppercase tracking-[0.08em] text-white transition-all duration-200 hover:bg-orange-700 active:scale-[0.98]"
+                    className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-orange-brand px-4 py-3 text-sm font-black uppercase tracking-[0.08em] text-white transition-all duration-200 hover:bg-[--color-orange-dark] active:scale-[0.98]"
                   >
                     Open Calculators
                     <ArrowRight className="h-4 w-4" aria-hidden />
@@ -123,13 +123,13 @@ export default function AboutPage() {
                   <Link
                     href={routes.commandCenter}
                     prefetch={false}
-                    className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm font-semibold uppercase tracking-[0.08em] text-slate-700 transition-all duration-200 hover:border-orange-300 hover:text-orange-700 active:scale-[0.98]"
+                    className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm font-semibold uppercase tracking-[0.08em] text-slate-700 transition-all duration-200 hover:border-[--color-orange-rim] hover:text-[--color-orange-dark] active:scale-[0.98]"
                   >
                     Command Center
                   </Link>
                   <Link
                     href={routes.guide}
-                    className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm font-semibold uppercase tracking-[0.08em] text-slate-700 transition-all duration-200 hover:border-orange-300 hover:text-orange-700 active:scale-[0.98]"
+                    className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm font-semibold uppercase tracking-[0.08em] text-slate-700 transition-all duration-200 hover:border-[--color-orange-rim] hover:text-[--color-orange-dark] active:scale-[0.98]"
                   >
                     User Guide
                   </Link>
@@ -141,7 +141,7 @@ export default function AboutPage() {
                       key={pillar.title}
                       className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"
                     >
-                      <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-orange-600">
+                      <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-orange-brand">
                         {pillar.title}
                       </p>
                       <p className="mt-2 text-sm leading-relaxed text-slate-600">
@@ -152,11 +152,11 @@ export default function AboutPage() {
                 </div>
               </div>
 
-              <div className="relative overflow-hidden rounded-3xl border border-orange-200 bg-orange-50 p-5">
+              <div className="relative overflow-hidden rounded-3xl border border-[--color-orange-rim] bg-[--color-orange-soft] p-5">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.08),transparent_48%)]" />
                 <div className="relative flex h-full min-h-[280px] flex-col justify-between">
                   <div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-orange-600">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-orange-brand">
                       Brand Signal
                     </p>
                     <p className="mt-2 max-w-[18rem] text-sm leading-relaxed text-slate-700">
@@ -167,11 +167,11 @@ export default function AboutPage() {
                   </div>
 
                   <div className="relative flex items-center justify-center py-6">
-                    <div className="absolute h-44 w-44 rounded-full border border-orange-200" />
-                    <div className="absolute h-28 w-28 rounded-full border border-orange-300/50" />
-                    <div className="flex h-24 w-24 items-center justify-center rounded-full bg-orange-100 shadow-[0_0_0_1px_rgba(194,65,12,0.15)]">
+                    <div className="absolute h-44 w-44 rounded-full border border-[--color-orange-rim]" />
+                    <div className="absolute h-28 w-28 rounded-full border border-[--color-orange-rim]/50" />
+                    <div className="flex h-24 w-24 items-center justify-center rounded-full bg-[--color-orange-brand]/12 shadow-[0_0_0_1px_rgba(194,65,12,0.15)]">
                       <DraftingCompass
-                        className="h-10 w-10 text-orange-600"
+                        className="h-10 w-10 text-orange-brand"
                         strokeWidth={2}
                         aria-hidden
                       />
@@ -179,7 +179,7 @@ export default function AboutPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <div className="flex items-center justify-between rounded-2xl border border-orange-200 bg-white px-3 py-2">
+                    <div className="flex items-center justify-between rounded-2xl border border-[--color-orange-rim] bg-white px-3 py-2">
                       <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-600">
                         Core calculators
                       </span>
@@ -187,7 +187,7 @@ export default function AboutPage() {
                         Free
                       </span>
                     </div>
-                    <div className="flex items-center justify-between rounded-2xl border border-orange-200 bg-white px-3 py-2">
+                    <div className="flex items-center justify-between rounded-2xl border border-[--color-orange-rim] bg-white px-3 py-2">
                       <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-600">
                         Workflow depth
                       </span>
@@ -195,7 +195,7 @@ export default function AboutPage() {
                         Optional
                       </span>
                     </div>
-                    <div className="flex items-center justify-between rounded-2xl border border-orange-200 bg-white px-3 py-2">
+                    <div className="flex items-center justify-between rounded-2xl border border-[--color-orange-rim] bg-white px-3 py-2">
                       <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-600">
                         Jobsite bias
                       </span>
@@ -236,7 +236,7 @@ export default function AboutPage() {
 
             <aside className="space-y-4">
               <div className="content-card p-5">
-                <div className="inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-orange-600">
+                <div className="inline-flex items-center gap-2 rounded-full border border-[--color-orange-rim] bg-[--color-orange-soft] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-orange-brand">
                   <ShieldCheck className="h-3.5 w-3.5" aria-hidden />
                   What we optimize for
                 </div>
@@ -265,7 +265,7 @@ export default function AboutPage() {
                       key={index}
                       className="rounded-2xl border border-[--color-border] bg-[--color-surface-alt] px-4 py-3"
                     >
-                      <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-orange-600">
+                      <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-orange-brand">
                         Step {index + 1}
                       </span>
                       <p className="mt-1 leading-relaxed">{step}</p>
@@ -292,8 +292,8 @@ export default function AboutPage() {
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
               {includedFeatures.map(({ icon: Icon, title, detail }) => (
                 <div key={title} className="content-card p-5">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-50 shadow-inner">
-                    <Icon className="h-5 w-5 text-orange-600" aria-hidden />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[--color-orange-soft] shadow-inner">
+                    <Icon className="h-5 w-5 text-orange-brand" aria-hidden />
                   </div>
                   <h3 className="mt-4 font-display text-xl font-bold uppercase text-[--color-ink]">
                     {title}

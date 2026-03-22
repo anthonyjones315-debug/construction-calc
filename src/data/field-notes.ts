@@ -146,6 +146,117 @@ Use our [footing volume calculator](/calculators/concrete/footing) once the desi
     `,
   },
   {
+    slug: "oneida-county-sales-tax-2026",
+    title: "Oneida County Sales Tax (8.75%) and ST-124 Rules",
+    description:
+      "A contractor-focused guide to Oneida County's current combined sales tax rate covering the Rome and Utica market, ST-124 capital improvement exemptions, and clean estimating habits.",
+    category: "Business & Legal",
+    date: "May 2026",
+    lastVerified: "2026-03-17",
+    relatedToolLinks: [
+      { href: "/calculators/business/tax-save", label: "Tax Save Calculator" },
+      { href: "/calculators/business/profit-margin", label: "Profit Margin" },
+      { href: "/calculators/business/labor-rate", label: "Labor Rate" },
+    ],
+    content: `
+## Current combined rate
+
+New York's current jurisdiction table lists Oneida County at 8.75 percent combined sales tax. That is 4 percent state tax plus 4.75 percent local tax. This applies to taxable repair and maintenance work performed within Oneida County, including the Rome and Utica metro areas.
+
+## Capital improvements and Form ST-124
+
+If the project qualifies as a capital improvement under NYS tax law, collect a signed Form ST-124 from the property owner before the job starts. A valid ST-124 on file means you do not charge sales tax on labor for that scope. Materials you purchase for the job are still taxable at the point of purchase unless a separate exemption applies.
+
+## Common traps in the Rome and Utica market
+
+- Remodeling a kitchen or bathroom usually qualifies as a capital improvement. Patching or repairing the same space usually does not.
+- A job that mixes new work with repair work needs two separate invoice lines so the tax treatment is clear on paper.
+- Do not rely on what the last GC told you. Verify the project type before the proposal goes out.
+
+## Clean estimating habits
+
+- Enter the 8.75 percent rate in the Tax Save calculator before you build the bid.
+- Keep the signed ST-124 in the job file alongside the executed contract and final invoice.
+- Show tax as its own line on every taxable estimate so clients are not surprised at closeout.
+
+## Local contractor note
+
+Oneida County projects often span multiple municipalities from Rome to Utica to Whitesboro. Tax treatment does not change by city for sales tax purposes, but permit requirements and inspection processes can vary significantly. Confirm local jurisdiction paperwork before you break ground.
+
+Use our [Tax Save calculator](/calculators/business/tax-save) to model the taxable and exempt versions of a bid before it leaves your desk.
+    `,
+  },
+  {
+    slug: "herkimer-county-sales-tax-2026",
+    title: "Herkimer County Sales Tax (8.25%) and ST-124 Rules",
+    description:
+      "A straightforward guide to Herkimer County's current combined sales tax rate and how ST-124 changes the labor line on a qualifying capital-improvement job.",
+    category: "Business & Legal",
+    date: "May 2026",
+    lastVerified: "2026-03-17",
+    relatedToolLinks: [
+      { href: "/calculators/business/tax-save", label: "Tax Save Calculator" },
+      { href: "/calculators/business/profit-margin", label: "Profit Margin" },
+      { href: "/calculators/business/labor-rate", label: "Labor Rate" },
+    ],
+    content: `
+## Current combined rate
+
+New York's current jurisdiction table lists Herkimer County at 8.25 percent combined sales tax. That is 4 percent state tax plus 4.25 percent local tax.
+
+## When ST-124 changes the invoice
+
+If the job qualifies as a capital improvement and you have a signed Form ST-124 on file, labor is not taxed. If the work is repair or maintenance, the taxable labor line stays in play.
+
+## Clean estimating habits
+
+- Separate repair work from capital-improvement work on mixed jobs.
+- Keep materials, labor, overhead, and profit visible instead of hiding tax inside a lump sum.
+- Save the signed ST-124 with the estimate and invoice package.
+
+## Local reminder
+
+Permit handling and review timing can still vary by town or village, so do not let the tax math distract you from jurisdiction-specific paperwork.
+
+Use our [Tax Save calculator](/calculators/business/tax-save) to model the job both ways before you send the bid.
+    `,
+  },
+  {
+    slug: "madison-county-sales-tax-2026",
+    title: "Madison County Sales Tax (8.00%) and ST-124 Rules",
+    description:
+      "How to handle Madison County's current combined rate and keep taxable repairs separate from true capital-improvement work.",
+    category: "Business & Legal",
+    date: "May 2026",
+    lastVerified: "2026-03-17",
+    relatedToolLinks: [
+      { href: "/calculators/business/tax-save", label: "Tax Save Calculator" },
+      { href: "/calculators/business/profit-margin", label: "Profit Margin" },
+      { href: "/calculators/business/labor-rate", label: "Labor Rate" },
+    ],
+    content: `
+## Current combined rate
+
+Madison County is currently listed at an 8.00 percent combined sales tax rate. That is 4 percent state tax plus 4 percent local tax.
+
+## Where contractors get tripped up
+
+The mistake is not usually the percentage. It is treating every residential job like a capital improvement. If the work is repair or maintenance, tax still applies. If it qualifies and you have Form ST-124 on file, labor is not taxed.
+
+## Keep the paperwork clean
+
+- Decide early whether the scope is taxable repair, exempt capital improvement, or a mix of both.
+- Split mixed scopes into separate lines so the invoice tells the same story as the contract.
+- Keep the exemption form in the file, not in someone's inbox.
+
+## Practical takeaway
+
+The easier you make the paper trail, the easier it is to defend the invoice later.
+
+Use our [Tax Save calculator](/calculators/business/tax-save) to compare the taxed and exempt versions before you send the estimate.
+    `,
+  },
+  {
     slug: "nys-retainage-laws",
     title: "NYS Retainage Rules: What Local GCs Should Read First",
     description:
@@ -422,6 +533,190 @@ The Town of Marcy has an adopted Unified Development Code on file with the state
 ## Practical move
 
 If you are bidding a 2026 project in Marcy or elsewhere in Oneida County, check the code status first and confirm land-use review requirements second before the proposal leaves your desk.
+    `,
+  },
+  {
+    slug: "how-much-mulch-do-i-need",
+    title: "How Much Mulch Do I Need? A Quick Volume Guide",
+    description:
+      "Estimate bulk mulch in cubic yards for beds, tree rings, and landscape areas — with depth guidelines by application.",
+    category: "Landscaping",
+    date: "March 2026",
+    relatedToolLinks: [
+      { href: "/calculators/landscape/mulch", label: "Mulch Calculator" },
+      { href: "/calculators/landscape/topsoil", label: "Topsoil Calculator" },
+    ],
+    content: `
+## Start with the area
+
+Measure the length and width of the bed or landscape area in feet. Multiply them to get square footage. For irregular shapes, break the area into rectangles and add the sections together.
+
+## Pick the right depth
+
+Mulch depth depends on the application:
+
+- **Garden beds:** 2–3 inches is standard for weed suppression and moisture retention.
+- **Tree rings:** 3–4 inches, but keep mulch 6 inches away from the trunk to avoid rot.
+- **Walkway borders:** 2 inches is usually enough for appearance.
+- **Erosion control on slopes:** 4 inches minimum to stay in place.
+
+## Convert to cubic yards
+
+The formula is simple:
+
+**Cubic yards = (length × width × depth in inches) ÷ (12 × 27)**
+
+For example, a 20 × 10 foot bed at 3 inches deep needs about 1.85 cubic yards before waste.
+
+## Bulk vs. bagged
+
+Bulk mulch from a local yard runs 3–4 times cheaper per cubic yard than bagged product from a box store. Once you need more than about 2 cubic yards, bulk delivery almost always makes sense — especially in the tri-county area where most suppliers charge a flat delivery fee regardless of quantity.
+
+## Add waste
+
+Order 10% extra for settling, uneven bed depths, and spillage. Mulch compresses after rain, and a short order means a second trip.
+
+Use our [mulch calculator](/calculators/landscape/mulch) to turn your bed dimensions into a clean cubic yard number.
+    `,
+  },
+  {
+    slug: "planning-a-paver-patio-materials-and-layout",
+    title: "Planning a Paver Patio: Materials and Layout",
+    description:
+      "How to estimate pavers, sand, and gravel base for a patio — with base depth guidelines for Upstate New York freeze-thaw conditions.",
+    category: "Outdoor",
+    date: "March 2026",
+    relatedToolLinks: [
+      { href: "/calculators/outdoor/paver-patio", label: "Paver Patio Calculator" },
+      { href: "/calculators/landscape/gravel", label: "Gravel & Stone Calculator" },
+    ],
+    content: `
+## Base prep matters most
+
+A paver patio is only as good as what is underneath it. In the tri-county area, freeze-thaw cycles will destroy a patio with an undersized base in one or two winters. Start with the base, not the pavers.
+
+## Gravel base depth
+
+- **Patios (foot traffic only):** 4 inches of compacted crushed stone minimum.
+- **Areas with occasional vehicle traffic:** 6 inches minimum.
+- **Over clay soils or poor drainage:** Add 2 inches to the above numbers.
+
+Compact the base in 2-inch lifts with a plate compactor. Skipping this step is the number one reason patios fail.
+
+## Sand bedding
+
+A 1-inch layer of bedding sand goes on top of the compacted gravel. Use concrete sand or ASTM C33 sand — not play sand or mason sand.
+
+## Paver count
+
+A standard 4×8 inch brick paver covers about 0.222 square feet. For a 12×12 foot patio (144 sq ft):
+
+- **Pavers:** 144 ÷ 0.222 = ~649 pavers before waste
+- **With 10% waste:** ~714 pavers
+
+Pattern cuts (herringbone, basket weave) generate more waste than running bond. Budget 10–15% depending on the pattern.
+
+## Edge restraint
+
+Every patio needs edge restraint around the perimeter to prevent pavers from shifting. Measure the perimeter in linear feet and order rigid plastic or aluminum edging to match.
+
+## Polymeric sand
+
+After setting pavers, sweep polymeric sand into the joints and activate with water. This locks the pavers in place and prevents weed growth. One 50-lb bag covers roughly 30–50 sq ft depending on joint width.
+
+Use our [paver patio calculator](/calculators/outdoor/paver-patio) to get material quantities for your project.
+    `,
+  },
+  {
+    slug: "fence-material-estimating-posts-rails-and-pickets",
+    title: "Fence Material Estimating: Posts, Rails, and Pickets",
+    description:
+      "The math behind a wood fence package — post spacing, rail count, picket quantities, and frost line requirements for Upstate New York.",
+    category: "Outdoor",
+    date: "March 2026",
+    relatedToolLinks: [
+      { href: "/calculators/outdoor/fence", label: "Fence Calculator" },
+    ],
+    content: `
+## Posts first
+
+Post count is straightforward: divide the total linear footage by the post spacing, then add one.
+
+- **Standard spacing:** 8 feet on center for most residential wood fences.
+- **6-foot spacing:** Used on slopes, heavy wind areas, or when the fence height exceeds 6 feet.
+
+A 100-foot fence at 8-foot spacing needs 14 posts (100 ÷ 8 + 1 = 13.5, round up).
+
+## Frost line depth
+
+In Oneida, Madison, and Herkimer counties, fence posts must be set at least 48 inches below grade per NYS frost line requirements. This means the post needs to be at least 4 feet in the ground. For a 6-foot fence, use 10-foot posts (6 above + 4 below). Cutting corners on depth leads to frost-heaved posts by the second spring.
+
+## Rails
+
+- **Fences up to 6 feet:** 2 horizontal rails per section.
+- **Fences over 6 feet:** 3 rails per section for structural rigidity.
+
+Each section runs between two posts, so rail count = sections × rails per section. A 100-foot fence at 8-foot spacing with 2 rails needs 13 sections × 2 = 26 rails.
+
+## Pickets
+
+A standard dog-ear picket is 3.5 inches wide. With a 0.5-inch gap between pickets, each picket takes up 4 inches of fence width.
+
+- **Pickets per 8-foot section:** (8 × 12) ÷ 4 = 24 pickets
+- **For 13 sections:** 24 × 13 = 312 pickets
+
+Add 10% for waste (broken boards, bad cuts, and gate framing).
+
+## Gates
+
+Each gate opening loses one section of fence but adds a gate frame kit. Budget 2 extra posts (doubled for hinge/latch strength) and a pre-hung gate or custom frame per opening.
+
+Use our [fence calculator](/calculators/outdoor/fence) to get a complete material list before the order goes in.
+    `,
+  },
+  {
+    slug: "spring-driveway-repair-asphalt-vs-concrete",
+    title: "Spring Driveway Repair: Asphalt vs Concrete",
+    description:
+      "A practical comparison of asphalt and concrete driveways for Upstate New York homeowners — cost, durability, and climate considerations.",
+    category: "Outdoor",
+    date: "March 2026",
+    relatedToolLinks: [
+      { href: "/calculators/outdoor/asphalt-driveway", label: "Asphalt Driveway Calculator" },
+      { href: "/calculators/concrete/slab", label: "Slab Calculator" },
+    ],
+    content: `
+## The climate factor
+
+Upstate New York winters are hard on driveways. Freeze-thaw cycles, road salt, and plow damage all affect the surface differently depending on the material.
+
+**Asphalt** flexes with freeze-thaw movement, which reduces cracking. But it softens in extreme heat and needs seal coating every 3–5 years. Salt damage is minimal.
+
+**Concrete** is rigid and cracks more easily from frost heave, but it lasts longer without maintenance when the base is done right. De-icing salt can cause surface spalling over time — use sand or calcium chloride instead of rock salt on concrete.
+
+## Cost comparison
+
+Rough installed cost ranges for the tri-county area (2026):
+
+- **Asphalt:** $3–$6 per square foot installed
+- **Concrete:** $6–$12 per square foot installed
+
+Asphalt is cheaper upfront but has higher lifetime maintenance cost. Concrete costs more initially but requires almost no maintenance for 20–30 years when properly installed.
+
+## Thickness and base
+
+- **Asphalt driveways:** 2–3 inches of compacted hot mix over 6–8 inches of compacted gravel base.
+- **Concrete driveways:** 4 inches of concrete over 4–6 inches of compacted gravel base. Rebar or wire mesh recommended for crack control.
+
+Both materials need proper gravel base and compaction to handle Upstate freeze-thaw conditions.
+
+## When to choose each
+
+**Choose asphalt** when budget is tight, the driveway is long, or you want a surface that handles plow blades better.
+
+**Choose concrete** when you want longevity, minimal maintenance, or decorative options (stamped, colored, exposed aggregate).
+
+Use our [asphalt driveway calculator](/calculators/outdoor/asphalt-driveway) for tonnage estimates, or our [slab calculator](/calculators/concrete/slab) for concrete driveway volume.
     `,
   },
 ];

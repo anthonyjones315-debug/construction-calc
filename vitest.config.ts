@@ -6,6 +6,13 @@ export default defineConfig({
     environment: "node",
     globals: true,
     setupFiles: [],
+    exclude: [
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/e2e/**",
+      "**/.claude/**",
+      "**/construction-calc/**",
+    ],
     coverage: {
       reporter: ["text", "lcov"],
     },

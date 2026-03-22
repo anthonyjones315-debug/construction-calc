@@ -20,12 +20,12 @@ export default function TermsPage() {
       <Header />
       <main id="main-content" className="flex-1">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
-          <div className="dark-feature-panel mb-8 p-6 text-white">
+          <div className="dark-feature-panel mb-8 p-6 text-[--color-ink]">
             <p className="section-kicker">Rules of use</p>
             <h1 className="mt-2 text-3xl font-display font-bold">
               Terms of Service
             </h1>
-            <p className="mt-2 text-sm text-[--color-nav-text]/70">
+            <p className="mt-2 text-sm text-[--color-ink-mid]">
               Pro Construction Calc · Effective Date: {EFFECTIVE_DATE}
             </p>
           </div>

@@ -1,0 +1,6 @@
+# Nested copy / local tooling — not part of the deployable app
+construction-calc
+.claude
+e2e
+spring-seo-content
+*.docx

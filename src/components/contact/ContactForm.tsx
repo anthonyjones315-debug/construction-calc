@@ -148,7 +148,7 @@ export function ContactForm({
 
   if (status === "sent") {
     return (
-      <div className="glass-panel border-emerald-500/30 bg-emerald-500/12 px-4 py-4 text-sm text-emerald-100">
+      <div className="glass-panel border-emerald-200 bg-emerald-50 px-4 py-4 text-sm text-emerald-800">
         {successMessage}
       </div>
     );
@@ -221,7 +221,7 @@ export function ContactForm({
         </div>
       </label>
       {isErrorReport && lockedDiagnostics ? (
-        <div className="glass-panel-deep space-y-3 border-white/10 bg-black/15 p-4">
+        <div className="glass-panel-deep space-y-3 border-[--color-border] bg-[--color-surface-alt] p-4">
           <div className="space-y-1">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary">
               Locked System Details
@@ -242,7 +242,7 @@ export function ContactForm({
         </div>
       ) : null}
       {status === "error" && errorMessage && (
-        <div className="glass-panel border-red-500/25 bg-red-500/10 px-4 py-3 text-sm text-red-100">
+        <div className="glass-panel border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
           {errorMessage}
         </div>
       )}

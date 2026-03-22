@@ -21,7 +21,9 @@ export type TradePageDefinition = {
     | "finish"
     | "management"
     | "interior"
-    | "business";
+    | "business"
+    | "landscape"
+    | "outdoor";
   title: string;
   description: string;
   heroKicker: string;
@@ -76,12 +78,24 @@ const categoryLinks: Record<TradePageDefinition["category"], RelatedLink[]> = {
       label: "Shingle Bundles Calculator",
     },
     {
+      href: "/calculators/roofing/shingles",
+      label: "Shingles Calculator",
+    },
+    {
       href: "/calculators/roofing/pitch-slope",
       label: "Pitch & Slope Calculator",
     },
     {
+      href: "/calculators/roofing/pitch",
+      label: "Roof Pitch Calculator",
+    },
+    {
       href: "/calculators/roofing/siding-squares",
       label: "Siding Squares Calculator",
+    },
+    {
+      href: "/calculators/roofing/siding",
+      label: "Siding Calculator",
     },
   ],
   mechanical: [
@@ -104,8 +118,16 @@ const categoryLinks: Record<TradePageDefinition["category"], RelatedLink[]> = {
       label: "R-Value Tracker",
     },
     {
+      href: "/calculators/insulation/r-value",
+      label: "R-Value Calculator",
+    },
+    {
       href: "/calculators/insulation/drywall-sheets",
       label: "Drywall Sheets Calculator",
+    },
+    {
+      href: "/calculators/insulation/drywall",
+      label: "Drywall Calculator",
     },
     {
       href: "/calculators/insulation/duct-sizing",
@@ -163,6 +185,26 @@ const categoryLinks: Record<TradePageDefinition["category"], RelatedLink[]> = {
     },
     { href: "/calculators/business/lead-estimator", label: "Lead Estimator" },
     { href: "/calculators/business/tax-save", label: "Tax Save Calculator" },
+  ],
+  landscape: [
+    { href: "/calculators/landscape/mulch", label: "Mulch Calculator" },
+    { href: "/calculators/landscape/topsoil", label: "Topsoil Calculator" },
+    { href: "/calculators/landscape/sod", label: "Sod & Seed Calculator" },
+    {
+      href: "/calculators/landscape/gravel",
+      label: "Gravel & Stone Calculator",
+    },
+  ],
+  outdoor: [
+    { href: "/calculators/outdoor/fence", label: "Fence Calculator" },
+    {
+      href: "/calculators/outdoor/paver-patio",
+      label: "Paver Patio Calculator",
+    },
+    {
+      href: "/calculators/outdoor/asphalt-driveway",
+      label: "Asphalt Driveway Calculator",
+    },
   ],
 };
 
@@ -1133,6 +1175,175 @@ export const tradePages: Record<string, TradePageDefinition> = {
     ],
     relatedLinks: categoryLinks.mechanical,
     altText: "Industrial drywall sheets calculator icon",
+  },
+
+  /* ── Landscape & Lawn ──────────────────────────────────────────── */
+  landscape: {
+    key: "landscape",
+    type: "category",
+    category: "landscape",
+    title: "Lawn & Landscape Calculators",
+    description:
+      "Mulch, topsoil, gravel, and sod estimators for spring landscaping projects with bulk-order-friendly outputs.",
+    heroKicker: "Lawn & Landscape",
+    proTip:
+      "Order bulk materials by the cubic yard from a local supplier — bagged product costs 3-4x more per yard once you pass a few square feet of coverage.",
+    localFocus:
+      "Built for landscape crews across Oneida, Madison, and Herkimer counties where spring delivery windows fill fast after frost.",
+    canonicalPath: "/calculators/landscape",
+    keywords: [
+      "mulch calculator",
+      "topsoil calculator",
+      "landscape estimator Rome NY",
+    ],
+    relatedLinks: categoryLinks.landscape,
+    altText: "Professional lawn and landscape calculator icon",
+  },
+
+  /* ── Outdoor: Fences, Driveways & Patios ───────────────────────── */
+  outdoor: {
+    key: "outdoor",
+    type: "category",
+    category: "outdoor",
+    title: "Fences, Driveways & Patios",
+    description:
+      "Fence, paver patio, and driveway calculators for spring outdoor projects with material lists ready for the supplier.",
+    heroKicker: "Fences, Driveways & Patios",
+    proTip:
+      "Always confirm frost line depth before setting fence posts — 48 inches below grade is the NYS minimum for the tri-county area.",
+    localFocus:
+      "Configured for Upstate New York frost line requirements and local supplier ordering conventions.",
+    canonicalPath: "/calculators/outdoor",
+    keywords: [
+      "fence calculator",
+      "paver patio calculator",
+      "driveway estimator Utica NY",
+    ],
+    relatedLinks: categoryLinks.outdoor,
+    altText: "Professional outdoor construction calculator icon",
+  },
+
+  /* ── Landscape Calculators ─────────────────────────────────────── */
+  "landscape-mulch": {
+    key: "landscape-mulch",
+    type: "calculator",
+    category: "landscape",
+    title: "Mulch Calculator — Cubic Yards Estimator",
+    description:
+      "Estimate mulch volume in cubic yards for garden beds, tree rings, and landscape areas with bulk-order-friendly outputs.",
+    heroKicker: "Landscape / Mulch",
+    proTip:
+      "Order 10% extra mulch for settling and uneven bed depths — most tri-county suppliers charge a delivery minimum regardless.",
+    localFocus:
+      "Built for landscape crews across Oneida, Madison, and Herkimer counties ordering bulk mulch from local yards.",
+    canonicalPath: "/calculators/landscape/mulch",
+    keywords: ["mulch calculator", "cubic yards mulch", "landscape mulch estimator"],
+    relatedLinks: categoryLinks.landscape,
+    altText: "Professional mulch volume calculator icon",
+  },
+  "landscape-topsoil": {
+    key: "landscape-topsoil",
+    type: "calculator",
+    category: "landscape",
+    title: "Topsoil Calculator — Volume & Tonnage",
+    description:
+      "Calculate topsoil volume in cubic yards and approximate tonnage for grading, fill, and lawn prep with waste allowance.",
+    heroKicker: "Landscape / Topsoil",
+    proTip:
+      "Topsoil weighs 1.0–1.3 tons per cubic yard depending on moisture — confirm with your supplier before ordering by the ton.",
+    localFocus:
+      "Configured for tri-county suppliers where topsoil is sold by the cubic yard or by the ton depending on the yard.",
+    canonicalPath: "/calculators/landscape/topsoil",
+    keywords: ["topsoil calculator", "fill dirt estimator", "topsoil cubic yards"],
+    relatedLinks: categoryLinks.landscape,
+    altText: "Professional topsoil volume calculator icon",
+  },
+  "landscape-sod": {
+    key: "landscape-sod",
+    type: "calculator",
+    category: "landscape",
+    title: "Sod & Seed Calculator",
+    description:
+      "Estimate sod rolls, pallets, or grass seed quantity for new lawns and patching with waste built in.",
+    heroKicker: "Landscape / Sod & Seed",
+    proTip:
+      "Sod pallets cover roughly 450 sq ft — order by the pallet for better pricing and less handling waste.",
+    localFocus:
+      "Tuned for tri-county cool-season grass blends where spring and early fall are the best seeding windows.",
+    canonicalPath: "/calculators/landscape/sod",
+    keywords: ["sod calculator", "grass seed calculator", "lawn coverage estimator"],
+    relatedLinks: categoryLinks.landscape,
+    altText: "Professional sod and seed calculator icon",
+  },
+  "landscape-gravel": {
+    key: "landscape-gravel",
+    type: "calculator",
+    category: "landscape",
+    title: "Gravel & Stone Calculator — Tons Estimator",
+    description:
+      "Calculate gravel or crushed stone in cubic yards and tons for driveways, paths, and drainage beds.",
+    heroKicker: "Landscape / Gravel & Stone",
+    proTip:
+      "Crushed stone averages 1.4 tons per cubic yard — always order in tons since that is how suppliers sell it.",
+    localFocus:
+      "Built for Upstate New York where gravel base is standard for drainage and frost-heave prevention.",
+    canonicalPath: "/calculators/landscape/gravel",
+    keywords: ["gravel calculator", "crushed stone tons", "gravel driveway estimator"],
+    relatedLinks: categoryLinks.landscape,
+    altText: "Professional gravel and stone calculator icon",
+  },
+
+  /* ── Outdoor Calculators ───────────────────────────────────────── */
+  "outdoor-fence": {
+    key: "outdoor-fence",
+    type: "calculator",
+    category: "outdoor",
+    title: "Fence Material Calculator",
+    description:
+      "Estimate posts, rails, and pickets for wood privacy and picket fences with waste and gate allowances.",
+    heroKicker: "Outdoor / Fence",
+    proTip:
+      "Fence posts in the tri-county area must be set at least 48 inches below grade per NYS frost line requirements.",
+    localFocus:
+      "Configured for Upstate New York frost line depth (48 in) and local lumber yard ordering conventions.",
+    canonicalPath: "/calculators/outdoor/fence",
+    keywords: ["fence calculator", "fence material estimator", "picket fence calculator"],
+    relatedLinks: categoryLinks.outdoor,
+    altText: "Professional fence material calculator icon",
+  },
+  "outdoor-paver-patio": {
+    key: "outdoor-paver-patio",
+    type: "calculator",
+    category: "outdoor",
+    title: "Paver Patio Calculator",
+    description:
+      "Estimate paver count, sand, and gravel base for patio installations with pattern waste factored in.",
+    heroKicker: "Outdoor / Paver Patio",
+    proTip:
+      "Use minimum 4 inches of compacted gravel base for patios — 6 inches for any area that may see vehicle traffic.",
+    localFocus:
+      "Built for tri-county freeze-thaw conditions where proper base depth prevents frost-heave damage.",
+    canonicalPath: "/calculators/outdoor/paver-patio",
+    keywords: ["paver calculator", "patio material estimator", "paver patio cost"],
+    relatedLinks: categoryLinks.outdoor,
+    altText: "Professional paver patio calculator icon",
+  },
+  "outdoor-asphalt-driveway": {
+    key: "outdoor-asphalt-driveway",
+    type: "calculator",
+    category: "outdoor",
+    title: "Asphalt Driveway Calculator — Tonnage Estimator",
+    description:
+      "Calculate hot mix asphalt tonnage for residential driveways and parking areas at standard compacted thickness.",
+    heroKicker: "Outdoor / Asphalt Driveway",
+    proTip:
+      "Residential driveways typically need 2–3 inches of compacted asphalt — always order in tons since that is how plants sell it.",
+    localFocus:
+      "Configured for Upstate New York paving season where temperature windows and plant minimums affect scheduling.",
+    canonicalPath: "/calculators/outdoor/asphalt-driveway",
+    keywords: ["asphalt calculator", "driveway tonnage", "hot mix asphalt estimator"],
+    relatedLinks: categoryLinks.outdoor,
+    altText: "Professional asphalt driveway calculator icon",
   },
 };
 

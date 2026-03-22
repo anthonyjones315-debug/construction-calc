@@ -5,7 +5,7 @@ test.describe("Security", () => {
     const context = await browser.newContext();
     const page = await context.newPage();
     await page.goto("/saved");
-    await expect(page).toHaveURL(/signin|auth/);
+    await expect(page).toHaveURL(/sign-in/);
     await context.close();
   });
 
@@ -13,7 +13,7 @@ test.describe("Security", () => {
     const context = await browser.newContext();
     const page = await context.newPage();
     await page.goto("/settings");
-    await expect(page).toHaveURL(/signin|auth/);
+    await expect(page).toHaveURL(/sign-in/);
     await context.close();
   });
 
@@ -23,7 +23,7 @@ test.describe("Security", () => {
     const context = await browser.newContext();
     const page = await context.newPage();
     await page.goto("/command-center");
-    await expect(page).toHaveURL(/signin|auth/);
+    await expect(page).toHaveURL(/sign-in/);
     await context.close();
   });
 
@@ -31,7 +31,7 @@ test.describe("Security", () => {
     const context = await browser.newContext();
     const page = await context.newPage();
     await page.goto("/pricebook");
-    await expect(page).toHaveURL(/signin|auth/);
+    await expect(page).toHaveURL(/sign-in/);
     await context.close();
   });
 

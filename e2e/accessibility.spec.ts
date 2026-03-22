@@ -10,7 +10,7 @@ test.describe("Accessibility — WCAG 2.1 AA", () => {
     "/cart",
     "/saved",
     "/settings",
-    "/auth/signin",
+    "/sign-in",
   ];
 
   for (const route of keyPages) {

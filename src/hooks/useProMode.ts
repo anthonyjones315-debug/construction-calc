@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth/client";
 
 const PRO_MODE_STORAGE_KEY = "constructionCalc.proMode";
 const PRO_MODE_EVENT = "construction-calc:pro-mode-changed";

@@ -4,7 +4,7 @@ test.describe("Settings", () => {
 
   test("settings page loads for authenticated user", async ({ page }) => {
     await page.goto("/settings");
-    await expect(page).not.toHaveURL(/auth\/signin/);
+    await expect(page).not.toHaveURL(/\/sign-in/);
     await expect(page.getByRole("heading", { name: /settings/i })).toBeVisible();
   });
 
@@ -55,11 +55,11 @@ test.describe("Settings", () => {
 
     if (await signOutBtn.isVisible()) {
       await signOutBtn.click();
-      await expect(page).toHaveURL(/auth\/signin|\/$/);
+      await expect(page).toHaveURL(/\/sign-in|\/$/);
 
       // Confirm session is gone — protected route should redirect
       await page.goto("/saved");
-      await expect(page).toHaveURL(/auth\/signin/);
+      await expect(page).toHaveURL(/\/sign-in/);
     }
   });
 

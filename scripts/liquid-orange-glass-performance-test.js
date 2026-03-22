@@ -13,7 +13,7 @@
 
 // Self-executing function to avoid polluting global scope
 (function () {
-  const BRAND_PRIMARY = "var(--color-primary, #FF7A00)";
+  const BRAND_PRIMARY = "var(--color-primary, #ea580c)";
   const HEADER_STYLE = `font-weight: bold; color: ${BRAND_PRIMARY};`;
   const GLASS_SELECTOR =
     ".glass-container, .glass-card, .glass-panel, .glass-modal, .glass-gpu";

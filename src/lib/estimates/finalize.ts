@@ -1,7 +1,8 @@
 import { z } from "zod";
 
 const SHARE_CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-const SHARE_CODE_LENGTH = 6;
+/** Canonical share-link length (see `generateEstimateShareCode`). */
+export const SHARE_CODE_LENGTH = 6;
 const DEFAULT_SITE_URL = "https://proconstructioncalc.com";
 
 export const estimateResultSchema = z.object({
@@ -20,6 +21,12 @@ export const finalizeEstimateSchema = z
     results: z.array(estimateResultSchema).min(1).max(25),
     material_list: z.array(z.string().trim().min(1).max(200)).min(1).max(50),
     inputs: z.record(z.string(), z.unknown()).optional(),
+    /** Customer-facing note shown on the estimate PDF. */
+    quote_note: z.string().trim().max(1000).nullable().optional(),
+    /** Internal project note. Never rendered on PDFs or client-facing output. */
+    internal_note: z.string().trim().max(2000).nullable().optional(),
+    /** Document type discriminant. Defaults to calculator_report. */
+    type: z.enum(["calculator_report", "estimate"]).optional(),
     metadata: z
       .object({
         title: z.string().trim().min(1).max(200),
@@ -37,6 +44,8 @@ export const finalizeEstimateSchema = z
       })
       .strict()
       .optional(),
+    /** When set, replaces this saved row instead of inserting a duplicate (same calculator session). */
+    saved_estimate_id: z.string().uuid().optional(),
   })
   .strict();
 
@@ -92,6 +101,22 @@ export function buildSignUrl(shareCode: string) {
 
 export function normalizeShareCode(value: string) {
   return value.trim().toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12);
+}
+
+/** Reject garbage paths before hitting the database (enumeration / typo noise). */
+export function isValidShareCodeNormalized(normalized: string): boolean {
+  if (
+    normalized.length < SHARE_CODE_LENGTH ||
+    normalized.length > 12
+  ) {
+    return false;
+  }
+  for (let i = 0; i < normalized.length; i += 1) {
+    if (!SHARE_CODE_CHARS.includes(normalized[i]!)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 export function buildSigningMeta(

@@ -55,6 +55,10 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
     Array.isArray(payload.material_list) && payload.material_list.length
       ? payload.material_list
       : [];
+  const quoteNote =
+    typeof payload.quote_note === "string" && payload.quote_note.trim()
+      ? payload.quote_note.trim()
+      : null;
 
   const dollars =
     typeof payload.total_cost === "number"
@@ -173,20 +177,20 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
   <body>
     <div class="page">
       <!-- Header -->
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 20px; border-bottom: 3px solid #b85a10;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 20px; border-bottom: 3px solid #FF7A00;">
         <div style="display: flex; align-items: center; gap: 12px;">
           ${
             contractorLogoUrl
               ? `<img src="${contractorLogoUrl}" alt="" style="width: 48px; height: 48px; border-radius: 8px; object-fit: contain; border: 1px solid #e5e7eb;" />`
-              : `<div style="width: 48px; height: 48px; border-radius: 8px; background: #b85a10; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 20px;">${safeContractorName.charAt(0).toUpperCase()}</div>`
+              : `<div style="width: 48px; height: 48px; border-radius: 8px; background: #FF7A00; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 20px;">${safeContractorName.charAt(0).toUpperCase()}</div>`
           }
           <div>
-            <p style="font-size: 18px; font-weight: 800; color: #111827; line-height: 1.2;">${safeContractorName}</p>
+            <p style="font-size: 18px; font-weight: 700; color: #111827; line-height: 1.2; letter-spacing: -0.02em;">${safeContractorName}</p>
             ${contactLine ? `<p style="font-size: 12px; color: #6b7280; margin-top: 2px;">${contactLine}</p>` : ""}
           </div>
         </div>
         <div style="text-align: right;">
-          <p style="font-size: 22px; font-weight: 800; color: #b85a10; letter-spacing: -0.02em;">ESTIMATE</p>
+          <p style="font-size: 22px; font-weight: 800; color: #FF7A00; letter-spacing: -0.02em;">ESTIMATE</p>
           ${controlNumber ? `<p style="font-size: 11px; color: #6b7280; margin-top: 2px;">${controlNumber}</p>` : ""}
           <p style="font-size: 11px; color: #6b7280; margin-top: 2px;">${generatedAt}</p>
         </div>
@@ -247,7 +251,7 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
           }
           <div style="display: flex; justify-content: space-between; padding: 12px 0; border-top: 2px solid #111827; margin-top: 4px;">
             <span style="font-size: 14px; font-weight: 800; color: #111827;">TOTAL</span>
-            <span style="font-size: 18px; font-weight: 800; color: #b85a10;">${total ?? (dollars || "—")}</span>
+            <span style="font-size: 18px; font-weight: 800; color: #FF7A00;">${total ?? (dollars || "—")}</span>
           </div>
         </div>
       </div>
@@ -295,11 +299,40 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
         </p>
       </div>
 
-      <!-- Footer -->
-      <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e5e7eb; text-align: center;">
-        <p style="font-size: 10px; color: #9ca3af;">Powered by Pro Construction Calc</p>
-      </div>
+        <!-- Quote Note (customer-facing) -->
+        ${
+          quoteNote
+            ? `<section class="glass-panel px-5 py-4">
+               <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/80">
+                 Note
+               </p>
+               <p class="mt-1 text-sm text-white/90 whitespace-pre-line">${quoteNote}</p>
+             </section>`
+            : ""
+        }
+
+        <!-- Field Notes -->
+        <section class="glass-panel px-5 py-4">
+          <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/80">
+            Field Notes
+          </p>
+          <p class="mt-1 text-xs text-white/70">
+            Use this estimate as a planning tool. Always verify on-site dimensions, substrate conditions, and tax status (ST-124) before ordering or invoicing.
+          </p>
+        </section>
+
+        <!-- Footer -->
+        <footer class="pt-4 text-center text-[8pt] text-slate-500">
+          <p>Powered by Pro Construction Calc</p>
+          <p class="text-[8pt] mt-0.5">
+            <a href="https://proconstructioncalc.com/terms" class="text-slate-500 hover:text-orange-300">Terms</a>
+            <span class="mx-1">•</span>
+            <a href="https://proconstructioncalc.com/privacy" class="text-slate-500 hover:text-orange-300">Privacy</a>
+          </p>
+        </footer>
+      </main>
     </div>
+    <script>document.fonts.ready.then(() => { window.__fontsReady = true; });</script>
   </body>
 </html>`;
 }

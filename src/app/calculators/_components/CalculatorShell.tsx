@@ -20,7 +20,7 @@ export function CalculatorShell({
       <CalculatorBreadcrumb page={page} />
       <CalculatorPageHeader page={page} />
 
-      <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6">
+      <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6">
         <div className="grid gap-4 lg:grid-cols-[1fr_380px] lg:items-start">
           <section aria-label="Calculator inputs" className="space-y-4">
             {inputsPanel}

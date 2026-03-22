@@ -75,14 +75,13 @@ export default function GlossaryPage() {
       <main id="main-content" className="flex-1">
         <JsonLD schema={schema} />
         <div className="mx-auto w-full max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
-          <div className="dark-feature-panel mb-8 flex items-center gap-4 p-6 text-white">
+          <div className="dark-feature-panel mb-8 flex items-center gap-4 p-6 text-[--color-ink]">
             <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[--color-orange-brand]/15 shadow-inner">
               <BookOpen className="h-7 w-7 text-[--color-orange-brand]" aria-hidden />
             </div>
             <div className="space-y-1">
               <p className="section-kicker">Common Terms</p>
-                Common Terms
-              <h1 className="mt-2 font-display text-2xl font-bold leading-tight sm:text-3xl">
+              <h1 className="mt-2 font-display text-2xl font-bold leading-tight text-[--color-ink] sm:text-3xl">
                 Construction & Financial Glossary
               </h1>
               <p className="mt-2 text-sm text-[--color-ink-mid]">

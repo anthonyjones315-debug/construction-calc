@@ -1,4 +1,4 @@
-import type { Session } from "next-auth";
+import type { Session } from "@/lib/auth/session";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { ensurePublicUser } from "@/lib/supabase/ensurePublicUser";
 import { UnauthorizedError } from "@/lib/errors/unauthorized";
@@ -122,7 +122,7 @@ export function getTenantScopeId(context: BusinessContext): string {
   return context.usesLegacyUserScope ? context.userId : context.businessId;
 }
 
-function buildDefaultBusinessName(session: Session): string {
+function buildDefaultBusinessName(session: NonNullable<Session>): string {
   const candidate =
     session.user?.name?.trim() || session.user?.email?.trim() || "My Business";
   return `${candidate} Business`;
@@ -190,7 +190,7 @@ async function ensureOwnerBusiness(
 
 export async function getBusinessContextForSession(
   db: SupabaseClient,
-  session: Session,
+  session: NonNullable<Session>,
 ): Promise<BusinessContext> {
   const userId = session.user?.id;
   if (!userId) {

@@ -8,14 +8,14 @@ export function AboutContactSection() {
 
   return (
     <>
-      <div className="dark-feature-panel relative overflow-hidden p-8 text-center text-white">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(249,115,22,0.15),transparent_38%)]" />
+      <div className="dark-feature-panel relative overflow-hidden p-8 text-center text-[--color-ink]">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(249,115,22,0.12),transparent_42%)]" />
         <div className="relative">
           <p className="section-kicker">Talk shop</p>
-          <h2 className="mt-3 font-display text-3xl font-bold uppercase text-white">
+          <h2 className="mt-3 font-display text-3xl font-bold uppercase text-[--color-ink]">
             Got feedback?
           </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-[--color-nav-text]/78">
+          <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-[--color-ink-mid]">
             We actively improve the product based on what contractors, estimators,
             and builders tell us they need in the field.
           </p>

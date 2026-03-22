@@ -98,11 +98,21 @@ export default function GuidePage() {
       <Header />
       <main id="main-content" className="flex-1">
         <JsonLD schema={howToSchema} />
-        <JsonLD schema={getBreadcrumbSchema([{ name: "Guide", href: "/guide" }])} />
+        <JsonLD
+          schema={getBreadcrumbSchema([{ name: "Guide", href: "/guide" }])}
+        />
         <div className="guide-shell viewport-frame max-w-6xl">
           {/* Breadcrumb */}
-          <nav aria-label="Breadcrumb" className="mb-3 flex items-center gap-2 text-[11px] text-slate-500">
-            <Link href="/" className="transition-colors hover:text-orange-600">Home</Link>
+          <nav
+            aria-label="Breadcrumb"
+            className="mb-3 flex items-center gap-2 text-[11px] text-slate-500"
+          >
+            <Link
+              href="/"
+              className="transition-colors hover:text-[--color-orange-brand]"
+            >
+              Home
+            </Link>
             <span aria-hidden>/</span>
             <span className="font-semibold text-slate-800">Guide</span>
           </nav>
@@ -188,20 +198,20 @@ export default function GuidePage() {
 
             <article className="guide-card public-panel">
               <div className="public-chip public-chip-accent">
-                Operator checks
+                Estimating checklist
               </div>
               <ul className="guide-list">
                 <li>
-                  Pick the right county before exporting a client-facing
-                  estimate.
+                  Use Tax Save with the correct county and ST-124 setting before
+                  exporting a client-facing estimate.
                 </li>
                 <li>
                   Saved estimates, invoice PDFs, and the dashboard all reuse the
                   same verified math path.
                 </li>
                 <li>
-                  Reopen the app after updates so you are not working from a
-                  stale service worker.
+                  Keep a signed ST-124 in the job file for every capital
+                  improvement.
                 </li>
               </ul>
             </article>
