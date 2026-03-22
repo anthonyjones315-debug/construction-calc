@@ -1169,42 +1169,28 @@ export default function CommandCenterClient({
                         {estimate.name}
                       </p>
                       <p className="mt-1 truncate text-xs text-[--color-ink-dim]">
-                        {priority.value}
+                        {estimate.clientName || "No client name"}
                       </p>
                     </div>
                     <span
                       className={`inline-flex shrink-0 items-center rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest ${estimateStatusClasses(estimate.status)}`}
                     >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-300">
-                            {item.calculatorLabel}
-                          </p>
-                          <p className="mt-1 truncate text-sm font-bold text-white">
-                            {item.estimateName}
-                          </p>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => removeCartItem(item.id)}
-                          className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/15 text-slate-400 transition hover:border-red-400/50 hover:text-red-400"
-                          aria-label={`Remove ${item.estimateName} from cart`}
-                        >
-                          <X className="h-4 w-4" aria-hidden />
-                        </button>
-                      </div>
-                      <p className="mt-3 text-sm text-slate-300">
-                        {item.primaryResult.label}:{" "}
-                        <span className="font-mono font-semibold text-white">
-                          {formatCartValue(item.primaryResult.value)}{" "}
-                          {item.primaryResult.unit}
-                        </span>
-                      </p>
-                    </article>
-                  ))}
-                </div>
-              )}
-            </section>
+                      {formatEstimateStatus(estimate.status)}
+                    </span>
+                  </div>
+                  <p className="mt-3 text-xs text-[--color-ink-dim]">
+                    Updated{" "}
+                    {new Date(estimate.updatedAt).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          )}
+        </article>
+      </div>
     </div>
   );
 
