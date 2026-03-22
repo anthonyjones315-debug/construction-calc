@@ -1276,6 +1276,28 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     if (nextMode === "30") setDepthThickness(30);
   }
 
+  function handleWallStudSpacingModeChange(nextMode: WallStudSpacingMode) {
+    setWallStudSpacingMode(nextMode);
+    if (nextMode === "16") {
+      setWallStudCustomSpacingInches(16);
+    } else if (nextMode === "24") {
+      setWallStudCustomSpacingInches(24);
+    }
+  }
+
+  function handleWallStudHeightModeChange(nextMode: WallStudHeightMode) {
+    setWallStudHeightMode(nextMode);
+    if (nextMode === "8-precut") {
+      setWallStudCustomHeightFeet(92.625 / 12);
+    } else if (nextMode === "9-precut") {
+      setWallStudCustomHeightFeet(104.625 / 12);
+    } else if (nextMode === "10") {
+      setWallStudCustomHeightFeet(10);
+    } else if (nextMode === "12") {
+      setWallStudCustomHeightFeet(12);
+    }
+  }
+
   const calculatorResults: CalculatorResultsBundle = useMemo(() => {
     const isFlooringCalculator = page.canonicalPath.includes("flooring");
     const isSidingCalculator = page.canonicalPath.includes("siding");
@@ -4083,14 +4105,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                     { value: "24", label: `24" OC` },
                                     { value: "custom", label: "Custom" },
                                   ]}
-                                  onChange={(nextMode) => {
-                                    setWallStudSpacingMode(nextMode);
-                                    if (nextMode === "16") {
-                                      setWallStudCustomSpacingInches(16);
-                                    } else if (nextMode === "24") {
-                                      setWallStudCustomSpacingInches(24);
-                                    }
-                                  }}
+                                  onChange={handleWallStudSpacingModeChange}
                                 />
                                 {wallStudSpacingMode === "custom" ? (
                                   <ProInput
@@ -4122,18 +4137,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                     { value: "12", label: "12'" },
                                     { value: "custom", label: "Custom" },
                                   ]}
-                                  onChange={(nextMode) => {
-                                    setWallStudHeightMode(nextMode);
-                                    if (nextMode === "8-precut") {
-                                      setWallStudCustomHeightFeet(92.625 / 12);
-                                    } else if (nextMode === "9-precut") {
-                                      setWallStudCustomHeightFeet(104.625 / 12);
-                                    } else if (nextMode === "10") {
-                                      setWallStudCustomHeightFeet(10);
-                                    } else if (nextMode === "12") {
-                                      setWallStudCustomHeightFeet(12);
-                                    }
-                                  }}
+                                  onChange={handleWallStudHeightModeChange}
                                 />
                                 {wallStudHeightMode === "custom" ? (
                                   <FeetInchesInput
@@ -4230,22 +4234,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                       { value: "12", label: "12'" },
                                       { value: "custom", label: "Custom" },
                                     ]}
-                                    onChange={(nextMode) => {
-                                      setWallStudHeightMode(nextMode);
-                                      if (nextMode === "8-precut") {
-                                        setWallStudCustomHeightFeet(
-                                          92.625 / 12,
-                                        );
-                                      } else if (nextMode === "9-precut") {
-                                        setWallStudCustomHeightFeet(
-                                          104.625 / 12,
-                                        );
-                                      } else if (nextMode === "10") {
-                                        setWallStudCustomHeightFeet(10);
-                                      } else if (nextMode === "12") {
-                                        setWallStudCustomHeightFeet(12);
-                                      }
-                                    }}
+                                    onChange={handleWallStudHeightModeChange}
                                   />
                                   {wallStudHeightMode === "custom" ? (
                                     <ProInput
