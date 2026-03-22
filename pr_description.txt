@@ -1,0 +1,13 @@
+Title: 🧪 [Testing improvement for stale-cache.ts]
+
+Description:
+🎯 **What:** The testing gap addressed
+This PR addresses the missing test coverage for the public API functions inside `src/lib/supabase/stale-cache.ts`. These functions are critical for determining timeout scenarios in Supabase queries and controlling the stale-cache fallback mechanism.
+
+📊 **Coverage:** What scenarios are now tested
+- `isSupabaseTimeoutLike`: Tests that the function correctly identifies SupabaseTimeoutError instances, specific postgres error codes (like `57014`), standard `AbortError` objects, and various string matching combinations for typical timeout messages. It also explicitly verifies that primitive types and arbitrary errors return false.
+- `throwForStaleCacheOnTimeout`: Tests that a valid timeout-like error correctly throws a `SupabaseTimeoutError` with the appropriate prefix string, including testing default message fallback behavior. Verifies non-timeout errors do not throw.
+- `withSupabaseRevalidationTimeout`: Covers asynchronous promise resolutions, rejections from the underlying operation, timeout generation (including verifying that `process.env.SUPABASE_REVALIDATION_TIMEOUT_MS` overrides work correctly), and fallback to the default timeout value.
+
+✨ **Result:** The improvement in test coverage
+The public contract of `stale-cache.ts` is now completely covered by a standalone Vitest test suite (`src/lib/supabase/stale-cache.test.ts`), improving the project's reliability and resilience against regressions in the Supabase revalidation and caching logic.
