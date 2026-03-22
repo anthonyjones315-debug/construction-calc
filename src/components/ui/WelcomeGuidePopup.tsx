@@ -157,7 +157,7 @@ export function WelcomeGuidePopup({
               <GlassFeatureItem key={label}>
                 <Icon className="h-4 w-4 text-primary" aria-hidden />
                 <span>{label}</span>
-              </div>
+              </GlassFeatureItem>
             ))}
           </div>
 
