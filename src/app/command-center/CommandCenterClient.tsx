@@ -71,7 +71,12 @@ type NavItem = {
   description?: string;
 };
 
-type WorkspaceSlug = "overview" | "launch" | "workflow" | "crew" | "pages";
+type WorkspaceSlug =
+  | "overview"
+  | "launch"
+  | "workflow"
+  | "crew"
+  | "pages";
 
 type ToolCategory =
   | "all"
@@ -148,8 +153,7 @@ const toolNavItems: NavItem[] = [
     slug: "trade-modules",
     href: routes.calculators,
     icon: HardHat,
-    description:
-      "Open the full calculator library — concrete, framing, roofing, and more.",
+    description: "Open the full calculator library — concrete, framing, roofing, and more.",
   },
   {
     label: "Concrete & Masonry",
@@ -262,23 +266,18 @@ const commandPages: Array<{
 
 function formatRole(role: string): string {
   switch (role) {
-    case "owner":
-      return "Owner";
-    case "admin":
-      return "Admin";
-    case "editor":
-      return "Editor";
-    case "member":
-      return "Member";
-    default:
-      return "Member";
+    case "owner":   return "Owner";
+    case "admin":   return "Admin";
+    case "editor":  return "Editor";
+    case "member":  return "Member";
+    default:        return "Member";
   }
 }
 
 function roleBadgeClasses(role: string): string {
   switch (role) {
     case "owner":
-      return "border-[--color-orange-brand]/40 bg-[--color-orange-soft]/10 text-[--color-orange-dark]";
+      return "border-orange-500/40 bg-orange-500/10 text-orange-700";
     case "admin":
       return "border-blue-500/40 bg-blue-500/10 text-blue-700";
     case "editor":
@@ -318,19 +317,16 @@ function estimateStatusClasses(status: string | null) {
     return "border-emerald-500/40 bg-emerald-500/10 text-emerald-700";
   }
   if (status === "PENDING" || status === "Sent") {
-    return "border-[--color-orange-brand]/40 bg-[--color-orange-soft]/10 text-[--color-orange-dark]";
+    return "border-orange-500/40 bg-orange-500/10 text-orange-700";
   }
   return "border-[--color-border] bg-[--color-surface-alt] text-[--color-ink-mid]";
 }
 
 function categorizeTool(item: NavItem): ToolCategory {
   if (
-    [
-      "slab-thickness",
-      "running-lineal-feet",
-      "cubic-yards",
-      "masonry",
-    ].includes(item.slug)
+    ["slab-thickness", "running-lineal-feet", "cubic-yards", "masonry"].includes(
+      item.slug,
+    )
   ) {
     return "concrete";
   }
@@ -384,10 +380,7 @@ function WorkspaceTabButton({
           : "border-[--color-border] bg-[--color-surface-alt] text-[--color-ink-mid] hover:border-[--color-orange-brand]/40 hover:text-[--color-orange-brand]"
       }`}
     >
-      <Icon
-        className={`h-4 w-4 ${active ? "text-[--color-orange-brand]" : "text-[--color-ink-dim]"}`}
-        aria-hidden
-      />
+      <Icon className={`h-4 w-4 ${active ? "text-[--color-orange-brand]" : "text-[--color-ink-dim]"}`} aria-hidden />
       <span className="whitespace-nowrap">{label}</span>
     </button>
   );
@@ -410,14 +403,10 @@ function CommandStatCard({
         {label}
       </p>
       <div>
-        <p
-          className={`text-3xl font-black tracking-tight ${tone ?? "text-[--color-ink]"}`}
-        >
+        <p className={`text-3xl font-black tracking-tight ${tone ?? "text-[--color-ink]"}`}>
           {value}
         </p>
-        <p className="mt-2 text-xs leading-relaxed text-[--color-ink-dim]">
-          {detail}
-        </p>
+        <p className="mt-2 text-xs leading-relaxed text-[--color-ink-dim]">{detail}</p>
       </div>
     </article>
   );
@@ -438,17 +427,12 @@ function ToolLaunchCard({
     <>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="truncate text-sm font-bold text-[--color-ink]">
-            {item.label}
-          </p>
+          <p className="truncate text-sm font-bold text-[--color-ink]">{item.label}</p>
           <p className="mt-1 text-xs leading-relaxed text-[--color-ink-dim]">
             {item.description ?? "Open this field tool from Command Center."}
           </p>
         </div>
-        <item.icon
-          className="mt-0.5 h-4 w-4 shrink-0 text-[--color-orange-brand]"
-          aria-hidden
-        />
+        <item.icon className="mt-0.5 h-4 w-4 shrink-0 text-[--color-orange-brand]" aria-hidden />
       </div>
       <div className="mt-4 inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-orange-brand]">
         Open tool
@@ -473,7 +457,7 @@ function ToolLaunchCard({
     <Link
       href={href}
       prefetch={false}
-      className="command-card min-h-0 rounded-2xl px-4 py-4 text-left transition hover:border-[--color-orange-brand]/40 hover:bg-[--color-orange-soft]"
+      className="command-card min-h-0 rounded-2xl px-4 py-4 text-left transition hover:border-orange-500/40 hover:bg-[--color-orange-soft]"
     >
       {content}
     </Link>
@@ -495,19 +479,14 @@ function CommandPageCard({
     <Link
       href={href}
       prefetch={false}
-      className="command-card flex min-h-0 flex-col gap-3 rounded-2xl px-4 py-4 transition hover:border-[--color-orange-brand]/40 hover:bg-[--color-orange-soft]"
+      className="command-card flex min-h-0 flex-col gap-3 rounded-2xl px-4 py-4 transition hover:border-orange-500/40 hover:bg-[--color-orange-soft]"
     >
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-sm font-bold text-[--color-ink]">{label}</p>
-          <p className="mt-1 text-xs leading-relaxed text-[--color-ink-dim]">
-            {description}
-          </p>
+          <p className="mt-1 text-xs leading-relaxed text-[--color-ink-dim]">{description}</p>
         </div>
-        <Icon
-          className="mt-0.5 h-4 w-4 shrink-0 text-[--color-orange-brand]"
-          aria-hidden
-        />
+        <Icon className="mt-0.5 h-4 w-4 shrink-0 text-[--color-orange-brand]" aria-hidden />
       </div>
       <span className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-orange-brand]">
         Open page
@@ -612,63 +591,15 @@ export default function CommandCenterClient({
         day: "numeric",
       })
     : "No estimate activity yet";
-  const fieldPriorities = [
-    {
-      label: "Review active estimate cart",
-      value:
-        cartItemCount > 0
-          ? `${cartItemCount} batch item${cartItemCount === 1 ? "" : "s"} ready`
-          : "Cart is clear",
-      href: routes.cart,
-    },
-    {
-      label: "Follow up sent proposals",
-      value:
-        sentEstimateCount > 0
-          ? `${sentEstimateCount} estimate${sentEstimateCount === 1 ? "" : "s"} waiting on client`
-          : "No proposals waiting on client action",
-      href: routes.saved,
-    },
-    {
-      label: "Business handoff readiness",
-      value: needsBusinessProfileSetup ? "Needs setup" : "Brand ready",
-      href: routes.settings,
-    },
-  ];
-  const featuredToolItems = filteredToolItems.slice(0, 6);
-  const mobileQuickActions = [
-    {
-      label: "Drafts",
-      value: draftEstimateCount > 0 ? `${draftEstimateCount} open` : "Start first",
-      href: routes.saved,
-      icon: FileText,
-    },
-    {
-      label: "Calculators",
-      value: "Field math",
-      href: routes.calculators,
-      icon: Calculator,
-    },
-    {
-      label: "Cart",
-      value: cartItemCount > 0 ? `${cartItemCount} batched` : "Ready to fill",
-      href: routes.cart,
-      icon: ShoppingCart,
-    },
-    {
-      label: "Settings",
-      value: needsBusinessProfileSetup ? "Needs setup" : "Brand ready",
-      href: routes.settings,
-      icon: Settings,
-    },
-  ];
+  const workspaceMeta =
+    workspaceTabs.find((tab) => tab.slug === activeWorkspace) ?? workspaceTabs[0];
+  const recentEstimatePreview = recentEstimates.slice(0, 4);
+  const memberPreview = members.slice(0, 6);
 
   useEffect(() => {
     if (!toolFromQuerySlug) return;
     if (handledDeepLink === toolFromQuerySlug) return;
-    const match = toolNavItems.find(
-      (entry) => entry.slug === toolFromQuerySlug,
-    );
+    const match = toolNavItems.find((entry) => entry.slug === toolFromQuerySlug);
     if (!match) return;
 
     setToolCategory(categorizeTool(match));
@@ -822,25 +753,15 @@ export default function CommandCenterClient({
       {/* ── Compact status bar — 44px ─────────────────────────────── */}
       <div className="flex flex-wrap items-center gap-px rounded-xl border border-[--color-border] bg-[--color-surface-alt] overflow-hidden">
         <div className="status-bar-cell flex-1 border-r border-[--color-border] py-2.5">
-          <span
-            className={`status-dot${cartItemCount > 0 ? " status-dot-warn" : ""}`}
-          />
-          {cartItemCount > 0
-            ? `${cartItemCount} item${cartItemCount === 1 ? "" : "s"} in cart`
-            : "Cart clear"}
+          <span className={`status-dot${cartItemCount > 0 ? " status-dot-warn" : ""}`} />
+          {cartItemCount > 0 ? `${cartItemCount} item${cartItemCount === 1 ? "" : "s"} in cart` : "Cart clear"}
         </div>
         <div className="status-bar-cell flex-1 border-r border-[--color-border] py-2.5">
-          <span
-            className={`status-dot${sentEstimateCount > 0 ? " status-dot-warn" : ""}`}
-          />
-          {sentEstimateCount > 0
-            ? `${sentEstimateCount} proposal${sentEstimateCount === 1 ? "" : "s"} waiting`
-            : "No follow-ups pending"}
+          <span className={`status-dot${sentEstimateCount > 0 ? " status-dot-warn" : ""}`} />
+          {sentEstimateCount > 0 ? `${sentEstimateCount} proposal${sentEstimateCount === 1 ? "" : "s"} waiting` : "No follow-ups pending"}
         </div>
         <div className="status-bar-cell flex-1 py-2.5">
-          <span
-            className={`status-dot${needsBusinessProfileSetup ? " status-dot-warn" : ""}`}
-          />
+          <span className={`status-dot${needsBusinessProfileSetup ? " status-dot-warn" : ""}`} />
           {needsBusinessProfileSetup ? "Profile needs setup" : "Profile ready"}
         </div>
       </div>
@@ -855,7 +776,11 @@ export default function CommandCenterClient({
           <Calculator className="h-3.5 w-3.5" aria-hidden />
           New Estimate
         </Link>
-        <Link href={routes.saved} prefetch={false} className="action-bar-btn">
+        <Link
+          href={routes.saved}
+          prefetch={false}
+          className="action-bar-btn"
+        >
           <FileText className="h-3.5 w-3.5" aria-hidden />
           Open Drafts
         </Link>
@@ -867,7 +792,11 @@ export default function CommandCenterClient({
           <Settings className="h-3.5 w-3.5" aria-hidden />
           Business Setup
         </Link>
-        <Link href={routes.guide} prefetch={false} className="action-bar-btn">
+        <Link
+          href={routes.guide}
+          prefetch={false}
+          className="action-bar-btn"
+        >
           <HardHat className="h-3.5 w-3.5" aria-hidden />
           Owner Guide
         </Link>
@@ -876,21 +805,15 @@ export default function CommandCenterClient({
       {/* ── 4-up KPI row — 64px ───────────────────────────────────── */}
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         <div className="stat-kpi border-l-2 border-l-emerald-500">
-          <span className="stat-kpi-value text-emerald-300">
-            {signedEstimateCount}
-          </span>
+          <span className="stat-kpi-value text-emerald-300">{signedEstimateCount}</span>
           <span className="stat-kpi-label">Closed / Signed</span>
         </div>
-        <div className="stat-kpi border-l-2 border-l-[--color-orange-brand]">
-          <span className="stat-kpi-value text-[--color-orange-brand]">
-            {sentEstimateCount}
-          </span>
+        <div className="stat-kpi border-l-2 border-l-orange-500">
+          <span className="stat-kpi-value text-[--color-orange-brand]">{sentEstimateCount}</span>
           <span className="stat-kpi-label">Sent / Waiting</span>
         </div>
         <div className="stat-kpi border-l-2 border-l-sky-500">
-          <span className="stat-kpi-value text-sky-300">
-            {draftEstimateCount}
-          </span>
+          <span className="stat-kpi-value text-sky-300">{draftEstimateCount}</span>
           <span className="stat-kpi-label">Drafts Active</span>
         </div>
         <div className="stat-kpi border-l-2 border-l-slate-500">
@@ -909,19 +832,15 @@ export default function CommandCenterClient({
               </p>
               <h2 className="app-heading mt-0.5">Live readiness</h2>
             </div>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-[--color-orange-brand]/30 bg-[--color-orange-soft]/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[--color-orange-brand]">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-orange-500/30 bg-orange-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[--color-orange-brand]">
               <ShieldCheck className="h-3 w-3" aria-hidden />
               Locked
             </span>
           </div>
           <div className="grid gap-2.5 sm:grid-cols-2">
             <div className="rounded-xl border border-[--color-border] bg-[--color-surface-alt] px-4 py-3">
-              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[--color-ink-dim]">
-                Launch Pad
-              </p>
-              <p className="mt-1.5 text-sm text-[--color-ink-mid]">
-                Six high-value tools stay one tap away.
-              </p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[--color-ink-dim]">Launch Pad</p>
+              <p className="mt-1.5 text-sm text-[--color-ink-mid]">Six high-value tools stay one tap away.</p>
               <button
                 type="button"
                 onClick={() => setActiveWorkspace("launch")}
@@ -931,12 +850,8 @@ export default function CommandCenterClient({
               </button>
             </div>
             <div className="rounded-xl border border-[--color-border] bg-[--color-surface-alt] px-4 py-3">
-              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[--color-ink-dim]">
-                Workflow
-              </p>
-              <p className="mt-1.5 text-sm text-[--color-ink-mid]">
-                Cart items and estimate handoff in one view.
-              </p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[--color-ink-dim]">Workflow</p>
+              <p className="mt-1.5 text-sm text-[--color-ink-mid]">Cart items and estimate handoff in one view.</p>
               <button
                 type="button"
                 onClick={() => setActiveWorkspace("workflow")}
@@ -975,16 +890,10 @@ export default function CommandCenterClient({
                   className="flex items-center justify-between gap-3 rounded-xl border border-[--color-border] bg-[--color-surface-alt] px-3 py-2.5 transition hover:border-[--color-orange-brand]/35 hover:bg-white"
                 >
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-bold text-[--color-ink]">
-                      {estimate.name}
-                    </p>
-                    <p className="truncate text-xs text-[--color-ink-dim]">
-                      {estimate.clientName || "No client"}
-                    </p>
+                    <p className="truncate text-sm font-bold text-[--color-ink]">{estimate.name}</p>
+                    <p className="truncate text-xs text-[--color-ink-dim]">{estimate.clientName || "No client"}</p>
                   </div>
-                  <span
-                    className={`shrink-0 inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${estimateStatusClasses(estimate.status)}`}
-                  >
+                  <span className={`shrink-0 inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${estimateStatusClasses(estimate.status)}`}>
                     {formatEstimateStatus(estimate.status)}
                   </span>
                 </Link>
@@ -1000,7 +909,7 @@ export default function CommandCenterClient({
     <div className="grid h-full min-h-0 gap-4 xl:grid-cols-[0.9fr,1.1fr]">
       <article className="command-card flex min-h-0 flex-col gap-4 px-5 py-5">
         <div>
-          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-brand">
+          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-500">
             Tool Launch
           </p>
           <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-[--color-ink]">
@@ -1077,12 +986,9 @@ export default function CommandCenterClient({
         {visibleToolItems.length === 0 ? (
           <article className="command-card flex min-h-[220px] items-center justify-center rounded-3xl px-5 py-5 text-center">
             <div>
-              <p className="text-sm font-bold text-[--color-ink]">
-                No tools match that search.
-              </p>
+              <p className="text-sm font-bold text-[--color-ink]">No tools match that search.</p>
               <p className="mt-2 text-sm text-[--color-ink-dim]">
-                Clear the term or switch the category bar to reopen the launch
-                grid.
+                Clear the term or switch the category bar to reopen the launch grid.
               </p>
             </div>
           </article>
@@ -1122,17 +1028,13 @@ export default function CommandCenterClient({
               <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-ink-dim]">
                 Open items
               </p>
-              <p className="mt-1 text-3xl font-black text-[--color-ink]">
-                {cartItemCount}
-              </p>
+              <p className="mt-1 text-3xl font-black text-[--color-ink]">{cartItemCount}</p>
             </div>
             <div className="rounded-2xl border border-[--color-border] bg-white px-4 py-3">
               <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-ink-dim]">
                 Workflow
               </p>
-              <p className="mt-1 text-sm font-bold text-[--color-ink]">
-                Cart to saved handoff
-              </p>
+              <p className="mt-1 text-sm font-bold text-[--color-ink]">Cart to saved handoff</p>
             </div>
           </div>
         </div>
@@ -1141,7 +1043,7 @@ export default function CommandCenterClient({
           <Link
             href={routes.cart}
             prefetch={false}
-            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-orange-brand px-4 text-sm font-black uppercase tracking-[0.08em] text-white transition hover:bg-[--color-orange-dark]"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-orange-500 px-4 text-sm font-black uppercase tracking-[0.08em] text-white transition hover:bg-orange-600"
           >
             Review Cart
             <ArrowRight className="h-4 w-4" aria-hidden />
@@ -1167,10 +1069,7 @@ export default function CommandCenterClient({
         {cartItemCount === 0 ? (
           <div className="rounded-2xl border border-dashed border-[--color-border] bg-[--color-surface-alt] px-4 py-4 text-sm text-[--color-ink-mid]">
             No estimates in the cart yet. Use any calculator&apos;s
-            <span className="font-semibold text-[--color-ink]">
-              {" "}
-              Add to Cart{" "}
-            </span>
+            <span className="font-semibold text-[--color-ink]"> Add to Cart </span>
             action and it will stay visible here.
           </div>
         ) : (
@@ -1201,125 +1100,80 @@ export default function CommandCenterClient({
                 <p className="mt-3 text-sm text-[--color-ink-mid]">
                   {item.primaryResult.label}:{" "}
                   <span className="font-mono font-semibold text-[--color-ink]">
-                    {formatCartValue(item.primaryResult.value)}{" "}
-                    {item.primaryResult.unit}
+                    {formatCartValue(item.primaryResult.value)} {item.primaryResult.unit}
                   </span>
                 </p>
-                <div className="mt-5 grid gap-3 md:grid-cols-3">
-                  {fieldPriorities.map((priority) => (
-                    <Link
-                      key={priority.label}
-                      href={priority.href}
-                      prefetch={false}
-                      className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 transition hover:border-orange-500/30 hover:bg-white/8"
-                    >
-                      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
-                        {priority.label}
-                      </p>
-                      <p className="mt-1 truncate text-xs text-[--color-ink-dim]">
-                        {priority.value}
-                      </p>
-                    </Link>
-                  ))}
-                </div>
-                <div className="mt-5 flex flex-wrap gap-2">
-                  <Link
-                    href={routes.saved}
-                    className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-orange-500 px-4 text-sm font-black uppercase tracking-[0.08em] text-white transition hover:bg-orange-600"
-                  >
-                    Open Drafts
-                  </Link>
-                  <Link
-                    href={routes.calculators}
-                    className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-white/20 px-4 text-sm font-semibold text-white transition hover:border-orange-400/60 hover:text-orange-200"
-                  >
-                    Start New Estimate
-                  </Link>
-                  <Link
-                    href={routes.guide}
-                    className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-white/12 bg-white/5 px-4 text-sm font-semibold text-slate-200 transition hover:border-white/25 hover:text-white"
-                  >
-                    Open Owner Guide
-                  </Link>
-                </div>
+                <p className="mt-2 text-xs leading-relaxed text-[--color-ink-dim]">
+                  {item.materialList.length > 0
+                    ? item.materialList.slice(0, 3).join(" • ")
+                    : "Estimate ready for batch checkout."}
+                </p>
               </article>
             ))}
           </div>
         )}
       </article>
 
-      <section className="overflow-hidden rounded-3xl border border-orange-500/25 bg-[radial-gradient(circle_at_top_left,rgba(249,115,22,0.18),transparent_42%),linear-gradient(135deg,#111827_0%,#0f172a_48%,#020617_100%)] p-5 shadow-[0_24px_60px_rgba(0,0,0,0.28)]">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                <div className="max-w-2xl">
-                  <p className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-orange-300">
-                    <ShoppingCart className="h-4 w-4" aria-hidden />
-                    Field Cart
-                  </p>
-                  <h2 className="mt-2 text-2xl font-black uppercase tracking-tight text-white sm:text-3xl">
-                    Batch your estimate work without leaving Command Center.
-                  </h2>
-                  <p className="mt-2 text-sm leading-relaxed text-slate-300">
-                    Keep active calculator outputs in one place, review them fast,
-                    and hand off the batch when you are ready.
-                  </p>
-                </div>
-                <div className="grid shrink-0 grid-cols-2 gap-3 lg:min-w-[240px]">
-                  <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
-                      Open Items
-                    </p>
-                    <p className="mt-1 text-3xl font-black text-white">
-                      {cartItemCount}
-                    </p>
-                  </div>
-                  <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
-                      Workflow
-                    </p>
-                    <p className="mt-1 text-sm font-bold text-white">
-                      Cart to saved checkout
-                    </p>
-                  </div>
-                </div>
-              </div>
+      <div className="grid min-h-0 gap-4">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <CommandStatCard
+            label="Sent / waiting"
+            value={sentEstimateCount}
+            detail="Quotes already with clients."
+            tone="text-[--color-orange-brand]"
+          />
+          <CommandStatCard
+            label="Last activity"
+            value={lastEstimateLabel}
+            detail="Most recent saved-estimate touchpoint."
+          />
+        </div>
 
-              <div className="mt-4 flex flex-wrap gap-2">
-                <Link
-                  href={routes.cart}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-orange-500 px-4 text-sm font-black uppercase tracking-[0.08em] text-white transition hover:bg-orange-600"
-                >
-                  Review Cart
-                  <ArrowRight className="h-4 w-4" aria-hidden />
-                </Link>
-                <Link
-                  href={routes.calculators}
-                  className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-white/20 px-4 text-sm font-semibold text-white transition hover:border-orange-400/60 hover:text-orange-200"
-                >
-                  Add More Estimates
-                </Link>
-                <button
-                  type="button"
-                  onClick={clearCart}
-                  disabled={cartItemCount === 0}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-white/12 bg-white/5 px-4 text-sm font-semibold text-slate-200 transition hover:border-red-400/50 hover:text-red-200 disabled:cursor-not-allowed disabled:opacity-45"
-                >
-                  <Trash2 className="h-4 w-4" aria-hidden />
-                  Clear Cart
-                </button>
-              </div>
+        <article className="command-card flex min-h-0 flex-col gap-4 px-5 py-5">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-500">
+                Recent Estimates
+              </p>
+              <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-[--color-ink]">
+                Latest activity
+              </h2>
+            </div>
+            <Link
+              href={routes.saved}
+              prefetch={false}
+              className="inline-flex min-h-10 items-center justify-center rounded-xl border border-[--color-border] px-4 text-sm font-semibold text-[--color-ink-mid] transition hover:border-[--color-orange-brand]/50 hover:text-[--color-orange-brand]"
+            >
+              View All
+            </Link>
+          </div>
 
-              {cartItemCount === 0 ? (
-                <div className="mt-4 rounded-2xl border border-dashed border-white/15 bg-slate-950/35 px-4 py-4 text-sm text-slate-300">
-                  No estimates in the cart yet. Use any calculator&apos;s
-                  <span className="font-semibold text-white"> Add to Cart </span>
-                  action and it will stay visible here at the top of Command Center.
-                </div>
-              ) : (
-                <div className="mt-4 grid gap-3 xl:grid-cols-3">
-                  {latestCartItems.map((item) => (
-                    <article
-                      key={item.id}
-                      className="rounded-2xl border border-white/10 bg-slate-950/40 p-4"
+          {recentEstimatePreview.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-[--color-border] bg-[--color-surface-alt] px-4 py-5 text-sm text-[--color-ink-dim]">
+              No estimates yet. Start a draft from any calculator and it will
+              appear here.
+            </div>
+          ) : (
+            <div className="grid gap-3">
+              {recentEstimatePreview.map((estimate) => (
+                <Link
+                  key={estimate.id}
+                  href={`${routes.saved}?id=${estimate.id}`}
+                  aria-label={`Open estimate ${estimate.name}`}
+                  prefetch={false}
+                  className="rounded-2xl border border-[--color-border] bg-[--color-surface-alt] px-4 py-4 transition hover:border-[--color-orange-brand]/35 hover:bg-white"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-bold text-[--color-ink]">
+                        {estimate.name}
+                      </p>
+                      <p className="mt-1 truncate text-xs text-[--color-ink-dim]">
+                        {priority.value}
+                      </p>
+                    </div>
+                    <span
+                      className={`inline-flex shrink-0 items-center rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest ${estimateStatusClasses(estimate.status)}`}
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
@@ -1359,39 +1213,23 @@ export default function CommandCenterClient({
       {/* ── Top 2-col row: team info + invite code ─────────────────── */}
       <div className="grid gap-3 sm:grid-cols-2">
         <article className="command-card px-4 py-4">
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-orange-brand]">
-            Your Team
-          </p>
-          <h2 className="app-heading mt-0.5">
-            {planName} · {seatsUsed}/{seatLimit} seats
-          </h2>
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-orange-brand]">Your Team</p>
+          <h2 className="app-heading mt-0.5">{planName} · {seatsUsed}/{seatLimit} seats</h2>
           <div className="mt-3 grid grid-cols-2 gap-2">
             <div className="rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2">
-              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[--color-ink-dim]">
-                Remaining
-              </p>
-              <p className="mt-1 text-2xl font-black text-[--color-ink]">
-                {seatsAvailable}
-              </p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[--color-ink-dim]">Remaining</p>
+              <p className="mt-1 text-2xl font-black text-[--color-ink]">{seatsAvailable}</p>
             </div>
             <div className="rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2">
-              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[--color-ink-dim]">
-                Utilization
-              </p>
-              <p className="mt-1 text-2xl font-black text-[--color-orange-brand]">
-                {utilizationPercent}%
-              </p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[--color-ink-dim]">Utilization</p>
+              <p className="mt-1 text-2xl font-black text-[--color-orange-brand]">{utilizationPercent}%</p>
             </div>
           </div>
         </article>
 
         <article className="public-panel-strong px-4 py-4">
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-orange-brand]">
-            Invite New Member
-          </p>
-          <p className="mt-2 text-[10px] uppercase tracking-[0.18em] text-[--color-ink-dim]">
-            Join Code
-          </p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-orange-brand]">Invite New Member</p>
+          <p className="mt-2 text-[10px] uppercase tracking-[0.18em] text-[--color-ink-dim]">Join Code</p>
           {/* Compact monospace code pill + inline copy */}
           <div className="mt-1.5 flex items-center gap-2">
             <code className="flex-1 rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2 font-mono text-2xl font-black tracking-[0.1em] text-[--color-orange-brand]">
@@ -1423,18 +1261,14 @@ export default function CommandCenterClient({
               {isRefreshingInvite ? "Refreshing…" : "Rotate Code"}
             </button>
           )}
-          <p className="mt-2 text-xs text-[--color-ink-dim]">
-            Share with your crew. Old codes invalidate on rotate.
-          </p>
+          <p className="mt-2 text-xs text-[--color-ink-dim]">Share with your crew. Old codes invalidate on rotate.</p>
         </article>
       </div>
 
       {/* ── Crew roster table ──────────────────────────────────────── */}
       <article className="command-card flex min-h-0 flex-1 flex-col gap-3 overflow-hidden px-4 py-4">
         <div className="flex items-center justify-between gap-3">
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-orange-brand]">
-            Active Crew Roster
-          </p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-orange-brand]">Active Crew Roster</p>
           <Link
             href={routes.settings}
             prefetch={false}
@@ -1458,35 +1292,24 @@ export default function CommandCenterClient({
               {members.slice(0, 5).map((member) => {
                 const isOwner = member.role === "owner";
                 return (
-                  <tr
-                    key={member.membershipId}
-                    className="border-b border-[--color-border]/60 last:border-0"
-                  >
+                  <tr key={member.membershipId} className="border-b border-[--color-border]/60 last:border-0">
                     <td className="py-2.5 pr-4">
                       <div className="flex items-center gap-2">
                         <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[--color-border] bg-[--color-surface-alt] text-[10px] font-semibold text-[--color-ink-mid]">
                           {initialsForName(member.name)}
                         </div>
                         <div className="min-w-0">
-                          <p className="truncate text-xs font-bold text-[--color-ink]">
-                            {member.name}
-                          </p>
-                          <p className="truncate text-[10px] text-[--color-ink-dim]">
-                            {member.email}
-                          </p>
+                          <p className="truncate text-xs font-bold text-[--color-ink]">{member.name}</p>
+                          <p className="truncate text-[10px] text-[--color-ink-dim]">{member.email}</p>
                         </div>
                       </div>
                     </td>
                     <td className="py-2.5 pr-4">
-                      <span
-                        className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.12em] ${roleBadgeClasses(member.role)}`}
-                      >
+                      <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.12em] ${roleBadgeClasses(member.role)}`}>
                         {formatRole(member.role)}
                       </span>
                     </td>
-                    <td className="py-2.5 pr-4 text-[10px] text-[--color-ink-dim]">
-                      {formatJoinedAt(member.joinedAt)}
-                    </td>
+                    <td className="py-2.5 pr-4 text-[10px] text-[--color-ink-dim]">{formatJoinedAt(member.joinedAt)}</td>
                     <td className="py-2.5">
                       {!isOwner && canManageCrew ? (
                         <button
@@ -1498,9 +1321,7 @@ export default function CommandCenterClient({
                           <MoreHorizontal className="h-3.5 w-3.5" aria-hidden />
                         </button>
                       ) : (
-                        <span className="text-[10px] text-[--color-ink-dim]">
-                          Owner protected
-                        </span>
+                        <span className="text-[10px] text-[--color-ink-dim]">Owner protected</span>
                       )}
                     </td>
                   </tr>
@@ -1512,7 +1333,7 @@ export default function CommandCenterClient({
 
         {members.length > 5 && (
           <p className="text-[10px] text-[--color-ink-dim]">
-            Showing 5 of {members.length}. Open Settings for full roster.
+            Showing {memberPreview.length} of {members.length}. Open Settings for full roster.
           </p>
         )}
       </article>
@@ -1520,25 +1341,31 @@ export default function CommandCenterClient({
   );
 
   const renderPages = () => {
-    const operationsPages = commandPages.filter(
-      (page) => page.group === "Operations",
-    );
-    const referencePages = commandPages.filter(
-      (page) => page.group === "Reference",
-    );
+    const operationsPages = commandPages.filter((page) => page.group === "Operations");
+    const referencePages = commandPages.filter((page) => page.group === "Reference");
 
     return (
-      <div className="grid h-full min-h-0 gap-4 xl:grid-cols-[1fr,1fr]">
-        <article className="command-card flex min-h-0 flex-col gap-4 px-5 py-5">
+      <div className="grid h-full min-h-0 gap-4 xl:grid-cols-[0.9fr,1.1fr]">
+        <article className="public-panel-strong flex min-h-0 flex-col gap-4 px-5 py-5">
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[--color-orange-brand]">
+              Pages & References
+            </p>
+            <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-[--color-ink]">
+              Consolidated menus for the rest of the system
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-[--color-ink-mid]">
+              Instead of keeping every destination in a tall rail, the command
+              center now gives you focused pages and a clean page launcher.
+            </p>
+          </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <Link
               href={routes.privacy}
               prefetch={false}
               className="rounded-2xl border border-[--color-border] bg-white px-4 py-4 transition hover:border-[--color-orange-brand]/50"
             >
-              <p className="text-sm font-bold text-[--color-ink]">
-                Privacy Policy
-              </p>
+              <p className="text-sm font-bold text-[--color-ink]">Privacy Policy</p>
               <p className="mt-1 text-xs leading-relaxed text-[--color-ink-dim]">
                 Consent and privacy references for production launch.
               </p>
@@ -1548,9 +1375,7 @@ export default function CommandCenterClient({
               prefetch={false}
               className="rounded-2xl border border-[--color-border] bg-white px-4 py-4 transition hover:border-[--color-orange-brand]/50"
             >
-              <p className="text-sm font-bold text-[--color-ink]">
-                Terms of Service
-              </p>
+              <p className="text-sm font-bold text-[--color-ink]">Terms of Service</p>
               <p className="mt-1 text-xs leading-relaxed text-[--color-ink-dim]">
                 Legal operating guardrails for crews and exports.
               </p>
@@ -1573,7 +1398,7 @@ export default function CommandCenterClient({
           <section className="command-card px-5 py-5">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-brand">
+                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-500">
                   Operations
                 </p>
                 <h2 className="mt-1 text-lg font-black uppercase tracking-tight text-[--color-ink]">
@@ -1590,7 +1415,7 @@ export default function CommandCenterClient({
 
           <section className="command-card px-5 py-5">
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-brand">
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-500">
                 Reference
               </p>
               <h2 className="mt-1 text-lg font-black uppercase tracking-tight text-[--color-ink]">
@@ -1624,9 +1449,7 @@ export default function CommandCenterClient({
             Command Center
           </p>
           <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-[--color-ink-dim]">
-            <span className="truncate font-semibold text-[--color-ink]">
-              {businessName}
-            </span>
+            <span className="truncate font-semibold text-[--color-ink]">{businessName}</span>
             <span>{todayLabel}</span>
             <span>{workspaceTabs.find((t) => t.slug === activeWorkspace)?.description}</span>
           </div>
@@ -1691,26 +1514,24 @@ export default function CommandCenterClient({
           <span className="font-semibold text-[--color-orange-brand]">
             Setup your Business Profile.
           </span>{" "}
-          Add your company name so PDFs, emails, and client-facing signing pages
-          use your branding.
+          Add your company name so PDFs, emails, and client-facing signing pages use your branding.
           <Link
-            href={routes.settingsBusinessProfile}
+            href={routes.settings}
             prefetch={false}
             className="ml-2 font-semibold text-[--color-orange-brand] transition hover:text-[--color-orange-brand]"
           >
-            Open business profile
+            Open settings
           </Link>
         </div>
       ) : null}
 
       {draftMode ? (
-        <div className="mx-4 mt-4 rounded-2xl border border-[--color-orange-brand]/30 bg-[--color-orange-soft]/10 px-4 py-3 sm:mx-5">
+        <div className="mx-4 mt-4 rounded-2xl border border-orange-500/30 bg-orange-500/10 px-4 py-3 sm:mx-5">
           <p className="text-xs font-bold uppercase tracking-[0.15em] text-[--color-orange-brand]">
             Drafting mode
           </p>
           <p className="mt-1 text-sm text-[--color-ink-mid]">
-            Start a new estimate from Launch Pad or open Workflow to continue an
-            existing draft.
+            Start a new estimate from Launch Pad or open Workflow to continue an existing draft.
           </p>
         </div>
       ) : null}
@@ -1728,11 +1549,10 @@ export default function CommandCenterClient({
           />
           {activeTradePage ? (
             <div className="relative z-10 flex h-full w-full max-w-6xl flex-col overflow-hidden border border-[--color-border] bg-[--color-bg] shadow-[0_24px_50px_rgba(0,0,0,0.3)] sm:rounded-3xl">
-              <div className="sticky top-0 z-20 flex h-12 items-center justify-between gap-2 border-b border-[--color-border] bg-[--color-nav-bg] px-3">
+              <div className="sticky top-0 z-20 flex h-12 items-center justify-between gap-2 border-b border-[--color-border] bg-[--color-nav-bg]/95 px-3 backdrop-blur-sm">
                 <nav className="truncate text-[10px] font-semibold uppercase tracking-[0.16em] text-[--color-ink-dim]">
                   Calculators &gt;{" "}
-                  {activeTradePage.heroKicker.split("/")[0]?.trim() ??
-                    "Category"}
+                  {activeTradePage.heroKicker.split("/")[0]?.trim() ?? "Category"}
                 </nav>
                 <div className="flex items-center justify-between gap-2">
                   <button
@@ -1819,9 +1639,7 @@ export default function CommandCenterClient({
             <h2 className="mt-1 text-xl font-sans font-extrabold tracking-tight text-[--color-ink]">
               {manageTarget.name}
             </h2>
-            <p className="text-sm text-[--color-ink-dim]">
-              {manageTarget.email}
-            </p>
+            <p className="text-sm text-[--color-ink-dim]">{manageTarget.email}</p>
             <div className="mt-4 grid grid-cols-2 gap-2">
               <button
                 type="button"

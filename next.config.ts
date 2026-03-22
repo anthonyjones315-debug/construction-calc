@@ -78,6 +78,7 @@ const nextConfig: NextConfig = {
       // Clerk (auth UI + bot challenge)
       "https://*.clerk.accounts.dev",
       "https://clerk.accounts.dev",
+      "https://*.clerk.com",
       "https://challenges.cloudflare.com",
     ].join(" ");
 
@@ -125,6 +126,9 @@ const nextConfig: NextConfig = {
       "https://*.clerk.com",
       "https://clerk-telemetry.com",
       "https://*.clerk-telemetry.com",
+      // Cloudflare Insights
+      "https://static.cloudflareinsights.com",
+      "https://cloudflareinsights.com",
     ].join(" ");
 
     const ContentSecurityPolicy = [
@@ -140,7 +144,7 @@ const nextConfig: NextConfig = {
       "media-src 'none'",
       "object-src 'none'",
       "worker-src 'self' blob:",
-      "frame-src 'self' https://googleads.g.doubleclick.net https://*.googlesyndication.com https://*.google.com https://accounts.google.com https://*.adtrafficquality.google https://challenges.cloudflare.com https://*.clerk.accounts.dev https://clerk.accounts.dev",
+      "frame-src 'self' https://googleads.g.doubleclick.net https://*.googlesyndication.com https://*.google.com https://accounts.google.com https://*.adtrafficquality.google https://challenges.cloudflare.com https://*.clerk.accounts.dev https://clerk.accounts.dev https://clerk.com https://*.clerk.com https://vercel.live",
       // frame-ancestors mirrors X-Frame-Options: DENY for CSP-aware browsers
       "frame-ancestors 'none'",
       "base-uri 'self'",

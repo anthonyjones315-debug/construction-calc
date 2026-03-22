@@ -189,11 +189,7 @@ export function CalculatorsDirectoryClient() {
 
   return (
     <>
-      <main
-        id="main-content"
-        className="flex-1 bg-[--color-bg]"
-        tabIndex={-1}
-      >
+      <main id="main-content" className="flex-1 bg-[--color-bg]" tabIndex={-1}>
         {/* ── Hero strip ──────────────────────────────────────── */}
         <div className="border-b-2 border-[--color-orange-soft] bg-white px-4 py-5 sm:px-6 sm:py-6">
           <div className="mx-auto max-w-5xl text-center">
@@ -301,10 +297,8 @@ export function CalculatorsDirectoryClient() {
               const sampleCalcs = links.slice(0, 3);
 
               return (
-                <Link
+                <div
                   key={key}
-                  href={href as Route}
-                  prefetch={false}
                   className="group relative flex h-full min-h-0 flex-col rounded-xl border border-[--color-border] bg-[--color-surface] p-4 shadow-sm transition-all duration-200 hover:border-[--color-orange-rim] hover:shadow-md before:absolute before:left-0 before:top-4 before:bottom-4 before:w-[3px] before:rounded-full before:bg-[--color-orange-brand]/0 hover:before:bg-[--color-orange-brand] before:transition-all"
                 >
                   <div className="flex items-center gap-2.5">
@@ -343,10 +337,16 @@ export function CalculatorsDirectoryClient() {
                     </div>
                   )}
                   <div className="mt-auto flex items-center pt-2 text-[10px] font-semibold text-[--color-orange-brand]">
-                    View all
-                    <ChevronRight className="h-3 w-3" aria-hidden />
+                    <Link
+                      href={href as Route}
+                      prefetch={false}
+                      className="inline-flex items-center gap-1 rounded-full border border-[--color-orange-rim] bg-[--color-orange-soft] px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-[--color-orange-dark] transition-colors hover:border-[--color-orange-brand] hover:bg-[--color-orange-brand]/12 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[--color-orange-brand]"
+                    >
+                      View all
+                      <ChevronRight className="h-3 w-3" aria-hidden />
+                    </Link>
                   </div>
-                </Link>
+                </div>
               );
             })}
           </div>
@@ -363,7 +363,7 @@ export function CalculatorsDirectoryClient() {
                 key={calc.key}
                 href={calc.href as Route}
                 prefetch={false}
-                className="group flex h-full min-h-0 flex-col rounded-xl border border-[--color-border] bg-[--color-surface-alt] p-4 shadow-sm transition-all duration-200 hover:border-[--color-orange-rim] hover:shadow-md"
+                className="group flex h-full min-h-0 flex-col rounded-xl border border-[--color-border] bg-[--color-surface] p-4 shadow-sm transition-all duration-200 hover:border-[--color-orange-rim] hover:shadow-md"
               >
                 <div className="flex items-center justify-between gap-2">
                   <p className="font-semibold text-slate-900 group-hover:text-[--color-orange-brand]">
@@ -378,7 +378,10 @@ export function CalculatorsDirectoryClient() {
                 </p>
                 <div className="mt-auto flex items-center pt-2 text-xs font-semibold text-[--color-orange-brand]">
                   Open
-                  <ArrowRight className="h-3.5 w-3.5 opacity-0 transition-opacity group-hover:opacity-100" aria-hidden />
+                  <ArrowRight
+                    className="h-3.5 w-3.5 opacity-0 transition-opacity group-hover:opacity-100"
+                    aria-hidden
+                  />
                 </div>
               </Link>
             ))}
