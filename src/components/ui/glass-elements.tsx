@@ -252,13 +252,13 @@ export function ProInput({
           {label}
         </span>
         {subLabel ? (
-          <span className="text-[10px] font-normal normal-case text-copy-tertiary">
+          <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
             {subLabel}
           </span>
         ) : null}
       </span>
       {helpText ? (
-        <span className="text-[10px] font-normal normal-case text-copy-tertiary">
+        <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
           {helpText}
         </span>
       ) : null}

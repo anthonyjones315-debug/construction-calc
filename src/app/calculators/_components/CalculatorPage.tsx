@@ -73,6 +73,7 @@ import { calculateNysSalesTax } from "@/services/taxEngine";
 import { routes } from "@routes";
 import { UnitToggle } from "./UnitToggle";
 import { ProInput, ProResult } from "@/components/ui/glass-elements";
+import { FeetInchesInput } from "@/components/ui/FeetInchesInput";
 import { useProMode } from "@/hooks/useProMode";
 import { triggerHaptic } from "@/hooks/useHaptic";
 import { sanitizeFilename } from "@/utils/sanitize-filename";
@@ -3310,11 +3311,11 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                     {displayTitle(page.title)}
                   </h1>
                 ) : null}
-                <p className="mt-2 text-sm leading-relaxed text-copy-secondary sm:text-base">
+                <p className="mt-2 text-sm leading-relaxed text-copy-secondary sm:text-base lg:line-clamp-2">
                   {page.description}
                 </p>
 
-                <div className="mt-3 inline-flex items-center gap-2 rounded-lg border border-orange-base/30 bg-orange-base/10 px-3 py-1.5 text-sm text-copy-accent">
+                <div className="mt-3 inline-flex items-center gap-2 rounded-lg border border-orange-base/30 bg-orange-base/10 px-3 py-1.5 text-sm text-copy-accent lg:hidden">
                   <MapPin className="h-3.5 w-3.5 shrink-0" aria-hidden />
                   {page.localFocus}
                 </div>
@@ -3696,10 +3697,9 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                 />
                               ) : (
                                 <>
-                                  <ProInput
+                                  <FeetInchesInput
                                     label="Roof Length"
                                     subLabel="Footprint length (before overhang)."
-                                    type="number"
                                     min={1}
                                     max={10000}
                                     value={String(baseMeasurement)}
@@ -3711,19 +3711,16 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                         10000,
                                       )
                                     }
-                                    unitSuffix="ft"
                                   />
-                                  <ProInput
+                                  <FeetInchesInput
                                     label="Roof Width"
                                     subLabel="Footprint width (before overhang)."
-                                    type="number"
                                     min={1}
                                     max={10000}
                                     value={String(widthSpan)}
                                     onChange={(next: string) =>
                                       parseAndSet(next, setWidthSpan, 1, 10000)
                                     }
-                                    unitSuffix="ft"
                                   />
                                   <ProInput
                                     label="Overhang / Eave"
@@ -3856,17 +3853,15 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                 }
                                 unitSuffix="lf"
                               />
-                              <ProInput
+                              <FeetInchesInput
                                 label="Stock Length"
                                 subLabel={getInlineSubLabel("Stock Length")}
-                                type="number"
                                 min={4}
                                 max={20}
                                 value={String(depthThickness)}
                                 onChange={(next) =>
                                   parseAndSet(next, setDepthThickness, 4, 20)
                                 }
-                                unitSuffix="ft"
                               />
                             </>
                           ) : isAreaTotalMode ? (
@@ -3933,10 +3928,9 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                             page.canonicalPath.includes("/framing/wall") &&
                             !isWallStudTotalMode ? (
                             <>
-                              <ProInput
+                              <FeetInchesInput
                                 label={labels.first}
                                 subLabel={getInlineSubLabel(labels.first)}
-                                type="number"
                                 min={1}
                                 max={10000}
                                 value={String(baseMeasurement)}
@@ -3948,7 +3942,6 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                     10000,
                                   )
                                 }
-                                unitSuffix="ft"
                               />
 
                               <div className="space-y-2 glass-panel p-3">
@@ -4013,10 +4006,9 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                   }}
                                 />
                                 {wallStudHeightMode === "custom" ? (
-                                  <ProInput
+                                  <FeetInchesInput
                                     label="Custom Stud Height"
                                     subLabel="Custom heights are capped at 20' for job-site realism."
-                                    type="number"
                                     min={1}
                                     max={20}
                                     value={String(wallStudCustomHeightFeet)}
@@ -4028,7 +4020,6 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                         20,
                                       )
                                     }
-                                    unitSuffix="ft"
                                   />
                                 ) : null}
 
@@ -4058,10 +4049,9 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                             </>
                           ) : isWallStudTotalMode ? (
                             <>
-                              <ProInput
+                              <FeetInchesInput
                                 label={labels.first}
                                 subLabel={getInlineSubLabel(labels.first)}
-                                type="number"
                                 min={1}
                                 max={10000}
                                 value={String(baseMeasurement)}
@@ -4073,7 +4063,6 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                     10000,
                                   )
                                 }
-                                unitSuffix="ft"
                               />
                               <ProInput
                                 label="Total Studs"
@@ -4149,9 +4138,147 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                   ) : null}
                                 </div>
                               ) : (
-                                <ProInput
+                                <FeetInchesInput
                                   label={labels.third}
                                   subLabel={getInlineSubLabel(labels.third)}
+                                  min={thirdInputMin}
+                                  max={thirdInputMax}
+                                  value={String(depthThickness)}
+                                  onChange={(next) =>
+                                    parseAndSet(
+                                      next,
+                                      setDepthThickness,
+                                      thirdInputMin,
+                                      thirdInputMax,
+                                    )
+                                  }
+                                />
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              {firstUnitSuffix === "ft" ? (
+                                <FeetInchesInput
+                                  label={labels.first}
+                                  subLabel={getInlineSubLabel(labels.first)}
+                                  min={firstInputMin}
+                                  max={firstInputMax}
+                                  value={String(baseMeasurement)}
+                                  onChange={(next) =>
+                                    parseAndSet(
+                                      next,
+                                      setBaseMeasurement,
+                                      firstInputMin,
+                                      firstInputMax,
+                                    )
+                                  }
+                                />
+                              ) : (
+                                <ProInput
+                                  label={labels.first}
+                                  subLabel={getInlineSubLabel(labels.first)}
+                                  type="number"
+                                  min={firstInputMin}
+                                  max={firstInputMax}
+                                  value={String(baseMeasurement)}
+                                  onChange={(next) =>
+                                    parseAndSet(
+                                      next,
+                                      setBaseMeasurement,
+                                      firstInputMin,
+                                      firstInputMax,
+                                    )
+                                  }
+                                  unitSuffix={firstUnitSuffix}
+                                />
+                              )}
+                              {secondUnitSuffix === "ft" ? (
+                                <FeetInchesInput
+                                  label={
+                                    isBusinessTaxSave
+                                      ? "Tax Rate (%)"
+                                      : labels.second
+                                  }
+                                  subLabel={
+                                    isBusinessTaxSave
+                                      ? "Use NYS auto-fill by county or enter your blended rate."
+                                      : getInlineSubLabel(labels.second)
+                                  }
+                                  min={secondInputMin}
+                                  max={secondInputMax}
+                                  value={String(widthSpan)}
+                                  onChange={(next) =>
+                                    parseAndSet(
+                                      next,
+                                      setWidthSpan,
+                                      secondInputMin,
+                                      secondInputMax,
+                                    )
+                                  }
+                                />
+                              ) : (
+                                <ProInput
+                                  label={
+                                    isBusinessTaxSave
+                                      ? "Tax Rate (%)"
+                                      : labels.second
+                                  }
+                                  subLabel={
+                                    isBusinessTaxSave
+                                      ? "Use NYS auto-fill by county or enter your blended rate."
+                                      : getInlineSubLabel(labels.second)
+                                  }
+                                  type="number"
+                                  min={secondInputMin}
+                                  max={secondInputMax}
+                                  value={String(widthSpan)}
+                                  onChange={(next) =>
+                                    parseAndSet(
+                                      next,
+                                      setWidthSpan,
+                                      secondInputMin,
+                                      secondInputMax,
+                                    )
+                                  }
+                                  unitSuffix={secondUnitSuffix}
+                                />
+                              )}
+                              {thirdUnitSuffix === "ft" ? (
+                                <FeetInchesInput
+                                  label={
+                                    isBusinessTaxSave
+                                      ? "Deductions ($)"
+                                      : labels.third
+                                  }
+                                  subLabel={
+                                    isBusinessTaxSave
+                                      ? "Optional deductions or adjustments taken before tax."
+                                      : getInlineSubLabel(labels.third)
+                                  }
+                                  min={thirdInputMin}
+                                  max={thirdInputMax}
+                                  value={String(depthThickness)}
+                                  onChange={(next) =>
+                                    parseAndSet(
+                                      next,
+                                      setDepthThickness,
+                                      thirdInputMin,
+                                      thirdInputMax,
+                                    )
+                                  }
+                                />
+                              ) : (
+                                <ProInput
+                                  label={
+                                    isBusinessTaxSave
+                                      ? "Deductions ($)"
+                                      : labels.third
+                                  }
+                                  subLabel={
+                                    isBusinessTaxSave
+                                      ? "Optional deductions or adjustments taken before tax."
+                                      : getInlineSubLabel(labels.third)
+                                  }
                                   type="number"
                                   min={thirdInputMin}
                                   max={thirdInputMax}
@@ -4164,79 +4291,9 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                       thirdInputMax,
                                     )
                                   }
-                                  unitSuffix="ft"
+                                  unitSuffix={thirdUnitSuffix}
                                 />
                               )}
-                            </>
-                          ) : (
-                            <>
-                              <ProInput
-                                label={labels.first}
-                                subLabel={getInlineSubLabel(labels.first)}
-                                type="number"
-                                min={firstInputMin}
-                                max={firstInputMax}
-                                value={String(baseMeasurement)}
-                                onChange={(next) =>
-                                  parseAndSet(
-                                    next,
-                                    setBaseMeasurement,
-                                    firstInputMin,
-                                    firstInputMax,
-                                  )
-                                }
-                                unitSuffix={firstUnitSuffix}
-                              />
-                              <ProInput
-                                label={
-                                  isBusinessTaxSave
-                                    ? "Tax Rate (%)"
-                                    : labels.second
-                                }
-                                subLabel={
-                                  isBusinessTaxSave
-                                    ? "Use NYS auto-fill by county or enter your blended rate."
-                                    : getInlineSubLabel(labels.second)
-                                }
-                                type="number"
-                                min={secondInputMin}
-                                max={secondInputMax}
-                                value={String(widthSpan)}
-                                onChange={(next) =>
-                                  parseAndSet(
-                                    next,
-                                    setWidthSpan,
-                                    secondInputMin,
-                                    secondInputMax,
-                                  )
-                                }
-                                unitSuffix={secondUnitSuffix}
-                              />
-                              <ProInput
-                                label={
-                                  isBusinessTaxSave
-                                    ? "Deductions ($)"
-                                    : labels.third
-                                }
-                                subLabel={
-                                  isBusinessTaxSave
-                                    ? "Optional deductions or adjustments taken before tax."
-                                    : getInlineSubLabel(labels.third)
-                                }
-                                type="number"
-                                min={thirdInputMin}
-                                max={thirdInputMax}
-                                value={String(depthThickness)}
-                                onChange={(next) =>
-                                  parseAndSet(
-                                    next,
-                                    setDepthThickness,
-                                    thirdInputMin,
-                                    thirdInputMax,
-                                  )
-                                }
-                                unitSuffix={thirdUnitSuffix}
-                              />
                               {isSidingRoute && (
                                 <ProInput
                                   label="Window/Door Deductions"
