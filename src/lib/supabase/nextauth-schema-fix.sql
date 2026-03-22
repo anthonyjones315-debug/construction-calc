@@ -74,6 +74,11 @@ revoke all on next_auth.verification_tokens from anon, authenticated;
 create or replace function next_auth.sync_user_to_public()
 returns trigger as $$
 begin
+  if tg_op = 'DELETE' then
+    delete from public.users where id = old.id;
+    return old;
+  end if;
+
   insert into public.users (id, name, email, "emailVerified", image)
   values (new.id, new.name, new.email, new."emailVerified", new.image)
   on conflict (id) do update
@@ -87,5 +92,5 @@ $$ language plpgsql security definer;
 
 drop trigger if exists sync_user_to_public on next_auth.users;
 create trigger sync_user_to_public
-  after insert or update on next_auth.users
+  after insert or update or delete on next_auth.users
   for each row execute function next_auth.sync_user_to_public();
