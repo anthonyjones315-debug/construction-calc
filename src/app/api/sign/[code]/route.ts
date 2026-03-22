@@ -101,6 +101,7 @@ export async function POST(
     );
   }
 
+
   try {
     const { code } = await params;
     const normalizedCode = normalizeShareCode(code);
@@ -124,93 +125,12 @@ export async function POST(
       );
     }
 
-    const estimate = await getPublicEstimateByShareCode(normalizedCode);
-    if (!estimate) {
-      return NextResponse.json({ error: "Estimate not found." }, { status: 404 });
+    const res = await processSignature(normalizedCode, parsed.data);
+    if ("error" in res) {
+      return NextResponse.json({ error: res.error }, { status: res.status });
     }
 
-    if (estimate.status === "SIGNED" || estimate.status === "Approved") {
-      return NextResponse.json(
-        { error: "This estimate has already been signed." },
-        { status: 409 },
-      );
-    }
-
-    const db = createServerClient();
-    const { data: currentRow, error: currentError } = await db
-      .from("saved_estimates")
-      .select("id, user_id, business_id, inputs")
-      .eq("share_code", normalizedCode)
-      .single();
-
-    if (currentError || !currentRow) {
-      throw new Error(currentError?.message ?? "Unable to load estimate.");
-    }
-
-    const signedAt = new Date().toISOString();
-    const inputs = currentRow.inputs ?? {};
-    const existingSigning =
-      inputs.signing && typeof inputs.signing === "object"
-        ? (inputs.signing as Record<string, unknown>)
-        : {};
-
-    const inviteRecipientRaw = existingSigning.inviteRecipientEmail;
-    const inviteRecipientEmail =
-      typeof inviteRecipientRaw === "string" && inviteRecipientRaw.includes("@")
-        ? inviteRecipientRaw.trim().toLowerCase()
-        : null;
-
-    const signerEmailResolved = inviteRecipientEmail
-      ? inviteRecipientEmail
-      : parsed.data.signerEmail?.trim()
-        ? parsed.data.signerEmail.trim()
-        : null;
-
-    const nextInputs = {
-      ...inputs,
-      signing: {
-        ...existingSigning,
-        shareCode: normalizedCode,
-        status: "signed",
-        signedAt,
-        signerName: parsed.data.signerName,
-        signerEmail: signerEmailResolved,
-        signatureDataUrl: parsed.data.signatureDataUrl,
-      },
-    };
-
-    const { error: updateError } = await db
-      .from("saved_estimates")
-      .update({
-        status: "SIGNED",
-        inputs: nextInputs,
-      })
-      .eq("id", currentRow.id);
-
-    if (updateError) {
-      throw new Error(updateError.message);
-    }
-
-    const tenantId = currentRow.business_id ?? currentRow.user_id;
-    revalidateTag(FINANCIAL_DASHBOARD_TAG, "max");
-    revalidateTag(getFinancialDashboardTag(tenantId), "max");
-    revalidateTag(SAVED_ESTIMATES_TAG, "max");
-    revalidateTag(getSavedEstimatesTag(tenantId), "max");
-    revalidateTag(getEstimateTag(currentRow.id), "max");
-
-    const posthog = getPostHogClient();
-    posthog.capture({
-      distinctId: currentRow.user_id,
-      event: "estimate_signed",
-      properties: {
-        estimate_id: currentRow.id,
-        signer_provided_email: Boolean(signerEmailResolved),
-        signed_at: signedAt,
-      },
-    });
-    await posthog.shutdown();
-
-    return NextResponse.json({ ok: true, signedAt });
+    return NextResponse.json({ ok: true, signedAt: res.signedAt });
   } catch (error) {
     Sentry.captureException(error);
     if (error instanceof ShareCodeColumnMissingError) {
@@ -221,4 +141,91 @@ export async function POST(
       { status: 500 },
     );
   }
+}
+
+async function processSignature(normalizedCode: string, parsedData: z.infer<typeof signEstimateSchema>) {
+  const estimate = await getPublicEstimateByShareCode(normalizedCode);
+  if (!estimate) {
+    return { error: "Estimate not found.", status: 404 };
+  }
+
+  if (estimate.status === "SIGNED" || estimate.status === "Approved") {
+    return { error: "This estimate has already been signed.", status: 409 };
+  }
+
+  const db = createServerClient();
+  const { data: currentRow, error: currentError } = await db
+    .from("saved_estimates")
+    .select("id, user_id, business_id, inputs")
+    .eq("share_code", normalizedCode)
+    .single();
+
+  if (currentError || !currentRow) {
+    throw new Error(currentError?.message ?? "Unable to load estimate.");
+  }
+
+  const signedAt = new Date().toISOString();
+  const inputs = currentRow.inputs ?? {};
+  const existingSigning =
+    inputs.signing && typeof inputs.signing === "object"
+      ? (inputs.signing as Record<string, unknown>)
+      : {};
+
+  const inviteRecipientRaw = existingSigning.inviteRecipientEmail;
+  const inviteRecipientEmail =
+    typeof inviteRecipientRaw === "string" && inviteRecipientRaw.includes("@")
+      ? inviteRecipientRaw.trim().toLowerCase()
+      : null;
+
+  const signerEmailResolved = inviteRecipientEmail
+    ? inviteRecipientEmail
+    : parsedData.signerEmail?.trim()
+      ? parsedData.signerEmail.trim()
+      : null;
+
+  const nextInputs = {
+    ...inputs,
+    signing: {
+      ...existingSigning,
+      shareCode: normalizedCode,
+      status: "signed",
+      signedAt,
+      signerName: parsedData.signerName,
+      signerEmail: signerEmailResolved,
+      signatureDataUrl: parsedData.signatureDataUrl,
+    },
+  };
+
+  const { error: updateError } = await db
+    .from("saved_estimates")
+    .update({
+      status: "SIGNED",
+      inputs: nextInputs,
+    })
+    .eq("id", currentRow.id);
+
+  if (updateError) {
+    throw new Error(updateError.message);
+  }
+
+  const tenantId = currentRow.business_id ?? currentRow.user_id;
+  revalidateTag(FINANCIAL_DASHBOARD_TAG, "max");
+  revalidateTag(getFinancialDashboardTag(tenantId), "max");
+  revalidateTag(SAVED_ESTIMATES_TAG, "max");
+  revalidateTag(getSavedEstimatesTag(tenantId), "max");
+  revalidateTag(getEstimateTag(currentRow.id), "max");
+
+  const posthog = getPostHogClient();
+  posthog.capture({
+    distinctId: currentRow.user_id,
+    event: "estimate_signed",
+    properties: {
+      estimate_id: currentRow.id,
+      signer_provided_email: Boolean(signerEmailResolved),
+      signed_at: signedAt,
+    },
+  });
+  await posthog.shutdown();
+
+  return { signedAt };
 }
