@@ -33,14 +33,8 @@ export async function POST(request: NextRequest) {
     );
 
     if (!exists) {
-      return NextResponse.json(
-        {
-          error:
-            "No account found for that email address. Double-check the address or create a new account.",
-          notFound: true,
-        },
-        { status: 404 }
-      );
+      // Return a generic success to prevent email enumeration
+      return NextResponse.json({ ok: true });
     }
 
     await triggerReset(email);
