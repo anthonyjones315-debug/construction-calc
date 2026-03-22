@@ -876,13 +876,13 @@ export default function CommandCenterClient({
               View All →
             </Link>
           </div>
-          {recentEstimatePreview.length === 0 ? (
+          {recentEstimates.length === 0 ? (
             <div className="flex flex-1 items-center justify-center rounded-xl border border-dashed border-[--color-border] bg-[--color-surface-alt] px-4 py-6 text-center text-sm text-[--color-ink-dim]">
               No estimates yet. Start a draft from any calculator.
             </div>
           ) : (
             <div className="space-y-2 overflow-y-auto">
-              {recentEstimatePreview.map((estimate) => (
+              {recentEstimates.map((estimate) => (
                 <Link
                   key={estimate.id}
                   href={`${routes.saved}?id=${estimate.id}`}
@@ -1275,7 +1275,7 @@ export default function CommandCenterClient({
               </tr>
             </thead>
             <tbody>
-              {memberPreview.map((member) => {
+              {members.slice(0, 5).map((member) => {
                 const isOwner = member.role === "owner";
                 return (
                   <tr key={member.membershipId} className="border-b border-[--color-border]/60 last:border-0">
@@ -1317,7 +1317,7 @@ export default function CommandCenterClient({
           </table>
         </div>
 
-        {members.length > memberPreview.length && (
+        {members.length > 5 && (
           <p className="text-[10px] text-[--color-ink-dim]">
             Showing {memberPreview.length} of {members.length}. Open Settings for full roster.
           </p>
@@ -1437,7 +1437,7 @@ export default function CommandCenterClient({
           <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-[--color-ink-dim]">
             <span className="truncate font-semibold text-[--color-ink]">{businessName}</span>
             <span>{todayLabel}</span>
-            <span>{workspaceMeta.description}</span>
+            <span>{workspaceTabs.find((t) => t.slug === activeWorkspace)?.description}</span>
           </div>
         </div>
         <div className="flex items-center gap-3">
