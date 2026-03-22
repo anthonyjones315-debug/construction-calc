@@ -4441,11 +4441,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
 
                 <aside
                   ref={resultsCardRef}
-                  className={`self-start pb-8 ${
-                    deviceProfile.layoutMode === "two-column"
-                      ? ""
-                      : "glass-container-elevated"
-                  } ${
+                  suppressHydrationWarning
+                  className={`self-start pb-8 glass-container-elevated ${
                     deviceProfile.layoutMode === "glass-stack"
                       ? ""
                       : "lg:sticky lg:top-[calc(var(--shell-header-h,52px)+16px)] lg:self-start lg:pb-0"
