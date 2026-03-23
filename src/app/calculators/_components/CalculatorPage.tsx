@@ -411,11 +411,7 @@ const tradeModuleGroups: TradeModuleGroup[] = [
         href: "/calculators/mechanical/ventilation-calc" as Route,
         icon: Gauge,
       },
-      {
-        label: "Drywall Sheets",
-        href: "/calculators/mechanical/drywall-sheets" as Route,
-        icon: Layout,
-      },
+
     ],
   },
   {
@@ -3561,6 +3557,50 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                     Email Estimate
                   </button>
                   {session ? (
+  <button
+    type="button"
+    onClick={handleSaveEstimate}
+    disabled={saveState !== "idle" || !session}
+    className={`glass-button inline-flex h-9 min-h-9 items-center gap-2 rounded-xl px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-[--color-ink] transition-all duration-200 hover:text-[--color-ink] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 ${saveState !== "idle" ? "scale-95" : ""} ${saveState === "corrected" ? "verified-lock-pulse border-primary text-primary" : ""}`}
+    title={!session ? "Sign in to save estimates" : undefined}
+  >
+    {saveState === "saving" ? (
+      <>
+        <Save className="h-3.5 w-3.5" aria-hidden />
+        Saving
+      </>
+    ) : saveState === "saved" ? (
+      <>
+        <Check className="h-3.5 w-3.5 text-emerald-400" aria-hidden />
+        Saved
+      </>
+    ) : saveState === "corrected" ? (
+      <>
+        <Check className="h-3.5 w-3.5 text-primary" aria-hidden />
+        Verified &amp; Locked
+      </>
+    ) : saveState === "downloaded" ? (
+      <>
+        <Check className="h-3.5 w-3.5 text-emerald-400" aria-hidden />
+        Downloaded
+      </>
+    ) : (
+      <>
+        <Save className="h-3.5 w-3.5" aria-hidden />
+        Save Estimate
+      </>
+    )}
+  </button>
+) : (
+  <button
+    type="button"
+    disabled={true}
+    className="glass-button inline-flex h-9 min-h-9 items-center gap-2 rounded-xl px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-[--color-ink] disabled:cursor-not-allowed disabled:opacity-50"
+    title="Sign in to save estimates"
+  >
+    Save Estimate
+  </button>
+)}
                     <button
                       type="button"
                       onClick={handleSaveEstimate}

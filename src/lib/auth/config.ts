@@ -47,34 +47,39 @@ async function resolveAppUserId(params: {
   image: string | null;
   publicMetadata: Record<string, unknown>;
 }) {
-  const db = getSupabaseAdminClient();
-  if (!db) {
+  try {
+    const db = getSupabaseAdminClient();
+    if (!db) {
+      return null;
+    }
+
+    const existingMetadataUserId =
+      typeof params.publicMetadata[APP_USER_ID_METADATA_KEY] === "string"
+        ? (params.publicMetadata[APP_USER_ID_METADATA_KEY] as string)
+        : null;
+
+    const appUserId = await ensurePublicUserRecord(db, {
+      id: existingMetadataUserId ?? crypto.randomUUID(),
+      email: params.email,
+      name: params.name,
+      image: params.image,
+    });
+
+    if (existingMetadataUserId !== appUserId) {
+      const client = await clerkClient();
+      await client.users.updateUserMetadata(params.clerkUserId, {
+        publicMetadata: {
+          ...params.publicMetadata,
+          [APP_USER_ID_METADATA_KEY]: appUserId,
+        },
+      });
+    }
+
+    return appUserId;
+  } catch (error) {
+    console.error("[Auth] Failed to resolve appUserId from Supabase:", error);
     return null;
   }
-
-  const existingMetadataUserId =
-    typeof params.publicMetadata[APP_USER_ID_METADATA_KEY] === "string"
-      ? (params.publicMetadata[APP_USER_ID_METADATA_KEY] as string)
-      : null;
-
-  const appUserId = await ensurePublicUserRecord(db, {
-    id: existingMetadataUserId ?? crypto.randomUUID(),
-    email: params.email,
-    name: params.name,
-    image: params.image,
-  });
-
-  if (existingMetadataUserId !== appUserId) {
-    const client = await clerkClient();
-    await client.users.updateUserMetadata(params.clerkUserId, {
-      publicMetadata: {
-        ...params.publicMetadata,
-        [APP_USER_ID_METADATA_KEY]: appUserId,
-      },
-    });
-  }
-
-  return appUserId;
 }
 
 export async function auth(): Promise<AuthSession> {

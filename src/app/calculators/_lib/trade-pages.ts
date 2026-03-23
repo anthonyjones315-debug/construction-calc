@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getPageMetadata } from "@/seo";
 
 const SITE_URL = "https://proconstructioncalc.com";
-const LOCAL_MARKET_LABEL = "Oneida, Madison, and Herkimer counties, NY";
+const LOCAL_MARKET_LABEL = "Nationwide";
 
 type RelatedLink = {
   href: string;
@@ -1346,16 +1346,15 @@ export function getTradePageByPath(
 }
 
 export function getTradePageMetadata(page: TradePageDefinition): Metadata {
-  const localDescription = `${page.description} Serving contractors across Oneida, Madison, and Herkimer counties in your state.`;
+  const localDescription = `${page.description} Serving contractors nationwide.`;
   const mergedKeywords = Array.from(
     new Set([
       ...page.keywords,
-      "local",
-      "Madison County NY",
-      "Herkimer County NY",
-      "regional contractor calculator",
-    ]),
+      "nationwide",
+      "contractor calculator",
+    ])
   );
+
 
   return {
     ...getPageMetadata({

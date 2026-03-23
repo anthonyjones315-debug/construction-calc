@@ -32,7 +32,7 @@ const CALCULATOR_PATHS: string[] = [
   "/calculators/mechanical",
   "/calculators/mechanical/btu-estimator",
   "/calculators/mechanical/ventilation-calc",
-  "/calculators/mechanical/drywall-sheets",
+
   "/calculators/insulation",
   "/calculators/insulation/r-value",
   "/calculators/insulation/r-value-tracker",

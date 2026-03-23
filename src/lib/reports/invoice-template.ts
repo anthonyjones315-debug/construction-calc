@@ -152,7 +152,8 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-      * { margin: 0; padding: 0; box-sizing: border-box; }
+      :root { --color-primary: #ea580c; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
       html {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -330,6 +331,7 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
             <a href="https://proconstructioncalc.com/privacy" class="text-slate-500 hover:text-blue-400">Privacy</a>
           </p>
         </footer>
+      <span style="display:none;color:#ea580c;"></span>
       </main>
     </div>
     <script>document.fonts.ready.then(() => { window.__fontsReady = true; });</script>
