@@ -3,11 +3,12 @@ import {
   SignInButton,
   SignUpButton,
   UserButton,
+  useAuth,
 } from "@clerk/nextjs";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useSession } from "@/lib/auth/client";
+
 import {
   LayoutDashboard,
   Menu,
@@ -24,7 +25,7 @@ import { useStore } from "@/lib/store";
 
 export function Header() {
   const pathname = usePathname();
-  const { data: session, status } = useSession();
+  const { isLoaded, isSignedIn, userId } = useAuth();
   const [isMounted, setIsMounted] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [businessName, setBusinessName] = useState<string | null>(null);
@@ -34,14 +35,14 @@ export function Header() {
   const online = useOnlineStatus();
   const isCommandCenterActive =
     pathname === "/command-center" || pathname === "/dashboard";
-  const commandCenterHref = session ? routes.commandCenter : routes.auth.signIn;
-  const brandHref = session ? routes.commandCenter : routes.home;
+  const commandCenterHref = isSignedIn ? routes.commandCenter : routes.auth.signIn;
+  const brandHref = isSignedIn ? routes.commandCenter : routes.home;
 
   useEffect(() => {
     let cancelled = false;
 
     const loadBusinessName = async () => {
-      if (!session?.user?.id) {
+      if (!userId) {
         setBusinessName(null);
         return;
       }
@@ -81,20 +82,12 @@ export function Header() {
     return () => {
       cancelled = true;
     };
-  }, [session?.user?.id]);
-
-  const [loadingTimedOut, setLoadingTimedOut] = useState(false);
+  }, [userId]);
 
   useEffect(() => {
     const frame = requestAnimationFrame(() => setIsMounted(true));
     return () => cancelAnimationFrame(frame);
   }, []);
-
-  useEffect(() => {
-    if (status !== "loading") return;
-    const timer = setTimeout(() => setLoadingTimedOut(true), 2000);
-    return () => clearTimeout(timer);
-  }, [status]);
 
   const closeMobileMenu = useCallback(() => setMobileNavOpen(false), []);
   useClickOutside(headerRef, closeMobileMenu, mobileNavOpen);
@@ -202,19 +195,10 @@ export function Header() {
             Offline
           </span>
 
-          {/* Auth area */}
-          {!isMounted ? (
+          {/* Auth area — Clerk controls everything */}
+          {!isMounted || !isLoaded ? (
             <div className="h-7 w-7 rounded-full bg-slate-200 animate-pulse" />
-          ) : status === "loading" && !loadingTimedOut ? (
-            <div className="h-7 w-7 rounded-full bg-slate-200 animate-pulse" />
-          ) : status === "loading" && loadingTimedOut ? (
-            <Link
-              href={routes.auth.signIn}
-              className="btn-tactile flex min-h-7 items-center rounded-lg bg-blue-brand px-2 text-[10px] font-black uppercase text-white transition-all duration-200 hover:bg-[--color-blue-dark] active:scale-[0.98] sm:px-2.5 sm:text-[11px]"
-            >
-              Sign In
-            </Link>
-          ) : session ? (
+          ) : isSignedIn ? (
             <UserButton
               appearance={{
                 elements: {
@@ -292,13 +276,13 @@ export function Header() {
           className="flex flex-col gap-1 border-t-2 border-[--color-blue-brand] bg-white px-4 py-2 shadow-lg md:hidden"
           aria-label="Mobile navigation"
         >
-          {session && businessName && (
+          {isSignedIn && businessName && (
             <div className="border-b border-slate-100 px-4 py-2 mb-1">
               <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">Signed in</p>
               <p className="text-sm font-semibold text-slate-800 truncate">{businessName}</p>
             </div>
           )}
-          {session && (
+          {isSignedIn && (
             <Link
               href={routes.commandCenter}
               prefetch={false}
@@ -341,7 +325,7 @@ export function Header() {
             />
             Estimates ({estimateCount})
           </Link>
-          {!session && (
+          {!isSignedIn && (
             <div className="mt-2 flex flex-col gap-2 border-t border-slate-100 px-2 pt-3">
               <SignInButton
                 mode="redirect"
