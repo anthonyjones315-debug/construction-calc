@@ -75,3 +75,16 @@ Copy `.env.local.example` to `.env.local` and set required variables (see repo d
 ## Versioning
 
 Releases follow [Keep a Changelog](https://keepachangelog.com/). See [CHANGELOG.md](./CHANGELOG.md) for version history.
+- **Supabase Health Check**
+
+Run the master verification script:
+
+```bash
+supabase db remote:run supabase_master_check.sql
+```
+
+Or use the Node health check script:
+
+```bash
+npm run supabase:health
+```

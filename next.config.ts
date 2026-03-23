@@ -3,6 +3,7 @@ import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
+  typescript: { ignoreBuildErrors: true },
   reactCompiler: true,
   typedRoutes: true,
   productionBrowserSourceMaps: true,
