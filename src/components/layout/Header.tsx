@@ -244,7 +244,7 @@ export function Header() {
           ) : (
             <div className="flex items-center gap-1 sm:gap-1.5">
               <SignInButton
-                mode="modal"
+                mode="redirect"
               >
                 <button
                   type="button"
@@ -255,7 +255,7 @@ export function Header() {
                 </button>
               </SignInButton>
               <SignUpButton
-                mode="modal"
+                mode="redirect"
               >
                 <button
                   type="button"
@@ -344,7 +344,7 @@ export function Header() {
           {!session && (
             <div className="mt-2 flex flex-col gap-2 border-t border-slate-100 px-2 pt-3">
               <SignInButton
-                mode="modal"
+                mode="redirect"
               >
                 <button
                   type="button"
@@ -355,7 +355,7 @@ export function Header() {
                 </button>
               </SignInButton>
               <SignUpButton
-                mode="modal"
+                mode="redirect"
               >
                 <button
                   type="button"
