@@ -9,6 +9,7 @@ export const routes = {
   fieldNotes: "/field-notes" as Route,
   calculators: "/calculators" as Route,
   commandCenter: "/command-center" as Route,
+  crm: "/command-center/crm" as Route,
   newEstimate: "/command-center/estimates/new" as Route,
   faq: "/faq" as Route,
   offline: "/offline" as Route,

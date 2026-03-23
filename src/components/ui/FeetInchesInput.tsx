@@ -41,22 +41,61 @@ export type FeetInchesInputProps = {
     }
 );
 
-function toFeetInches(decimal: number): { feet: number; inches: number } {
-  if (!Number.isFinite(decimal) || decimal <= 0) return { feet: 0, inches: 0 };
+/** Standard construction fractions in sixteenths */
+const FRACTION_OPTIONS: { label: string; value: number }[] = [
+  { label: "–",     value: 0 },
+  { label: "1/16",  value: 1 / 16 },
+  { label: "1/8",   value: 1 / 8 },
+  { label: "3/16",  value: 3 / 16 },
+  { label: "1/4",   value: 1 / 4 },
+  { label: "5/16",  value: 5 / 16 },
+  { label: "3/8",   value: 3 / 8 },
+  { label: "7/16",  value: 7 / 16 },
+  { label: "1/2",   value: 1 / 2 },
+  { label: "9/16",  value: 9 / 16 },
+  { label: "5/8",   value: 5 / 8 },
+  { label: "11/16", value: 11 / 16 },
+  { label: "3/4",   value: 3 / 4 },
+  { label: "13/16", value: 13 / 16 },
+  { label: "7/8",   value: 7 / 8 },
+  { label: "15/16", value: 15 / 16 },
+];
+
+/** Snap a decimal inch remainder to the nearest 1/16 fraction option index */
+function nearestFractionIndex(remainder: number): number {
+  let bestIdx = 0;
+  let bestDist = Math.abs(remainder);
+  for (let i = 1; i < FRACTION_OPTIONS.length; i++) {
+    const dist = Math.abs(remainder - FRACTION_OPTIONS[i].value);
+    if (dist < bestDist) {
+      bestDist = dist;
+      bestIdx = i;
+    }
+  }
+  return bestIdx;
+}
+
+function toFeetInchesFraction(decimal: number): {
+  feet: number;
+  wholeInches: number;
+  fractionIndex: number;
+} {
+  if (!Number.isFinite(decimal) || decimal <= 0)
+    return { feet: 0, wholeInches: 0, fractionIndex: 0 };
   const feet = Math.floor(decimal);
-  const inches = Math.round((decimal - feet) * 12 * 10) / 10;
-  if (inches >= 12) return { feet: feet + 1, inches: 0 };
-  return { feet, inches };
+  const totalInches = (decimal - feet) * 12;
+  const wholeInches = Math.floor(totalInches);
+  const remainder = totalInches - wholeInches;
+  const fractionIndex = nearestFractionIndex(remainder);
+  // If fraction rounds up to 1, carry over
+  if (fractionIndex === 0 && remainder > 0.96875) {
+    return { feet, wholeInches: wholeInches + 1, fractionIndex: 0 };
+  }
+  return { feet, wholeInches, fractionIndex };
 }
 
 export function FeetInchesInput(props: FeetInchesInputProps) {
-  const {
-    label,
-    subLabel,
-    helpText,
-    id,
-    autoFocus,
-  } = props;
+  const { label, subLabel, helpText, id, autoFocus } = props;
 
   const reactGeneratedId = React.useId();
   const fieldId = id ?? reactGeneratedId;
@@ -66,36 +105,58 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
   const isExplicitMode = "feet" in props && props.feet !== undefined;
 
   let feet: number;
-  let inches: number;
+  let wholeInches: number;
+  let fractionIndex: number;
   let isValid: boolean;
   let handleFeetChange: (val: number) => void;
-  let handleInchesChange: (val: number) => void;
+  let handleWholeInchesChange: (val: number) => void;
+  let handleFractionChange: (idx: number) => void;
 
   if (isExplicitMode) {
     const p = props as Extract<FeetInchesInputProps, { feet: number | "" }>;
     feet = p.feet === "" ? 0 : p.feet;
-    inches = p.inches === "" ? 0 : p.inches;
+    const rawInches = p.inches === "" ? 0 : p.inches;
+    wholeInches = Math.floor(rawInches);
+    fractionIndex = nearestFractionIndex(rawInches - wholeInches);
     isValid = true;
+
     handleFeetChange = (val) => p.onFeetChange(val);
-    handleInchesChange = (val) => p.onInchesChange(val);
+    handleWholeInchesChange = (val) => {
+      p.onInchesChange(val + FRACTION_OPTIONS[fractionIndex].value);
+    };
+    handleFractionChange = (idx) => {
+      p.onInchesChange(wholeInches + FRACTION_OPTIONS[idx].value);
+    };
   } else {
     const p = props as Extract<FeetInchesInputProps, { value: string | number }>;
     const numericValue =
-      typeof p.value === "number" ? p.value : Number.parseFloat(String(p.value));
-    const parsed = toFeetInches(numericValue);
+      typeof p.value === "number"
+        ? p.value
+        : Number.parseFloat(String(p.value));
+    const parsed = toFeetInchesFraction(numericValue);
     feet = parsed.feet;
-    inches = parsed.inches;
+    wholeInches = parsed.wholeInches;
+    fractionIndex = parsed.fractionIndex;
     isValid = Number.isFinite(numericValue) && numericValue > 0;
 
-    const emitCombined = (nextFeet: number, nextInches: number) => {
-      const safeInches = Math.max(0, nextInches);
-      let total = Math.max(0, nextFeet) + safeInches / 12;
+    const emitCombined = (
+      nextFeet: number,
+      nextWholeInches: number,
+      nextFracIdx: number,
+    ) => {
+      const totalInches =
+        Math.max(0, nextWholeInches) + FRACTION_OPTIONS[nextFracIdx].value;
+      let total = Math.max(0, nextFeet) + totalInches / 12;
       if (p.min != null && total < p.min) total = p.min;
       if (p.max != null && total > p.max) total = p.max;
       p.onChange(String(Math.round(total * 10000) / 10000));
     };
-    handleFeetChange = (val) => emitCombined(val, inches);
-    handleInchesChange = (val) => emitCombined(feet, val);
+    handleFeetChange = (val) =>
+      emitCombined(val, wholeInches, fractionIndex);
+    handleWholeInchesChange = (val) =>
+      emitCombined(feet, val, fractionIndex);
+    handleFractionChange = (idx) =>
+      emitCombined(feet, wholeInches, idx);
   }
 
   return (
@@ -122,6 +183,7 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
         data-valid={isValid ? "true" : "false"}
         className="glass-input-shell relative flex min-h-[3.5rem] items-stretch overflow-hidden rounded-xl p-0"
       >
+        {/* ── Feet ── */}
         <input
           id={`${fieldId}-ft`}
           type="number"
@@ -141,23 +203,48 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
         <div className="flex items-center border-l border-[--color-border] bg-[--color-surface-alt] px-2 text-[11px] font-semibold uppercase tabular-nums tracking-tight text-copy-secondary">
           ft
         </div>
+
+        {/* ── Whole Inches ── */}
         <input
           id={`${fieldId}-in`}
           type="number"
-          value={inches}
+          value={wholeInches}
           onChange={(e) => {
-            handleInchesChange(Number.parseFloat(e.target.value) || 0);
+            handleWholeInchesChange(
+              Number.parseInt(e.target.value, 10) || 0,
+            );
           }}
           min={0}
-          step={0.5}
-          inputMode="decimal"
-          enterKeyHint="done"
+          step={1}
+          inputMode="numeric"
+          enterKeyHint="next"
           aria-labelledby={labelId}
           aria-label={`${label} inches`}
           className="glass-input flex-1 rounded-none border-0 border-l border-[--color-border] bg-transparent px-3 text-sm tabular-nums tracking-tight text-field-input shadow-none"
         />
         <div className="flex items-center border-l border-[--color-border] bg-[--color-surface-alt] px-2 text-[11px] font-semibold uppercase tabular-nums tracking-tight text-copy-secondary">
           in
+        </div>
+
+        {/* ── Fractional Inches ── */}
+        <select
+          id={`${fieldId}-frac`}
+          value={fractionIndex}
+          onChange={(e) => {
+            handleFractionChange(Number.parseInt(e.target.value, 10));
+          }}
+          aria-labelledby={labelId}
+          aria-label={`${label} fractional inches`}
+          className="glass-input flex-1 appearance-none rounded-none border-0 border-l border-[--color-border] bg-transparent px-2 text-center text-sm tabular-nums tracking-tight text-field-input shadow-none"
+        >
+          {FRACTION_OPTIONS.map((opt, i) => (
+            <option key={i} value={i}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+        <div className="flex items-center border-l border-[--color-border] bg-[--color-surface-alt] px-2 text-[11px] font-semibold uppercase tabular-nums tracking-tight text-copy-secondary">
+          frac
         </div>
       </div>
     </label>

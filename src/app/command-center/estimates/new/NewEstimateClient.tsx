@@ -164,7 +164,13 @@ function EstimateDetailsCard({
   const [lng, setLng] = useState<number | null>(null);
   const [isFetchingLocation, setIsFetchingLocation] = useState(false);
   const mapsKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
+  const [crmClients, setCrmClients] = useState<{id: string, name: string, email?: string, address?: string}[]>([]);
 
+  useEffect(() => {
+    fetch("/api/clients").then(res => res.json()).then(data => {
+      if (Array.isArray(data)) setCrmClients(data);
+    }).catch(() => {});
+  }, []);
 
   return (
     <article className="rounded-2xl border border-slate-300 bg-white px-4 py-4 shadow-sm sm:px-5 sm:py-5">
@@ -217,13 +223,38 @@ function EstimateDetailsCard({
           <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
             Client Name <span className="text-red-500">*</span>
           </label>
-          <input
-            type="text"
-            value={clientName}
-            onChange={(e) => onChange("clientName", e.target.value)}
-            placeholder="John Smith"
-            className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[--color-blue-brand]/45 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[--color-blue-brand]/20"
-          />
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={clientName}
+              onChange={(e) => onChange("clientName", e.target.value)}
+              placeholder="John Smith"
+              className="flex-1 h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[--color-blue-brand]/45 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[--color-blue-brand]/20"
+            />
+            {crmClients.length > 0 && (
+              <select
+                title="Fill from CRM"
+                className="h-11 w-20 sm:w-28 rounded-xl border border-slate-200 bg-slate-50 px-2 text-xs font-semibold text-slate-700 outline-none transition focus:border-[--color-blue-brand]/45 focus:ring-2 focus:ring-[--color-blue-brand]/20"
+                onChange={(e) => {
+                  if (!e.target.value) return;
+                  const c = crmClients.find((x) => x.id === e.target.value);
+                  if (c) {
+                    onChange("clientName", c.name);
+                    if (c.email) onChange("clientEmail", c.email);
+                    if (c.address) onChange("jobSiteAddress", c.address);
+                  }
+                  e.target.value = "";
+                }}
+              >
+                <option value="">Import...</option>
+                {crmClients.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
         </div>
       </div>
 

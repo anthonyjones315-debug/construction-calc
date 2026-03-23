@@ -212,6 +212,13 @@ const commandPages: Array<{
   group: "Operations" | "Reference";
 }> = [
   {
+    label: "CRM & Clients",
+    href: routes.crm,
+    icon: Users,
+    description: "Manage customer profiles and job history.",
+    group: "Operations",
+  },
+  {
     label: "Saved Estimates",
     href: routes.saved,
     icon: FileText,

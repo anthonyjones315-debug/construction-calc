@@ -8,7 +8,7 @@ import { getNoIndexMetadata } from "@/seo";
 import { routes } from "@routes";
 import CommandCenterClient from "./CommandCenterClient";
 import { JoinBusinessWithCodeForm } from "./JoinBusinessWithCodeForm";
-import WelcomeGuidePopupClient from "./WelcomeGuidePopupClient";
+import { CrmFeedbackBanner } from "./CrmFeedbackBanner";
 
 export const metadata = getNoIndexMetadata(
   "Command Center | Pro Construction Calc",
@@ -466,7 +466,7 @@ export default async function CommandCenterPage({
 
   return (
     <div className="light page-shell command-center-page-shell grid min-h-dvh grid-rows-[auto_1fr] overflow-hidden">
-      <WelcomeGuidePopupClient />
+      <CrmFeedbackBanner />
       <main id="main-content" className="row-start-2 viewport-main">
         <div className="viewport-frame command-center-page-frame">
           {mainContent}
