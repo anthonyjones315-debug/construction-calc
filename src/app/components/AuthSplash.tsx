@@ -2,6 +2,7 @@
 
 import type { Route } from "next";
 
+import { useClerk } from "@clerk/nextjs";
 import Link from "next/link";
 import { useSession } from "@/lib/auth/client";
 import { useRouter } from "next/navigation";
@@ -13,6 +14,7 @@ import { useEffect } from "react";
  */
 export function AuthSplash() {
   const { status } = useSession();
+  const clerk = useClerk();
   const router = useRouter();
 
   // If the user is signed in we redirect to the home page (or keep the caller's page).
@@ -34,17 +36,33 @@ export function AuthSplash() {
         Our powerful calculators are built for contractors. Sign up to start creating estimates and unlock the full suite of tools.
       </p>
       <div className="flex flex-wrap items-center justify-center gap-3">
-        <Link
-          href={"/sign-in" as Route}
+        <button
+          type="button"
+          onClick={() =>
+            clerk.openSignIn({
+              fallbackRedirectUrl: window.location.pathname || "/",
+            })
+          }
           className="rounded-xl border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-[--color-ink] transition-colors hover:border-blue-700 hover:text-blue-700"
         >
           Sign In
-        </Link>
-        <Link
-          href={"/sign-up" as Route}
+        </button>
+        <button
+          type="button"
+          onClick={() =>
+            clerk.openSignUp({
+              fallbackRedirectUrl: window.location.pathname || "/",
+            })
+          }
           className="rounded-xl bg-blue-700 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-800"
         >
           Sign Up &amp; Get Started
+        </button>
+        <Link
+          href={"/" as Route}
+          className="px-2 py-3 text-sm font-medium text-[--color-ink-mid] transition-colors hover:text-[--color-ink]"
+        >
+          Back Home
         </Link>
       </div>
     </div>

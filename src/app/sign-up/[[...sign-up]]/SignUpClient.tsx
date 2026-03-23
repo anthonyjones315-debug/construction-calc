@@ -1,7 +1,7 @@
 "use client";
 
-import { SignUp } from "@clerk/nextjs";
 import { useSearchParams } from "next/navigation";
+import { ClerkAuthLauncher } from "@/components/auth/ClerkAuthLauncher";
 import { routes } from "@routes";
 import { safeAppRedirectPath } from "@/lib/auth/safe-redirect";
 
@@ -17,5 +17,5 @@ export function SignUpClient() {
     searchParams.get("next");
   const fallback = safeAppRedirectPath(next, routes.settingsBusinessProfile);
 
-  return <SignUp fallbackRedirectUrl={fallback} />;
+  return <ClerkAuthLauncher mode="sign-up" fallbackRedirectUrl={fallback} />;
 }
