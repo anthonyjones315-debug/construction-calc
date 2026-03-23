@@ -36,15 +36,16 @@ self.addEventListener("fetch", (event) => {
   const sameOrigin = requestUrl.origin === self.location.origin;
   const isNavigation = event.request.mode === "navigate";
 
-  // Next.js App Router RSC fetches and build assets must not be cached or answered
-  // with synthetic offline responses — that breaks client navigations and can serve
-  // stale flight payloads.
+  // Bypass Service Worker completely for Next.js internal requests, API routes, and auth pages.
+  // This prevents issues with Clerk middleware throwing during SW fetch intercepts.
   if (
     sameOrigin &&
     (requestUrl.pathname.startsWith("/_next/") ||
+      requestUrl.pathname.startsWith("/api/") ||
+      requestUrl.pathname.startsWith("/sign-in") ||
+      requestUrl.pathname.startsWith("/sign-up") ||
       requestUrl.searchParams.has("_rsc"))
   ) {
-    event.respondWith(fetch(event.request));
     return;
   }
 
