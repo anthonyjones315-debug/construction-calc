@@ -33,12 +33,20 @@ export function AuthSplash() {
       <p className="mb-6 max-w-lg text-lg text-[--color-ink-mid]">
         Our powerful calculators are built for contractors. Sign up to start creating estimates and unlock the full suite of tools.
       </p>
-      <Link
-        href={"/sign-up" as Route}
-        className="rounded-xl bg-blue-700 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-800"
-      >
-        Sign Up &amp; Get Started
-      </Link>
+      <div className="flex flex-wrap items-center justify-center gap-3">
+        <Link
+          href={"/sign-in" as Route}
+          className="rounded-xl border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-[--color-ink] transition-colors hover:border-blue-700 hover:text-blue-700"
+        >
+          Sign In
+        </Link>
+        <Link
+          href={"/sign-up" as Route}
+          className="rounded-xl bg-blue-700 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-800"
+        >
+          Sign Up &amp; Get Started
+        </Link>
+      </div>
     </div>
   );
 }

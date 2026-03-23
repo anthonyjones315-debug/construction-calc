@@ -2,7 +2,6 @@
 import {
   UserButton,
   useAuth,
-  useClerk,
 } from "@clerk/nextjs";
 import Link from "next/link";
 import Image from "next/image";
@@ -24,7 +23,6 @@ import { useStore } from "@/lib/store";
 export function Header() {
   const pathname = usePathname();
   const { isLoaded, isSignedIn } = useAuth();
-  const clerk = useClerk();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [businessName, setBusinessName] = useState<string | null>(null);
   const headerRef = useRef<HTMLElement>(null);
@@ -37,7 +35,6 @@ export function Header() {
   /* Load business name for signed-in users */
   useEffect(() => {
     if (!isSignedIn) {
-      setBusinessName(null);
       return;
     }
     let cancelled = false;
@@ -74,20 +71,6 @@ export function Header() {
     document.addEventListener("mousedown", handleMouseDown);
     return () => document.removeEventListener("mousedown", handleMouseDown);
   }, [mobileNavOpen]);
-
-  /** Open Clerk sign-in modal */
-  const handleSignIn = () => {
-    clerk.openSignIn({
-      fallbackRedirectUrl: routes.commandCenter,
-    });
-  };
-
-  /** Open Clerk sign-up modal */
-  const handleSignUp = () => {
-    clerk.openSignUp({
-      fallbackRedirectUrl: routes.commandCenter,
-    });
-  };
 
   return (
     <header ref={headerRef} className="site-header-shell sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50 shadow-sm transition-all duration-300">
@@ -184,15 +167,17 @@ export function Header() {
           )}
 
           {/* ——— AUTH AREA ——— */}
-          {/* Before Clerk loads: show nothing to avoid flash */}
-          {isLoaded && !isSignedIn && (
-            <button
-              type="button"
-              onClick={handleSignIn}
+          {!isSignedIn && (
+            <Link
+              href={{
+                pathname: routes.auth.signIn,
+                query: { callbackUrl: routes.commandCenter },
+              }}
+              prefetch={false}
               className="btn-tactile flex min-h-7 items-center rounded-lg bg-[--color-blue-brand] px-3 text-[10px] font-black uppercase tracking-[0.08em] text-white transition-all duration-200 hover:bg-[--color-blue-dark] active:scale-[0.98] sm:px-3.5 sm:text-[11px]"
             >
               Sign In
-            </button>
+            </Link>
           )}
 
           {isLoaded && isSignedIn && (
@@ -299,20 +284,28 @@ export function Header() {
           </Link>
           {!isSignedIn && (
             <div className="mt-2 flex flex-col gap-2 border-t border-slate-100 px-2 pt-3">
-              <button
-                type="button"
-                onClick={() => { setMobileNavOpen(false); handleSignIn(); }}
+              <Link
+                href={{
+                  pathname: routes.auth.signIn,
+                  query: { callbackUrl: routes.commandCenter },
+                }}
+                prefetch={false}
+                onClick={() => setMobileNavOpen(false)}
                 className="btn-tactile flex min-h-10 w-full items-center justify-center rounded-lg bg-[--color-blue-brand] px-4 text-xs font-black uppercase text-white"
               >
                 Sign In
-              </button>
-              <button
-                type="button"
-                onClick={() => { setMobileNavOpen(false); handleSignUp(); }}
+              </Link>
+              <Link
+                href={{
+                  pathname: routes.auth.signUp,
+                  query: { callbackUrl: routes.commandCenter },
+                }}
+                prefetch={false}
+                onClick={() => setMobileNavOpen(false)}
                 className="btn-tactile flex min-h-10 w-full items-center justify-center rounded-lg border border-slate-300 bg-white px-4 text-xs font-black uppercase text-slate-700"
               >
                 Sign Up
-              </button>
+              </Link>
             </div>
           )}
         </nav>
