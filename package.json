@@ -23,16 +23,26 @@
     "supabase:types": "supabase gen types typescript --project-id $SUPABASE_PROJECT_ID > src/lib/supabase/types.gen.ts",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
+<<<<<<< Updated upstream
     "test:e2e:debug": "playwright test --debug"
+=======
+    "test:e2e:debug": "playwright test --debug",
+    "discover-features": "ts-node scripts/discover-features.ts",
+    "generate-tests": "node scripts/generate-tests.js",
+    "supabase:health": "ts-node scripts/check-supabase.ts",
+    "supabase:check": "supabase db remote:run supabase_master_check.sql"
+>>>>>>> Stashed changes
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@clerk/nextjs": "^7.0.6",
+    "@hello-pangea/dnd": "^18.0.1",
     "@next/third-parties": "^16.2.1",
     "@react-pdf/renderer": "^4.3.2",
     "@sentry/nextjs": "^10.43.0",
+    "@stripe/stripe-js": "^8.11.0",
     "@supabase/ssr": "^0.9.0",
     "@supabase/supabase-js": "^2.99.1",
     "@tailwindcss/postcss": "^4.2.1",
@@ -53,6 +63,7 @@
     "react-signature-canvas": "^1.1.0-alpha.2",
     "resend": "^6.9.3",
     "server-only": "^0.0.1",
+    "stripe": "^20.4.1",
     "tailwindcss": "^4.2.1",
     "typescript": "^5.9.3",
     "zod": "^4.3.6",
@@ -65,6 +76,11 @@
     "eslint": "^9.39.4",
     "eslint-config-next": "^16.2.1",
     "puppeteer": "^24.7.1",
+<<<<<<< Updated upstream
+=======
+    "supabase": "^2.83.0",
+    "ts-node": "^10.9.2",
+>>>>>>> Stashed changes
     "vitest": "^1.6.0"
   }
 }
