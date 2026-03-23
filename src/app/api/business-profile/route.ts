@@ -50,21 +50,27 @@ export async function GET() {
     const tenantColumn = getTenantScopeColumn(businessContext);
     const tenantId = getTenantScopeId(businessContext);
 
-    const { data, error } = await getBusinessProfile(tenantColumn, tenantId);
-
-    if (error && error.code !== "PGRST116") {
-      Sentry.captureException(error);
-      return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    let profileData = null;
+    try {
+      const { data, error } = await getBusinessProfile(tenantColumn, tenantId);
+      if (error && error.code !== "PGRST116") {
+        Sentry.captureException(error);
+      } else {
+        profileData = data;
+      }
+    } catch (err) {
+      console.error("[API] Failed to fetch business profile:", err);
+      // Fallback to null profileData if DB is down
     }
 
     return NextResponse.json({
       role: businessContext.role,
       isOwner: businessContext.isOwner,
-      profile: data
+      profile: profileData
         ? {
-            ...data,
-            company_name: data.business_name ?? null,
-            business_email: data.business_email ?? accountEmail,
+            ...profileData,
+            company_name: profileData.business_name ?? null,
+            business_email: profileData.business_email ?? accountEmail,
           }
         : {
             company_name: null,

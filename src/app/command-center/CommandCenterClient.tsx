@@ -34,8 +34,8 @@ import { UserButton } from "@clerk/nextjs";
 import { useSearchParams } from "next/navigation";
 import * as Sentry from "@sentry/nextjs";
 import { routes } from "@routes";
-import { CalculatorPage } from "@/app/calculators/_components/CalculatorPage";
-import { getTradePageByPath } from "@/app/calculators/_lib/trade-pages";
+import { CommandCenterCalculator } from "./CommandCenterCalculator";
+import { getTradePageByPath, tradePages } from "@/app/calculators/_lib/trade-pages";
 import { useProMode } from "@/hooks/useProMode";
 import { useStore } from "@/lib/store";
 
@@ -420,13 +420,30 @@ function CommandStatCard({
 function ToolLaunchCard({
   item,
   onOpen,
+  onCategoryClick,
+  onInternalLinkClick,
 }: {
   item: NavItem;
   onOpen: (item: NavItem) => void;
+  onCategoryClick?: (category: ToolCategory) => void;
+  onInternalLinkClick?: (workspace: WorkspaceSlug) => void;
 }) {
   const href = item.href ?? routes.commandCenter;
-  const opensCalculatorModal =
-    typeof href === "string" && Boolean(getTradePageByPath(href));
+  const tp = typeof href === "string" ? getTradePageByPath(href) : undefined;
+  const opensCalculatorModal = Boolean(tp && tp.type === "calculator");
+  const isCategoryLink = Boolean(tp && tp.type === "category");
+
+  const handleOpen = (e: React.MouseEvent) => {
+    if (isCategoryLink && onCategoryClick && tp) {
+      e.preventDefault();
+      onCategoryClick(tp.category as ToolCategory);
+      return;
+    }
+    if (opensCalculatorModal) {
+      e.preventDefault();
+      onOpen(item);
+    }
+  };
 
   const content = (
     <>
@@ -446,11 +463,11 @@ function ToolLaunchCard({
     </>
   );
 
-  if (opensCalculatorModal && typeof href === "string") {
+  if ((opensCalculatorModal || isCategoryLink) && typeof href === "string") {
     return (
       <button
         type="button"
-        onClick={() => onOpen(item)}
+        onClick={handleOpen}
         className="flex min-h-0 flex-col justify-between rounded-2xl border border-[--color-border] bg-white px-5 py-5 text-left transition-all hover:border-[--color-blue-brand]/40 hover:bg-[--color-blue-soft] hover:shadow-sm"
       >
         {content}
@@ -462,6 +479,17 @@ function ToolLaunchCard({
     <Link
       href={href}
       prefetch={false}
+      onClick={(e) => {
+        if (onInternalLinkClick) {
+          if (href === routes.calculators) {
+            e.preventDefault();
+            onInternalLinkClick("launch");
+          } else if (href === routes.saved) {
+            e.preventDefault();
+            onInternalLinkClick("pages");
+          }
+        }
+      }}
       className="flex min-h-0 flex-col justify-between rounded-2xl border border-[--color-border] bg-white px-5 py-5 text-left transition-all hover:border-[--color-blue-brand]/40 hover:bg-[--color-blue-soft] hover:shadow-sm"
     >
       {content}
@@ -550,23 +578,36 @@ export default function CommandCenterClient({
   const seatsAvailable = Math.max(seatLimit - seatsUsed, 0);
   const utilizationPercent = Math.round((seatsUsed / seatLimit) * 100);
   const normalizedFilter = toolFilter.trim().toLowerCase();
-  const filteredToolItems = toolNavItems.filter((item) => {
-    const matchesCategory =
-      toolCategory === "all" || categorizeTool(item) === toolCategory;
+  const filteredToolItems = useMemo(() => {
+    let baseItems = toolNavItems;
 
-    if (!matchesCategory) {
-      return false;
+    if (toolCategory !== "all") {
+      baseItems = Object.values(tradePages)
+        .filter((p) => p.category === toolCategory && p.type === "calculator")
+        .map((p) => ({
+          label: p.title,
+          slug: p.key,
+          href: p.canonicalPath as Route,
+          icon: Calculator,
+          description: p.description,
+        }));
     }
 
-    if (!normalizedFilter) {
-      return true;
-    }
+    return baseItems.filter((item) => {
+      if (toolCategory === "all") {
+        const matchesCategory =
+          toolCategory === "all" || categorizeTool(item) === toolCategory;
+        if (!matchesCategory) return false;
+      }
 
-    const haystack = [item.label, item.slug, item.description ?? ""]
-      .join(" ")
-      .toLowerCase();
-    return haystack.includes(normalizedFilter);
-  });
+      if (!normalizedFilter) return true;
+
+      const haystack = [item.label, item.slug, item.description ?? ""]
+        .join(" ")
+        .toLowerCase();
+      return haystack.includes(normalizedFilter);
+    });
+  }, [toolCategory, normalizedFilter]);
   const visibleToolItems = filteredToolItems.slice(0, 6);
   const toolFromQuerySlug = toolFromQuery?.toLowerCase() ?? "";
   const activeToolHref =
@@ -781,22 +822,22 @@ export default function CommandCenterClient({
           <Calculator className="h-3.5 w-3.5" aria-hidden />
           New Estimate
         </button>
-        <Link
-          href={routes.saved}
-          prefetch={false}
+        <button
+          type="button"
+          onClick={() => setActiveWorkspace("pages")}
           className="action-bar-btn"
         >
           <FileText className="h-3.5 w-3.5" aria-hidden />
           Open Drafts
-        </Link>
-        <Link
-          href={routes.settings}
-          prefetch={false}
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveWorkspace("pages")}
           className="action-bar-btn"
         >
           <Settings className="h-3.5 w-3.5" aria-hidden />
           Business Setup
-        </Link>
+        </button>
         {/* Modal for New Estimate */}
         <Modal isOpen={showNewEstimate} onClose={() => setShowNewEstimate(false)}>
           <div className="max-w-4xl w-full">
@@ -806,14 +847,14 @@ export default function CommandCenterClient({
             }} />
           </div>
         </Modal>
-        <Link
-          href={routes.guide}
-          prefetch={false}
+        <button
+          type="button"
+          onClick={() => setActiveWorkspace("pages")}
           className="action-bar-btn"
         >
           <HardHat className="h-3.5 w-3.5" aria-hidden />
           Owner Guide
-        </Link>
+        </button>
       </div>
 
       {/* ── 4-up KPI row — 64px ───────────────────────────────────── */}
@@ -859,7 +900,7 @@ export default function CommandCenterClient({
               <button
                 type="button"
                 onClick={() => setActiveWorkspace("launch")}
-                className="mt-4 inline-flex h-10 items-center justify-center rounded-xl bg-[--color-blue-brand] px-5 text-[11px] font-black uppercase tracking-[0.1em] text-white transition hover:bg-[--color-blue-dark]"
+                className="mt-4 inline-flex h-10 items-center justify-center rounded-xl border border-[--color-border] bg-white px-5 text-[11px] font-bold uppercase tracking-[0.1em] text-[--color-ink] transition hover:border-[--color-blue-brand]/50 hover:text-[--color-blue-brand]"
               >
                 Open Launch Pad
               </button>
@@ -1008,6 +1049,14 @@ export default function CommandCenterClient({
                 key={item.slug}
                 item={item}
                 onOpen={(nextItem) => setActiveTool(nextItem)}
+                onCategoryClick={(cat) => {
+                  setToolCategory(cat);
+                  setToolFilter("");
+                }}
+                onInternalLinkClick={(ws) => {
+                  setActiveWorkspace(ws);
+                  if (ws === "launch") setToolCategory("all");
+                }}
               />
             ))}
           </div>
@@ -1373,7 +1422,7 @@ export default function CommandCenterClient({
     const referencePages = commandPages.filter((page) => page.group === "Reference");
 
     return (
-      <div className="flex flex-col gap-4 lg:grid lg:h-full lg:min-h-0 lg:grid-cols-[0.9fr,1.1fr]">
+      <div className="flex flex-col gap-4 lg:grid lg:min-h-0 lg:grid-cols-[0.9fr,1.1fr]">
         <article className="public-panel-strong flex min-h-0 flex-col gap-4 px-5 py-5">
           <div>
             <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[--color-blue-brand]">
@@ -1423,7 +1472,7 @@ export default function CommandCenterClient({
         </article>
 
         <div className="grid min-h-0 gap-4">
-          <section className="flex min-h-0 flex-col gap-3 overflow-hidden rounded-2xl border border-[--color-border] bg-white px-5 py-5 shadow-sm">
+          <section className="flex min-h-0 flex-col gap-3 rounded-2xl border border-[--color-border] bg-white px-5 py-5 shadow-sm">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[--color-blue-brand]">
@@ -1441,7 +1490,7 @@ export default function CommandCenterClient({
             </div>
           </section>
 
-          <section className="flex min-h-0 flex-col gap-3 overflow-hidden rounded-2xl border border-[--color-border] bg-white px-5 py-5 shadow-sm">
+          <section className="flex min-h-0 flex-col gap-3 rounded-2xl border border-[--color-border] bg-white px-5 py-5 shadow-sm">
             <div>
               <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[--color-blue-brand]">
                 Reference
@@ -1661,7 +1710,7 @@ export default function CommandCenterClient({
                 </div>
               </div>
               <div className="flex-1 overflow-y-auto bg-[--color-bg]">
-                <CalculatorPage page={activeTradePage} />
+                <CommandCenterCalculator page={activeTradePage} closeModal={() => setActiveTool(null)} />
               </div>
             </div>
           ) : (

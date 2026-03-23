@@ -10,7 +10,7 @@ if (fs.existsSync(jsonPath)) {
   try {
     const data = JSON.parse(fs.readFileSync(jsonPath, 'utf-8')) as { url: string; title: string }[];
     routes = data.map(r => r.url);
-  } catch (e) {
+  } catch {
     console.warn('Failed to parse feature-map.json, using fallback routes');
   }
 }

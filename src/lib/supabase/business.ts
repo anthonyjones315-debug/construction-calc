@@ -199,60 +199,68 @@ export async function getBusinessContextForSession(
     );
   }
 
-  await ensurePublicUser(db, session);
+  try {
+    await ensurePublicUser(db, session);
 
-  const existingMembership = await findMembership(db, userId);
-  if (!existingMembership) {
-    try {
-      const business = await ensureOwnerBusiness(
-        db,
-        userId,
-        buildDefaultBusinessName(session),
-      );
+    const existingMembership = await findMembership(db, userId);
+    if (!existingMembership) {
+      try {
+        const business = await ensureOwnerBusiness(
+          db,
+          userId,
+          buildDefaultBusinessName(session),
+        );
 
-      const { error: membershipError } = await db.from("memberships").upsert(
-        {
-          business_id: business.id,
-          user_id: userId,
+        const { error: membershipError } = await db.from("memberships").upsert(
+          {
+            business_id: business.id,
+            user_id: userId,
+            role: "owner",
+          },
+          { onConflict: "business_id,user_id" },
+        );
+
+        if (membershipError) {
+          if (isTenantSchemaMissingError(membershipError.message)) {
+            return fallbackLegacyContext(userId);
+          }
+          throw new Error(
+            `Failed to create owner membership: ${membershipError.message}`,
+          );
+        }
+
+        return {
+          userId,
+          businessId: business.id,
           role: "owner",
-        },
-        { onConflict: "business_id,user_id" },
-      );
-
-      if (membershipError) {
-        if (isTenantSchemaMissingError(membershipError.message)) {
+          ...buildBusinessCapabilities("owner"),
+          usesLegacyUserScope: false,
+        };
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        if (isTenantSchemaMissingError(message)) {
           return fallbackLegacyContext(userId);
         }
-        throw new Error(
-          `Failed to create owner membership: ${membershipError.message}`,
-        );
+        throw error;
       }
-
-      return {
-        userId,
-        businessId: business.id,
-        role: "owner",
-        ...buildBusinessCapabilities("owner"),
-        usesLegacyUserScope: false,
-      };
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      if (isTenantSchemaMissingError(message)) {
-        return fallbackLegacyContext(userId);
-      }
-      throw error;
     }
-  }
 
-  return {
-    userId,
-    businessId: existingMembership.business_id,
-    role: normalizeMembershipRole(existingMembership.role),
-    ...buildBusinessCapabilities(
-      normalizeMembershipRole(existingMembership.role),
-    ),
-    usesLegacyUserScope: false,
-  };
+    return {
+      userId,
+      businessId: existingMembership.business_id,
+      role: normalizeMembershipRole(existingMembership.role),
+      ...buildBusinessCapabilities(
+        normalizeMembershipRole(existingMembership.role),
+      ),
+      usesLegacyUserScope: false,
+    };
+  } catch (error) {
+    console.warn(
+      `[Supabase] getBusinessContextForSession failed for user ${userId}, falling back to legacy context:`,
+      error,
+    );
+    return fallbackLegacyContext(userId);
+  }
 }
 
 export async function getBusinessContextForUserId(

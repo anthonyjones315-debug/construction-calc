@@ -10,11 +10,11 @@ import { useSession } from "@/lib/auth/client";
 import * as Sentry from "@sentry/nextjs";
 import posthog from "posthog-js";
 import Autocomplete from "react-google-autocomplete";
-import { RoofingGlyph } from "./TradeGlyphs";
+import { RoofingGlyph } from "@/app/calculators/_components/TradeGlyphs";
 import {
   getCalculatorAuditRef,
   setCalculatorAuditSnapshot,
-} from "../_lib/calculator-audit-ref";
+} from "@/app/calculators/_lib/calculator-audit-ref";
 import { useHaptic } from "@/hooks/useHaptic";
 import {
   ArrowLeft,
@@ -64,7 +64,7 @@ import { ArticleMarkdown } from "@/components/content/ArticleMarkdown";
 import {
   getTradePageSchema,
   type TradePageDefinition,
-} from "../_lib/trade-pages";
+} from "@/app/calculators/_lib/trade-pages";
 import { NYS_COUNTY_TAX_RATES } from "@/data/nys-tax-rates";
 // Business identity imports removed – not used in this component
 import {
@@ -74,7 +74,7 @@ import {
 } from "@/data/financial-terms";
 import { calculateNysSalesTax } from "@/services/taxEngine";
 import { routes } from "@routes";
-import { UnitToggle } from "./UnitToggle";
+import { UnitToggle } from "@/app/calculators/_components/UnitToggle";
 import { ProInput, ProResult } from "@/components/ui/glass-elements";
 import {
   FeetInchesInput,
@@ -107,7 +107,7 @@ const EmailEstimateModal = dynamic(
 
 const CalculatorAuditPanel = dynamic(
   () =>
-    import("./CalculatorAuditPanel").then((mod) => mod.CalculatorAuditPanel),
+    import("@/app/calculators/_components/CalculatorAuditPanel").then((mod) => mod.CalculatorAuditPanel),
   {
     ssr: false,
     loading: () => (
@@ -833,7 +833,7 @@ function getHeroImageForKey(key: string): string {
   return 'framing';
 }
 
-export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
+export function CommandCenterCalculator({ page, closeModal }: CalculatorPageProps) {
   const calculatorShellRef = useRef<HTMLElement>(null);
   const { data: session } = useSession();
   const contractorProfile = useContractorProfile();
