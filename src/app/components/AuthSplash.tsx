@@ -1,12 +1,11 @@
 "use client";
 
-import type { Route } from "next";
-
-import { useClerk } from "@clerk/nextjs";
 import Link from "next/link";
 import { useSession } from "@/lib/auth/client";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { routes } from "@routes";
+import { useClerkAuthFlow } from "@/components/auth/useClerkAuthFlow";
 
 /**
  * Full‑screen splash shown to visitors who are not logged in.
@@ -14,8 +13,8 @@ import { useEffect } from "react";
  */
 export function AuthSplash() {
   const { status } = useSession();
-  const clerk = useClerk();
   const router = useRouter();
+  const { openSignIn, openSignUp } = useClerkAuthFlow();
 
   // If the user is signed in we redirect to the home page (or keep the caller's page).
   useEffect(() => {
@@ -26,6 +25,11 @@ export function AuthSplash() {
 
   // If the session is still loading we render nothing to avoid flicker.
   if (status === "loading") return null;
+
+  const currentPath =
+    typeof window === "undefined"
+      ? routes.home
+      : `${window.location.pathname}${window.location.search}` || routes.home;
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-[--color-surface] p-8 text-center">
@@ -38,28 +42,20 @@ export function AuthSplash() {
       <div className="flex flex-wrap items-center justify-center gap-3">
         <button
           type="button"
-          onClick={() =>
-            clerk.openSignIn({
-              fallbackRedirectUrl: window.location.pathname || "/",
-            })
-          }
+          onClick={() => void openSignIn(currentPath)}
           className="rounded-xl border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-[--color-ink] transition-colors hover:border-blue-700 hover:text-blue-700"
         >
           Sign In
         </button>
         <button
           type="button"
-          onClick={() =>
-            clerk.openSignUp({
-              fallbackRedirectUrl: window.location.pathname || "/",
-            })
-          }
+          onClick={() => void openSignUp(currentPath)}
           className="rounded-xl bg-blue-700 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-800"
         >
           Sign Up &amp; Get Started
         </button>
         <Link
-          href={"/" as Route}
+          href={routes.home}
           className="px-2 py-3 text-sm font-medium text-[--color-ink-mid] transition-colors hover:text-[--color-ink]"
         >
           Back Home

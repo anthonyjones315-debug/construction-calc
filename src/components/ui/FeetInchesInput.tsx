@@ -88,8 +88,8 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
     isValid = Number.isFinite(numericValue) && numericValue > 0;
 
     const emitCombined = (nextFeet: number, nextInches: number) => {
-      const clampedInches = Math.min(Math.max(0, nextInches), 11.99);
-      let total = Math.max(0, nextFeet) + clampedInches / 12;
+      const safeInches = Math.max(0, nextInches);
+      let total = Math.max(0, nextFeet) + safeInches / 12;
       if (p.min != null && total < p.min) total = p.min;
       if (p.max != null && total > p.max) total = p.max;
       p.onChange(String(Math.round(total * 10000) / 10000));
@@ -149,7 +149,6 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
             handleInchesChange(Number.parseFloat(e.target.value) || 0);
           }}
           min={0}
-          max={11.99}
           step={0.5}
           inputMode="decimal"
           enterKeyHint="done"

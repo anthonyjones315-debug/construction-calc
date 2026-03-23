@@ -2,7 +2,6 @@
 import {
   UserButton,
   useAuth,
-  useClerk,
 } from "@clerk/nextjs";
 import Link from "next/link";
 import Image from "next/image";
@@ -20,11 +19,13 @@ import { primaryNavigation, routes } from "@routes";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import { useClickOutside } from "@/hooks/useClickOutside";
 import { useStore } from "@/lib/store";
+import { useClerkAuthFlow } from "@/components/auth/useClerkAuthFlow";
 
 export function Header() {
   const pathname = usePathname();
   const { isLoaded, isSignedIn } = useAuth();
-  const clerk = useClerk();
+  const { openSignIn: launchSignIn, openSignUp: launchSignUp } =
+    useClerkAuthFlow();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [businessName, setBusinessName] = useState<string | null>(null);
   const headerRef = useRef<HTMLElement>(null);
@@ -75,16 +76,12 @@ export function Header() {
   }, [mobileNavOpen]);
 
   const openSignIn = useCallback(() => {
-    clerk.openSignIn({
-      fallbackRedirectUrl: routes.commandCenter,
-    });
-  }, [clerk]);
+    void launchSignIn(routes.commandCenter);
+  }, [launchSignIn]);
 
   const openSignUp = useCallback(() => {
-    clerk.openSignUp({
-      fallbackRedirectUrl: routes.settingsBusinessProfile,
-    });
-  }, [clerk]);
+    void launchSignUp(routes.settingsBusinessProfile);
+  }, [launchSignUp]);
 
   return (
     <header ref={headerRef} className="site-header-shell sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50 shadow-sm transition-all duration-300">

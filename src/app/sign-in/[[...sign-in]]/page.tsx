@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { SignInClient } from "./SignInClient";
+import { shouldEnableClerkClient } from "@/lib/clerk/env";
 
 export default function SignInPage() {
   return (
@@ -12,7 +13,7 @@ export default function SignInPage() {
           </div>
         }
       >
-        <SignInClient />
+        <SignInClient clerkEnabled={shouldEnableClerkClient()} />
       </Suspense>
     </div>
   );

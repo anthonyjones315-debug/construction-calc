@@ -1,6 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { getClerkPublishableKey } from "@/lib/clerk/publishable-key";
+import {
+  getClerkFallbackRedirectFromEnv,
+  getClerkRouteFromEnv,
+} from "@/lib/clerk/routing";
 import { Oswald, Inter, JetBrains_Mono } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
@@ -85,6 +89,12 @@ const jetBrainsMono = JetBrains_Mono({
 const brandedSiteTitle = `${BUSINESS_NAME} — Construction Estimating & Cost Calculators`;
 
 const clerkPublishableKey = getClerkPublishableKey();
+const clerkSignInUrl = getClerkRouteFromEnv("sign-in");
+const clerkSignUpUrl = getClerkRouteFromEnv("sign-up");
+const clerkSignInFallbackRedirectUrl =
+  getClerkFallbackRedirectFromEnv("sign-in");
+const clerkSignUpFallbackRedirectUrl =
+  getClerkFallbackRedirectFromEnv("sign-up");
 
 export const metadata: Metadata = {
   metadataBase: new URL(BUSINESS_SITE_URL),
@@ -206,6 +216,10 @@ export default function RootLayout({
         {/* ClerkProvider reads request auth (cookies/headers); Next.js 16 requires Suspense */}
         <Suspense fallback={null}>
           <ClerkProvider
+            signInUrl={clerkSignInUrl}
+            signUpUrl={clerkSignUpUrl}
+            signInFallbackRedirectUrl={clerkSignInFallbackRedirectUrl}
+            signUpFallbackRedirectUrl={clerkSignUpFallbackRedirectUrl}
             appearance={{
               variables: {
                 colorPrimary: "#2563eb",

@@ -1,3 +1,37 @@
+import { isPublishableKey } from "@clerk/shared/keys";
+
+function getPublishableKey(): string {
+  return (
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.trim() ??
+    process.env.CLERK_PUBLISHABLE_KEY?.trim() ??
+    ""
+  );
+}
+
+function getSecretKey(): string {
+  return process.env.CLERK_SECRET_KEY?.trim() ?? "";
+}
+
+function getKeyMode(
+  value: string,
+  prefixes: readonly [testPrefix: string, livePrefix: string],
+): "test" | "live" | null {
+  if (value.startsWith(prefixes[0])) return "test";
+  if (value.startsWith(prefixes[1])) return "live";
+  return null;
+}
+
+export function shouldEnableClerkClient(): boolean {
+  const pk = getPublishableKey();
+  const sk = getSecretKey();
+
+  if (!pk) {
+    return process.env.NODE_ENV === "development" && !sk;
+  }
+
+  return isPublishableKey(pk);
+}
+
 /**
  * Returns true when Clerk middleware should run:
  * - **Keyless (development only)**: both publishable and secret env vars are unset/empty.
@@ -9,22 +43,14 @@
 export function shouldUseClerkMiddleware(): boolean {
   // Removed hardcoded dev-bypass so Clerk can protect routes properly
 
-  const pk = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.trim() ?? "";
-  const sk = process.env.CLERK_SECRET_KEY?.trim() ?? "";
+  const pk = getPublishableKey();
+  const sk = getSecretKey();
 
   const keyless = !pk && !sk;
   if (keyless) return process.env.NODE_ENV === "development";
 
-  const pkMode = pk.startsWith("pk_test_")
-    ? "test"
-    : pk.startsWith("pk_live_")
-      ? "live"
-      : null;
-  const skMode = sk.startsWith("sk_test_")
-    ? "test"
-    : sk.startsWith("sk_live_")
-      ? "live"
-      : null;
+  const pkMode = getKeyMode(pk, ["pk_test_", "pk_live_"]);
+  const skMode = getKeyMode(sk, ["sk_test_", "sk_live_"]);
 
   return !!pkMode && !!skMode && pkMode === skMode;
 }

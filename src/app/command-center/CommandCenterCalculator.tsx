@@ -3905,7 +3905,6 @@ export function CommandCenterCalculator({ page, closeModal }: CalculatorPageProp
                                 minFeet={0}
                                 maxFeet={10000}
                                 minInches={0}
-                                maxInches={11}
                                 helpText={getInlineSubLabel(labels.first)}
                               />
                               <FeetInchesInput
@@ -3933,7 +3932,6 @@ export function CommandCenterCalculator({ page, closeModal }: CalculatorPageProp
                                 minFeet={0}
                                 maxFeet={10000}
                                 minInches={0}
-                                maxInches={11}
                                 helpText={getInlineSubLabel(labels.second)}
                               />
                             </>

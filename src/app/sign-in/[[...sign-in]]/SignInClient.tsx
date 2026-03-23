@@ -1,17 +1,22 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { ClerkAuthLauncher } from "@/components/auth/ClerkAuthLauncher";
-import { routes } from "@routes";
-import { safeAppRedirectPath } from "@/lib/auth/safe-redirect";
+import { ClerkAuthPage } from "@/components/auth/ClerkAuthPage";
+import { getSafeClerkRedirect } from "@/lib/clerk/routing";
 
-export function SignInClient() {
+export function SignInClient({ clerkEnabled }: { clerkEnabled: boolean }) {
   const searchParams = useSearchParams();
   const next =
     searchParams.get("callbackUrl") ??
     searchParams.get("redirect_url") ??
     searchParams.get("next");
-  const fallback = safeAppRedirectPath(next, routes.commandCenter);
+  const fallback = getSafeClerkRedirect("sign-in", next);
 
-  return <ClerkAuthLauncher mode="sign-in" fallbackRedirectUrl={fallback} />;
+  return (
+    <ClerkAuthPage
+      mode="sign-in"
+      fallbackRedirectUrl={fallback}
+      clerkEnabled={clerkEnabled}
+    />
+  );
 }

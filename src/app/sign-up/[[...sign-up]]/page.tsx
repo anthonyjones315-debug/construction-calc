@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { SignUpClient } from "./SignUpClient";
+import { shouldEnableClerkClient } from "@/lib/clerk/env";
 
 export default function SignUpPage() {
   return (
@@ -12,7 +13,7 @@ export default function SignUpPage() {
           </div>
         }
       >
-        <SignUpClient />
+        <SignUpClient clerkEnabled={shouldEnableClerkClient()} />
       </Suspense>
     </div>
   );
