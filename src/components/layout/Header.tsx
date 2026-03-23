@@ -1,14 +1,12 @@
 "use client";
 import {
-  SignInButton,
-  SignUpButton,
   UserButton,
   useAuth,
+  useClerk,
 } from "@clerk/nextjs";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-
 import {
   LayoutDashboard,
   Menu,
@@ -25,44 +23,30 @@ import { useStore } from "@/lib/store";
 
 export function Header() {
   const pathname = usePathname();
-  const { isLoaded, isSignedIn, userId } = useAuth();
-  const [isMounted, setIsMounted] = useState(false);
+  const { isLoaded, isSignedIn } = useAuth();
+  const clerk = useClerk();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [businessName, setBusinessName] = useState<string | null>(null);
   const headerRef = useRef<HTMLElement>(null);
   const estimateCount = useStore((s) => s.estimateCart.length);
-
   const online = useOnlineStatus();
+
   const isCommandCenterActive =
     pathname === "/command-center" || pathname === "/dashboard";
-  const commandCenterHref = isSignedIn ? routes.commandCenter : routes.auth.signIn;
-  const brandHref = isSignedIn ? routes.commandCenter : routes.home;
 
+  /* Load business name for signed-in users */
   useEffect(() => {
+    if (!isSignedIn) {
+      setBusinessName(null);
+      return;
+    }
     let cancelled = false;
-
-    const loadBusinessName = async () => {
-      if (!userId) {
-        setBusinessName(null);
-        return;
-      }
-
+    const load = async () => {
       try {
         const res = await fetch("/api/business-profile");
-        if (cancelled) return;
-        if (!res.ok) {
-          setBusinessName(null);
-          return;
-        }
-
-        const data: {
-          profile?: {
-            business_name?: string | null;
-            company_name?: string | null;
-          };
-        } | null = await res.json();
+        if (cancelled || !res.ok) return;
+        const data = await res.json();
         if (cancelled || !data?.profile) return;
-
         const name =
           typeof data.profile.company_name === "string"
             ? data.profile.company_name.trim()
@@ -71,23 +55,12 @@ export function Header() {
               : null;
         setBusinessName(name);
       } catch {
-        if (!cancelled) {
-          setBusinessName(null);
-        }
+        if (!cancelled) setBusinessName(null);
       }
     };
-
-    loadBusinessName();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [userId]);
-
-  useEffect(() => {
-    const frame = requestAnimationFrame(() => setIsMounted(true));
-    return () => cancelAnimationFrame(frame);
-  }, []);
+    load();
+    return () => { cancelled = true; };
+  }, [isSignedIn]);
 
   const closeMobileMenu = useCallback(() => setMobileNavOpen(false), []);
   useClickOutside(headerRef, closeMobileMenu, mobileNavOpen);
@@ -102,15 +75,29 @@ export function Header() {
     return () => document.removeEventListener("mousedown", handleMouseDown);
   }, [mobileNavOpen]);
 
+  /** Open Clerk sign-in modal */
+  const handleSignIn = () => {
+    clerk.openSignIn({
+      fallbackRedirectUrl: routes.commandCenter,
+    });
+  };
+
+  /** Open Clerk sign-up modal */
+  const handleSignUp = () => {
+    clerk.openSignUp({
+      fallbackRedirectUrl: routes.commandCenter,
+    });
+  };
+
   return (
     <header ref={headerRef} className="site-header-shell sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50 shadow-sm transition-all duration-300">
       <div className="mx-auto flex h-[var(--shell-header-h)] min-w-0 max-w-7xl items-center justify-between gap-1 px-4 sm:gap-2 sm:px-6 lg:px-8">
         {/* Logo */}
         <Link
-          href={brandHref}
+          href={isSignedIn ? routes.commandCenter : routes.home}
           prefetch={false}
           className="flex shrink-0 items-center gap-1 text-xs font-display font-black tracking-wide text-slate-900 transition-colors hover:text-[--color-blue-brand] sm:text-base"
-          aria-label="Pro Construction Calc - Command Center"
+          aria-label="Pro Construction Calc"
         >
           <Image
             src="/images/app-logo-transparent.png"
@@ -153,20 +140,22 @@ export function Header() {
 
         {/* Right side */}
         <div className="flex min-w-0 shrink-0 items-center gap-1 sm:gap-1.5">
-          {/* Command Center quick link */}
-          <Link
-            href={commandCenterHref}
-            prefetch={false}
-            className={`inline-flex h-7 min-w-[84px] items-center justify-center rounded-full border px-2 text-[9px] font-black uppercase tracking-[0.16em] ${
-              isCommandCenterActive
-                ? "border-[--color-blue-brand]/45 bg-[--color-blue-soft] text-[--color-blue-dark]"
-                : "border-slate-300 bg-white text-slate-700 hover:border-[--color-blue-brand]/45 hover:text-[--color-blue-brand]"
-            } hidden xs:inline-flex sm:hidden`}
-            aria-label="Open Command Center dashboard"
-          >
-            <LayoutDashboard className="mr-1 h-3 w-3" aria-hidden />
-            Command
-          </Link>
+          {/* Command Center quick link (signed-in only) */}
+          {isSignedIn && (
+            <Link
+              href={routes.commandCenter}
+              prefetch={false}
+              className={`inline-flex h-7 min-w-[84px] items-center justify-center rounded-full border px-2 text-[9px] font-black uppercase tracking-[0.16em] ${
+                isCommandCenterActive
+                  ? "border-[--color-blue-brand]/45 bg-[--color-blue-soft] text-[--color-blue-dark]"
+                  : "border-slate-300 bg-white text-slate-700 hover:border-[--color-blue-brand]/45 hover:text-[--color-blue-brand]"
+              } hidden xs:inline-flex sm:hidden`}
+              aria-label="Open Command Center dashboard"
+            >
+              <LayoutDashboard className="mr-1 h-3 w-3" aria-hidden />
+              Command
+            </Link>
+          )}
 
           {/* Estimate queue */}
           <Link
@@ -185,20 +174,28 @@ export function Header() {
           </Link>
 
           {/* Offline badge */}
-          <span
-            className={`hidden rounded-full border border-slate-300 bg-white px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500 md:inline-flex ${
-              isMounted && !online ? "" : "invisible"
-            }`}
-            aria-live="polite"
-            aria-hidden={!(isMounted && !online)}
-          >
-            Offline
-          </span>
+          {!online && (
+            <span
+              className="hidden rounded-full border border-slate-300 bg-white px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500 md:inline-flex"
+              aria-live="polite"
+            >
+              Offline
+            </span>
+          )}
 
-          {/* Auth area — Clerk controls everything */}
-          {!isMounted || !isLoaded ? (
-            <div className="h-7 w-7 rounded-full bg-slate-200 animate-pulse" />
-          ) : isSignedIn ? (
+          {/* ——— AUTH AREA ——— */}
+          {/* Before Clerk loads: show nothing to avoid flash */}
+          {isLoaded && !isSignedIn && (
+            <button
+              type="button"
+              onClick={handleSignIn}
+              className="btn-tactile flex min-h-7 items-center rounded-lg bg-[--color-blue-brand] px-3 text-[10px] font-black uppercase tracking-[0.08em] text-white transition-all duration-200 hover:bg-[--color-blue-dark] active:scale-[0.98] sm:px-3.5 sm:text-[11px]"
+            >
+              Sign In
+            </button>
+          )}
+
+          {isLoaded && isSignedIn && (
             <UserButton
               appearance={{
                 elements: {
@@ -225,31 +222,6 @@ export function Header() {
                 />
               </UserButton.MenuItems>
             </UserButton>
-          ) : (
-            <div className="flex items-center gap-1 sm:gap-1.5">
-              <SignInButton
-                mode="redirect"
-              >
-                <button
-                  type="button"
-                  className="btn-tactile flex min-h-7 items-center rounded-lg bg-blue-brand px-2 text-[10px] font-black uppercase text-white transition-all duration-200 hover:bg-[--color-blue-dark] active:scale-[0.98] sm:px-2.5 sm:text-[11px]"
-                  aria-label="Sign in to your Estimating Cockpit"
-                >
-                  Sign In
-                </button>
-              </SignInButton>
-              <SignUpButton
-                mode="redirect"
-              >
-                <button
-                  type="button"
-                  className="btn-tactile hidden min-h-7 items-center rounded-lg border border-slate-300 bg-white px-2 text-[10px] font-black uppercase text-slate-700 transition-all duration-200 hover:border-[--color-blue-brand]/45 hover:text-[--color-blue-brand] active:scale-[0.98] xs:inline-flex sm:px-2.5 sm:text-[11px]"
-                  aria-label="Create an account"
-                >
-                  Sign Up
-                </button>
-              </SignUpButton>
-            </div>
           )}
 
           {/* Mobile hamburger */}
@@ -327,28 +299,20 @@ export function Header() {
           </Link>
           {!isSignedIn && (
             <div className="mt-2 flex flex-col gap-2 border-t border-slate-100 px-2 pt-3">
-              <SignInButton
-                mode="redirect"
+              <button
+                type="button"
+                onClick={() => { setMobileNavOpen(false); handleSignIn(); }}
+                className="btn-tactile flex min-h-10 w-full items-center justify-center rounded-lg bg-[--color-blue-brand] px-4 text-xs font-black uppercase text-white"
               >
-                <button
-                  type="button"
-                  onClick={() => setMobileNavOpen(false)}
-                  className="btn-tactile flex min-h-10 w-full items-center justify-center rounded-lg bg-blue-brand px-4 text-xs font-black uppercase text-white"
-                >
-                  Sign In
-                </button>
-              </SignInButton>
-              <SignUpButton
-                mode="redirect"
+                Sign In
+              </button>
+              <button
+                type="button"
+                onClick={() => { setMobileNavOpen(false); handleSignUp(); }}
+                className="btn-tactile flex min-h-10 w-full items-center justify-center rounded-lg border border-slate-300 bg-white px-4 text-xs font-black uppercase text-slate-700"
               >
-                <button
-                  type="button"
-                  onClick={() => setMobileNavOpen(false)}
-                  className="btn-tactile flex min-h-10 w-full items-center justify-center rounded-lg border border-slate-300 bg-white px-4 text-xs font-black uppercase text-slate-700"
-                >
-                  Sign Up
-                </button>
-              </SignUpButton>
+                Sign Up
+              </button>
             </div>
           )}
         </nav>
