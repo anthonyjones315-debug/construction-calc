@@ -49,16 +49,16 @@ export default function ForgotPasswordPage() {
     >
       <div className="w-full max-w-4xl">
         <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-          <section className="relative overflow-hidden rounded-[30px] border border-[--color-orange-brand]/20 bg-[radial-gradient(circle_at_top_left,rgba(249,115,22,0.18),transparent_38%),linear-gradient(160deg,var(--color-surface)_0%,var(--color-bg)_52%,var(--color-bg)_100%)] p-6 text-[--color-ink] shadow-[0_24px_60px_rgba(0,0,0,0.08)] sm:p-8">
+          <section className="relative overflow-hidden rounded-[30px] border border-[--color-blue-brand]/20 bg-[radial-gradient(circle_at_top_left,rgba(249,115,22,0.18),transparent_38%),linear-gradient(160deg,var(--color-surface)_0%,var(--color-bg)_52%,var(--color-bg)_100%)] p-6 text-[--color-ink] shadow-[0_24px_60px_rgba(0,0,0,0.08)] sm:p-8">
             <div className="inline-flex items-center gap-2.5">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[--color-orange-brand]/30 bg-[--color-orange-soft]/15">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[--color-blue-brand]/30 bg-[--color-blue-soft]/15">
                 <HardHat
-                  className="h-6 w-6 text-orange-brand shrink-0"
+                  className="h-6 w-6 text-blue-brand shrink-0"
                   aria-hidden
                 />
               </div>
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-orange-brand">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-brand">
                   Account Recovery
                 </p>
                 <p className="font-display text-xl font-bold uppercase tracking-tight text-[--color-ink]">
@@ -78,7 +78,7 @@ export default function ForgotPasswordPage() {
 
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               <div className="rounded-2xl border border-[--color-border] bg-[--color-surface] p-4">
-                <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[--color-orange-brand]/25 bg-[--color-orange-soft]/10 text-orange-brand">
+                <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[--color-blue-brand]/25 bg-[--color-blue-soft]/10 text-blue-brand">
                   <MailCheck className="h-5 w-5" aria-hidden />
                 </div>
                 <p className="mt-3 text-sm font-bold uppercase tracking-[0.08em] text-[--color-ink]">
@@ -90,7 +90,7 @@ export default function ForgotPasswordPage() {
                 </p>
               </div>
               <div className="rounded-2xl border border-[--color-border] bg-[--color-surface] p-4">
-                <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[--color-orange-brand]/25 bg-[--color-orange-soft]/10 text-orange-brand">
+                <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[--color-blue-brand]/25 bg-[--color-blue-soft]/10 text-blue-brand">
                   <ShieldCheck className="h-5 w-5" aria-hidden />
                 </div>
                 <p className="mt-3 text-sm font-bold uppercase tracking-[0.08em] text-[--color-ink]">
@@ -110,7 +110,7 @@ export default function ForgotPasswordPage() {
 
           <section className="rounded-[30px] border border-[--color-border] bg-[--color-surface] p-6 shadow-[0_24px_50px_rgba(0,0,0,0.06)] sm:p-8">
             <div className="mb-6">
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-orange-brand">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-brand">
                 Password Reset
               </p>
               <h2 className="mt-2 text-2xl font-black uppercase tracking-tight text-[--color-ink]">
@@ -145,7 +145,7 @@ export default function ForgotPasswordPage() {
                 </div>
                 <Link
                   href={routes.auth.signIn}
-                  className="inline-flex w-full items-center justify-center rounded-xl border border-[--color-border] bg-[--color-surface-alt] px-4 py-3 text-sm font-semibold text-[--color-ink] transition hover:border-[--color-orange-brand]/45/50 hover:text-[--color-orange-brand] focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/30 focus:ring-offset-2"
+                  className="inline-flex w-full items-center justify-center rounded-xl border border-[--color-border] bg-[--color-surface-alt] px-4 py-3 text-sm font-semibold text-[--color-ink] transition hover:border-[--color-blue-brand]/45/50 hover:text-[--color-blue-brand] focus:outline-none focus:ring-2 focus:ring-[--color-blue-brand]/30 focus:ring-offset-2"
                 >
                   Back to Login
                 </Link>
@@ -182,14 +182,14 @@ export default function ForgotPasswordPage() {
                       onChange={(e) => setEmail(e.target.value)}
                       required
                       placeholder="you@example.com"
-                      className="w-full rounded-xl border border-[--color-border] bg-[--color-bg] px-3.5 py-3 text-sm text-[--color-ink] placeholder-copy-tertiary outline-none transition focus:border-[--color-orange-brand] focus:ring-2 focus:ring-[--color-orange-brand]/30"
+                      className="w-full rounded-xl border border-[--color-border] bg-[--color-bg] px-3.5 py-3 text-sm text-[--color-ink] placeholder-copy-tertiary outline-none transition focus:border-[--color-blue-brand] focus:ring-2 focus:ring-[--color-blue-brand]/30"
                     />
                   </div>
 
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full rounded-xl bg-[--color-orange-brand] px-4 py-3.5 text-sm font-black uppercase tracking-[0.08em] text-white transition hover:bg-[--color-orange-dark] focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/35 focus:ring-offset-2 disabled:cursor-wait disabled:opacity-60"
+                    className="w-full rounded-xl bg-[--color-blue-brand] px-4 py-3.5 text-sm font-black uppercase tracking-[0.08em] text-white transition hover:bg-[--color-blue-dark] focus:outline-none focus:ring-2 focus:ring-[--color-blue-brand]/35 focus:ring-offset-2 disabled:cursor-wait disabled:opacity-60"
                   >
                     {isLoading ? "Sending…" : "Send Reset Link"}
                   </button>
@@ -198,7 +198,7 @@ export default function ForgotPasswordPage() {
                 <div className="mt-5 space-y-3">
                   <Link
                     href={routes.auth.signIn}
-                    className="inline-flex w-full items-center justify-center gap-2 rounded-xl border-2 border-[--color-border] bg-transparent px-4 py-3 text-sm font-medium text-[--color-ink] transition-colors hover:bg-[--color-surface-alt] focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/30 focus:ring-offset-2"
+                    className="inline-flex w-full items-center justify-center gap-2 rounded-xl border-2 border-[--color-border] bg-transparent px-4 py-3 text-sm font-medium text-[--color-ink] transition-colors hover:bg-[--color-surface-alt] focus:outline-none focus:ring-2 focus:ring-[--color-blue-brand]/30 focus:ring-offset-2"
                   >
                     <ArrowLeft className="h-4 w-4" aria-hidden />
                     Back to Login

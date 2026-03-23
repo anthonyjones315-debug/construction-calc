@@ -139,7 +139,7 @@ export async function POST(req: NextRequest) {
 
     const html = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="color-scheme" content="light"></head><body style="margin:0;font-family:Inter,system-ui,sans-serif;background:#f6f4ef;padding:28px 20px;color:#334155;-webkit-font-smoothing:antialiased">
   <div style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #e2e0db;border-radius:16px;padding:24px 26px;box-shadow:0 4px 24px rgba(15,23,42,0.06)">
-  <p style="margin:0 0 12px;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#ea580c">Pro Construction Calc · Inbox</p>
+  <p style="margin:0 0 12px;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#2563eb">Pro Construction Calc · Inbox</p>
   <p><strong>Report type:</strong> ${isErrorReport ? "Manual error report" : "General feedback"}</p>
   <p><strong>From:</strong> ${escapeHtml(email)}${name ? ` (${escapeHtml(name)})` : ""}</p>
   <p><strong>Subject:</strong> ${escapeHtml(subjectLine)}</p>

@@ -50,7 +50,7 @@ export default async function BlogPost({ params }: Props) {
           </Link>
 
           <div className="mb-4 flex items-center gap-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-[--color-orange-brand] bg-[--color-orange-soft] px-2.5 py-1 rounded-full">
+            <span className="text-xs font-bold uppercase tracking-wider text-[--color-blue-brand] bg-[--color-blue-soft] px-2.5 py-1 rounded-full">
               {post.category}
             </span>
             <span className="text-xs text-[--color-ink-dim]">{post.date}</span>
@@ -67,8 +67,8 @@ export default async function BlogPost({ params }: Props) {
             <ArticleMarkdown content={post.content} />
           </article>
 
-          <div className="mt-12 rounded-2xl border border-[--color-orange-brand]/20 bg-[--color-orange-soft] p-6">
-            <p className="text-sm font-semibold text-[--color-orange-brand] mb-1">
+          <div className="mt-12 rounded-2xl border border-[--color-blue-brand]/20 bg-[--color-blue-soft] p-6">
+            <p className="text-sm font-semibold text-[--color-blue-brand] mb-1">
               Try the calculator
             </p>
             <p className="text-sm text-[--color-ink-mid] mb-3">
@@ -78,7 +78,7 @@ export default async function BlogPost({ params }: Props) {
             <Link
               href={routes.home}
               scroll={true}
-              className="inline-flex items-center gap-1.5 bg-[--color-orange-brand] hover:bg-[--color-orange-dark] text-white text-sm font-bold px-4 py-2 rounded-xl transition-all"
+              className="inline-flex items-center gap-1.5 bg-[--color-blue-brand] hover:bg-[--color-blue-dark] text-white text-sm font-bold px-4 py-2 rounded-xl transition-all"
             >
               Open Calculator →
             </Link>

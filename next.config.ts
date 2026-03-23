@@ -62,6 +62,7 @@ const nextConfig: NextConfig = {
       "https://browser.sentry-cdn.com",
       "https://js.sentry-cdn.com",
       "https://*.googletagmanager.com",
+      "https://maps.googleapis.com",
       "https://static.cloudflareinsights.com",
       "https://pagead2.googlesyndication.com",
       "https://adservice.google.com",
@@ -96,6 +97,7 @@ const nextConfig: NextConfig = {
       "https://*.adtrafficquality.google",
       "https://ep1.adtrafficquality.google",
       "https://*.google.com",
+      "https://maps.googleapis.com",
       // Google Identity / OAuth + APIs used during login
       "https://accounts.google.com",
       "https://oauth2.googleapis.com",
@@ -138,7 +140,7 @@ const nextConfig: NextConfig = {
       scriptSrc,
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://client.crisp.chat",
       "font-src 'self' data: https://fonts.gstatic.com https://client.crisp.chat",
-      "img-src 'self' data: blob: https://images.unsplash.com https://www.googletagmanager.com https://*.google-analytics.com https://*.googlesyndication.com https://*.doubleclick.net https://*.supabase.co https://*.googleusercontent.com https://lh3.googleusercontent.com http://googleusercontent.com https://*.adtrafficquality.google https://ep1.adtrafficquality.google https://client.crisp.chat https://image.crisp.chat https://proconstructioncalc.com https://app.termly.io https://img.clerk.com",
+      "img-src 'self' data: blob: https://images.unsplash.com https://maps.gstatic.com https://maps.googleapis.com https://www.googletagmanager.com https://*.google-analytics.com https://*.googlesyndication.com https://*.doubleclick.net https://*.supabase.co https://*.googleusercontent.com https://lh3.googleusercontent.com http://googleusercontent.com https://*.adtrafficquality.google https://ep1.adtrafficquality.google https://client.crisp.chat https://image.crisp.chat https://proconstructioncalc.com https://app.termly.io https://img.clerk.com",
       // Sentry ingest + Vercel + Google Analytics + ads + Supabase Auth (required for password reset / auth recovery)
       connectSrc,
       "media-src 'none'",
@@ -178,7 +180,7 @@ const nextConfig: NextConfig = {
       // ── Permissions Policy — disable unused browser features ─────
       {
         key: "Permissions-Policy",
-        value: "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+        value: "camera=(), microphone=(), interest-cohort=(), geolocation=(self \"https://maps.googleapis.com\")",
       },
       // ── Next.js RSC / router CORS headers ───────────────────────
       {

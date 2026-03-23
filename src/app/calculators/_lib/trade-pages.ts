@@ -99,18 +99,8 @@ const categoryLinks: Record<TradePageDefinition["category"], RelatedLink[]> = {
     },
   ],
   mechanical: [
-    {
-      href: "/calculators/mechanical/btu-estimator",
-      label: "Basic BTU Estimator",
-    },
-    {
-      href: "/calculators/mechanical/ventilation-calc",
-      label: "Ventilation Calculator",
-    },
-    {
-      href: "/calculators/mechanical/drywall-sheets",
-      label: "Drywall Sheets Calculator",
-    },
+    { href: "/calculators/mechanical/btu-estimator", label: "Basic BTU Estimator" },
+    { href: "/calculators/mechanical/ventilation-calc", label: "Ventilation Calculator" },
   ],
   insulation: [
     {
@@ -120,10 +110,6 @@ const categoryLinks: Record<TradePageDefinition["category"], RelatedLink[]> = {
     {
       href: "/calculators/insulation/r-value",
       label: "R-Value Calculator",
-    },
-    {
-      href: "/calculators/insulation/drywall-sheets",
-      label: "Drywall Sheets Calculator",
     },
     {
       href: "/calculators/insulation/drywall",
@@ -141,6 +127,7 @@ const categoryLinks: Record<TradePageDefinition["category"], RelatedLink[]> = {
       label: "Flooring Waste Calculator",
     },
     { href: "/calculators/finish/stairs", label: "Stair Stringer Calculator" },
+    { href: "/calculators/finish/drywall-sheets", label: "Drywall Sheets Calculator" },
   ],
   management: [
     {
@@ -220,12 +207,12 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Always add at least 10% concrete waste when scheduling mixed pours to account for form irregularities and spill loss.",
     localFocus:
-      "Configured for crews working in tri-county freeze/thaw conditions where over-ordering by one short load can save a second cold-weather dispatch.",
+      "Configured for crews working in regional freeze/thaw conditions where over-ordering by one short load can save a second cold-weather dispatch.",
     canonicalPath: "/calculators/concrete",
     keywords: [
       "concrete calculator",
       "masonry calculator",
-      "Rome NY concrete estimate",
+      "your region concrete estimate",
     ],
     relatedLinks: categoryLinks.concrete,
     altText: "Industrial concrete and masonry calculators icon",
@@ -241,7 +228,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Verify stud counts against actual opening schedules before ordering packages so headers and cripples don’t wipe out your labor margin.",
     localFocus:
-      "Built for framing crews in Rome and Utica balancing snow-load framing standards with practical cut-list planning.",
+      "Built for framing crews locally balancing snow-load framing standards with practical cut-list planning.",
     canonicalPath: "/calculators/framing",
     keywords: ["framing calculator", "stud calculator", "header estimator"],
     relatedLinks: categoryLinks.framing,
@@ -258,7 +245,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "For steep-slope roofs, add an extra bundle per plane to prevent downtime from damaged ridge and valley pieces.",
     localFocus:
-      "Calibrated for Upstate New York weather swings so your flashing and roof-edge quantities stay practical in the field.",
+      "Calibrated for Upstate your state weather swings so your flashing and roof-edge quantities stay practical in the field.",
     canonicalPath: "/calculators/roofing",
     keywords: [
       "roofing calculator",
@@ -279,16 +266,17 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Use temporary heat sizing as a site-check baseline, not a full HVAC design—then verify conditions on each enclosed phase.",
     localFocus:
-      "Built for Rome/Utica jobsite realities including Oneida County cold-weather envelope checks and practical temporary heat planning.",
+      "Built for local jobsite realities including local cold-weather envelope checks and practical temporary heat planning.",
     canonicalPath: "/calculators/mechanical",
     keywords: [
       "GC mechanical calculator",
       "btu estimator temporary heat",
-      "Oneida County site ventilation",
+      "local site ventilation",
     ],
     relatedLinks: categoryLinks.mechanical,
     altText: "Industrial spray foam and mechanical estimator icon",
   },
+
   insulation: {
     key: "insulation",
     type: "category",
@@ -300,7 +288,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Track cavity depth and thermal bridging separately so nominal R-values don’t overstate real-world performance.",
     localFocus:
-      "Focused on tri-county winter performance where envelope misses are expensive and callback rates climb fast.",
+      "Focused on regional winter performance where envelope misses are expensive and callback rates climb fast.",
     canonicalPath: "/calculators/insulation",
     keywords: [
       "insulation calculator",
@@ -321,7 +309,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Round trim lengths to full stock pieces before finalizing bids so waste is visible before purchase orders go out.",
     localFocus:
-      "Built for local remodel teams around Rome and Utica handling mixed stock lengths and fast-turn punch lists.",
+      "Built for local remodel teams around local markets handling mixed stock lengths and fast-turn punch lists.",
     canonicalPath: "/calculators/finish",
     keywords: [
       "finish carpentry calculator",
@@ -330,6 +318,21 @@ export const tradePages: Record<string, TradePageDefinition> = {
     ],
     relatedLinks: categoryLinks.finish,
     altText: "Professional wall framing and finish carpentry icon",
+  },
+  // Finish drywall entry
+  "finish-drywall-sheets": {
+    key: "finish-drywall-sheets",
+    type: "calculator",
+    category: "finish", // Mechanical drywall removed – now part of finish category
+    title: "Drywall Sheets Calculator",
+    description: "Calculate drywall sheet counts and waste for finish carpentry crews, ensuring proper sequencing after insulation.",
+    heroKicker: "Finish Carpentry • Drywall Sheets",
+    proTip: "Account for basic insulation stage requirements before drywall scheduling to reduce rework risk.",
+    localFocus: "Finish crew drywall takeoff",
+    canonicalPath: "/calculators/finish/drywall-sheets",
+    keywords: ["drywall sheets calculator", "drywall waste", "finish carpentry"],
+    relatedLinks: categoryLinks.finish,
+    altText: "Industrial drywall sheets calculator icon",
   },
   management: {
     key: "management",
@@ -342,7 +345,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Set margin targets after labor burden and permit admin time are applied, or your bid profit will look better than reality.",
     localFocus:
-      "Tailored for contractor pricing pressure across the tri-county region where lead quality and overhead control decide job profitability.",
+      "Tailored for contractor pricing pressure across the regional region where lead quality and overhead control decide job profitability.",
     canonicalPath: "/calculators/management",
     keywords: [
       "contractor margin calculator",
@@ -363,12 +366,12 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "For interior scopes in older homes, verify room-to-room transitions first so trim and flooring waste is planned before purchase.",
     localFocus:
-      "Built for Rome and Utica interior work where mixed room geometry can throw off finish-stage quantities.",
+      "Built for local markets interior work where mixed room geometry can throw off finish-stage quantities.",
     canonicalPath: "/calculators/interior",
     keywords: [
       "interior calculator",
       "finish takeoff",
-      "Utica interior contractor",
+      "local interior contractor",
     ],
     relatedLinks: categoryLinks.interior,
     altText: "Professional interior finish and trim estimator icon",
@@ -384,12 +387,12 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Review margin and lead acquisition cost together before final pricing, or profitable jobs can still lose cash.",
     localFocus:
-      "Designed for tri-county contractors balancing competitive bids with local operating costs and seasonality.",
+      "Designed for regional contractors balancing competitive bids with local operating costs and seasonality.",
     canonicalPath: "/calculators/business",
     keywords: [
       "contractor business calculator",
       "profit labor lead tax",
-      "Rome NY estimator",
+      "your region estimator",
     ],
     relatedLinks: categoryLinks.business,
     altText: "Industrial contractor business and estimating icon",
@@ -405,9 +408,9 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Always add 10% for slab waste and uneven grade correction before sending your batch order.",
     localFocus:
-      "Useful for tri-county slab planning where subgrade moisture and temperature shifts can increase waste.",
+      "Useful for regional slab planning where subgrade moisture and temperature shifts can increase waste.",
     canonicalPath: "/calculators/concrete/slab",
-    keywords: ["slab calculator", "3000 psi slab", "concrete slab Rome NY"],
+    keywords: ["slab calculator", "3000 psi slab", "concrete slab your region"],
     relatedLinks: categoryLinks.concrete,
     altText: "Industrial concrete slab volume calculator icon",
   },
@@ -422,7 +425,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Measure trench depth at several points and bid off the deepest average zone to avoid short-pour delays.",
     localFocus:
-      "Designed for local freeze-line footing jobs across Rome and Utica where depth variance is common.",
+      "Designed for local freeze-line footing jobs across local markets where depth variance is common.",
     canonicalPath: "/calculators/concrete/footing",
     keywords: [
       "footing volume calculator",
@@ -443,7 +446,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Add 5–8% overage for cuts and breakage, especially on patterned brickwork and corner-heavy walls.",
     localFocus:
-      "Built for tri-county masonry crews dealing with mixed restoration and new-build wall sections.",
+      "Built for regional masonry crews dealing with mixed restoration and new-build wall sections.",
     canonicalPath: "/calculators/concrete/block",
     keywords: [
       "block calculator",
@@ -464,7 +467,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       'For energy framing, 24" OC and staggered stud layouts can reduce thermal bridging—verify spacing, opening schedule, and plate plan together before ordering.',
     localFocus:
-      "Practical for framing jobs in the Rome/Utica market where additions and retrofits change stud spacing assumptions.",
+      "Practical for framing jobs in the local market where additions and retrofits change stud spacing assumptions.",
     canonicalPath: "/calculators/framing/wall",
     keywords: ["wall framing calculator", "stud count", "lumber takeoff"],
     relatedLinks: categoryLinks.framing,
@@ -481,7 +484,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Test one complete rafter pair before full production cutting to catch slope and seat-cut errors.",
     localFocus:
-      "Created for tri-county snow-load framing where pitch precision impacts sheathing and ventilation details.",
+      "Created for regional snow-load framing where pitch precision impacts sheathing and ventilation details.",
     canonicalPath: "/calculators/framing/rafters",
     keywords: ["rafter calculator", "roof framing", "rafter length"],
     relatedLinks: categoryLinks.framing,
@@ -498,7 +501,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Match joist spacing to span tables before ordering so floor stiffness and load performance stay on target.",
     localFocus:
-      "Built for tri-county framing crews handling floor layouts in remodel and new construction scopes.",
+      "Built for regional framing crews handling floor layouts in remodel and new construction scopes.",
     canonicalPath: "/calculators/framing/floor",
     keywords: [
       "floor joists calculator",
@@ -559,9 +562,9 @@ export const tradePages: Record<string, TradePageDefinition> = {
       "Estimate roofing squares, bundle count, and overage for asphalt shingle jobs.",
     heroKicker: "Roofing / Shingles",
     proTip:
-      "For high-wind zones (like the Mohawk Valley), remember to factor 6 nails per shingle and use drip edge on all rakes and eaves.",
+      "For high-wind zones (like high-wind zones), remember to factor 6 nails per shingle and use drip edge on all rakes and eaves.",
     localFocus:
-      "Configured for Rome and Utica roof replacement conditions with storm-season scheduling pressure.",
+      "Configured for local markets roof replacement conditions with storm-season scheduling pressure.",
     canonicalPath: "/calculators/roofing/shingles",
     keywords: ["shingle bundle calculator", "roofing squares", "roof estimate"],
     relatedLinks: categoryLinks.roofing,
@@ -595,7 +598,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Order accessory metal by perimeter plus contingency so crew flow is not blocked by short trim stock.",
     localFocus:
-      "Made for tri-county exteriors where wind exposure and weatherproofing details are critical.",
+      "Made for regional exteriors where wind exposure and weatherproofing details are critical.",
     canonicalPath: "/calculators/roofing/siding",
     keywords: [
       "siding calculator",
@@ -616,7 +619,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Use cavity and continuous insulation values separately so thermal bridging risk is visible in your estimate.",
     localFocus:
-      "Optimized for cold-weather tri-county envelope planning where underinsulation drives callbacks.",
+      "Optimized for cold-weather regional envelope planning where underinsulation drives callbacks.",
     canonicalPath: "/calculators/insulation/r-value",
     keywords: [
       "r-value calculator",
@@ -637,7 +640,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Stage board lengths by room group first; mixed lengths reduce waste and speed up install flow.",
     localFocus:
-      "Built for interior crews in Rome and Utica managing tight delivery windows and mixed remodel layouts.",
+      "Built for interior crews locally managing tight delivery windows and mixed remodel layouts.",
     canonicalPath: "/calculators/insulation/drywall",
     keywords: ["drywall calculator", "sheet count", "drywall waste"],
     relatedLinks: categoryLinks.insulation,
@@ -654,7 +657,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Group rooms by trim profile and stock length before ordering to minimize mismatched leftover pieces.",
     localFocus:
-      "Suited for tri-county remodeling work where room transitions and legacy walls affect trim cuts.",
+      "Suited for regional remodeling work where room transitions and legacy walls affect trim cuts.",
     canonicalPath: "/calculators/finish/trim",
     keywords: ["trim calculator", "baseboard estimator", "finish carpentry"],
     relatedLinks: categoryLinks.finish,
@@ -671,7 +674,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Increase waste percentage for diagonal and herringbone layouts before committing purchase orders.",
     localFocus:
-      "Useful for Rome/Utica flooring jobs where older footprints and out-of-square rooms raise cut waste.",
+      "Useful for local flooring jobs where older footprints and out-of-square rooms raise cut waste.",
     canonicalPath: "/calculators/finish/flooring",
     keywords: ["flooring calculator", "flooring waste", "material takeoff"],
     relatedLinks: categoryLinks.finish,
@@ -705,7 +708,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Set a minimum margin floor per job type and reject scopes that cannot clear it after burdened labor.",
     localFocus:
-      "Built for tri-county bid environments where price sensitivity is high and margin discipline matters.",
+      "Built for regional bid environments where price sensitivity is high and margin discipline matters.",
     canonicalPath: "/calculators/management/margin",
     keywords: ["profit margin calculator", "contractor pricing", "bid margin"],
     relatedLinks: categoryLinks.management,
@@ -722,7 +725,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Review labor burden quarterly; insurance and payroll changes can quietly erase your expected profit.",
     localFocus:
-      "Structured for local contractors balancing labor availability and overhead pressure in Rome and Utica.",
+      "Structured for local contractors balancing labor availability and overhead pressure locally.",
     canonicalPath: "/calculators/management/labor",
     keywords: [
       "labor overhead calculator",
@@ -743,7 +746,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Track close-rate by lead source monthly so marketing spend shifts toward the channels that actually convert.",
     localFocus:
-      "Designed for tri-county service contractors where seasonality affects both tax timing and lead quality.",
+      "Designed for regional service contractors where seasonality affects both tax timing and lead quality.",
     canonicalPath: "/calculators/management/leads",
     keywords: [
       "lead cost calculator",
@@ -764,7 +767,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Confirm block size, bond-beam courses, and vertical rebar layout before ordering CMU and mortar so your field layout matches the engineer’s details.",
     localFocus:
-      "Useful for tri-county wall builds where weather and renovation conditions can increase unit waste.",
+      "Useful for regional wall builds where weather and renovation conditions can increase unit waste.",
     canonicalPath: "/calculators/concrete/block-wall",
     keywords: ["block wall calculator", "CMU estimator", "masonry wall count"],
     relatedLinks: categoryLinks.concrete,
@@ -781,7 +784,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "For staggered stud walls, total count is (Wall Length / OC Spacing + 1) × 2, plus end studs. Verify opening schedule before ordering.",
     localFocus:
-      "Built for Rome and Utica framing crews balancing energy code requirements with practical field layouts. Supports both standard and staggered stud configurations.",
+      "Built for local markets framing crews balancing energy code requirements with practical field layouts. Supports both standard and staggered stud configurations.",
     canonicalPath: "/calculators/framing/wall-studs",
     keywords: [
       "wall studs calculator",
@@ -820,7 +823,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Confirm joist spacing against decking material specs before locking order quantities.",
     localFocus:
-      "Tailored for tri-county deck projects where seasonal moisture and structure age affect framing choices.",
+      "Tailored for regional deck projects where seasonal moisture and structure age affect framing choices.",
     canonicalPath: "/calculators/framing/deck-joists",
     keywords: ["deck joist calculator", "deck framing", "joist spacing"],
     relatedLinks: categoryLinks.framing,
@@ -851,14 +854,14 @@ export const tradePages: Record<string, TradePageDefinition> = {
     key: "roofing-shingle-bundles",
     type: "calculator",
     category: "roofing",
-    title: "Shingle Bundles Calculator",
+    title: "Shingle Bundles Calculator for Roofing Squares",
     description:
       "Estimate roofing shingle bundles from roof area and waste assumptions for faster ordering.",
     heroKicker: "Roofing / Shingle Bundles",
     proTip:
       "Include starter, hip, and ridge accessory waste before final bundle counts are sent.",
     localFocus:
-      "Designed for Rome and Utica reroof jobs where weather windows are tight and return trips are costly.",
+      "Designed for local markets reroof jobs where weather windows are tight and return trips are costly.",
     canonicalPath: "/calculators/roofing/shingle-bundles",
     keywords: [
       "shingle bundles calculator",
@@ -896,7 +899,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Add overage for gables and cut-heavy elevations to prevent siding shortfalls late in install.",
     localFocus:
-      "Built for tri-county exteriors where weatherproofing details and layout waste are high impact.",
+      "Built for regional exteriors where weatherproofing details and layout waste are high impact.",
     canonicalPath: "/calculators/roofing/siding-squares",
     keywords: [
       "siding squares calculator",
@@ -917,7 +920,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Account for NY frost lines and thermal bridging when calculating final assembly performance.",
     localFocus:
-      "Optimized for tri-county winter envelope planning where missed R-value targets cause callbacks.",
+      "Optimized for regional winter envelope planning where missed R-value targets cause callbacks.",
     canonicalPath: "/calculators/insulation/r-value-tracker",
     keywords: [
       "r-value tracker",
@@ -926,23 +929,6 @@ export const tradePages: Record<string, TradePageDefinition> = {
     ],
     relatedLinks: categoryLinks.insulation,
     altText: "Industrial R-value tracker calculator icon",
-  },
-  "insulation-drywall-sheets": {
-    key: "insulation-drywall-sheets",
-    type: "calculator",
-    category: "insulation",
-    title: "Drywall Sheets Calculator",
-    description:
-      "Estimate drywall sheet counts and waste factors for walls and ceilings.",
-    heroKicker: "HVAC / Drywall Sheets",
-    proTip:
-      "Stage board lengths by room group first to reduce cuts and handling waste on install day.",
-    localFocus:
-      "Designed for Rome and Utica interior crews navigating mixed room sizes and renovation geometry.",
-    canonicalPath: "/calculators/insulation/drywall-sheets",
-    keywords: ["drywall sheets calculator", "drywall waste", "sheet count"],
-    relatedLinks: categoryLinks.insulation,
-    altText: "Industrial drywall sheets calculator icon",
   },
   "insulation-duct-sizing": {
     key: "insulation-duct-sizing",
@@ -955,7 +941,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Validate airflow assumptions room-by-room before final fabrication quantities are approved.",
     localFocus:
-      "Built for tri-county HVAC installs where retrofits often force non-standard routing.",
+      "Built for regional HVAC installs where retrofits often force non-standard routing.",
     canonicalPath: "/calculators/insulation/duct-sizing",
     keywords: ["duct sizing calculator", "hvac airflow", "ductwork estimate"],
     relatedLinks: categoryLinks.insulation,
@@ -993,7 +979,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Bump waste percentage for diagonal or pattern layouts before purchase orders are finalized.",
     localFocus:
-      "Built for Rome/Utica flooring projects where non-square rooms can increase cut waste.",
+      "Built for local flooring projects where non-square rooms can increase cut waste.",
     canonicalPath: "/calculators/interior/flooring-waste",
     keywords: ["flooring waste calculator", "flooring takeoff", "tile waste"],
     relatedLinks: categoryLinks.interior,
@@ -1027,7 +1013,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Add extra gallon allowance for color transitions and touch-up pass work on occupied homes.",
     localFocus:
-      "Built for interior repaint scopes around Utica and Rome where finish quality drives callbacks.",
+      "Built for interior repaint scopes around local and local where finish quality drives callbacks.",
     canonicalPath: "/calculators/interior/paint-gal",
     keywords: ["paint gallon calculator", "paint estimate", "coats coverage"],
     relatedLinks: categoryLinks.interior,
@@ -1044,7 +1030,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Set a minimum acceptable margin per trade so discounting never undercuts production reality.",
     localFocus:
-      "Useful for tri-county bids where pricing pressure is high and margin discipline is critical.",
+      "Useful for regional bids where pricing pressure is high and margin discipline is critical.",
     canonicalPath: "/calculators/business/profit-margin",
     keywords: [
       "profit margin calculator",
@@ -1065,7 +1051,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Recalculate labor burden quarterly to reflect payroll tax and insurance changes.",
     localFocus:
-      "Built for Rome/Utica contractors balancing labor availability against overhead pressure.",
+      "Built for local contractors balancing labor availability against overhead pressure.",
     canonicalPath: "/calculators/business/labor-rate",
     keywords: ["labor rate calculator", "burdened labor", "crew cost"],
     relatedLinks: categoryLinks.business,
@@ -1082,7 +1068,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Track source-level close rates so paid lead spend follows conversion, not just volume.",
     localFocus:
-      "Designed for tri-county contractors where seasonal demand changes lead quality.",
+      "Designed for regional contractors where seasonal demand changes lead quality.",
     canonicalPath: "/calculators/business/lead-estimator",
     keywords: [
       "lead estimator",
@@ -1103,7 +1089,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Model tax impact before final quote approval so projected net aligns with actual cash outcomes.",
     localFocus:
-      "Built for local contractor operations in the Rome/Utica area with seasonal revenue shifts.",
+      "Built for local contractor operations in the local area with seasonal revenue shifts.",
     canonicalPath: "/calculators/business/tax-save",
     keywords: [
       "tax save calculator",
@@ -1119,12 +1105,12 @@ export const tradePages: Record<string, TradePageDefinition> = {
     category: "mechanical",
     title: "Basic BTU Estimator for Temporary Site Heat",
     description:
-      "Quick BTU site-check calculator for temporary heating/cooling unit planning on active construction projects.",
-    heroKicker: "Mechanical / BTU Estimator",
+      "Quick BTU estimator for temporary site heat—helps contractors size heaters for trailers, site offices, or temporary enclosures.",
+    heroKicker: "Mechanical • BTU Estimator",
     proTip:
       "For Upstate NY cold snaps, round temporary heat capacity up after envelope status is reviewed to avoid overnight temperature drops.",
     localFocus:
-      "Tailored for tri-county GC site planning where enclosed-phase heat checks are needed before finish work.",
+      "Tailored for regional GC site planning where enclosed-phase heat checks are needed before finish work.",
     canonicalPath: "/calculators/mechanical/btu-estimator",
     keywords: [
       "btu estimator",
@@ -1145,7 +1131,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Use ventilation results as a field planning baseline, then verify final airflow requirements with applicable code references.",
     localFocus:
-      "Built for Rome and Utica general contractors coordinating enclosed work and temporary occupancy transitions.",
+      "Built for local markets general contractors coordinating enclosed work and temporary occupancy transitions.",
     canonicalPath: "/calculators/mechanical/ventilation-calc",
     keywords: [
       "ventilation calculator",
@@ -1155,29 +1141,8 @@ export const tradePages: Record<string, TradePageDefinition> = {
     relatedLinks: categoryLinks.mechanical,
     altText: "Industrial ventilation calculator icon",
   },
-  "mechanical-drywall-sheets": {
-    key: "mechanical-drywall-sheets",
-    type: "calculator",
-    category: "mechanical",
-    title: "Drywall Sheets Calculator",
-    description:
-      "Calculate drywall sheet count and waste for practical room-by-room GC estimating.",
-    heroKicker: "Mechanical / Drywall Sheets",
-    proTip:
-      "Account for basic Oneida County insulation stage requirements before drywall scheduling to reduce rework risk.",
-    localFocus:
-      "Made for tri-county interior sequencing where framing, insulation, and board delivery windows overlap.",
-    canonicalPath: "/calculators/mechanical/drywall-sheets",
-    keywords: [
-      "drywall sheets calculator",
-      "gc drywall takeoff",
-      "site board count",
-    ],
-    relatedLinks: categoryLinks.mechanical,
-    altText: "Industrial drywall sheets calculator icon",
-  },
 
-  /* ── Landscape & Lawn ──────────────────────────────────────────── */
+  /* ── Landscape: Mulch, Topsoil, Sod & Gravel ──────────────────── */
   landscape: {
     key: "landscape",
     type: "category",
@@ -1194,7 +1159,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     keywords: [
       "mulch calculator",
       "topsoil calculator",
-      "landscape estimator Rome NY",
+      "landscape estimator your region",
     ],
     relatedLinks: categoryLinks.landscape,
     altText: "Professional lawn and landscape calculator icon",
@@ -1210,14 +1175,14 @@ export const tradePages: Record<string, TradePageDefinition> = {
       "Fence, paver patio, and driveway calculators for spring outdoor projects with material lists ready for the supplier.",
     heroKicker: "Fences, Driveways & Patios",
     proTip:
-      "Always confirm frost line depth before setting fence posts — 48 inches below grade is the NYS minimum for the tri-county area.",
+      "Always confirm frost line depth before setting fence posts — 48 inches below grade is the regional minimum for your local area.",
     localFocus:
-      "Configured for Upstate New York frost line requirements and local supplier ordering conventions.",
+      "Configured for Upstate your state frost line requirements and local supplier ordering conventions.",
     canonicalPath: "/calculators/outdoor",
     keywords: [
       "fence calculator",
       "paver patio calculator",
-      "driveway estimator Utica NY",
+      "driveway estimator your region",
     ],
     relatedLinks: categoryLinks.outdoor,
     altText: "Professional outdoor construction calculator icon",
@@ -1233,7 +1198,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
       "Estimate mulch volume in cubic yards for garden beds, tree rings, and landscape areas with bulk-order-friendly outputs.",
     heroKicker: "Landscape / Mulch",
     proTip:
-      "Order 10% extra mulch for settling and uneven bed depths — most tri-county suppliers charge a delivery minimum regardless.",
+      "Order 10% extra mulch for settling and uneven bed depths — most regional suppliers charge a delivery minimum regardless.",
     localFocus:
       "Built for landscape crews across Oneida, Madison, and Herkimer counties ordering bulk mulch from local yards.",
     canonicalPath: "/calculators/landscape/mulch",
@@ -1252,7 +1217,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Topsoil weighs 1.0–1.3 tons per cubic yard depending on moisture — confirm with your supplier before ordering by the ton.",
     localFocus:
-      "Configured for tri-county suppliers where topsoil is sold by the cubic yard or by the ton depending on the yard.",
+      "Configured for regional suppliers where topsoil is sold by the cubic yard or by the ton depending on the yard.",
     canonicalPath: "/calculators/landscape/topsoil",
     keywords: ["topsoil calculator", "fill dirt estimator", "topsoil cubic yards"],
     relatedLinks: categoryLinks.landscape,
@@ -1269,7 +1234,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Sod pallets cover roughly 450 sq ft — order by the pallet for better pricing and less handling waste.",
     localFocus:
-      "Tuned for tri-county cool-season grass blends where spring and early fall are the best seeding windows.",
+      "Tuned for regional cool-season grass blends where spring and early fall are the best seeding windows.",
     canonicalPath: "/calculators/landscape/sod",
     keywords: ["sod calculator", "grass seed calculator", "lawn coverage estimator"],
     relatedLinks: categoryLinks.landscape,
@@ -1286,7 +1251,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Crushed stone averages 1.4 tons per cubic yard — always order in tons since that is how suppliers sell it.",
     localFocus:
-      "Built for Upstate New York where gravel base is standard for drainage and frost-heave prevention.",
+      "Built for Upstate your state where gravel base is standard for drainage and frost-heave prevention.",
     canonicalPath: "/calculators/landscape/gravel",
     keywords: ["gravel calculator", "crushed stone tons", "gravel driveway estimator"],
     relatedLinks: categoryLinks.landscape,
@@ -1303,9 +1268,9 @@ export const tradePages: Record<string, TradePageDefinition> = {
       "Estimate posts, rails, and pickets for wood privacy and picket fences with waste and gate allowances.",
     heroKicker: "Outdoor / Fence",
     proTip:
-      "Fence posts in the tri-county area must be set at least 48 inches below grade per NYS frost line requirements.",
+      "Fence posts in your local area must be set at least 48 inches below grade per regional frost line requirements.",
     localFocus:
-      "Configured for Upstate New York frost line depth (48 in) and local lumber yard ordering conventions.",
+      "Configured for Upstate your state frost line depth (48 in) and local lumber yard ordering conventions.",
     canonicalPath: "/calculators/outdoor/fence",
     keywords: ["fence calculator", "fence material estimator", "picket fence calculator"],
     relatedLinks: categoryLinks.outdoor,
@@ -1322,7 +1287,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Use minimum 4 inches of compacted gravel base for patios — 6 inches for any area that may see vehicle traffic.",
     localFocus:
-      "Built for tri-county freeze-thaw conditions where proper base depth prevents frost-heave damage.",
+      "Built for regional freeze-thaw conditions where proper base depth prevents frost-heave damage.",
     canonicalPath: "/calculators/outdoor/paver-patio",
     keywords: ["paver calculator", "patio material estimator", "paver patio cost"],
     relatedLinks: categoryLinks.outdoor,
@@ -1339,7 +1304,7 @@ export const tradePages: Record<string, TradePageDefinition> = {
     proTip:
       "Residential driveways typically need 2–3 inches of compacted asphalt — always order in tons since that is how plants sell it.",
     localFocus:
-      "Configured for Upstate New York paving season where temperature windows and plant minimums affect scheduling.",
+      "Configured for Upstate your state paving season where temperature windows and plant minimums affect scheduling.",
     canonicalPath: "/calculators/outdoor/asphalt-driveway",
     keywords: ["asphalt calculator", "driveway tonnage", "hot mix asphalt estimator"],
     relatedLinks: categoryLinks.outdoor,
@@ -1381,14 +1346,14 @@ export function getTradePageByPath(
 }
 
 export function getTradePageMetadata(page: TradePageDefinition): Metadata {
-  const localDescription = `${page.description} Serving contractors across Oneida, Madison, and Herkimer counties in New York.`;
+  const localDescription = `${page.description} Serving contractors across Oneida, Madison, and Herkimer counties in your state.`;
   const mergedKeywords = Array.from(
     new Set([
       ...page.keywords,
-      "Oneida County NY",
+      "local",
       "Madison County NY",
       "Herkimer County NY",
-      "tri-county contractor calculator",
+      "regional contractor calculator",
     ]),
   );
 
@@ -1401,7 +1366,7 @@ export function getTradePageMetadata(page: TradePageDefinition): Metadata {
     }),
     other: {
       "geo.region": "US-NY",
-      "geo.placename": "Oneida County, NY",
+      "geo.placename": "your region",
     },
   };
 }

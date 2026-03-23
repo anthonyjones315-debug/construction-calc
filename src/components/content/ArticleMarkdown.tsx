@@ -33,13 +33,13 @@ const markdownComponents: Components = {
   ),
   li: ({ children }) => <li className="pl-1 leading-relaxed">{children}</li>,
   blockquote: ({ children }) => (
-    <blockquote className="my-5 rounded-2xl border border-[--color-orange-brand]/20 bg-[--color-orange-soft]/35 px-5 py-4 text-[--color-ink-mid]">
+    <blockquote className="my-5 rounded-2xl border border-[--color-blue-brand]/20 bg-[--color-blue-soft]/35 px-5 py-4 text-[--color-ink-mid]">
       {children}
     </blockquote>
   ),
   a: ({ href = "", children }) => {
     const className =
-      "font-medium text-[--color-orange-brand] underline decoration-[--color-orange-brand]/35 underline-offset-4 transition-colors hover:text-[--color-orange-dark]";
+      "font-medium text-[--color-blue-brand] underline decoration-[--color-blue-brand]/35 underline-offset-4 transition-colors hover:text-[--color-blue-dark]";
 
     if (href.startsWith("/")) {
       return (

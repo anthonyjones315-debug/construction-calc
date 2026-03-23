@@ -139,6 +139,10 @@ export interface PDFEstimateData {
     businessAddress?: string | null;
     businessPhone?: string | null;
     businessEmail?: string | null;
+    brandColor?: string | null;
+    invoiceTerms?: string | null;
+    hideMaterialList?: boolean;
+    hidePricingDetails?: boolean;
   };
   generatedAt: string;
 }

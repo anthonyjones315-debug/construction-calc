@@ -27,7 +27,7 @@ test.describe("Framing Calculators", () => {
   };
 
   const materialOrder = (page: Parameters<typeof test>[0]["page"]) =>
-    page.getByText(/Order\s+[\d.]+/i).first();
+    page.locator('div').filter({ hasText: /Order/i }).filter({ hasText: /[\d.]+/ }).last();
 
   test.describe("Wall Studs", () => {
     test("calculates 16 OC studs for a standard 20ft wall", async ({

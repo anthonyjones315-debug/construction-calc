@@ -129,7 +129,7 @@ export default function HomePage() {
               </div>
               <h1 className="home-display-heading mt-2.5 max-w-2xl font-display font-bold">
                 Pro Construction Calc
-                <span className="mt-2 block text-orange-brand">
+                <span className="mt-2 block text-blue-brand">
                   Fast, easy-to-use calculators for everyday field estimates.
                 </span>
               </h1>
@@ -143,7 +143,7 @@ export default function HomePage() {
                 <Link
                   href={`${routes.commandCenter}?mode=draft`}
                   prefetch={false}
-                  className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-orange-brand px-4 py-2.5 text-xs font-black text-white transition-all duration-200 hover:bg-[--color-orange-dark] active:scale-[0.98]"
+                  className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-blue-brand px-4 py-2.5 text-xs font-black text-white transition-all duration-200 hover:bg-[--color-blue-dark] active:scale-[0.98]"
                 >
                   Start New Estimate{" "}
                   <ArrowRight className="h-4 w-4" aria-hidden />
@@ -151,21 +151,21 @@ export default function HomePage() {
                 {/* Secondary CTAs — ghost/outline, compact */}
                 <Link
                   href={routes.calculators}
-                  className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 px-3 py-2.5 text-xs font-semibold text-slate-700 transition-all duration-200 hover:border-[--color-orange-rim] hover:text-[--color-orange-dark] active:scale-[0.98]"
+                  className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 px-3 py-2.5 text-xs font-semibold text-slate-700 transition-all duration-200 hover:border-[--color-blue-rim] hover:text-[--color-blue-dark] active:scale-[0.98]"
                 >
                   Calculators
                 </Link>
                 <Link
                   href={routes.saved}
                   prefetch={false}
-                  className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 px-3 py-2.5 text-xs font-semibold text-slate-700 transition-all duration-200 hover:border-[--color-orange-rim] hover:text-[--color-orange-dark] active:scale-[0.98]"
+                  className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 px-3 py-2.5 text-xs font-semibold text-slate-700 transition-all duration-200 hover:border-[--color-blue-rim] hover:text-[--color-blue-dark] active:scale-[0.98]"
                 >
                   Saved
                 </Link>
                 <Link
                   href={routes.pricebook}
                   prefetch={false}
-                  className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 px-3 py-2.5 text-xs font-semibold text-slate-700 transition-all duration-200 hover:border-[--color-orange-rim] hover:text-[--color-orange-dark] active:scale-[0.98]"
+                  className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 px-3 py-2.5 text-xs font-semibold text-slate-700 transition-all duration-200 hover:border-[--color-blue-rim] hover:text-[--color-blue-dark] active:scale-[0.98]"
                 >
                   Price Book
                 </Link>
@@ -193,9 +193,9 @@ export default function HomePage() {
                     key={label}
                     className="home-feature-card rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2.5"
                   >
-                    <div className="flex items-center gap-2 text-orange-brand">
+                    <div className="flex items-center gap-2 text-blue-brand">
                       <Icon className="h-4 w-4" aria-hidden />
-                      <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-orange-brand">
+                      <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-blue-brand">
                         {label}
                       </p>
                     </div>
@@ -232,7 +232,7 @@ export default function HomePage() {
                       key={title}
                       className="home-market-card rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3"
                     >
-                      <div className="flex items-center gap-2 text-orange-brand">
+                      <div className="flex items-center gap-2 text-blue-brand">
                         <Icon className="h-4 w-4" aria-hidden />
                         <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-900">
                           {title}
@@ -245,6 +245,18 @@ export default function HomePage() {
                   ),
                 )}
               </div>
+
+              <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 pb-2">
+                <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-slate-200">
+                  <img src="/images/framing.png" alt="Timber framing skeleton at sunset" className="absolute inset-0 h-full w-full object-cover hover:scale-105 transition-transform duration-500 ease-out" />
+                </div>
+                <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-slate-200 hidden sm:block">
+                  <img src="/images/concrete.png" alt="Concrete foundation pour" className="absolute inset-0 h-full w-full object-cover hover:scale-105 transition-transform duration-500 ease-out" />
+                </div>
+                <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-slate-200">
+                  <img src="/images/blueprint.png" alt="Construction blueprints" className="absolute inset-0 h-full w-full object-cover hover:scale-105 transition-transform duration-500 ease-out" />
+                </div>
+              </div>
             </div>
 
             <div className="home-secondary-column flex min-h-0 flex-col gap-3 xl:pt-0.5">
@@ -256,7 +268,7 @@ export default function HomePage() {
                       key={item.title}
                       href={item.href}
                       prefetch={false}
-                      className="block min-h-10 rounded-2xl border border-slate-200 bg-white px-3 py-2.5 transition-all duration-200 hover:border-[--color-orange-rim] hover:bg-[--color-orange-soft]"
+                      className="block min-h-10 rounded-2xl border border-slate-200 bg-white px-3 py-2.5 transition-all duration-200 hover:border-[--color-blue-rim] hover:bg-[--color-blue-soft]"
                     >
                       <p className="font-display text-sm font-semibold uppercase tracking-wide text-slate-900">
                         {item.title}
@@ -277,13 +289,13 @@ export default function HomePage() {
                       key={name}
                       href={href}
                       prefetch={false}
-                      className="group flex min-h-10 items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 transition-all duration-200 hover:border-[--color-orange-rim] hover:bg-[--color-orange-soft]"
+                      className="group flex min-h-10 items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 transition-all duration-200 hover:border-[--color-blue-rim] hover:bg-[--color-blue-soft]"
                     >
-                      <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-700 group-hover:text-[--color-orange-dark]">
+                      <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-700 group-hover:text-[--color-blue-dark]">
                         {name}
                       </p>
                       <ArrowRight
-                        className="h-4 w-4 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-[--color-orange-brand]"
+                        className="h-4 w-4 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-[--color-blue-brand]"
                         aria-hidden
                       />
                     </Link>
@@ -318,7 +330,7 @@ export default function HomePage() {
                       key={item.title}
                       href={item.href}
                       prefetch={false}
-                      className="block rounded-2xl border border-slate-200 bg-white px-3 py-3 transition-all duration-200 hover:border-[--color-orange-rim] hover:bg-[--color-orange-soft]"
+                      className="block rounded-2xl border border-slate-200 bg-white px-3 py-3 transition-all duration-200 hover:border-[--color-blue-rim] hover:bg-[--color-blue-soft]"
                     >
                       <p className="text-sm font-display font-semibold uppercase tracking-wide text-slate-900">
                         {item.title}

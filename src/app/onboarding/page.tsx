@@ -205,7 +205,8 @@ export default async function OnboardingPage({
         buildOnboardingErrorRedirectUrl({
           targetPath,
           code: "create_business_failed",
-          details: "We could not finish setting up your account. Please try again.",
+          details:
+            "We could not finish setting up your account. Please try again.",
         }),
       );
     }
@@ -232,8 +233,6 @@ export default async function OnboardingPage({
       redirect(targetPath as Route);
     }
 
-    let createdBusinessId: string | null = null;
-
     try {
       const { data: business, error: businessError } = await publicDb
         .from("businesses")
@@ -247,8 +246,6 @@ export default async function OnboardingPage({
       if (businessError || !business?.id) {
         throw businessError ?? new Error("Business insert returned no id.");
       }
-
-      createdBusinessId = business.id;
 
       const { error: membershipError } = await publicDb
         .from("memberships")
@@ -277,21 +274,6 @@ export default async function OnboardingPage({
         throw profileError;
       }
     } catch (error) {
-      if (createdBusinessId) {
-        const rollbackResult = await publicDb
-          .from("businesses")
-          .delete()
-          .eq("id", createdBusinessId);
-
-        if (rollbackResult.error) {
-          console.error("[onboarding] Rollback failed", {
-            userId,
-            businessId: createdBusinessId,
-            rollbackError: rollbackResult.error,
-          });
-        }
-      }
-
       const details = getExactSupabaseErrorString(error);
 
       console.error("[onboarding] Failed to create business profile", {
@@ -315,7 +297,7 @@ export default async function OnboardingPage({
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-xl items-center bg-[--color-bg] px-4 py-12 sm:px-6">
       <section className="w-full rounded-2xl border border-[--color-border] bg-[--color-surface] p-6 text-[--color-ink] shadow-[0_12px_36px_rgba(15,18,27,0.08)]">
-        <p className="text-xs font-black uppercase tracking-[0.15em] text-[--color-orange-brand]">
+        <p className="text-xs font-black uppercase tracking-[0.15em] text-[--color-blue-brand]">
           Command Center Setup
         </p>
         <h1 className="mt-2 text-2xl font-black uppercase text-[--color-ink]">
@@ -342,13 +324,13 @@ export default async function OnboardingPage({
               type="text"
               required
               placeholder="Acme Construction"
-              className="h-11 rounded-lg border border-[--color-border] bg-[--color-surface] px-3 text-[--color-ink] placeholder:text-[--color-ink-dim] outline-none focus:ring-2 focus:ring-[--color-orange-brand]/35"
+              className="h-11 rounded-lg border border-[--color-border] bg-[--color-surface] px-3 text-[--color-ink] placeholder:text-[--color-ink-dim] outline-none focus:ring-2 focus:ring-[--color-blue-brand]/35"
             />
           </label>
 
           <button
             type="submit"
-            className="inline-flex h-11 items-center justify-center rounded-lg bg-[--color-orange-brand] px-5 text-sm font-black uppercase text-white transition hover:bg-[--color-orange-dark]"
+            className="inline-flex h-11 items-center justify-center rounded-lg bg-[--color-blue-brand] px-5 text-sm font-black uppercase text-white transition hover:bg-[--color-blue-dark]"
           >
             Create Business Profile
           </button>

@@ -192,7 +192,7 @@ export function ProfileSettings() {
   if (status === "loading" || loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[--color-orange-brand] border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[--color-blue-brand] border-t-transparent" />
       </div>
     );
   }
@@ -200,13 +200,13 @@ export function ProfileSettings() {
   if (!session) {
     return (
       <div className="mx-auto max-w-md px-4 py-16 text-center">
-        <LogIn className="mx-auto mb-4 h-10 w-10 text-[--color-orange-brand]" />
+        <LogIn className="mx-auto mb-4 h-10 w-10 text-[--color-blue-brand]" />
         <h1 className="mb-2 text-xl font-bold text-[--color-ink]">
           Sign in to manage your business profile
         </h1>
         <Link
           href={routes.auth.signIn}
-          className="inline-flex items-center gap-2 rounded-xl bg-[--color-orange-brand] px-6 py-3 font-bold text-white"
+          className="inline-flex items-center gap-2 rounded-xl bg-[--color-blue-brand] px-6 py-3 font-bold text-white"
         >
           Sign In Free
         </Link>
@@ -227,7 +227,7 @@ export function ProfileSettings() {
       </p>
 
       {!isOwner && (
-        <div className="mb-6 rounded-xl border border-[--color-orange-brand]/40 bg-[--color-orange-soft] px-4 py-3 text-sm font-semibold text-[--color-ink]">
+        <div className="mb-6 rounded-xl border border-[--color-blue-brand]/40 bg-[--color-blue-soft] px-4 py-3 text-sm font-semibold text-[--color-ink]">
           Read-Only: Team Member Access
           <span className="ml-2 font-normal text-[--color-ink-mid]">
             ({membershipRole})
@@ -257,7 +257,7 @@ export function ProfileSettings() {
                 type="button"
                 onClick={() => fileRef.current?.click()}
                 disabled={uploading || !isOwner}
-                className="flex items-center gap-2 rounded-lg border border-[--color-border] px-4 py-2 text-sm font-medium text-[--color-ink-mid] transition-all hover:border-[--color-orange-brand] hover:text-[--color-orange-brand]"
+                className="flex items-center gap-2 rounded-lg border border-[--color-border] px-4 py-2 text-sm font-medium text-[--color-ink-mid] transition-all hover:border-[--color-blue-brand] hover:text-[--color-blue-brand]"
               >
                 {uploading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -334,7 +334,7 @@ export function ProfileSettings() {
                 className={`w-full rounded-xl border border-[--color-border] bg-[--color-surface-alt] px-4 py-2.5 text-sm text-[--color-ink] ${
                   !isOwner
                     ? "cursor-not-allowed opacity-80"
-                    : "focus:border-[--color-orange-brand] focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/25"
+                    : "focus:border-[--color-blue-brand] focus:outline-none focus:ring-2 focus:ring-[--color-blue-brand]/25"
                 }`}
               />
             </div>
@@ -351,7 +351,7 @@ export function ProfileSettings() {
           <button
             type="submit"
             disabled={saving}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[--color-orange-brand] py-3 font-bold text-white transition-all hover:bg-[--color-orange-dark]"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[--color-blue-brand] py-3 font-bold text-white transition-all hover:bg-[--color-blue-dark]"
           >
             {saving ? (
               <Loader2 className="h-4 w-4 animate-spin" />

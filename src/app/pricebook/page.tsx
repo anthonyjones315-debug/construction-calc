@@ -168,7 +168,7 @@ function PriceBookContent() {
   ) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="w-8 h-8 border-2 border-[--color-orange-brand] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[--color-blue-brand] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -176,13 +176,13 @@ function PriceBookContent() {
   if (!session) {
     return (
       <div className="mx-auto max-w-md px-4 py-16 text-center">
-        <LogIn className="w-10 h-10 text-[--color-orange-brand] mx-auto mb-4" />
+        <LogIn className="w-10 h-10 text-[--color-blue-brand] mx-auto mb-4" />
         <h1 className="text-xl font-bold text-[--color-ink] mb-2">
           Sign in to manage your Price Book
         </h1>
         <Link
           href={routes.auth.signIn}
-          className="inline-flex items-center gap-2 bg-[--color-orange-brand] text-white font-bold px-6 py-3 rounded-xl"
+          className="inline-flex items-center gap-2 bg-[--color-blue-brand] text-white font-bold px-6 py-3 rounded-xl"
         >
           Sign In Free
         </Link>
@@ -206,7 +206,7 @@ function PriceBookContent() {
       <div className="flex items-start justify-between mb-8 flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-display font-bold text-[--color-ink] flex items-center gap-2">
-            <BookOpen className="w-6 h-6 text-[--color-orange-brand]" /> Price
+            <BookOpen className="w-6 h-6 text-[--color-blue-brand]" /> Price
             Book
           </h1>
           <p className="text-sm text-[--color-ink-dim] mt-1">
@@ -215,7 +215,7 @@ function PriceBookContent() {
         </div>
         <button
           onClick={() => setAdding(true)}
-          className="flex items-center gap-2 bg-[--color-orange-brand] hover:bg-[--color-orange-dark] text-white font-bold px-4 py-2.5 rounded-xl text-sm transition-all"
+          className="flex items-center gap-2 bg-[--color-blue-brand] hover:bg-[--color-blue-dark] text-white font-bold px-4 py-2.5 rounded-xl text-sm transition-all"
         >
           <Plus className="w-4 h-4" /> Add Material
         </button>
@@ -247,7 +247,7 @@ function PriceBookContent() {
       {adding && (
         <form
           onSubmit={handleAdd}
-          className="content-card mb-6 grid grid-cols-2 gap-3 border-[--color-orange-brand]/30 p-4 sm:grid-cols-4"
+          className="content-card mb-6 grid grid-cols-2 gap-3 border-[--color-blue-brand]/30 p-4 sm:grid-cols-4"
         >
           <input
             autoFocus
@@ -303,14 +303,14 @@ function PriceBookContent() {
             <button
               type="button"
               onClick={() => setAdding(false)}
-              className="rounded-lg border border-[--color-border] px-3 py-1.5 text-sm text-[--color-ink-dim] transition-colors hover:border-[--color-orange-brand]/35 hover:text-[--color-ink]"
+              className="rounded-lg border border-[--color-border] px-3 py-1.5 text-sm text-[--color-ink-dim] transition-colors hover:border-[--color-blue-brand]/35 hover:text-[--color-ink]"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="flex items-center gap-1.5 px-4 py-1.5 bg-[--color-orange-brand] text-white text-sm font-bold rounded-lg"
+              className="flex items-center gap-1.5 px-4 py-1.5 bg-[--color-blue-brand] text-white text-sm font-bold rounded-lg"
             >
               {saving ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -331,7 +331,7 @@ function PriceBookContent() {
           </p>
           <button
             onClick={() => setAdding(true)}
-            className="text-[--color-orange-brand] font-medium text-sm hover:underline"
+            className="text-[--color-blue-brand] font-medium text-sm hover:underline"
           >
             + Add your first material
           </button>
@@ -438,7 +438,7 @@ function PriceBookContent() {
                               <td className="px-4 py-3 text-[--color-ink-dim] hidden sm:table-cell">
                                 {mat.unit_type}
                               </td>
-                              <td className="px-4 py-3 text-right font-mono font-semibold text-[--color-orange-brand]">
+                              <td className="px-4 py-3 text-right font-mono font-semibold text-[--color-blue-brand]">
                                 ${Number(mat.unit_cost).toFixed(2)}
                               </td>
                               <td className="px-3 py-3">
@@ -455,7 +455,7 @@ function PriceBookContent() {
                                         unit_cost: mat.unit_cost,
                                       });
                                     }}
-                                    className="rounded p-1.5 text-[--color-ink-dim] transition-all hover:bg-[--color-orange-soft] hover:text-[--color-orange-brand]"
+                                    className="rounded p-1.5 text-[--color-ink-dim] transition-all hover:bg-[--color-blue-soft] hover:text-[--color-blue-brand]"
                                   >
                                     <Pencil className="w-3.5 h-3.5" />
                                   </button>

@@ -129,7 +129,7 @@ export default async function SavedEstimateDetailPage({ params }: Props) {
             </div>
             <Link
               href={routes.saved}
-              className="rounded-lg border border-[--color-border] bg-[--color-surface] px-3 py-2 text-sm font-medium text-[--color-ink] hover:border-[--color-orange-brand]"
+              className="rounded-lg border border-[--color-border] bg-[--color-surface] px-3 py-2 text-sm font-medium text-[--color-ink] hover:border-[--color-blue-brand]"
             >
               Back to Saved
             </Link>
@@ -210,7 +210,7 @@ export default async function SavedEstimateDetailPage({ params }: Props) {
                             href={`/saved/estimates/${estimate.id}/invoices/${invoice.id}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-[--color-orange-brand] hover:text-[--color-orange-dark]"
+                            className="text-[--color-blue-brand] hover:text-[--color-blue-dark]"
                           >
                             Open Window
                           </a>

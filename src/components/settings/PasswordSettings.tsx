@@ -53,7 +53,7 @@ export function PasswordSettings() {
         <button
           type="button"
           onClick={() => openUserProfile()}
-          className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[--color-orange-brand] px-4 text-sm font-bold text-white transition hover:bg-[--color-orange-dark]"
+          className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[--color-blue-brand] px-4 text-sm font-bold text-white transition hover:bg-[--color-blue-dark]"
         >
           Open account security
         </button>

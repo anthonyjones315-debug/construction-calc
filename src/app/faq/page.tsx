@@ -151,7 +151,7 @@ export default function FAQPage() {
           >
             <Link
               href="/"
-              className="transition-colors hover:text-[--color-orange-brand]"
+              className="transition-colors hover:text-[--color-blue-brand]"
             >
               Home
             </Link>
@@ -159,16 +159,18 @@ export default function FAQPage() {
             <span className="font-semibold text-[--color-nav-text]">FAQ</span>
           </nav>
 
-          <div className="dark-feature-panel p-4 text-[--color-ink]">
-            <p className="section-kicker">Field answers</p>
-            <h1 className="mt-1.5 text-2xl font-display font-bold">
+          <div className="rounded-2xl border border-[--color-border] bg-white p-6 md:p-8 shadow-sm">
+            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[--color-blue-brand]">
+              Field Answers
+            </p>
+            <h1 className="mt-2 text-3xl font-black uppercase tracking-tight text-[--color-ink] sm:text-4xl">
               Frequently Asked Questions
             </h1>
-            <p className="mt-1.5 text-sm text-[--color-ink-mid]">
-              Everything you need to know about Pro Construction Calc.
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[--color-ink-mid] sm:text-base">
+              Everything you need to know about Pro Construction Calc. Practical, straightforward answers for real jobs.
             </p>
-            <div className="trim-nav-border mt-3 inline-flex rounded-full border bg-[--color-surface-alt] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-[--color-ink]">
-              Practical answers for real jobs
+            <div className="mt-5 inline-flex rounded-full border border-[--color-border] bg-[--color-surface-alt] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-[--color-ink-dim]">
+              Core tool info · Usage & methodology
             </div>
           </div>
 

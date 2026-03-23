@@ -78,6 +78,8 @@ async function resolveAppUserId(params: {
 }
 
 export async function auth(): Promise<AuthSession> {
+  // Normal auth resolving without hardcoded development bypass
+
   const { userId: clerkUserId } = await clerkAuth();
 
   if (!clerkUserId) {

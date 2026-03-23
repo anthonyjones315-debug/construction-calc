@@ -350,7 +350,7 @@ export function ProResult({
       </div>
 
       <div className="flex flex-col gap-2">
-        <div className="glass-panel border-primary/30 bg-[--color-orange-soft] shadow-[0_10px_22px_rgb(var(--color-primary-rgb)/0.16)]">
+        <div className="glass-panel border-primary/30 bg-[--color-blue-soft] shadow-[0_10px_22px_rgb(var(--color-primary-rgb)/0.16)]">
           <p className="text-xs font-bold uppercase tracking-[0.14em] text-copy-secondary">
             {primary.label}
           </p>
@@ -387,7 +387,7 @@ export function ProResult({
         )}
 
         {localTip ? (
-          <div className="glass-panel border-primary/25 bg-[--color-orange-soft] p-3">
+          <div className="glass-panel border-primary/25 bg-[--color-blue-soft] p-3">
             <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-primary">
               Pro Tip
             </h3>

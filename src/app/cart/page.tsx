@@ -53,7 +53,7 @@ export default function CartPage() {
                     className="content-card flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div className="min-w-0">
-                      <p className="text-xs font-bold uppercase tracking-[0.16em] text-[--color-orange-brand]/90">
+                      <p className="text-xs font-bold uppercase tracking-[0.16em] text-[--color-blue-brand]/90">
                         {item.calculatorLabel}
                       </p>
                       <p className="mt-1 text-sm font-semibold text-[--color-ink]">
@@ -104,7 +104,7 @@ export default function CartPage() {
                   <button
                     type="button"
                     onClick={handleCreateInvoiceBatch}
-                    className="rounded-xl bg-[--color-orange-brand] px-4 py-2 text-sm font-bold text-white hover:brightness-95"
+                    className="rounded-xl bg-[--color-blue-brand] px-4 py-2 text-sm font-bold text-white hover:brightness-95"
                   >
                     Create invoice batch
                   </button>

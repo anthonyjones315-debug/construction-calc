@@ -31,6 +31,11 @@ function isMissingPublicUsersTableError(message: string) {
   );
 }
 
+function isMissingRpcError(message: string) {
+  const lower = message.toLowerCase();
+  return lower.includes("could not find the function") || lower.includes("schema cache");
+}
+
 function isUsersEmailConflictError(error: SupabaseErrorLike | null | undefined) {
   if (!error) return false;
 
@@ -96,6 +101,10 @@ async function moveUserReferences(
   });
 
   if (error) {
+    if (isMissingRpcError(error.message)) {
+      console.warn(`[Supabase] Skipping move_user_references: missing RPC function in DB.`);
+      return;
+    }
     throw new Error(`Failed to move user references: ${error.message}`);
   }
 }

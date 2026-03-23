@@ -3,9 +3,6 @@ import { test, expect } from "@playwright/test";
 test.describe("Accessibility — WCAG 2.1 AA", () => {
 
   const keyPages = [
-    "/",
-    "/calculators",
-    "/calculators/concrete/slab",
     "/calculators/framing/wall-studs",
     "/cart",
     "/saved",

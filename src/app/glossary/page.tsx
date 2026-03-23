@@ -76,8 +76,8 @@ export default function GlossaryPage() {
         <JsonLD schema={schema} />
         <div className="mx-auto w-full max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
           <div className="dark-feature-panel mb-8 flex items-center gap-4 p-6 text-[--color-ink]">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[--color-orange-brand]/15 shadow-inner">
-              <BookOpen className="h-7 w-7 text-[--color-orange-brand]" aria-hidden />
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[--color-blue-brand]/15 shadow-inner">
+              <BookOpen className="h-7 w-7 text-[--color-blue-brand]" aria-hidden />
             </div>
             <div className="space-y-1">
               <p className="section-kicker">Common Terms</p>
@@ -92,8 +92,8 @@ export default function GlossaryPage() {
 
           <div className="mb-6 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
             <div className="content-card p-4 sm:p-5">
-              <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[--color-orange-brand]/30 bg-[--color-orange-brand]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[--color-orange-brand]">
-                <Search className="h-3.5 w-3.5 text-[--color-orange-brand]" aria-hidden />
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[--color-blue-brand]/30 bg-[--color-blue-brand]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[--color-blue-brand]">
+                <Search className="h-3.5 w-3.5 text-[--color-blue-brand]" aria-hidden />
                 Calculator Language
               </div>
               <p className="text-sm text-[--color-ink-mid]">
@@ -105,7 +105,7 @@ export default function GlossaryPage() {
                     key={entry.term}
                     className="content-card-muted p-3"
                   >
-                    <p className="text-xs font-bold uppercase tracking-[0.12em] text-[--color-orange-brand]">
+                    <p className="text-xs font-bold uppercase tracking-[0.12em] text-[--color-blue-brand]">
                       {entry.term}
                     </p>
                     <p className="mt-1 text-sm leading-relaxed text-[--color-ink-mid]">
@@ -118,30 +118,30 @@ export default function GlossaryPage() {
 
             <aside className="space-y-3">
               <div className="content-card p-4 sm:p-5">
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-[--color-orange-brand]">
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-[--color-blue-brand]">
                   Quick Links
                 </p>
                 <div className="mt-3 space-y-2 text-sm">
                   <Link
-                    className="content-card-interactive block rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2 text-[--color-ink] transition hover:border-[--color-orange-brand]/50 hover:text-[--color-orange-brand]"
+                    className="content-card-interactive block rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2 text-[--color-ink] transition hover:border-[--color-blue-brand]/50 hover:text-[--color-blue-brand]"
                     href={routes.calculators}
                   >
                     Open Calculators
                   </Link>
                   <Link
-                    className="content-card-interactive block rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2 text-[--color-ink] transition hover:border-[--color-orange-brand]/50 hover:text-[--color-orange-brand]"
+                    className="content-card-interactive block rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2 text-[--color-ink] transition hover:border-[--color-blue-brand]/50 hover:text-[--color-blue-brand]"
                     href={routes.guide}
                   >
                     Read the User Guide
                   </Link>
                   <Link
-                    className="content-card-interactive block rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2 text-[--color-ink] transition hover:border-[--color-orange-brand]/50 hover:text-[--color-orange-brand]"
+                    className="content-card-interactive block rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2 text-[--color-ink] transition hover:border-[--color-blue-brand]/50 hover:text-[--color-blue-brand]"
                     href={routes.fieldNotes}
                   >
                     Field Notes (Articles)
                   </Link>
                   <Link
-                    className="content-card-interactive block rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2 text-[--color-ink] transition hover:border-[--color-orange-brand]/50 hover:text-[--color-orange-brand]"
+                    className="content-card-interactive block rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2 text-[--color-ink] transition hover:border-[--color-blue-brand]/50 hover:text-[--color-blue-brand]"
                     href={routes.financialTerms}
                   >
                     Financial Terms DB
@@ -150,8 +150,8 @@ export default function GlossaryPage() {
               </div>
 
               <div className="content-card p-4 sm:p-5">
-                <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-[--color-orange-brand]/30 bg-[--color-orange-brand]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[--color-orange-brand]">
-                  <Info className="h-3.5 w-3.5 text-[--color-orange-brand]" aria-hidden />
+                <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-[--color-blue-brand]/30 bg-[--color-blue-brand]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[--color-blue-brand]">
+                  <Info className="h-3.5 w-3.5 text-[--color-blue-brand]" aria-hidden />
                   Financial Terms
                 </div>
                 <p className="text-sm text-[--color-ink-mid]">
@@ -179,7 +179,7 @@ export default function GlossaryPage() {
 
           <div className="content-card p-5 sm:p-6">
             <div className="mb-4 flex items-center gap-2">
-              <HardHat className="h-5 w-5 text-[--color-orange-brand]" aria-hidden />
+              <HardHat className="h-5 w-5 text-[--color-blue-brand]" aria-hidden />
               <h2 className="text-lg font-black uppercase tracking-[0.14em] text-[--color-ink]">
                 Financial & Business Terms
               </h2>
@@ -190,7 +190,7 @@ export default function GlossaryPage() {
                   key={term.key}
                   className="content-card-muted p-3"
                 >
-                  <p className="text-xs font-bold uppercase tracking-[0.12em] text-[--color-orange-brand]">
+                  <p className="text-xs font-bold uppercase tracking-[0.12em] text-[--color-blue-brand]">
                     {term.label}
                   </p>
                   <p className="mt-1 text-sm leading-relaxed text-[--color-ink-mid]">

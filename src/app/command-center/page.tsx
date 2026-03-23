@@ -2,12 +2,11 @@ import type { Route } from "next";
 import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth/config";
-import { Header } from "@/components/layout/Header";
 import { createServerClient } from "@/lib/supabase/server";
 import { getBusinessJoinCode } from "@/lib/supabase/join-code";
 import { getNoIndexMetadata } from "@/seo";
 import { routes } from "@routes";
-import CommandCenterLiteClient from "./CommandCenterLiteClient";
+import CommandCenterClient from "./CommandCenterClient";
 import { JoinBusinessWithCodeForm } from "./JoinBusinessWithCodeForm";
 import WelcomeGuidePopupClient from "./WelcomeGuidePopupClient";
 
@@ -216,7 +215,7 @@ function CommandCenterOnboarding({
   return (
     <div className="mx-auto flex min-h-[70vh] w-full max-w-xl items-center px-4 py-12 sm:px-6">
       <section className="w-full rounded-2xl border border-[--color-border] bg-[--color-surface] p-6 text-[--color-ink] shadow-[0_12px_36px_rgba(15,18,27,0.08)]">
-        <p className="text-xs font-black uppercase tracking-[0.15em] text-[--color-orange-brand]">
+        <p className="text-xs font-black uppercase tracking-[0.15em] text-[--color-blue-brand]">
           Command Center Setup
         </p>
         <h1 className="mt-2 text-2xl font-black uppercase text-[--color-ink]">
@@ -244,13 +243,13 @@ function CommandCenterOnboarding({
               type="text"
               required
               placeholder="Acme Construction"
-              className="h-11 rounded-lg border border-[--color-border] bg-[--color-surface] px-3 text-[--color-ink] placeholder:text-[--color-ink-dim] outline-none transition focus:border-[--color-orange-brand] focus:ring-2 focus:ring-[--color-orange-brand]/25"
+              className="h-11 rounded-lg border border-[--color-border] bg-[--color-surface] px-3 text-[--color-ink] placeholder:text-[--color-ink-dim] outline-none transition focus:border-[--color-blue-brand] focus:ring-2 focus:ring-[--color-blue-brand]/25"
             />
           </label>
 
           <button
             type="submit"
-            className="inline-flex h-11 items-center justify-center rounded-lg bg-[--color-orange-brand] px-5 text-sm font-black uppercase text-white shadow-md transition hover:bg-[--color-orange-dark]"
+            className="inline-flex h-11 items-center justify-center rounded-lg bg-[--color-blue-brand] px-5 text-sm font-black uppercase text-white shadow-md transition hover:bg-[--color-blue-dark]"
           >
             Create Your Business
           </button>
@@ -387,7 +386,25 @@ export default async function CommandCenterPage({
 }) {
   const { session, userId } = await resolveUserId();
 
-  if (!session?.user) {
+  // Development bypass: allow unauthenticated access for UI testing.
+  let effectiveSession = session;
+  let effectiveUserId = userId;
+  if (!effectiveSession?.user && process.env.NODE_ENV === "development") {
+    effectiveSession = {
+      user: {
+        id: "dev-user",
+        email: "dev@example.com",
+        name: "Dev User",
+        image: null,
+        business_id: null,
+        role: "owner",
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any;
+    effectiveUserId = "dev-user";
+  }
+
+  if (!effectiveSession?.user) {
     const params = new URLSearchParams({
       next: routes.commandCenter,
       callbackUrl: routes.commandCenter,
@@ -404,30 +421,52 @@ export default async function CommandCenterPage({
     : params.setupErrorDetails;
   const setupError = getSetupErrorMessage(setupErrorCode, setupErrorDetails);
 
-  const commandCenterData =
-    userId === null ? null : await loadCommandCenterData(userId);
+  const commandCenterData = effectiveUserId === null
+    ? null
+    : process.env.NODE_ENV === "development"
+    ? {
+        hasBusiness: true,
+        isOwner: true,
+        userRole: "owner",
+        businessName: "Acme Construction",
+        joinCode: "DEV-CODE-1234",
+        members: [
+          {
+            membershipId: "m1",
+            userId: "dev-user",
+            name: "Dev User",
+            email: "dev@example.com",
+            role: "owner",
+            joinedAt: new Date().toISOString(),
+          },
+        ],
+        recentEstimates: [],
+        needsBusinessProfileSetup: false,
+      }
+    : await loadCommandCenterData(effectiveUserId);
 
   let mainContent: ReactNode;
 
-  if (!userId || !commandCenterData || !commandCenterData.hasBusiness) {
+  if (!effectiveUserId || !commandCenterData || !commandCenterData.hasBusiness) {
     mainContent = <CommandCenterOnboarding setupError={setupError} />;
   } else {
     mainContent = (
-      <CommandCenterLiteClient
+      <CommandCenterClient
         businessName={commandCenterData.businessName}
         joinCode={commandCenterData.joinCode}
         initialMembers={commandCenterData.members}
         recentEstimates={commandCenterData.recentEstimates}
         needsBusinessProfileSetup={commandCenterData.needsBusinessProfileSetup}
         userRole={commandCenterData.userRole}
+        draftMode={params.mode === "draft"}
+        initialToolSlug={typeof params.tool === "string" ? params.tool : undefined}
       />
     );
   }
 
   return (
-    <div className="light public-page page-shell command-center-page-shell grid min-h-dvh grid-rows-[auto_1fr] overflow-hidden">
+    <div className="light page-shell command-center-page-shell grid min-h-dvh grid-rows-[auto_1fr] overflow-hidden">
       <WelcomeGuidePopupClient />
-      <Header />
       <main id="main-content" className="row-start-2 viewport-main">
         <div className="viewport-frame command-center-page-frame">
           {mainContent}

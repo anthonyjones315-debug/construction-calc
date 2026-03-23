@@ -34,6 +34,7 @@ import { sendEstimateSignatureEmail } from "@/lib/email/estimates";
 import { getPostHogClient } from "@/lib/posthog-server";
 import { normalizeDollars } from "@/utils/money";
 import { saveCalculation, verifyEstimate } from "@/app/actions/calculations";
+import { generateAutoEstimateName } from "@/lib/estimates/name-generator";
 
 function getClientEmail(input: Record<string, unknown> | undefined) {
   const candidate = input?.client_email;
@@ -188,6 +189,18 @@ export async function POST(request: NextRequest) {
       savedId = estimateId;
       insertError = null;
 
+      let projectName = typeof payload.inputs?.project_name === "string" ? payload.inputs.project_name : undefined;
+      if (!projectName) projectName = payload.metadata?.jobName ?? payload.name;
+      const generatedName = await generateAutoEstimateName(
+        db,
+        tenantId,
+        tenantColumn,
+        payload.client_name,
+        projectName,
+        payload.job_site_address,
+        savedId
+      );
+
       for (let attempt = 0; attempt < 5; attempt += 1) {
         shareCode = signingMeta.shareCode;
         const inputs = buildSavedInputs(shareCodeSupported);
@@ -204,7 +217,7 @@ export async function POST(request: NextRequest) {
         });
 
         const updatePayload: Record<string, unknown> = {
-          name: payload.name,
+          name: generatedName,
           calculator_id: payload.calculator_id,
           inputs,
           results: payload.results,
@@ -256,12 +269,23 @@ export async function POST(request: NextRequest) {
         throw new Error(insertError.message);
       }
     } else {
+      let projectName = typeof payload.inputs?.project_name === "string" ? payload.inputs.project_name : undefined;
+      if (!projectName) projectName = payload.metadata?.jobName ?? payload.name;
+      const generatedName = await generateAutoEstimateName(
+        db,
+        tenantId,
+        tenantColumn,
+        payload.client_name,
+        projectName,
+        payload.job_site_address
+      );
+
       for (let attempt = 0; attempt < 5; attempt += 1) {
         shareCode = signingMeta.shareCode;
 
         const insertPayload: Record<string, unknown> = {
           user_id: session.user.id,
-          name: payload.name,
+          name: generatedName,
           calculator_id: payload.calculator_id,
           inputs: buildSavedInputs(shareCodeSupported),
           results: payload.results,

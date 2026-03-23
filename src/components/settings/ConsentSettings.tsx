@@ -75,7 +75,7 @@ export function ConsentSettings() {
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <a
             href="#"
-            className="termly-display-preferences inline-flex items-center gap-1 rounded-lg bg-[--color-orange-brand] px-3 py-2 text-sm font-semibold text-white hover:bg-[--color-orange-dark]"
+            className="termly-display-preferences inline-flex items-center gap-1 rounded-lg bg-[--color-blue-brand] px-3 py-2 text-sm font-semibold text-white hover:bg-[--color-blue-dark]"
           >
             Open Termly Preferences
           </a>

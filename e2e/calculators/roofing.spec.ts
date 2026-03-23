@@ -30,7 +30,7 @@ test.describe("Roofing Calculators", () => {
     test("calculates bundles for a roof area", async ({ page }) => {
       await page.goto("/calculators/roofing/shingles");
       await fillNumbers(page, ["15", "6", "10"]);
-      await expect(page.getByText(/Order\s+[\d.]+/i).first()).toBeVisible();
+      await expect(page.locator('div').filter({ hasText: /Order/i }).filter({ hasText: /[\d.]+/ }).last()).toBeVisible();
     });
 
     test("waste percentage adds correct overage to bundle count", async ({
@@ -40,17 +40,25 @@ test.describe("Roofing Calculators", () => {
       await page.goto("/calculators/roofing/shingles");
       await fillNumbers(page, ["20", "15", "12"]);
 
-      const resultText = page.getByText(/Order\s+[\d.]+/i).first();
+      const resultText = page.locator('div').filter({ hasText: /Order/i }).filter({ hasText: /[\d.]+/ }).last();
       await expect(resultText).toBeVisible();
       const baseText = await resultText.textContent();
 
       // Adjust waste slider — move from default (10%) to 0%
       const wasteSlider = page.locator("input[type='range']").first();
       if (await wasteSlider.isVisible()) {
-        await wasteSlider.fill("0");
+        await wasteSlider.evaluate((node: HTMLInputElement) => {
+          node.value = "0";
+          node.dispatchEvent(new Event("input", { bubbles: true }));
+          node.dispatchEvent(new Event("change", { bubbles: true }));
+        });
         const zeroWasteText = await resultText.textContent();
         // Then set to max waste (slider max is 30)
-        await wasteSlider.fill("30");
+        await wasteSlider.evaluate((node: HTMLInputElement) => {
+          node.value = "30";
+          node.dispatchEvent(new Event("input", { bubbles: true }));
+          node.dispatchEvent(new Event("change", { bubbles: true }));
+        });
         await expect
           .poll(async () => (await resultText.textContent()) ?? "")
           .not.toEqual(zeroWasteText ?? "");
@@ -65,7 +73,7 @@ test.describe("Roofing Calculators", () => {
         expect(highCount).toBeGreaterThanOrEqual(zeroCount);
       } else {
         // If no slider, just verify we have a result
-        expect(baseText).toMatch(/Order\s+[\d.]+/i);
+        expect(baseText).toMatch(/Order\s*[\d.]+/i);
       }
     });
   });

@@ -120,7 +120,7 @@ export default function SignedEstimatesNotificationsClient() {
                   <li key={e.id} className="truncate">
                     <Link
                       href={getEstimateDetailRoute(e.id)}
-                      className="font-medium text-[--color-orange-brand] underline-offset-2 hover:underline"
+                      className="font-medium text-[--color-blue-brand] underline-offset-2 hover:underline"
                     >
                       {e.name}
                     </Link>
@@ -138,7 +138,7 @@ export default function SignedEstimatesNotificationsClient() {
               <div className="mt-4 flex flex-wrap gap-2">
                 <Link
                   href={routes.saved}
-                  className="inline-flex h-9 items-center justify-center rounded-lg bg-[--color-orange-brand] px-3 text-sm font-semibold text-white transition hover:bg-[--color-orange-dark]"
+                  className="inline-flex h-9 items-center justify-center rounded-lg bg-[--color-blue-brand] px-3 text-sm font-semibold text-white transition hover:bg-[--color-blue-dark]"
                 >
                   View saved estimates
                 </Link>

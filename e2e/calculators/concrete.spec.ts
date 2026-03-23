@@ -1,5 +1,7 @@
 import { test, expect } from "@playwright/test";
 
+import { setupClerkTestingToken } from "@clerk/testing/playwright";
+
 test.describe("Concrete Calculators", () => {
   // Dismiss cookie consent banner before interacting with inputs
   const dismissCookies = async (page: Parameters<typeof test>[0]["page"]) => {
@@ -30,7 +32,9 @@ test.describe("Concrete Calculators", () => {
   const expectMaterialOrder = async (
     page: Parameters<typeof test>[0]["page"],
   ) => {
-    await expect(page.getByText(/Order\s+[\d.]+/i).first()).toBeVisible();
+    const orderSection = page.locator('div').filter({ hasText: /Order/i }).filter({ hasText: /[\d.]+/ }).last();
+    await expect(orderSection).toBeVisible();
+    return orderSection;
   };
 
   test.describe("Slab Calculator", () => {
@@ -47,16 +51,24 @@ test.describe("Concrete Calculators", () => {
     }) => {
       await page.goto("/calculators/concrete/slab");
       await fillNumbers(page, ["20", "24", "4"]);
-      const resultText = page.getByText(/Order\s+[\d.]+/i).first();
+      const resultText = page.locator('div').filter({ hasText: /Order/i }).filter({ hasText: /[\d.]+/ }).last();
       await expect(resultText).toBeVisible();
       const parseOrder = (text: string | null) =>
         parseFloat(text?.match(/[\d.]+/)?.[0] ?? "0");
 
       const wasteSlider = page.locator("input[type='range']").first();
       if (await wasteSlider.isVisible()) {
-        await wasteSlider.fill("0");
+        await wasteSlider.evaluate((node: HTMLInputElement) => {
+          node.value = "0";
+          node.dispatchEvent(new Event("input", { bubbles: true }));
+          node.dispatchEvent(new Event("change", { bubbles: true }));
+        });
         const zeroWasteText = await resultText.textContent();
-        await wasteSlider.fill("20");
+        await wasteSlider.evaluate((node: HTMLInputElement) => {
+          node.value = "20";
+          node.dispatchEvent(new Event("input", { bubbles: true }));
+          node.dispatchEvent(new Event("change", { bubbles: true }));
+        });
         await expect
           .poll(async () => (await resultText.textContent()) ?? "")
           .not.toEqual(zeroWasteText ?? "");
@@ -89,6 +101,7 @@ test.describe("Concrete Calculators", () => {
     test("'Save Estimate' button is visible on calculator page", async ({
       page,
     }) => {
+      await setupClerkTestingToken({ page });
       await page.goto("/calculators/concrete/slab");
       await expectMaterialOrder(page);
 

@@ -187,15 +187,6 @@ const TILE_COPY: Record<string, TileCopy> = {
       compliance: "Compliance: Baseline only—verify code per job.",
     },
   },
-  "mechanical-drywall-sheets": {
-    summary: "Drywall sheet counts for GC sequencing checks.",
-    bullets: {
-      inputs: "Inputs: Room dims, ceiling height, board size.",
-      outputs: "Outputs: Sheet counts plus waste buffer.",
-      compliance: "Compliance: Notes inspection order before hang.",
-    },
-  },
-
   // Finish Carpentry
   "finish-trim": {
     summary: "Trim/baseboard linear footage with stock length picks.",
@@ -281,8 +272,8 @@ const TILE_COPY: Record<string, TileCopy> = {
       compliance: "Compliance: Notes NY frost-line considerations.",
     },
   },
-  "insulation-drywall-sheets": {
-    summary: "Drywall sheet calculator with waste and delivery cues.",
+  "finish-drywall-sheets": {
+    summary: "Drywall sheet counts for finish carpentry and sequencing.",
     bullets: {
       inputs: "Inputs: Room dims, board size, ceiling height.",
       outputs: "Outputs: Sheet count, waste, board mix.",

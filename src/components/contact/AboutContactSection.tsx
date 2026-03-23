@@ -23,7 +23,7 @@ export function AboutContactSection() {
         <button
           type="button"
           onClick={() => setModalOpen(true)}
-          className="btn-tactile relative mt-6 inline-flex min-h-11 items-center gap-2 rounded-xl bg-[--color-orange-brand] px-5 py-3 text-sm font-black uppercase tracking-[0.08em] text-white transition-all duration-200 hover:bg-[--color-orange-dark] active:scale-[0.98]"
+          className="btn-tactile relative mt-6 inline-flex min-h-11 items-center gap-2 rounded-xl bg-[--color-blue-brand] px-5 py-3 text-sm font-black uppercase tracking-[0.08em] text-white transition-all duration-200 hover:bg-[--color-blue-dark] active:scale-[0.98]"
         >
           Contact me
         </button>

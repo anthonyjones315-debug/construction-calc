@@ -191,24 +191,24 @@ export function CalculatorsDirectoryClient() {
     <>
       <main id="main-content" className="flex-1 bg-[--color-bg]" tabIndex={-1}>
         {/* ── Hero strip ──────────────────────────────────────── */}
-        <div className="border-b-2 border-[--color-orange-soft] bg-white px-4 py-5 sm:px-6 sm:py-6">
+        <div className="border-b border-[--color-border] bg-white px-4 py-8 sm:px-6 sm:py-10">
           <div className="mx-auto max-w-5xl text-center">
-            <div className="flex items-center justify-center gap-2 text-[--color-orange-brand]">
-              <HardHat className="h-5 w-5" aria-hidden />
-              <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-orange-brand">
+            <div className="inline-flex items-center justify-center gap-2 rounded-full border border-[--color-blue-rim] bg-[--color-blue-soft] px-3 py-1 text-[--color-blue-brand]">
+              <HardHat className="h-4 w-4" aria-hidden />
+              <span className="text-[10px] font-bold uppercase tracking-[0.18em]">
                 Pro Construction Calc
               </span>
             </div>
-            <h1 className="mt-1 font-display text-2xl font-black text-slate-900 sm:text-3xl">
-              Calculators Built for Your Trade
+            <h1 className="mt-4 text-3xl font-black uppercase tracking-tight text-[--color-ink] sm:text-5xl">
+              Commercial-Grade Space Math
             </h1>
-            <p className="mt-1 text-sm text-slate-500">
-              Serving contractors across Oneida, Madison &amp; Herkimer County, NY
+            <p className="mt-3 text-sm leading-relaxed text-[--color-ink-mid] sm:text-base">
+              Field-tested calculators that give you real numbers you can use on the job or in a quote. Built for estimators, crew leads, and contractors who need fast, accurate math.
             </p>
-            <div className="mx-auto mt-3 max-w-2xl">
-              <div className="flex items-center rounded-xl border border-slate-300 bg-slate-50 px-3 py-2.5 focus-within:border-[--color-orange-brand] focus-within:ring-1 focus-within:ring-[--color-orange-brand]">
+            <div className="mx-auto mt-6 max-w-2xl">
+              <div className="flex h-14 items-center rounded-2xl border-2 border-[--color-border] bg-white px-4 py-2 transition-colors focus-within:border-[--color-blue-brand] focus-within:ring-4 focus-within:ring-[--color-blue-brand]/10">
                 <Search
-                  className="h-4 w-4 shrink-0 text-slate-400"
+                  className="h-5 w-5 shrink-0 text-[--color-ink-dim]"
                   aria-hidden
                 />
                 <input
@@ -217,14 +217,14 @@ export function CalculatorsDirectoryClient() {
                   placeholder={
                     'Search: "concrete slab", "roof pitch", "profit margin"\u2026'
                   }
-                  className="ml-2 flex-1 bg-transparent text-sm text-slate-900 placeholder:text-slate-500 outline-none"
+                  className="ml-3 flex-1 bg-transparent text-base font-medium text-[--color-ink] placeholder:text-[--color-ink-dim] outline-none"
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
                   aria-label="Search construction calculators by trade, task, or name"
                 />
               </div>
             </div>
-            <p className="mt-2 text-xs text-slate-500">
+            <p className="mt-4 text-xs font-semibold tracking-wider text-[--color-ink-dim] uppercase">
               {totalCalculators} professional calculators · 6 trade modules
             </p>
           </div>
@@ -242,7 +242,7 @@ export function CalculatorsDirectoryClient() {
                   key={page.key}
                   href={page.href as Route}
                   prefetch={false}
-                  className="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-[--color-orange-brand]/60 hover:text-[--color-orange-brand]"
+                  className="rounded-lg border border-[--color-border] bg-white px-3 py-1.5 text-[11px] font-bold tracking-wide text-[--color-ink] transition hover:border-[--color-blue-brand]/60 hover:text-[--color-blue-brand]"
                 >
                   {page.title}
                 </Link>
@@ -266,17 +266,17 @@ export function CalculatorsDirectoryClient() {
                     key={page.key}
                     href={page.href as Route}
                     prefetch={false}
-                    className="group flex h-full min-h-0 flex-col rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-xs text-slate-700 transition-colors hover:border-[--color-orange-brand]/60 hover:bg-[--color-orange-soft]"
+                    className="group flex h-full min-h-0 flex-col rounded-2xl border border-[--color-border] bg-white px-4 py-3 text-xs text-[--color-ink] transition-colors hover:border-[--color-blue-brand]/60 hover:bg-[--color-blue-soft]"
                   >
                     <div className="flex items-center justify-between gap-2">
-                      <p className="font-semibold text-slate-900 group-hover:text-[--color-orange-brand]">
+                      <p className="font-bold text-[--color-ink] transition-colors group-hover:text-[--color-blue-brand]">
                         {page.title}
                       </p>
-                      <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+                      <span className="rounded-full border border-[--color-border] bg-[--color-surface-alt] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-[--color-ink-dim]">
                         {page.categoryLabel}
                       </span>
                     </div>
-                    <p className="mt-1 line-clamp-1 text-[11px] text-slate-600">
+                    <p className="mt-1.5 line-clamp-1 leading-relaxed text-[11px] text-[--color-ink-mid]">
                       {page.description}
                     </p>
                   </Link>
@@ -299,28 +299,28 @@ export function CalculatorsDirectoryClient() {
               return (
                 <div
                   key={key}
-                  className="group relative flex h-full min-h-0 flex-col rounded-xl border border-[--color-border] bg-[--color-surface] p-4 shadow-sm transition-all duration-200 hover:border-[--color-orange-rim] hover:shadow-md before:absolute before:left-0 before:top-4 before:bottom-4 before:w-[3px] before:rounded-full before:bg-[--color-orange-brand]/0 hover:before:bg-[--color-orange-brand] before:transition-all"
+                  className="group relative flex h-full min-h-0 flex-col rounded-2xl border border-[--color-border] bg-[--color-surface] p-5 shadow-sm transition-all duration-200 hover:border-[--color-blue-brand]/50 hover:shadow-md"
                 >
-                  <div className="flex items-center gap-2.5">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[--color-orange-brand]/12">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[--color-blue-soft]">
                       <Icon
-                        className="h-4.5 w-4.5 text-[--color-orange-brand]"
+                        className="h-5 w-5 text-[--color-blue-brand]"
                         aria-hidden
                       />
                     </div>
                     <div className="min-w-0">
-                      <h2 className="truncate font-display text-sm font-bold uppercase tracking-wide text-slate-900 transition-colors group-hover:text-[--color-orange-brand]">
+                      <h2 className="truncate text-[13px] font-black uppercase tracking-tight text-[--color-ink] transition-colors group-hover:text-[--color-blue-brand]">
                         {label}
                       </h2>
                       {calcCount > 0 && (
-                        <p className="text-[10px] text-slate-500">
+                        <p className="text-[10px] font-semibold uppercase tracking-wider text-[--color-ink-dim]">
                           {calcCount} calc{calcCount !== 1 ? "s" : ""}
                         </p>
                       )}
                     </div>
                   </div>
                   {page && (
-                    <p className="mt-2 line-clamp-2 text-[11px] leading-relaxed text-slate-600">
+                    <p className="mt-2 line-clamp-2 text-[11px] leading-relaxed text-[--color-ink-mid]">
                       {page.description}
                     </p>
                   )}
@@ -329,18 +329,18 @@ export function CalculatorsDirectoryClient() {
                       {sampleCalcs.map((link) => (
                         <span
                           key={link.href}
-                          className="rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] text-slate-600"
+                          className="rounded-md border border-[--color-border] bg-[--color-surface-alt] px-2 py-0.5 text-[10px] text-[--color-ink-dim]"
                         >
                           {link.label}
                         </span>
                       ))}
                     </div>
                   )}
-                  <div className="mt-auto flex items-center pt-2 text-[10px] font-semibold text-[--color-orange-brand]">
+                  <div className="mt-auto flex items-center pt-3 text-[10px] font-semibold text-[--color-blue-brand]">
                     <Link
                       href={href as Route}
                       prefetch={false}
-                      className="inline-flex items-center gap-1 rounded-full border border-[--color-orange-rim] bg-[--color-orange-soft] px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-[--color-orange-dark] transition-colors hover:border-[--color-orange-brand] hover:bg-[--color-orange-brand]/12 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[--color-orange-brand]"
+                      className="inline-flex items-center gap-1 rounded-full border border-[--color-blue-rim] bg-[--color-blue-soft] px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-[--color-blue-dark] transition-colors hover:border-[--color-blue-brand] hover:bg-[--color-blue-brand]/12 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[--color-blue-brand]"
                     >
                       View all
                       <ChevronRight className="h-3 w-3" aria-hidden />
@@ -354,32 +354,32 @@ export function CalculatorsDirectoryClient() {
 
         {/* Recommended Calculators */}
         <div className="mx-auto w-full max-w-5xl px-4 pb-6 sm:px-6 sm:pb-8">
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-brand">
-            Recommended Calculators
+          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[--color-blue-brand]">
+            Recommended Field Tools
           </p>
-          <div className="mt-2.5 grid items-stretch gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-4 grid items-stretch gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {RECOMMENDED.slice(0, 6).map((calc) => (
               <Link
                 key={calc.key}
                 href={calc.href as Route}
                 prefetch={false}
-                className="group flex h-full min-h-0 flex-col rounded-xl border border-[--color-border] bg-[--color-surface] p-4 shadow-sm transition-all duration-200 hover:border-[--color-orange-rim] hover:shadow-md"
+                className="group flex h-full min-h-[140px] flex-col rounded-2xl border border-[--color-border] bg-[--color-surface] p-5 shadow-sm transition-all duration-200 hover:border-[--color-blue-brand]/40 hover:shadow-md"
               >
-                <div className="flex items-center justify-between gap-2">
-                  <p className="font-semibold text-slate-900 group-hover:text-[--color-orange-brand]">
+                <div className="flex items-start justify-between gap-2">
+                  <p className="text-[13px] font-black uppercase tracking-tight text-[--color-ink] transition-colors group-hover:text-[--color-blue-brand]">
                     {calc.title}
                   </p>
-                  <span className="shrink-0 rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+                  <span className="shrink-0 rounded-full border border-[--color-border] bg-[--color-surface-alt] px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-[--color-ink-dim]">
                     {calc.categoryLabel}
                   </span>
                 </div>
-                <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-slate-600">
+                <p className="mt-2 line-clamp-3 text-[13px] leading-relaxed text-[--color-ink-mid]">
                   {calc.description}
                 </p>
-                <div className="mt-auto flex items-center pt-2 text-xs font-semibold text-[--color-orange-brand]">
-                  Open
+                <div className="mt-auto flex items-center pt-3 text-[11px] font-bold uppercase tracking-[0.1em] text-[--color-blue-brand]">
+                  Open Calculator
                   <ArrowRight
-                    className="h-3.5 w-3.5 opacity-0 transition-opacity group-hover:opacity-100"
+                    className="ml-1 h-3.5 w-3.5 opacity-0 transition-opacity group-hover:opacity-100"
                     aria-hidden
                   />
                 </div>

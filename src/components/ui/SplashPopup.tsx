@@ -138,7 +138,7 @@ export function SplashPopup() {
           <div className="mt-3 flex flex-col gap-2">
             <Link
               href={routes.guide}
-              className="flex min-h-[44px] w-full items-center justify-center rounded-xl bg-[--color-orange-brand] px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[--color-orange-dark] cursor-pointer"
+              className="flex min-h-[44px] w-full items-center justify-center rounded-xl bg-[--color-blue-brand] px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[--color-blue-dark] cursor-pointer"
               onClick={dismiss}
             >
               Open How-To Guide
@@ -152,7 +152,7 @@ export function SplashPopup() {
             </GlassButton>
             <Link
               href={routes.fieldNotes}
-              className="flex min-h-[44px] w-full cursor-pointer items-center justify-center rounded-xl text-xs text-primary transition-colors hover:bg-[--color-orange-soft]"
+              className="flex min-h-[44px] w-full cursor-pointer items-center justify-center rounded-xl text-xs text-primary transition-colors hover:bg-[--color-blue-soft]"
               onClick={dismiss}
             >
               Browse Field Notes →

@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    borderBottom: "2 solid #ea580c",
+    borderBottom: "2 solid #2563eb",
     paddingBottom: 12,
     gap: 10,
   },
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     fontWeight: 700,
   },
-  heroValue: { fontSize: 22, fontWeight: 700, color: "#ea580c" },
+  heroValue: { fontSize: 22, fontWeight: 700, color: "#2563eb" },
   heroCaption: { fontSize: 10, color: "#64748b", marginTop: 2 },
   table: {
     width: "100%",
@@ -174,7 +174,7 @@ function EstimateDocument(payload: EstimatePdfPayload) {
                   width: 46,
                   height: 46,
                   borderRadius: 10,
-                  backgroundColor: "#ea580c",
+                  backgroundColor: "#2563eb",
                   alignItems: "center",
                   justifyContent: "center",
                   color: "#fff",

@@ -76,7 +76,8 @@ alter table saved_estimates
   add column if not exists tax_basis_points integer,
   add column if not exists verified_county text,
   add column if not exists verification_status text not null default 'unverified',
-  add column if not exists share_code text;
+  add column if not exists share_code text,
+  add column if not exists version integer not null default 1;
 
 create index if not exists saved_estimates_share_code_idx
   on saved_estimates(share_code)

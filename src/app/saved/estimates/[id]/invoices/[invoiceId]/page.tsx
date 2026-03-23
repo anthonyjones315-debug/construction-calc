@@ -122,7 +122,7 @@ export default async function SavedInvoiceDetailPage({ params }: Props) {
             </div>
             <a
               href={`/saved/estimates/${estimate.id}`}
-              className="rounded-lg border border-[--color-border] bg-[--color-surface] px-3 py-2 text-sm font-medium text-[--color-ink] hover:border-[--color-orange-brand]"
+              className="rounded-lg border border-[--color-border] bg-[--color-surface] px-3 py-2 text-sm font-medium text-[--color-ink] hover:border-[--color-blue-brand]"
             >
               Back to Estimate
             </a>

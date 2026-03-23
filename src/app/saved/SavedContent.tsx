@@ -9,7 +9,9 @@ import {
   PackagePlus,
   FolderOpen,
   ExternalLink,
+  MapPin,
 } from "lucide-react";
+import Autocomplete from "react-google-autocomplete";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSession } from "@/lib/auth/client";
 import Link from "next/link";
@@ -1353,7 +1355,7 @@ export function SavedContent({
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="w-8 h-8 border-2 border-[--color-orange-brand] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[--color-blue-brand] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -1361,8 +1363,8 @@ export function SavedContent({
   if (!isAuthenticated && status !== "authenticated") {
     return (
       <div className="max-w-md mx-auto px-4 py-16 text-center">
-        <div className="w-14 h-14 rounded-2xl bg-[--color-orange-soft] flex items-center justify-center mx-auto mb-4">
-          <LogIn className="w-7 h-7 text-[--color-orange-brand]" />
+        <div className="w-14 h-14 rounded-2xl bg-[--color-blue-soft] flex items-center justify-center mx-auto mb-4">
+          <LogIn className="w-7 h-7 text-[--color-blue-brand]" />
         </div>
         <h1 className="text-2xl font-display font-bold text-[--color-ink] mb-2">
           Sign In to View Saved Estimates
@@ -1373,7 +1375,7 @@ export function SavedContent({
         </p>
         <Link
           href={routes.auth.signIn}
-          className="btn-tactile inline-flex min-h-11 items-center gap-2 rounded-xl bg-[--color-orange-brand] px-4 py-3 font-bold text-white transition-all duration-200 hover:bg-[--color-orange-dark] active:scale-[0.98]"
+          className="btn-tactile inline-flex min-h-11 items-center gap-2 rounded-xl bg-[--color-blue-brand] px-4 py-3 font-bold text-white transition-all duration-200 hover:bg-[--color-blue-dark] active:scale-[0.98]"
         >
           Sign In Free
         </Link>
@@ -1396,14 +1398,14 @@ export function SavedContent({
           <button
             type="button"
             onClick={() => setShowBuilder((current) => !current)}
-            className="btn-tactile flex min-h-11 items-center gap-2 rounded-lg border border-[--color-border] bg-[--color-surface] px-4 py-2 text-sm font-medium text-[--color-ink] transition-all duration-200 hover:border-[--color-orange-brand] active:scale-[0.98]"
+            className="btn-tactile flex min-h-11 items-center gap-2 rounded-lg border border-[--color-border] bg-[--color-surface] px-4 py-2 text-sm font-medium text-[--color-ink] transition-all duration-200 hover:border-[--color-blue-brand] active:scale-[0.98]"
           >
             <PackagePlus className="w-4 h-4" aria-hidden />
             {showBuilder ? "Close Builder" : "Build from Price Book"}
           </button>
           <Link
             href={routes.calculators}
-            className="btn-tactile flex min-h-11 items-center gap-2 rounded-lg bg-[--color-orange-brand] px-4 py-2 text-sm font-medium text-white transition-all duration-200 hover:bg-[--color-orange-dark] active:scale-[0.98]"
+            className="btn-tactile flex min-h-11 items-center gap-2 rounded-lg bg-[--color-blue-brand] px-4 py-2 text-sm font-medium text-white transition-all duration-200 hover:bg-[--color-blue-dark] active:scale-[0.98]"
           >
             <Calculator className="w-4 h-4" aria-hidden />
             New from Calculator
@@ -1458,13 +1460,44 @@ export function SavedContent({
 
             <label className="flex flex-col gap-1 text-sm text-[--color-ink-mid]">
               Job Site Address
-              <input
-                value={builderJobSiteAddress}
-                onChange={(event) =>
-                  setBuilderJobSiteAddress(event.target.value)
-                }
-                className="rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink]"
-              />
+              <div className="relative">
+                <Autocomplete
+                  apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+                  onPlaceSelected={(place) => {
+                    if (place.formatted_address) {
+                      setBuilderJobSiteAddress(place.formatted_address);
+                    } else if (place.name) {
+                      setBuilderJobSiteAddress(place.name);
+                    }
+                  }}
+                  options={{ types: ["address"] }}
+                  defaultValue={builderJobSiteAddress}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBuilderJobSiteAddress(e.target.value)}
+                  className="w-full rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 pr-10 py-2 text-sm text-[--color-ink]"
+                />
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if ("geolocation" in navigator) {
+                      navigator.geolocation.getCurrentPosition(async (pos) => {
+                        const { latitude, longitude } = pos.coords;
+                        try {
+                          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
+                          const data = await res.json();
+                          if (data && data.display_name) {
+                            setBuilderJobSiteAddress(data.display_name);
+                          }
+                        } catch {}
+                      })
+                    }
+                  }}
+                  className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-[--color-ink-dim] hover:text-[--color-blue-brand] transition-colors"
+                  title="Use Current Location"
+                >
+                  <MapPin className="h-4 w-4" aria-hidden />
+                </button>
+              </div>
             </label>
           </div>
 
@@ -1476,14 +1509,14 @@ export function SavedContent({
               <button
                 type="button"
                 onClick={addBuilderRow}
-                className="rounded-lg border border-[--color-border] px-3 py-1.5 text-sm text-[--color-ink] hover:border-[--color-orange-brand]"
+                className="rounded-lg border border-[--color-border] px-3 py-1.5 text-sm text-[--color-ink] hover:border-[--color-blue-brand]"
               >
                 + Add Line
               </button>
               <button
                 type="button"
                 onClick={addCustomBuilderRow}
-                className="rounded-lg border border-[--color-border] px-3 py-1.5 text-sm text-[--color-ink] hover:border-[--color-orange-brand]"
+                className="rounded-lg border border-[--color-border] px-3 py-1.5 text-sm text-[--color-ink] hover:border-[--color-blue-brand]"
               >
                 + Custom Line
               </button>
@@ -1661,7 +1694,7 @@ export function SavedContent({
               type="button"
               onClick={createEstimateFromBuilder}
               disabled={creatingEstimate || saveButtonLocked}
-              className="btn-tactile min-h-11 rounded-lg bg-[--color-orange-brand] px-4 py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-[--color-orange-dark] active:scale-[0.98] disabled:opacity-60 disabled:active:scale-100"
+              className="btn-tactile min-h-11 rounded-lg bg-[--color-blue-brand] px-4 py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-[--color-blue-dark] active:scale-[0.98] disabled:opacity-60 disabled:active:scale-100"
             >
               {creatingEstimate ? "Saving…" : "Save Price Book Estimate"}
             </button>
@@ -1702,7 +1735,7 @@ export function SavedContent({
             onClick={() => (deleting ? undefined : setDeleteTarget(null))}
           />
           <div className="relative w-full max-w-lg rounded-2xl border border-[--color-border] bg-[--color-surface] p-5 shadow-2xl">
-            <p className="text-xs font-bold uppercase tracking-[0.15em] text-orange-brand">
+            <p className="text-xs font-bold uppercase tracking-[0.15em] text-blue-brand">
               Confirm Delete
             </p>
             <h2 className="mt-1 text-xl font-display font-bold text-[--color-ink]">
@@ -1753,7 +1786,7 @@ export function SavedContent({
                 type="button"
                 onClick={() => setDeleteTarget(null)}
                 disabled={Boolean(deleting)}
-                className="rounded-lg border border-[--color-border] px-4 py-2 text-sm font-medium text-[--color-ink] hover:border-[--color-orange-brand] disabled:opacity-60"
+                className="rounded-lg border border-[--color-border] px-4 py-2 text-sm font-medium text-[--color-ink] hover:border-[--color-blue-brand] disabled:opacity-60"
               >
                 Cancel
               </button>
@@ -1785,7 +1818,7 @@ export function SavedContent({
           <p className="text-[--color-ink-dim] mb-4">No saved estimates yet.</p>
           <Link
             href={routes.calculators}
-            className="text-[--color-orange-brand] font-medium hover:underline text-sm"
+            className="text-[--color-blue-brand] font-medium hover:underline text-sm"
           >
             Run your first calculation →
           </Link>
@@ -1810,7 +1843,7 @@ export function SavedContent({
                         })}
                       </span>
                       {hero && (
-                        <span className="inline-flex items-center rounded-full border border-[--color-orange-brand]/35 bg-[--color-orange-brand]/10 px-2 py-0.5 text-xs font-bold text-[--color-orange-brand]">
+                        <span className="inline-flex items-center rounded-full border border-[--color-blue-brand]/35 bg-[--color-blue-brand]/10 px-2 py-0.5 text-xs font-bold text-[--color-blue-brand]">
                           {hero.value} {hero.unit}
                         </span>
                       )}
@@ -1843,7 +1876,7 @@ export function SavedContent({
                   <div className="flex items-center gap-2 shrink-0">
                     <Link
                       href={`/saved/${est.id}` as import("next").Route}
-                      className="flex items-center gap-1.5 rounded-lg border border-[--color-border] px-2.5 py-1.5 text-xs font-medium text-[--color-ink] transition-all hover:border-[--color-orange-brand]"
+                      className="flex items-center gap-1.5 rounded-lg border border-[--color-border] px-2.5 py-1.5 text-xs font-medium text-[--color-ink] transition-all hover:border-[--color-blue-brand]"
                       title="Open estimate"
                     >
                       <FolderOpen className="w-3.5 h-3.5" aria-hidden />
@@ -1858,7 +1891,7 @@ export function SavedContent({
                           "noopener,noreferrer",
                         );
                       }}
-                      className="flex items-center gap-1.5 rounded-lg border border-[--color-border] px-2.5 py-1.5 text-xs font-medium text-[--color-ink] transition-all hover:border-[--color-orange-brand]"
+                      className="flex items-center gap-1.5 rounded-lg border border-[--color-border] px-2.5 py-1.5 text-xs font-medium text-[--color-ink] transition-all hover:border-[--color-blue-brand]"
                       title="Open in new window"
                     >
                       <ExternalLink className="w-3.5 h-3.5" aria-hidden />
@@ -1866,7 +1899,7 @@ export function SavedContent({
                     </button>
                     <button
                       onClick={() => downloadPDF(est)}
-                      className="flex items-center gap-1.5 rounded-lg border border-[--color-orange-brand]/30 px-2.5 py-1.5 text-xs font-medium text-[--color-orange-brand] transition-all hover:border-[--color-orange-brand] hover:bg-[--color-orange-soft]"
+                      className="flex items-center gap-1.5 rounded-lg border border-[--color-blue-brand]/30 px-2.5 py-1.5 text-xs font-medium text-[--color-blue-brand] transition-all hover:border-[--color-blue-brand] hover:bg-[--color-blue-soft]"
                       title="Download PDF"
                     >
                       <FileDown className="w-3.5 h-3.5" aria-hidden />

@@ -63,7 +63,7 @@ export function JoinBusinessWithCodeForm() {
           autoComplete="off"
           spellCheck={false}
           placeholder="e.g. ABCD12"
-          className="h-11 rounded-lg border border-[--color-border] bg-[--color-surface] px-3 font-mono text-[--color-ink] uppercase placeholder:text-[--color-ink-dim] placeholder:normal-case outline-none transition focus:border-[--color-orange-brand] focus:ring-2 focus:ring-[--color-orange-brand]/25"
+          className="h-11 rounded-lg border border-[--color-border] bg-[--color-surface] px-3 font-mono text-[--color-ink] uppercase placeholder:text-[--color-ink-dim] placeholder:normal-case outline-none transition focus:border-[--color-blue-brand] focus:ring-2 focus:ring-[--color-blue-brand]/25"
         />
       </label>
       {error ? (
@@ -74,7 +74,7 @@ export function JoinBusinessWithCodeForm() {
       <button
         type="submit"
         disabled={busy}
-        className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-[--color-border] bg-[--color-surface] px-5 text-sm font-black uppercase text-[--color-ink] shadow-sm transition hover:border-[--color-orange-brand] hover:text-[--color-orange-brand] disabled:opacity-60"
+        className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-[--color-border] bg-[--color-surface] px-5 text-sm font-black uppercase text-[--color-ink] shadow-sm transition hover:border-[--color-blue-brand] hover:text-[--color-blue-brand] disabled:opacity-60"
       >
         {busy ? (
           <>

@@ -3,6 +3,8 @@
 import Link from "next/link";
 import type { Route } from "next";
 import { useEffect, useMemo, useState } from "react";
+import { Modal } from "@/components/Modal";
+import NewEstimateClient from "@/app/command-center/estimates/new/NewEstimateClient";
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowRight,
@@ -10,10 +12,12 @@ import {
   Bell,
   BrickWall,
   Calculator,
+  ClipboardList,
   Copy,
   FileText,
   Hammer,
   HardHat,
+  Home,
   Layout,
   MoreHorizontal,
   RefreshCw,
@@ -26,6 +30,7 @@ import {
   Users,
   X,
 } from "lucide-react";
+import { UserButton } from "@clerk/nextjs";
 import { useSearchParams } from "next/navigation";
 import * as Sentry from "@sentry/nextjs";
 import { routes } from "@routes";
@@ -277,7 +282,7 @@ function formatRole(role: string): string {
 function roleBadgeClasses(role: string): string {
   switch (role) {
     case "owner":
-      return "border-orange-500/40 bg-orange-500/10 text-orange-700";
+      return "border-blue-600/40 bg-blue-600/10 text-blue-800";
     case "admin":
       return "border-blue-500/40 bg-blue-500/10 text-blue-700";
     case "editor":
@@ -317,7 +322,7 @@ function estimateStatusClasses(status: string | null) {
     return "border-emerald-500/40 bg-emerald-500/10 text-emerald-700";
   }
   if (status === "PENDING" || status === "Sent") {
-    return "border-orange-500/40 bg-orange-500/10 text-orange-700";
+    return "border-blue-600/40 bg-blue-600/10 text-blue-800";
   }
   return "border-[--color-border] bg-[--color-surface-alt] text-[--color-ink-mid]";
 }
@@ -376,11 +381,11 @@ function WorkspaceTabButton({
       aria-pressed={active}
       className={`inline-flex min-h-11 items-center gap-2 rounded-2xl border px-3.5 py-2 text-sm font-semibold transition ${
         active
-          ? "border-[--color-orange-brand]/50 bg-[--color-orange-soft] text-[--color-orange-brand] shadow-[0_0_0_1px_rgba(234,88,12,0.12)]"
-          : "border-[--color-border] bg-[--color-surface-alt] text-[--color-ink-mid] hover:border-[--color-orange-brand]/40 hover:text-[--color-orange-brand]"
+          ? "border-[--color-blue-brand]/50 bg-[--color-blue-soft] text-[--color-blue-brand] shadow-[0_0_0_1px_rgba(234,88,12,0.12)]"
+          : "border-[--color-border] bg-[--color-surface-alt] text-[--color-ink-mid] hover:border-[--color-blue-brand]/40 hover:text-[--color-blue-brand]"
       }`}
     >
-      <Icon className={`h-4 w-4 ${active ? "text-[--color-orange-brand]" : "text-[--color-ink-dim]"}`} aria-hidden />
+      <Icon className={`h-4 w-4 ${active ? "text-[--color-blue-brand]" : "text-[--color-ink-dim]"}`} aria-hidden />
       <span className="whitespace-nowrap">{label}</span>
     </button>
   );
@@ -398,7 +403,7 @@ function CommandStatCard({
   tone?: string;
 }) {
   return (
-    <article className="command-card flex min-h-0 flex-col justify-between gap-3 px-4 py-4">
+    <article className="flex min-h-[120px] flex-col justify-between gap-3 rounded-2xl border border-[--color-border] bg-white px-5 py-5 shadow-sm">
       <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-ink-dim]">
         {label}
       </p>
@@ -427,14 +432,14 @@ function ToolLaunchCard({
     <>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="truncate text-sm font-bold text-[--color-ink]">{item.label}</p>
-          <p className="mt-1 text-xs leading-relaxed text-[--color-ink-dim]">
+          <p className="truncate text-[15px] font-black tracking-tight text-[--color-ink]">{item.label}</p>
+          <p className="mt-1.5 text-[13px] leading-relaxed text-[--color-ink-mid]">
             {item.description ?? "Open this field tool from Command Center."}
           </p>
         </div>
-        <item.icon className="mt-0.5 h-4 w-4 shrink-0 text-[--color-orange-brand]" aria-hidden />
+        <item.icon className="mt-0.5 h-4 w-4 shrink-0 text-[--color-blue-brand]" aria-hidden />
       </div>
-      <div className="mt-4 inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-orange-brand]">
+      <div className="mt-4 inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-blue-brand]">
         Open tool
         <ArrowRight className="h-3 w-3" aria-hidden />
       </div>
@@ -446,7 +451,7 @@ function ToolLaunchCard({
       <button
         type="button"
         onClick={() => onOpen(item)}
-        className="command-card min-h-0 rounded-2xl px-4 py-4 text-left transition hover:border-[--color-orange-brand]/40 hover:bg-[--color-orange-soft]"
+        className="flex min-h-0 flex-col justify-between rounded-2xl border border-[--color-border] bg-white px-5 py-5 text-left transition-all hover:border-[--color-blue-brand]/40 hover:bg-[--color-blue-soft] hover:shadow-sm"
       >
         {content}
       </button>
@@ -457,7 +462,7 @@ function ToolLaunchCard({
     <Link
       href={href}
       prefetch={false}
-      className="command-card min-h-0 rounded-2xl px-4 py-4 text-left transition hover:border-orange-500/40 hover:bg-[--color-orange-soft]"
+      className="flex min-h-0 flex-col justify-between rounded-2xl border border-[--color-border] bg-white px-5 py-5 text-left transition-all hover:border-[--color-blue-brand]/40 hover:bg-[--color-blue-soft] hover:shadow-sm"
     >
       {content}
     </Link>
@@ -479,16 +484,16 @@ function CommandPageCard({
     <Link
       href={href}
       prefetch={false}
-      className="command-card flex min-h-0 flex-col gap-3 rounded-2xl px-4 py-4 transition hover:border-orange-500/40 hover:bg-[--color-orange-soft]"
+      className="flex min-h-0 flex-col justify-between gap-3 rounded-2xl border border-[--color-border] bg-white px-5 py-5 transition-all hover:border-[--color-blue-brand]/40 hover:bg-[--color-blue-soft] hover:shadow-sm"
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-sm font-bold text-[--color-ink]">{label}</p>
-          <p className="mt-1 text-xs leading-relaxed text-[--color-ink-dim]">{description}</p>
+          <p className="text-[15px] font-black tracking-tight text-[--color-ink]">{label}</p>
+          <p className="mt-1.5 text-[13px] leading-relaxed text-[--color-ink-mid]">{description}</p>
         </div>
-        <Icon className="mt-0.5 h-4 w-4 shrink-0 text-[--color-orange-brand]" aria-hidden />
+        <Icon className="mt-0.5 h-4 w-4 shrink-0 text-[--color-blue-brand]" aria-hidden />
       </div>
-      <span className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-orange-brand]">
+      <span className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-blue-brand]">
         Open page
         <ArrowRight className="h-3 w-3" aria-hidden />
       </span>
@@ -521,6 +526,7 @@ export default function CommandCenterClient({
   const [activeWorkspace, setActiveWorkspace] = useState<WorkspaceSlug>(
     initialToolSlug ? "launch" : draftMode ? "workflow" : "overview",
   );
+  const [showNewEstimate, setShowNewEstimate] = useState(false);
   const { proMode, setProMode, mounted: proModeMounted } = useProMode();
   const estimateCart = useStore((s) => s.estimateCart);
   const removeCartItem = useStore((s) => s.removeCartItem);
@@ -591,8 +597,6 @@ export default function CommandCenterClient({
         day: "numeric",
       })
     : "No estimate activity yet";
-  const workspaceMeta =
-    workspaceTabs.find((tab) => tab.slug === activeWorkspace) ?? workspaceTabs[0];
   const recentEstimatePreview = recentEstimates.slice(0, 4);
   const memberPreview = members.slice(0, 6);
 
@@ -751,31 +755,32 @@ export default function CommandCenterClient({
   const renderOverview = () => (
     <div className="flex h-full min-h-0 flex-col gap-3">
       {/* ── Compact status bar — 44px ─────────────────────────────── */}
-      <div className="flex flex-wrap items-center gap-px rounded-xl border border-[--color-border] bg-[--color-surface-alt] overflow-hidden">
-        <div className="status-bar-cell flex-1 border-r border-[--color-border] py-2.5">
-          <span className={`status-dot${cartItemCount > 0 ? " status-dot-warn" : ""}`} />
+      {/* ── Compact status bar — 44px ─────────────────────────────── */}
+      <div className="flex flex-wrap items-center gap-px rounded-2xl border border-[--color-border] bg-[--color-surface-alt] overflow-hidden">
+        <div className="status-bar-cell flex-1 border-r border-[--color-border] py-3.5 px-4 font-bold tracking-wide">
+          <span className={`status-dot h-2 w-2 rounded-full flex-shrink-0 ${cartItemCount > 0 ? " status-dot-warn" : ""}`} />
           {cartItemCount > 0 ? `${cartItemCount} item${cartItemCount === 1 ? "" : "s"} in cart` : "Cart clear"}
         </div>
-        <div className="status-bar-cell flex-1 border-r border-[--color-border] py-2.5">
-          <span className={`status-dot${sentEstimateCount > 0 ? " status-dot-warn" : ""}`} />
+        <div className="status-bar-cell flex-1 border-r border-[--color-border] py-3.5 px-4 font-bold tracking-wide">
+          <span className={`status-dot h-2 w-2 rounded-full flex-shrink-0 ${sentEstimateCount > 0 ? " status-dot-warn" : ""}`} />
           {sentEstimateCount > 0 ? `${sentEstimateCount} proposal${sentEstimateCount === 1 ? "" : "s"} waiting` : "No follow-ups pending"}
         </div>
-        <div className="status-bar-cell flex-1 py-2.5">
-          <span className={`status-dot${needsBusinessProfileSetup ? " status-dot-warn" : ""}`} />
+        <div className="status-bar-cell flex-1 py-3.5 px-4 font-bold tracking-wide">
+          <span className={`status-dot h-2 w-2 rounded-full flex-shrink-0 ${needsBusinessProfileSetup ? " status-dot-warn" : ""}`} />
           {needsBusinessProfileSetup ? "Profile needs setup" : "Profile ready"}
         </div>
       </div>
 
       {/* ── Quick-action bar — 44px ───────────────────────────────── */}
       <div className="flex flex-wrap gap-2">
-        <Link
-          href={`${routes.commandCenter}?mode=draft`}
-          prefetch={false}
+        <button
+          type="button"
+          onClick={() => setShowNewEstimate(true)}
           className="action-bar-btn action-bar-btn-primary"
         >
           <Calculator className="h-3.5 w-3.5" aria-hidden />
           New Estimate
-        </Link>
+        </button>
         <Link
           href={routes.saved}
           prefetch={false}
@@ -792,6 +797,15 @@ export default function CommandCenterClient({
           <Settings className="h-3.5 w-3.5" aria-hidden />
           Business Setup
         </Link>
+        {/* Modal for New Estimate */}
+        <Modal isOpen={showNewEstimate} onClose={() => setShowNewEstimate(false)}>
+          <div className="max-w-4xl w-full">
+            <NewEstimateClient onOpenCalculators={() => {
+              setShowNewEstimate(false);
+              setActiveWorkspace("launch");
+            }} />
+          </div>
+        </Modal>
         <Link
           href={routes.guide}
           prefetch={false}
@@ -803,59 +817,60 @@ export default function CommandCenterClient({
       </div>
 
       {/* ── 4-up KPI row — 64px ───────────────────────────────────── */}
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-        <div className="stat-kpi border-l-2 border-l-emerald-500">
-          <span className="stat-kpi-value text-emerald-300">{signedEstimateCount}</span>
-          <span className="stat-kpi-label">Closed / Signed</span>
+      {/* ── 4-up KPI row — 64px ───────────────────────────────────── */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="flex min-h-[80px] flex-col justify-center rounded-2xl border border-[--color-border] bg-white px-5 py-2 shadow-sm">
+          <span className="text-3xl font-black text-[--color-ink]">{signedEstimateCount}</span>
+          <span className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-ink-dim]">Closed / Signed</span>
         </div>
-        <div className="stat-kpi border-l-2 border-l-orange-500">
-          <span className="stat-kpi-value text-[--color-orange-brand]">{sentEstimateCount}</span>
-          <span className="stat-kpi-label">Sent / Waiting</span>
+        <div className="flex min-h-[80px] flex-col justify-center rounded-2xl border border-[--color-border] bg-[--color-blue-brand]/5 px-5 py-2 shadow-sm">
+          <span className="text-3xl font-black text-[--color-blue-brand]">{sentEstimateCount}</span>
+          <span className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-blue-dark]">Sent / Waiting</span>
         </div>
-        <div className="stat-kpi border-l-2 border-l-sky-500">
-          <span className="stat-kpi-value text-sky-300">{draftEstimateCount}</span>
-          <span className="stat-kpi-label">Drafts Active</span>
+        <div className="flex min-h-[80px] flex-col justify-center rounded-2xl border border-[--color-border] bg-white px-5 py-2 shadow-sm">
+          <span className="text-3xl font-black text-[--color-ink]">{draftEstimateCount}</span>
+          <span className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-ink-dim]">Drafts Active</span>
         </div>
-        <div className="stat-kpi border-l-2 border-l-slate-500">
-          <span className="stat-kpi-value">{utilizationPercent}%</span>
-          <span className="stat-kpi-label">Crew Seats</span>
+        <div className="flex min-h-[80px] flex-col justify-center rounded-2xl border border-[--color-border] bg-white px-5 py-2 shadow-sm">
+          <span className="text-3xl font-black text-[--color-ink]">{utilizationPercent}%</span>
+          <span className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-ink-dim]">Crew Seats</span>
         </div>
       </div>
 
       {/* ── Main content grid ─────────────────────────────────────── */}
       <div className="grid min-h-0 flex-1 gap-3 xl:grid-cols-[1.2fr,0.88fr]">
-        <article className="command-card flex min-h-0 flex-col gap-3 overflow-hidden px-4 py-4">
+        <article className="flex min-h-0 flex-col gap-3 overflow-y-auto rounded-2xl border border-[--color-border] bg-white px-5 py-5 shadow-sm">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[--color-orange-brand]">
+              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[--color-blue-brand]">
                 Owner Controls
               </p>
-              <h2 className="app-heading mt-0.5">Live readiness</h2>
+              <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-[--color-ink]">Live readiness</h2>
             </div>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-orange-500/30 bg-orange-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[--color-orange-brand]">
-              <ShieldCheck className="h-3 w-3" aria-hidden />
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-[--color-blue-rim] bg-[--color-blue-soft] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-blue-brand]">
+              <ShieldCheck className="h-3.5 w-3.5" aria-hidden />
               Locked
             </span>
           </div>
-          <div className="grid gap-2.5 sm:grid-cols-2">
-            <div className="rounded-xl border border-[--color-border] bg-[--color-surface-alt] px-4 py-3">
-              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[--color-ink-dim]">Launch Pad</p>
-              <p className="mt-1.5 text-sm text-[--color-ink-mid]">Six high-value tools stay one tap away.</p>
+          <div className="mt-2 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-2xl border border-[--color-border] bg-[--color-surface-alt] px-4 py-4">
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-ink-dim]">Launch Pad</p>
+              <p className="mt-2 text-[13px] leading-relaxed text-[--color-ink-mid]">Six high-value tools stay one tap away.</p>
               <button
                 type="button"
                 onClick={() => setActiveWorkspace("launch")}
-                className="mt-3 inline-flex h-9 items-center justify-center rounded-lg bg-[--color-orange-brand] px-4 text-xs font-black uppercase tracking-[0.08em] text-white transition hover:bg-[--color-orange-dark]"
+                className="mt-4 inline-flex h-10 items-center justify-center rounded-xl bg-[--color-blue-brand] px-5 text-[11px] font-black uppercase tracking-[0.1em] text-white transition hover:bg-[--color-blue-dark]"
               >
                 Open Launch Pad
               </button>
             </div>
-            <div className="rounded-xl border border-[--color-border] bg-[--color-surface-alt] px-4 py-3">
-              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[--color-ink-dim]">Workflow</p>
-              <p className="mt-1.5 text-sm text-[--color-ink-mid]">Cart items and estimate handoff in one view.</p>
+            <div className="rounded-2xl border border-[--color-border] bg-[--color-surface-alt] px-4 py-4">
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-ink-dim]">Workflow</p>
+              <p className="mt-2 text-[13px] leading-relaxed text-[--color-ink-mid]">Cart items and estimate handoff in one view.</p>
               <button
                 type="button"
                 onClick={() => setActiveWorkspace("workflow")}
-                className="mt-3 inline-flex h-9 items-center justify-center rounded-lg border border-[--color-border] px-4 text-xs font-semibold text-[--color-ink-mid] transition hover:border-[--color-orange-brand]/50 hover:text-[--color-orange-brand]"
+                className="mt-4 inline-flex h-10 items-center justify-center rounded-xl border border-[--color-border] bg-white px-5 text-[11px] font-bold uppercase tracking-[0.1em] text-[--color-ink] transition hover:border-[--color-blue-brand]/50 hover:text-[--color-blue-brand]"
               >
                 Open Workflow
               </button>
@@ -863,40 +878,61 @@ export default function CommandCenterClient({
           </div>
         </article>
 
-        <article className="command-card flex min-h-0 flex-col gap-3 overflow-hidden px-4 py-4">
+        <article className="flex min-h-0 flex-col gap-3 overflow-y-auto rounded-2xl border border-[--color-border] bg-white px-5 py-5 shadow-sm">
           <div className="flex items-center justify-between gap-3">
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[--color-orange-brand]">
+            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[--color-blue-brand]">
               Recent Activity
             </p>
             <Link
               href={routes.saved}
               prefetch={false}
-              className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[--color-ink-dim] transition hover:text-[--color-orange-brand]"
+              className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-ink-dim] transition hover:text-[--color-blue-brand]"
             >
               View All →
             </Link>
           </div>
           {recentEstimates.length === 0 ? (
-            <div className="flex flex-1 items-center justify-center rounded-xl border border-dashed border-[--color-border] bg-[--color-surface-alt] px-4 py-6 text-center text-sm text-[--color-ink-dim]">
+            <div className="flex flex-1 items-center justify-center rounded-2xl border border-dashed border-[--color-border] bg-[--color-surface-alt] px-4 py-6 text-center text-sm font-semibold text-[--color-ink-dim]">
               No estimates yet. Start a draft from any calculator.
             </div>
           ) : (
-            <div className="space-y-2 overflow-y-auto">
+            <div className="mt-2 space-y-3 overflow-y-auto">
               {recentEstimates.map((estimate) => (
-                <Link
+                <div
                   key={estimate.id}
-                  href={`${routes.saved}?id=${estimate.id}`}
-                  prefetch={false}
-                  className="flex items-center justify-between gap-3 rounded-xl border border-[--color-border] bg-[--color-surface-alt] px-3 py-2.5 transition hover:border-[--color-orange-brand]/35 hover:bg-white"
+                  className="rounded-2xl border border-[--color-border] bg-[--color-surface-alt] px-4 py-3.5 transition hover:border-[--color-blue-brand]/35 hover:bg-white"
                 >
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-bold text-[--color-ink]">{estimate.name}</p>
-                    <p className="truncate text-xs text-[--color-ink-dim]">{estimate.clientName || "No client"}</p>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="truncate text-[14px] font-black tracking-tight text-[--color-ink]">{estimate.name}</p>
+                      <p className="mt-0.5 truncate text-[12px] font-semibold text-[--color-ink-dim]">{estimate.clientName || "No client"}</p>
+                    </div>
+                    <span className={`shrink-0 inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-black uppercase tracking-widest ${estimateStatusClasses(estimate.status)}`}>
+                      {formatEstimateStatus(estimate.status)}
+                    </span>
                   </div>
-                  <span className={`shrink-0 inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${estimateStatusClasses(estimate.status)}`}>
-                    {formatEstimateStatus(estimate.status)}
-                  </span>
-                </Link>
+                  <div className="mt-3 flex items-center justify-end gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setActiveWorkspace("launch");
+                        setSuccess(`Select a tool in Launch Pad to calculate and append to ${estimate.name}.`);
+                      }}
+                      className="flex items-center gap-1.5 rounded-lg border border-[--color-border] bg-white px-2.5 py-1.5 text-xs font-bold text-[--color-ink-mid] transition hover:border-[--color-blue-brand] hover:text-[--color-blue-brand]"
+                    >
+                      <Calculator className="h-3.5 w-3.5" aria-hidden />
+                      Calc
+                    </button>
+                    <Link
+                      href={`${routes.saved}?id=${estimate.id}`}
+                      prefetch={false}
+                      className="flex items-center gap-1.5 rounded-lg border border-[--color-blue-brand] bg-[--color-blue-soft] px-3 py-1.5 text-xs font-bold text-[--color-blue-brand] transition hover:bg-[--color-blue-brand] hover:text-white"
+                    >
+                      Open
+                      <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+                    </Link>
+                  </div>
+                </div>
               ))}
             </div>
           )}
@@ -906,10 +942,10 @@ export default function CommandCenterClient({
   );
 
   const renderLaunchPad = () => (
-    <div className="grid h-full min-h-0 gap-4 xl:grid-cols-[0.9fr,1.1fr]">
-      <article className="command-card flex min-h-0 flex-col gap-4 px-5 py-5">
+    <div className="flex flex-col gap-4 lg:grid lg:h-full lg:min-h-0 lg:grid-cols-[0.9fr,1.1fr]">
+      <article className="flex min-h-0 flex-col gap-4 overflow-y-auto rounded-2xl border border-[--color-border] bg-white px-5 py-5 shadow-sm">
         <div>
-          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-500">
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[--color-blue-brand]">
             Tool Launch
           </p>
           <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-[--color-ink]">
@@ -931,20 +967,20 @@ export default function CommandCenterClient({
             value={toolFilter}
             onChange={(event) => setToolFilter(event.target.value)}
             placeholder="Search calculators, estimates, or workflow tools"
-            className="h-11 rounded-2xl border border-[--color-border] bg-white px-3 text-sm text-[--color-ink] placeholder:text-[--color-ink-dim] focus:border-[--color-orange-brand] focus:ring-2 focus:ring-[--color-orange-brand]/20"
+            className="h-11 rounded-2xl border border-[--color-border] bg-white px-3 text-sm text-[--color-ink] placeholder:text-[--color-ink-dim] focus:border-[--color-blue-brand] focus:ring-2 focus:ring-[--color-blue-brand]/20"
           />
         </label>
 
-        <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex flex-wrap gap-2 pb-1">
           {toolCategoryTabs.map((category) => (
             <button
               key={category.slug}
               type="button"
               onClick={() => setToolCategory(category.slug)}
-              className={`inline-flex min-h-10 items-center rounded-full border px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] transition ${
+              className={`inline-flex min-h-10 shrink-0 items-center whitespace-nowrap rounded-full border px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] transition ${
                 toolCategory === category.slug
-                  ? "border-[--color-orange-brand]/50 bg-[--color-orange-soft] text-[--color-orange-brand]"
-                  : "border-[--color-border] bg-[--color-surface-alt] text-[--color-ink-mid] hover:border-[--color-orange-brand]/40 hover:text-[--color-orange-brand]"
+                  ? "border-[--color-blue-brand]/50 bg-[--color-blue-soft] text-[--color-blue-brand]"
+                  : "border-[--color-border] bg-[--color-surface-alt] text-[--color-ink-mid] hover:border-[--color-blue-brand]/40 hover:text-[--color-blue-brand]"
               }`}
             >
               {category.label}
@@ -952,39 +988,12 @@ export default function CommandCenterClient({
           ))}
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded-2xl border border-[--color-border] bg-[--color-surface-alt] px-4 py-4">
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-ink-dim]">
-              Results
-            </p>
-            <p className="mt-2 text-3xl font-black text-[--color-ink]">
-              {filteredToolItems.length}
-            </p>
-            <p className="mt-1 text-xs leading-relaxed text-[--color-ink-dim]">
-              Matching tools inside the selected menu bar.
-            </p>
-          </div>
-          <div className="rounded-2xl border border-[--color-border] bg-[--color-surface-alt] px-4 py-4">
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-ink-dim]">
-              Full library
-            </p>
-            <p className="mt-2 text-sm text-[--color-ink-mid]">
-              Need more than the launch grid? Open the full calculator library.
-            </p>
-            <Link
-              href={routes.calculators}
-              prefetch={false}
-              className="mt-4 inline-flex min-h-10 items-center justify-center rounded-xl border border-[--color-border] px-4 text-sm font-semibold text-[--color-ink-mid] transition hover:border-[--color-orange-brand]/50 hover:text-[--color-orange-brand]"
-            >
-              Open Library
-            </Link>
-          </div>
-        </div>
+
       </article>
 
       <div className="grid min-h-0 gap-4 content-start">
         {visibleToolItems.length === 0 ? (
-          <article className="command-card flex min-h-[220px] items-center justify-center rounded-3xl px-5 py-5 text-center">
+          <article className="flex min-h-[220px] items-center justify-center rounded-3xl border border-dashed border-[--color-border] bg-white px-5 py-5 text-center shadow-sm">
             <div>
               <p className="text-sm font-bold text-[--color-ink]">No tools match that search.</p>
               <p className="mt-2 text-sm text-[--color-ink-dim]">
@@ -1008,11 +1017,11 @@ export default function CommandCenterClient({
   );
 
   const renderWorkflow = () => (
-    <div className="grid h-full min-h-0 gap-4 xl:grid-cols-[1fr,0.95fr]">
-      <article className="public-panel-strong flex min-h-0 flex-col gap-4 px-5 py-5">
+    <div className="flex flex-col gap-4 lg:grid lg:h-full lg:min-h-0 lg:grid-cols-[1fr,0.95fr]">
+      <article className="flex min-h-0 flex-col gap-4 overflow-y-auto rounded-2xl border border-[--color-border] bg-white px-5 py-5 shadow-sm">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[--color-orange-brand]">
+            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[--color-blue-brand]">
               Field Cart
             </p>
             <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-[--color-ink]">
@@ -1040,10 +1049,17 @@ export default function CommandCenterClient({
         </div>
 
         <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => setActiveWorkspace("launch")}
+            className="flex min-h-12 w-full max-w-[200px] shrink-0 items-center justify-center rounded-2xl bg-[--color-blue-brand] px-6 text-sm font-black uppercase tracking-[0.08em] text-white shadow-[0_2px_12px_rgba(0,102,255,0.2)] transition hover:bg-[--color-blue-brand]/90 active:scale-95 sm:w-auto sm:max-w-none"
+          >
+            New Estimate
+          </button>
           <Link
             href={routes.cart}
             prefetch={false}
-            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-orange-500 px-4 text-sm font-black uppercase tracking-[0.08em] text-white transition hover:bg-orange-600"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-blue-600 px-4 text-sm font-black uppercase tracking-[0.08em] text-white transition hover:bg-blue-700"
           >
             Review Cart
             <ArrowRight className="h-4 w-4" aria-hidden />
@@ -1051,7 +1067,7 @@ export default function CommandCenterClient({
           <Link
             href={routes.calculators}
             prefetch={false}
-            className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-[--color-border] px-4 text-sm font-semibold text-[--color-ink-mid] transition hover:border-[--color-orange-brand]/60 hover:text-[--color-orange-brand]"
+            className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-[--color-border] px-4 text-sm font-semibold text-[--color-ink-mid] transition hover:border-[--color-blue-brand]/60 hover:text-[--color-blue-brand]"
           >
             Add More Estimates
           </Link>
@@ -1081,7 +1097,7 @@ export default function CommandCenterClient({
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-orange-brand]">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-blue-brand]">
                       {item.calculatorLabel}
                     </p>
                     <p className="mt-1 truncate text-sm font-bold text-[--color-ink]">
@@ -1120,7 +1136,7 @@ export default function CommandCenterClient({
             label="Sent / waiting"
             value={sentEstimateCount}
             detail="Quotes already with clients."
-            tone="text-[--color-orange-brand]"
+            tone="text-[--color-blue-brand]"
           />
           <CommandStatCard
             label="Last activity"
@@ -1129,10 +1145,10 @@ export default function CommandCenterClient({
           />
         </div>
 
-        <article className="command-card flex min-h-0 flex-col gap-4 px-5 py-5">
+        <article className="flex min-h-0 flex-col gap-4 overflow-y-auto rounded-2xl border border-[--color-border] bg-white px-5 py-5 shadow-sm">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-500">
+              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[--color-blue-brand]">
                 Recent Estimates
               </p>
               <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-[--color-ink]">
@@ -1142,7 +1158,7 @@ export default function CommandCenterClient({
             <Link
               href={routes.saved}
               prefetch={false}
-              className="inline-flex min-h-10 items-center justify-center rounded-xl border border-[--color-border] px-4 text-sm font-semibold text-[--color-ink-mid] transition hover:border-[--color-orange-brand]/50 hover:text-[--color-orange-brand]"
+              className="inline-flex min-h-10 items-center justify-center rounded-xl border border-[--color-border] px-4 text-sm font-semibold text-[--color-ink-mid] transition hover:border-[--color-blue-brand]/50 hover:text-[--color-blue-brand]"
             >
               View All
             </Link>
@@ -1156,12 +1172,9 @@ export default function CommandCenterClient({
           ) : (
             <div className="grid gap-3">
               {recentEstimatePreview.map((estimate) => (
-                <Link
+                <div
                   key={estimate.id}
-                  href={`${routes.saved}?id=${estimate.id}`}
-                  aria-label={`Open estimate ${estimate.name}`}
-                  prefetch={false}
-                  className="rounded-2xl border border-[--color-border] bg-[--color-surface-alt] px-4 py-4 transition hover:border-[--color-orange-brand]/35 hover:bg-white"
+                  className="rounded-2xl border border-[--color-border] bg-[--color-surface-alt] px-4 py-4 transition hover:border-[--color-blue-brand]/35 hover:bg-white"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
@@ -1178,14 +1191,43 @@ export default function CommandCenterClient({
                       {formatEstimateStatus(estimate.status)}
                     </span>
                   </div>
-                  <p className="mt-3 text-xs text-[--color-ink-dim]">
-                    Updated{" "}
-                    {new Date(estimate.updatedAt).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                    })}
-                  </p>
-                </Link>
+                  <div className="mt-4 flex items-center justify-between">
+                    <p className="text-xs text-[--color-ink-dim]">
+                      Updated{" "}
+                      {new Date(estimate.updatedAt).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </p>
+                    <div className="flex items-center gap-2">
+                       <button
+                         type="button"
+                         onClick={() => {
+                            // First, switch to the launchpad workspace
+                            setActiveWorkspace("launch");
+                            // Set a cookie or search param or state to indicate we are picking a calculator for this estimate?
+                            // For a truly cohesive UX, we should just let them use the generic cart flow. "fill the data to the estimate" implies it goes straight to the DB.
+                            // In Command Center, anything added to the cart can be attached to an estimate via "Review Cart".
+                            // I'll show a quick UI toast for now
+                            setSuccess(`Select a tool in Launch Pad to calculate and append to ${estimate.name}.`);
+                         }}
+                         className="flex items-center gap-1.5 rounded-lg border border-[--color-border] bg-white px-2.5 py-1.5 text-xs font-bold text-[--color-ink-mid] transition hover:border-[--color-blue-brand] hover:text-[--color-blue-brand]"
+                       >
+                         <Calculator className="h-3.5 w-3.5" aria-hidden />
+                         Open Calculator
+                       </button>
+                       <Link
+                         href={`${routes.saved}?id=${estimate.id}`}
+                         aria-label={`Open estimate ${estimate.name}`}
+                         className="flex items-center gap-1.5 rounded-lg bg-[--color-blue-brand] px-3 py-1.5 text-xs font-bold text-white transition hover:bg-[--color-blue-dark]"
+                         prefetch={false}
+                       >
+                         Open Estimate
+                         <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+                       </Link>
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           )}
@@ -1198,27 +1240,27 @@ export default function CommandCenterClient({
     <div className="flex h-full min-h-0 flex-col gap-3">
       {/* ── Top 2-col row: team info + invite code ─────────────────── */}
       <div className="grid gap-3 sm:grid-cols-2">
-        <article className="command-card px-4 py-4">
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-orange-brand]">Your Team</p>
-          <h2 className="app-heading mt-0.5">{planName} · {seatsUsed}/{seatLimit} seats</h2>
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            <div className="rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2">
+        <article className="flex min-h-0 flex-col gap-3 overflow-y-auto rounded-2xl border border-[--color-border] bg-white px-5 py-5 shadow-sm">
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-blue-brand]">Your Team</p>
+          <h2 className="text-xl font-black uppercase tracking-tight text-[--color-ink]">{planName} · {seatsUsed}/{seatLimit} seats</h2>
+          <div className="mt-3 grid grid-cols-2 gap-3">
+            <div className="rounded-2xl border border-[--color-border] bg-[--color-surface-alt] px-4 py-3">
               <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[--color-ink-dim]">Remaining</p>
               <p className="mt-1 text-2xl font-black text-[--color-ink]">{seatsAvailable}</p>
             </div>
-            <div className="rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2">
-              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[--color-ink-dim]">Utilization</p>
-              <p className="mt-1 text-2xl font-black text-[--color-orange-brand]">{utilizationPercent}%</p>
+            <div className="rounded-2xl border border-[--color-border] bg-[--color-blue-brand]/5 px-4 py-3">
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[--color-blue-dark]">Utilization</p>
+              <p className="mt-1 text-2xl font-black text-[--color-blue-brand]">{utilizationPercent}%</p>
             </div>
           </div>
         </article>
 
         <article className="public-panel-strong px-4 py-4">
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-orange-brand]">Invite New Member</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-blue-brand]">Invite New Member</p>
           <p className="mt-2 text-[10px] uppercase tracking-[0.18em] text-[--color-ink-dim]">Join Code</p>
           {/* Compact monospace code pill + inline copy */}
           <div className="mt-1.5 flex items-center gap-2">
-            <code className="flex-1 rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2 font-mono text-2xl font-black tracking-[0.1em] text-[--color-orange-brand]">
+            <code className="flex-1 rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2 font-mono text-2xl font-black tracking-[0.1em] text-[--color-blue-brand]">
               {activeJoinCode}
             </code>
             <button
@@ -1241,7 +1283,7 @@ export default function CommandCenterClient({
                   ? "Rotation requires the join_code migration to be applied."
                   : "Rotate invite code — old codes become invalid immediately"
               }
-              className="mt-2 inline-flex h-8 items-center gap-1.5 rounded-lg border border-[--color-border] px-3 text-xs font-semibold text-[--color-ink-dim] transition hover:border-[--color-orange-brand]/60 hover:text-[--color-orange-brand] disabled:cursor-not-allowed disabled:opacity-50"
+              className="mt-2 inline-flex h-8 items-center gap-1.5 rounded-lg border border-[--color-border] px-3 text-xs font-semibold text-[--color-ink-dim] transition hover:border-[--color-blue-brand]/60 hover:text-[--color-blue-brand] disabled:cursor-not-allowed disabled:opacity-50"
             >
               <RefreshCw className="h-3 w-3" aria-hidden />
               {isRefreshingInvite ? "Refreshing…" : "Rotate Code"}
@@ -1252,13 +1294,13 @@ export default function CommandCenterClient({
       </div>
 
       {/* ── Crew roster table ──────────────────────────────────────── */}
-      <article className="command-card flex min-h-0 flex-1 flex-col gap-3 overflow-hidden px-4 py-4">
+      <article className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto rounded-2xl border border-[--color-border] bg-white px-5 py-5 shadow-sm">
         <div className="flex items-center justify-between gap-3">
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-orange-brand]">Active Crew Roster</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-blue-brand]">Active Crew Roster</p>
           <Link
             href={routes.settings}
             prefetch={false}
-            className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[--color-ink-dim] transition hover:text-[--color-orange-brand]"
+            className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[--color-ink-dim] transition hover:text-[--color-blue-brand]"
           >
             Open Settings →
           </Link>
@@ -1301,7 +1343,7 @@ export default function CommandCenterClient({
                         <button
                           type="button"
                           onClick={() => setManageTargetId(member.membershipId)}
-                          className="inline-flex h-7 w-7 items-center justify-center rounded border border-[--color-border] text-[--color-ink-dim] transition hover:border-[--color-orange-brand]/50 hover:text-[--color-orange-brand]"
+                          className="inline-flex h-7 w-7 items-center justify-center rounded border border-[--color-border] text-[--color-ink-dim] transition hover:border-[--color-blue-brand]/50 hover:text-[--color-blue-brand]"
                           aria-label={`Manage ${member.name}`}
                         >
                           <MoreHorizontal className="h-3.5 w-3.5" aria-hidden />
@@ -1331,10 +1373,10 @@ export default function CommandCenterClient({
     const referencePages = commandPages.filter((page) => page.group === "Reference");
 
     return (
-      <div className="grid h-full min-h-0 gap-4 xl:grid-cols-[0.9fr,1.1fr]">
+      <div className="flex flex-col gap-4 lg:grid lg:h-full lg:min-h-0 lg:grid-cols-[0.9fr,1.1fr]">
         <article className="public-panel-strong flex min-h-0 flex-col gap-4 px-5 py-5">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[--color-orange-brand]">
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[--color-blue-brand]">
               Pages & References
             </p>
             <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-[--color-ink]">
@@ -1349,7 +1391,7 @@ export default function CommandCenterClient({
             <Link
               href={routes.privacy}
               prefetch={false}
-              className="rounded-2xl border border-[--color-border] bg-white px-4 py-4 transition hover:border-[--color-orange-brand]/50"
+              className="rounded-2xl border border-[--color-border] bg-white px-4 py-4 transition hover:border-[--color-blue-brand]/50"
             >
               <p className="text-sm font-bold text-[--color-ink]">Privacy Policy</p>
               <p className="mt-1 text-xs leading-relaxed text-[--color-ink-dim]">
@@ -1359,7 +1401,7 @@ export default function CommandCenterClient({
             <Link
               href={routes.terms}
               prefetch={false}
-              className="rounded-2xl border border-[--color-border] bg-white px-4 py-4 transition hover:border-[--color-orange-brand]/50"
+              className="rounded-2xl border border-[--color-border] bg-white px-4 py-4 transition hover:border-[--color-blue-brand]/50"
             >
               <p className="text-sm font-bold text-[--color-ink]">Terms of Service</p>
               <p className="mt-1 text-xs leading-relaxed text-[--color-ink-dim]">
@@ -1381,10 +1423,10 @@ export default function CommandCenterClient({
         </article>
 
         <div className="grid min-h-0 gap-4">
-          <section className="command-card px-5 py-5">
+          <section className="flex min-h-0 flex-col gap-3 overflow-hidden rounded-2xl border border-[--color-border] bg-white px-5 py-5 shadow-sm">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-500">
+                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[--color-blue-brand]">
                   Operations
                 </p>
                 <h2 className="mt-1 text-lg font-black uppercase tracking-tight text-[--color-ink]">
@@ -1399,9 +1441,9 @@ export default function CommandCenterClient({
             </div>
           </section>
 
-          <section className="command-card px-5 py-5">
+          <section className="flex min-h-0 flex-col gap-3 overflow-hidden rounded-2xl border border-[--color-border] bg-white px-5 py-5 shadow-sm">
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-500">
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[--color-blue-brand]">
                 Reference
               </p>
               <h2 className="mt-1 text-lg font-black uppercase tracking-tight text-[--color-ink]">
@@ -1427,11 +1469,38 @@ export default function CommandCenterClient({
     return renderOverview();
   };
 
+  const handleModalInterceptClick = (e: React.MouseEvent) => {
+    const anchor = (e.target as HTMLElement).closest("a");
+    if (!anchor) return;
+    const href = anchor.getAttribute("href");
+    if (!href) return;
+    if (href.startsWith("/calculators/")) {
+      e.preventDefault();
+      e.stopPropagation();
+      const match = toolNavItems.find((t) => t.href === href);
+      if (match) {
+        setActiveTool(match);
+      } else {
+        const slug = href.split("/").pop() || "";
+        setActiveTool({
+          label: "Calculator",
+          slug,
+          href: href as Route,
+          icon: Triangle,
+        });
+      }
+    } else if (href === "/calculators") {
+      e.preventDefault();
+      e.stopPropagation();
+      setActiveTool(null);
+    }
+  };
+
   return (
     <div className="command-center-shell command-theme flex h-full min-h-0 w-full flex-col overflow-hidden rounded-none xl:rounded-[30px]">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[--color-border] px-4 py-3 sm:px-5">
         <div className="min-w-0">
-          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[--color-orange-brand]">
+          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[--color-blue-brand]">
             Command Center
           </p>
           <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-[--color-ink-dim]">
@@ -1447,7 +1516,7 @@ export default function CommandCenterClient({
               onClick={() => setProMode(!proMode)}
               className={`inline-flex min-h-9 items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-bold uppercase tracking-[0.12em] transition ${
                 proMode
-                  ? "border-[--color-orange-brand]/70 bg-[--color-orange-soft] text-[--color-orange-brand]"
+                  ? "border-[--color-blue-brand]/70 bg-[--color-blue-soft] text-[--color-blue-brand]"
                   : "border-[--color-border] bg-[--color-surface-alt] text-[--color-ink-mid]"
               }`}
               aria-pressed={proMode}
@@ -1455,17 +1524,45 @@ export default function CommandCenterClient({
               Pro Mode
             </button>
           ) : null}
+          <Link
+            href={routes.home}
+            className="group relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-[--color-border] bg-[--color-surface-alt] text-[--color-ink-mid] transition hover:text-[--color-blue-brand]"
+            aria-label="Back to Public Site"
+          >
+            <Home className="h-4 w-4" aria-hidden />
+            <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-slate-800 px-2 py-0.5 text-[10px] font-bold text-white opacity-0 transition-opacity group-hover:opacity-100">
+              Site Home
+            </span>
+          </Link>
           <button
             type="button"
-            className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-[--color-border] bg-[--color-surface-alt] text-[--color-ink-mid] transition hover:text-[--color-orange-brand]"
+            className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-[--color-border] bg-[--color-surface-alt] text-[--color-ink-mid] transition hover:text-[--color-blue-brand]"
             aria-label="Notifications"
           >
             <Bell className="h-4 w-4" aria-hidden />
-            <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-[--color-orange-brand]" />
+            <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-[--color-blue-brand]" />
           </button>
-          <div className="flex h-9 w-9 items-center justify-center rounded-full border border-[--color-border] bg-[--color-surface-alt] text-xs font-semibold text-[--color-ink-mid]">
-            {initialsForName(members[0]?.name ?? "Owner")}
-          </div>
+          <UserButton
+            appearance={{
+              elements: {
+                avatarBox: "h-9 w-9",
+                userButtonPopoverCard: "rounded-2xl",
+              },
+            }}
+          >
+            <UserButton.MenuItems>
+              <UserButton.Link
+                href={routes.settings}
+                label="Business Profile"
+                labelIcon={<Settings className="h-4 w-4" aria-hidden />}
+              />
+              <UserButton.Link
+                href={routes.saved}
+                label="My Estimates"
+                labelIcon={<ClipboardList className="h-4 w-4" aria-hidden />}
+              />
+            </UserButton.MenuItems>
+          </UserButton>
         </div>
       </div>
 
@@ -1496,15 +1593,15 @@ export default function CommandCenterClient({
       )}
 
       {needsBusinessProfileSetup ? (
-        <div className="mx-4 mt-4 rounded-2xl border border-[--color-orange-brand]/25 bg-[--color-orange-soft] px-4 py-3 text-sm text-[--color-ink-mid] sm:mx-5">
-          <span className="font-semibold text-[--color-orange-brand]">
+        <div className="mx-4 mt-4 rounded-2xl border border-[--color-blue-brand]/25 bg-[--color-blue-soft] px-4 py-3 text-sm text-[--color-ink-mid] sm:mx-5">
+          <span className="font-semibold text-[--color-blue-brand]">
             Setup your Business Profile.
           </span>{" "}
           Add your company name so PDFs, emails, and client-facing signing pages use your branding.
           <Link
             href={routes.settings}
             prefetch={false}
-            className="ml-2 font-semibold text-[--color-orange-brand] transition hover:text-[--color-orange-brand]"
+            className="ml-2 font-semibold text-[--color-blue-brand] transition hover:text-[--color-blue-brand]"
           >
             Open settings
           </Link>
@@ -1512,8 +1609,8 @@ export default function CommandCenterClient({
       ) : null}
 
       {draftMode ? (
-        <div className="mx-4 mt-4 rounded-2xl border border-orange-500/30 bg-orange-500/10 px-4 py-3 sm:mx-5">
-          <p className="text-xs font-bold uppercase tracking-[0.15em] text-[--color-orange-brand]">
+        <div className="mx-4 mt-4 rounded-2xl border border-blue-600/30 bg-blue-600/10 px-4 py-3 sm:mx-5">
+          <p className="text-xs font-bold uppercase tracking-[0.15em] text-[--color-blue-brand]">
             Drafting mode
           </p>
           <p className="mt-1 text-sm text-[--color-ink-mid]">
@@ -1522,8 +1619,10 @@ export default function CommandCenterClient({
         </div>
       ) : null}
 
-      <div className="min-h-0 flex-1 overflow-hidden px-4 py-4 sm:px-5 sm:py-5">
-        {renderActiveWorkspace()}
+      <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-4 py-4 sm:px-5 sm:py-5 lg:overflow-y-auto">
+        <div className="h-full min-h-[max-content] lg:min-h-0">
+          {renderActiveWorkspace()}
+        </div>
       </div>
 
       {activeTool && (
@@ -1534,7 +1633,7 @@ export default function CommandCenterClient({
             className="absolute inset-0 bg-[--color-ink]/40"
           />
           {activeTradePage ? (
-            <div className="relative z-10 flex h-full w-full max-w-6xl flex-col overflow-hidden border border-[--color-border] bg-[--color-bg] shadow-[0_24px_50px_rgba(0,0,0,0.3)] sm:rounded-3xl">
+            <div onClickCapture={handleModalInterceptClick} className="relative z-10 flex h-full w-full max-w-6xl flex-col overflow-hidden border border-[--color-border] bg-[--color-bg] shadow-[0_24px_50px_rgba(0,0,0,0.3)] sm:rounded-3xl">
               <div className="sticky top-0 z-20 flex h-12 items-center justify-between gap-2 border-b border-[--color-border] bg-[--color-nav-bg]/95 px-3 backdrop-blur-sm">
                 <nav className="truncate text-[10px] font-semibold uppercase tracking-[0.16em] text-[--color-ink-dim]">
                   Calculators &gt;{" "}
@@ -1544,7 +1643,7 @@ export default function CommandCenterClient({
                   <button
                     type="button"
                     onClick={() => setActiveTool(null)}
-                    className="inline-flex h-8 items-center rounded-lg border border-[--color-border] px-2 text-[10px] font-bold uppercase tracking-widest text-[--color-ink-mid] transition hover:border-[--color-orange-brand] hover:text-[--color-orange-brand]"
+                    className="inline-flex h-8 items-center rounded-lg border border-[--color-border] px-2 text-[10px] font-bold uppercase tracking-widest text-[--color-ink-mid] transition hover:border-[--color-blue-brand] hover:text-[--color-blue-brand]"
                   >
                     Back
                   </button>
@@ -1554,14 +1653,14 @@ export default function CommandCenterClient({
                   <button
                     type="button"
                     onClick={() => setActiveTool(null)}
-                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[--color-border] text-[--color-ink-dim] transition hover:border-[--color-orange-brand] hover:text-[--color-orange-brand]"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[--color-border] text-[--color-ink-dim] transition hover:border-[--color-blue-brand] hover:text-[--color-blue-brand]"
                     aria-label="Close calculator modal"
                   >
                     <X className="h-4 w-4" aria-hidden />
                   </button>
                 </div>
               </div>
-              <div className="flex-1 overflow-hidden bg-[--color-bg]">
+              <div className="flex-1 overflow-y-auto bg-[--color-bg]">
                 <CalculatorPage page={activeTradePage} />
               </div>
             </div>
@@ -1579,13 +1678,13 @@ export default function CommandCenterClient({
                 <button
                   type="button"
                   onClick={() => setActiveTool(null)}
-                  className="rounded-full border border-[--color-border] p-1 text-[--color-ink-dim] transition hover:border-[--color-orange-brand] hover:text-[--color-orange-brand]"
+                  className="rounded-full border border-[--color-border] p-1 text-[--color-ink-dim] transition hover:border-[--color-blue-brand] hover:text-[--color-blue-brand]"
                   aria-label="Close tool detail pane"
                 >
                   <X className="h-4 w-4" aria-hidden />
                 </button>
               </div>
-              <div className="flex-1 overflow-hidden px-4 py-4 text-sm text-[--color-ink-mid]">
+              <div className="flex-1 overflow-y-auto px-4 py-4 text-sm text-[--color-ink-mid]">
                 <p className="text-[--color-ink-dim]">
                   {activeTool.description ??
                     "Field-ready figures, templates, and workflow context for this tool."}
@@ -1593,14 +1692,14 @@ export default function CommandCenterClient({
                 <div className="mt-4 flex flex-col gap-3">
                   <Link
                     href={activeTool.href ?? routes.commandCenter}
-                    className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[--color-orange-brand] bg-[--color-orange-brand] px-4 py-2 text-sm font-black uppercase text-white transition hover:bg-[--color-orange-dark]"
+                    className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[--color-blue-brand] bg-[--color-blue-brand] px-4 py-2 text-sm font-black uppercase text-white transition hover:bg-[--color-blue-dark]"
                   >
                     Open {activeTool.label}
                   </Link>
                   <button
                     type="button"
                     onClick={() => setActiveTool(null)}
-                    className="inline-flex items-center justify-center rounded-2xl border border-[--color-border] px-4 py-2 text-sm font-semibold text-[--color-ink-mid] transition hover:border-[--color-orange-brand] hover:text-[--color-orange-brand]"
+                    className="inline-flex items-center justify-center rounded-2xl border border-[--color-border] px-4 py-2 text-sm font-semibold text-[--color-ink-mid] transition hover:border-[--color-blue-brand] hover:text-[--color-blue-brand]"
                   >
                     Close panel
                   </button>
@@ -1619,7 +1718,7 @@ export default function CommandCenterClient({
             className="absolute inset-0 bg-[--color-ink]/30"
           />
           <div className="relative w-full max-w-md rounded-3xl border border-[--color-border] bg-white p-6 shadow-[0_24px_50px_rgba(0,0,0,0.2)]">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[--color-orange-brand]">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[--color-blue-brand]">
               Account Control
             </p>
             <h2 className="mt-1 text-xl font-sans font-extrabold tracking-tight text-[--color-ink]">
@@ -1631,7 +1730,7 @@ export default function CommandCenterClient({
                 type="button"
                 onClick={() => updateRole(manageTarget.membershipId, "member")}
                 disabled={busyMemberId === manageTarget.membershipId}
-                className="rounded-2xl border border-[--color-border] px-3 py-2 text-sm font-semibold text-[--color-ink-mid] transition hover:border-[--color-orange-brand] hover:bg-[--color-orange-soft] disabled:opacity-60"
+                className="rounded-2xl border border-[--color-border] px-3 py-2 text-sm font-semibold text-[--color-ink-mid] transition hover:border-[--color-blue-brand] hover:bg-[--color-blue-soft] disabled:opacity-60"
               >
                 Set Member
               </button>
@@ -1641,7 +1740,7 @@ export default function CommandCenterClient({
                   type="button"
                   onClick={() => updateRole(manageTarget.membershipId, "owner")}
                   disabled={busyMemberId === manageTarget.membershipId}
-                  className="rounded-2xl border border-[--color-border] px-3 py-2 text-sm font-semibold text-[--color-ink-mid] transition hover:border-[--color-orange-brand] hover:bg-[--color-orange-soft] disabled:opacity-60"
+                  className="rounded-2xl border border-[--color-border] px-3 py-2 text-sm font-semibold text-[--color-ink-mid] transition hover:border-[--color-blue-brand] hover:bg-[--color-blue-soft] disabled:opacity-60"
                 >
                   Promote Owner
                 </button>
@@ -1661,7 +1760,7 @@ export default function CommandCenterClient({
               type="button"
               onClick={() => setManageTargetId(null)}
               disabled={busyMemberId === manageTarget.membershipId}
-              className="mt-2 w-full rounded-2xl border border-[--color-border] px-3 py-2 text-sm font-semibold text-[--color-ink-mid] transition hover:border-[--color-orange-brand] hover:bg-[--color-orange-soft] disabled:opacity-60"
+              className="mt-2 w-full rounded-2xl border border-[--color-border] px-3 py-2 text-sm font-semibold text-[--color-ink-mid] transition hover:border-[--color-blue-brand] hover:bg-[--color-blue-soft] disabled:opacity-60"
             >
               Close
             </button>

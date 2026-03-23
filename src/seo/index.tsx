@@ -315,7 +315,7 @@ export function getLocalBusinessSchema(
     sameAs: [GOOGLE_BUSINESS_PROFILE_URL],
     address: {
       "@type": "PostalAddress",
-      addressLocality: "Rome",
+      addressLocality: "Local",
       addressRegion: BUSINESS_STATE,
       addressCountry: BUSINESS_COUNTRY,
     },
@@ -329,7 +329,7 @@ export function getLocalBusinessSchema(
         "@type": "ContactPoint",
         contactType: "customer support",
         email: BUSINESS_EMAIL,
-        areaServed: ["Oneida County, NY", "Madison County, NY", "Herkimer County, NY"],
+        areaServed: ["USA", "USA", "USA"],
         availableLanguage: "en",
         ...(BUSINESS_PHONE_E164 ? { telephone: BUSINESS_PHONE_E164 } : {}),
         ...(BUSINESS_WHATSAPP_URL ? { url: BUSINESS_WHATSAPP_URL } : {}),

@@ -18,9 +18,9 @@
   /* Semantic design tokens.
      These literals intentionally mirror tailwind.config.ts because
      Tailwind v4 stalls when theme() is referenced inside @theme. */
-  --color-primary: #ea580c;
+  --color-primary: #2563eb; /* Strong Electric SaaS Blue */
   --color-primary-foreground: #ffffff;
-  --color-primary-rgb: 234 88 12;
+  --color-primary-rgb: 37 99 235;
   --color-secondary-10: #e6f3ff;
   --color-secondary-20: #cce7ff;
   --color-secondary-30: #a6d4ff;
@@ -32,25 +32,25 @@
   --color-secondary-90: #013974;
 
   /* Legacy Brand Colors (preserved for compatibility) */
-  --color-orange-brand: var(--color-primary);
-  --color-orange-deep: color-mix(in srgb, var(--color-primary) 72%, black);
-  --color-orange-soft: color-mix(
+  --color-blue-brand: var(--color-primary);
+  --color-blue-deep: color-mix(in srgb, var(--color-primary) 72%, black);
+  --color-blue-soft: color-mix(
     in srgb,
     var(--color-primary) 12%,
     transparent
   );
-  --color-orange-muted: color-mix(in srgb, var(--color-primary) 70%, white);
+  --color-blue-muted: color-mix(in srgb, var(--color-primary) 70%, white);
 
   /* Liquid Orange Glass Brand Colors */
-  --color-orange-base: var(--color-primary);
-  --color-orange-light: color-mix(in srgb, var(--color-primary) 84%, white);
-  --color-orange-dark: color-mix(in srgb, var(--color-primary) 80%, black);
-  --color-orange-glow: color-mix(
+  --color-blue-base: var(--color-primary);
+  --color-blue-light: color-mix(in srgb, var(--color-primary) 84%, white);
+  --color-blue-dark: color-mix(in srgb, var(--color-primary) 80%, black);
+  --color-blue-glow: color-mix(
     in srgb,
     var(--color-primary) 30%,
     transparent
   );
-  --color-orange-rim: color-mix(in srgb, var(--color-primary) 60%, white);
+  --color-blue-rim: color-mix(in srgb, var(--color-primary) 60%, white);
 
   /* Surface Colors — solid SaaS (no glass) */
   --color-surface-deep: var(--color-surface-alt); /* inset zones — alias */
@@ -59,45 +59,41 @@
   --color-surface-frost: var(--color-surface-alt);
 
   /* Text Colors */
-  --color-text-primary: rgba(2, 6, 23, 0.96);
-  --color-text-secondary: rgba(15, 23, 42, 0.84);
-  --color-text-tertiary: rgba(51, 65, 85, 0.78);
+  --color-text-primary: rgba(9, 9, 11, 0.96);
+  --color-text-secondary: rgba(39, 39, 42, 0.84);
+  --color-text-tertiary: rgba(63, 63, 70, 0.88);
   --color-text-inverse: rgba(255, 255, 255, 0.95);
 
   /* Input Colors */
   --color-input-bg: rgba(255, 255, 255, 0.96);
-  --color-input-border: color-mix(
-    in srgb,
-    var(--color-primary) 22%,
-    white
-  );
-  --color-input-text: #020617;
-  --color-input-placeholder: rgba(51, 65, 85, 0.78);
+  --color-input-border: #e4e4e7;
+  --color-input-text: #09090b;
+  --color-input-placeholder: rgba(82, 82, 91, 0.88);
 
   /* Feedback Colors */
   --color-info: rgba(59, 130, 246, 1); /* Info blue */
 
-  /* ── Light-mode design tokens (single source of truth) ─────── */
-  --color-bg:           #f6f4ef;   /* warm off-white page background */
+  /* ── Light-mode design tokens (Industrial SaaS) ─────── */
+  --color-bg:           #f4f4f5;   /* page background */
   --color-surface:      #ffffff;   /* card / panel background */
-  --color-surface-alt:  #fafaf8;   /* slightly off-white for nested surfaces */
+  --color-surface-alt:  #fafafa;   /* slightly contrast for nested surfaces */
 
   /* Ink */
-  --color-ink:          #0f1117;   /* primary text */
-  --color-ink-mid:      #334155;   /* secondary text */
-  --color-ink-dim:      #5b6578;   /* placeholder / hint — AA on --color-bg */
+  --color-ink:          #09090b;   /* primary text */
+  --color-ink-mid:      #3f3f46;   /* secondary text */
+  --color-ink-dim:      #52525b;   /* placeholder / hint */
 
-  /* Brand orange tints (solid hex for UI panels; brand/dark from --color-primary + mixes above) */
-  --color-orange-soft: #fff7ed;
-  --color-orange-rim: #fed7aa;
+  /* Brand blue tints */
+  --color-blue-soft: #eff6ff;
+  --color-blue-rim: #bfdbfe;
 
   /* Border */
-  --color-border:       #e2e0db;   /* default card/input border */
-  --color-border-strong:#cbd5e1;   /* stronger divider */
+  --color-border:       #e4e4e7;
+  --color-border-strong:#d4d4d8;
 
   /* Nav */
-  --color-nav-bg:       rgba(255, 247, 237, 0.94);
-  --color-nav-text:     #0f172a;
+  --color-nav-bg:       rgba(255, 255, 255, 0.94);
+  --color-nav-text:     #09090b;
   --color-nav-active: var(--color-primary);
 
   /* Status */
@@ -117,9 +113,9 @@
   --shadow-inner: inset 0 2px 4px 0 rgba(2, 6, 23, 0.05);
 
   /* Glows */
-  --glow-orange-sm: 0 0 8px rgb(var(--color-primary-rgb) / 0.2);
-  --glow-orange-md: 0 0 12px rgb(var(--color-primary-rgb) / 0.3);
-  --glow-orange-lg: 0 0 20px rgb(var(--color-primary-rgb) / 0.4);
+  --glow-blue-sm: 0 0 8px rgb(var(--color-primary-rgb) / 0.2);
+  --glow-blue-md: 0 0 12px rgb(var(--color-primary-rgb) / 0.3);
+  --glow-blue-lg: 0 0 20px rgb(var(--color-primary-rgb) / 0.4);
   --glow-text: 0 0 0.8px color-mix(in srgb, var(--color-primary) 60%, white);
   --glow-border: 0 0 5px rgb(var(--color-primary-rgb) / 0.3);
 
@@ -139,14 +135,14 @@
   --space-20: 5rem; /* 80px */
   --space-24: 6rem; /* 96px */
 
-  /* Border Radius */
+  /* Border Radius - Sharpened for Industrial Feel */
   --radius-none: 0;
-  --radius-sm: 0.125rem; /* 2px */
-  --radius-md: 0.375rem; /* 6px */
-  --radius-lg: 0.5rem; /* 8px */
-  --radius-xl: 0.75rem; /* 12px */
-  --radius-2xl: 1rem; /* 16px */
-  --radius-3xl: 1.5rem; /* 24px */
+  --radius-sm: 0;
+  --radius-md: 0.125rem; /* 2px */
+  --radius-lg: 0.25rem; /* 4px */
+  --radius-xl: 0.375rem; /* 6px */
+  --radius-2xl: 0.5rem; /* 8px */
+  --radius-3xl: 0.75rem; /* 12px */
   --radius-full: 9999px;
 
   /* Shell Heights */
@@ -199,9 +195,7 @@
   transition: none !important;
 }
 
-/* ── Dark mode: disabled — committed to warm light theme ─────── */
-/* Dark mode tokens removed per UI overhaul plan. */
-
+/* ── Light mode: explicit ─────── */
 :root,
 html {
   color-scheme: light;
@@ -215,7 +209,7 @@ html {
 }
 
 body, .page-shell, .command-theme {
-  color: #020617;
+  color: #09090b;
 }
 .content-card, .content-card-muted, .command-card, header {
   color: var(--color-text-primary);
@@ -225,7 +219,7 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
 textarea, select {
   background: var(--color-input-bg);
   color: var(--color-input-text);
-  border-color: color-mix(in srgb, var(--color-primary) 18%, white);
+  border-color: var(--color-input-border);
 }
 input::placeholder, textarea::placeholder {
   color: var(--color-input-placeholder);
@@ -281,15 +275,15 @@ input::placeholder, textarea::placeholder {
     scrollbar-width: none;
   }
 
-  .bg-\[--color-orange-brand\],
-  .bg-orange-500,
-  .bg-orange-600,
-  .bg-orange-brand {
+  .bg-\[--color-blue-brand\],
+  .bg-blue-600,
+  .bg-blue-700,
+  .bg-blue-brand {
     color: #020617 !important;
   }
 
-  .bg-orange-brand {
-    background-color: var(--color-orange-brand) !important;
+  .bg-blue-brand {
+    background-color: var(--color-blue-brand) !important;
   }
 
   .bg-\[--color-nav-bg\] {
@@ -304,16 +298,16 @@ input::placeholder, textarea::placeholder {
     background-color: var(--color-surface-alt) !important;
   }
 
-  .text-\[--color-orange-brand\] {
-    color: var(--color-orange-brand) !important;
+  .text-\[--color-blue-brand\] {
+    color: var(--color-blue-brand) !important;
   }
 
-  .text-orange-brand {
-    color: var(--color-orange-brand) !important;
+  .text-blue-brand {
+    color: var(--color-blue-brand) !important;
   }
 
-  .text-\[--color-orange-dark\] {
-    color: var(--color-orange-dark) !important;
+  .text-\[--color-blue-dark\] {
+    color: var(--color-blue-dark) !important;
   }
 
   .text-\[--color-nav-text\] {
@@ -332,166 +326,166 @@ input::placeholder, textarea::placeholder {
     color: var(--color-ink-dim) !important;
   }
 
-  .border-\[--color-orange-brand\] {
-    border-color: var(--color-orange-brand) !important;
+  .border-\[--color-blue-brand\] {
+    border-color: var(--color-blue-brand) !important;
   }
 
   .border-\[--color-border\] {
     border-color: var(--color-border) !important;
   }
 
-  .bg-\[--color-orange-soft\] {
-    background-color: var(--color-orange-soft) !important;
+  .bg-\[--color-blue-soft\] {
+    background-color: var(--color-blue-soft) !important;
   }
 
-  .bg-\[--color-orange-soft\]\/35 {
+  .bg-\[--color-blue-soft\]\/35 {
     background-color: color-mix(
       in srgb,
-      var(--color-orange-soft) 35%,
+      var(--color-blue-soft) 35%,
       transparent
     ) !important;
   }
 
-  .bg-\[--color-orange-soft\]\/40 {
+  .bg-\[--color-blue-soft\]\/40 {
     background-color: color-mix(
       in srgb,
-      var(--color-orange-soft) 40%,
+      var(--color-blue-soft) 40%,
       transparent
     ) !important;
   }
 
-  .bg-\[--color-orange-soft\]\/50 {
+  .bg-\[--color-blue-soft\]\/50 {
     background-color: color-mix(
       in srgb,
-      var(--color-orange-soft) 50%,
+      var(--color-blue-soft) 50%,
       transparent
     ) !important;
   }
 
-  .bg-\[--color-orange-brand\]\/8 {
+  .bg-\[--color-blue-brand\]\/8 {
     background-color: color-mix(
       in srgb,
-      var(--color-orange-brand) 8%,
+      var(--color-blue-brand) 8%,
       transparent
     ) !important;
   }
 
-  .bg-\[--color-orange-brand\]\/10 {
+  .bg-\[--color-blue-brand\]\/10 {
     background-color: color-mix(
       in srgb,
-      var(--color-orange-brand) 10%,
+      var(--color-blue-brand) 10%,
       transparent
     ) !important;
   }
 
-  .bg-\[--color-orange-brand\]\/12 {
+  .bg-\[--color-blue-brand\]\/12 {
     background-color: color-mix(
       in srgb,
-      var(--color-orange-brand) 12%,
+      var(--color-blue-brand) 12%,
       transparent
     ) !important;
   }
 
-  .bg-\[--color-orange-brand\]\/14 {
+  .bg-\[--color-blue-brand\]\/14 {
     background-color: color-mix(
       in srgb,
-      var(--color-orange-brand) 14%,
+      var(--color-blue-brand) 14%,
       transparent
     ) !important;
   }
 
-  .bg-\[--color-orange-brand\]\/15 {
+  .bg-\[--color-blue-brand\]\/15 {
     background-color: color-mix(
       in srgb,
-      var(--color-orange-brand) 15%,
+      var(--color-blue-brand) 15%,
       transparent
     ) !important;
   }
 
-  .bg-\[--color-orange-brand\]\/18 {
+  .bg-\[--color-blue-brand\]\/18 {
     background-color: color-mix(
       in srgb,
-      var(--color-orange-brand) 18%,
+      var(--color-blue-brand) 18%,
       transparent
     ) !important;
   }
 
-  .bg-\[--color-orange-brand\]\/25 {
+  .bg-\[--color-blue-brand\]\/25 {
     background-color: color-mix(
       in srgb,
-      var(--color-orange-brand) 25%,
+      var(--color-blue-brand) 25%,
       transparent
     ) !important;
   }
 
-  .border-\[--color-orange-brand\]\/18 {
+  .border-\[--color-blue-brand\]\/18 {
     border-color: color-mix(
       in srgb,
-      var(--color-orange-brand) 18%,
+      var(--color-blue-brand) 18%,
       transparent
     ) !important;
   }
 
-  .border-\[--color-orange-brand\]\/20 {
+  .border-\[--color-blue-brand\]\/20 {
     border-color: color-mix(
       in srgb,
-      var(--color-orange-brand) 20%,
+      var(--color-blue-brand) 20%,
       transparent
     ) !important;
   }
 
-  .border-\[--color-orange-brand\]\/25 {
+  .border-\[--color-blue-brand\]\/25 {
     border-color: color-mix(
       in srgb,
-      var(--color-orange-brand) 25%,
+      var(--color-blue-brand) 25%,
       transparent
     ) !important;
   }
 
-  .border-\[--color-orange-brand\]\/30 {
+  .border-\[--color-blue-brand\]\/30 {
     border-color: color-mix(
       in srgb,
-      var(--color-orange-brand) 30%,
+      var(--color-blue-brand) 30%,
       transparent
     ) !important;
   }
 
-  .border-\[--color-orange-brand\]\/35 {
+  .border-\[--color-blue-brand\]\/35 {
     border-color: color-mix(
       in srgb,
-      var(--color-orange-brand) 35%,
+      var(--color-blue-brand) 35%,
       transparent
     ) !important;
   }
 
-  .border-\[--color-orange-brand\]\/40 {
+  .border-\[--color-blue-brand\]\/40 {
     border-color: color-mix(
       in srgb,
-      var(--color-orange-brand) 40%,
+      var(--color-blue-brand) 40%,
       transparent
     ) !important;
   }
 
-  .border-\[--color-orange-brand\]\/45 {
+  .border-\[--color-blue-brand\]\/45 {
     border-color: color-mix(
       in srgb,
-      var(--color-orange-brand) 45%,
+      var(--color-blue-brand) 45%,
       transparent
     ) !important;
   }
 
-  .border-\[--color-orange-brand\]\/50 {
+  .border-\[--color-blue-brand\]\/50 {
     border-color: color-mix(
       in srgb,
-      var(--color-orange-brand) 50%,
+      var(--color-blue-brand) 50%,
       transparent
     ) !important;
   }
 
-  .text-\[--color-orange-brand\]\/90 {
+  .text-\[--color-blue-brand\]\/90 {
     color: color-mix(
       in srgb,
-      var(--color-orange-brand) 90%,
+      var(--color-blue-brand) 90%,
       transparent
     ) !important;
   }
@@ -512,54 +506,54 @@ input::placeholder, textarea::placeholder {
     ) !important;
   }
 
-  .hover\:bg-\[--color-orange-dark\]:hover {
-    background-color: var(--color-orange-dark) !important;
+  .hover\:bg-\[--color-blue-dark\]:hover {
+    background-color: var(--color-blue-dark) !important;
   }
 
-  .hover\:bg-orange-dark:hover {
-    background-color: var(--color-orange-dark) !important;
+  .hover\:bg-blue-dark:hover {
+    background-color: var(--color-blue-dark) !important;
   }
 
-  .hover\:bg-\[--color-orange-brand\]\/10:hover {
+  .hover\:bg-\[--color-blue-brand\]\/10:hover {
     background-color: color-mix(
       in srgb,
-      var(--color-orange-brand) 10%,
+      var(--color-blue-brand) 10%,
       transparent
     ) !important;
   }
 
-  .hover\:bg-\[--color-orange-brand\]\/25:hover {
+  .hover\:bg-\[--color-blue-brand\]\/25:hover {
     background-color: color-mix(
       in srgb,
-      var(--color-orange-brand) 25%,
+      var(--color-blue-brand) 25%,
       transparent
     ) !important;
   }
 
-  .hover\:text-\[--color-orange-brand\]:hover {
-    color: var(--color-orange-brand) !important;
+  .hover\:text-\[--color-blue-brand\]:hover {
+    color: var(--color-blue-brand) !important;
   }
 
-  .hover\:text-\[--color-orange-dark\]:hover {
-    color: var(--color-orange-dark) !important;
+  .hover\:text-\[--color-blue-dark\]:hover {
+    color: var(--color-blue-dark) !important;
   }
 
-  .hover\:border-\[--color-orange-brand\]:hover {
-    border-color: var(--color-orange-brand) !important;
+  .hover\:border-\[--color-blue-brand\]:hover {
+    border-color: var(--color-blue-brand) !important;
   }
 
-  .hover\:border-\[--color-orange-brand\]\/35:hover {
+  .hover\:border-\[--color-blue-brand\]\/35:hover {
     border-color: color-mix(
       in srgb,
-      var(--color-orange-brand) 35%,
+      var(--color-blue-brand) 35%,
       transparent
     ) !important;
   }
 
-  .hover\:border-\[--color-orange-brand\]\/50:hover {
+  .hover\:border-\[--color-blue-brand\]\/50:hover {
     border-color: color-mix(
       in srgb,
-      var(--color-orange-brand) 50%,
+      var(--color-blue-brand) 50%,
       transparent
     ) !important;
   }
@@ -592,7 +586,7 @@ input::placeholder, textarea::placeholder {
   .skip-link:focus-visible {
     top: 0;
     opacity: 1;
-    outline: 3px solid var(--color-orange-brand);
+    outline: 3px solid var(--color-blue-brand);
     outline-offset: 2px;
   }
 
@@ -727,7 +721,7 @@ input::placeholder, textarea::placeholder {
   }
 
   .content-card-interactive:hover {
-    border-color: rgb(249 115 22 / 0.5);
+    border-color: rgb(37 99 235 / 0.5);
   }
 
   .content-card-muted {
@@ -796,11 +790,11 @@ input::placeholder, textarea::placeholder {
   .public-chip-accent {
     border-color: color-mix(
       in srgb,
-      var(--color-orange-brand) 30%,
+      var(--color-blue-brand) 30%,
       transparent
     );
-    background: color-mix(in srgb, var(--color-orange-brand) 12%, transparent);
-    color: var(--color-orange-brand);
+    background: color-mix(in srgb, var(--color-blue-brand) 12%, transparent);
+    color: var(--color-blue-brand);
   }
 
   .public-link-chip {
@@ -826,10 +820,10 @@ input::placeholder, textarea::placeholder {
   .public-link-chip:hover {
     border-color: color-mix(
       in srgb,
-      var(--color-orange-brand) 42%,
+      var(--color-blue-brand) 42%,
       transparent
     );
-    color: var(--color-orange-brand);
+    color: var(--color-blue-brand);
   }
 
   .guide-shell {
@@ -854,10 +848,10 @@ input::placeholder, textarea::placeholder {
     align-items: center;
     justify-content: center;
     border-radius: 1rem;
-    background: color-mix(in srgb, var(--color-orange-brand) 14%, transparent);
-    color: var(--color-orange-brand);
+    background: color-mix(in srgb, var(--color-blue-brand) 14%, transparent);
+    color: var(--color-blue-brand);
     box-shadow: inset 0 0 0 1px
-      color-mix(in srgb, var(--color-orange-brand) 20%, transparent);
+      color-mix(in srgb, var(--color-blue-brand) 20%, transparent);
   }
 
   .guide-hero-title {
@@ -1160,15 +1154,15 @@ input::placeholder, textarea::placeholder {
   .trim-accent-border {
     border-color: color-mix(
       in srgb,
-      var(--color-orange-brand) 25%,
+      var(--color-blue-brand) 25%,
       transparent
     );
   }
 
   .command-theme {
-    --color-orange-brand: var(--color-primary);
-    --color-orange-dark: color-mix(in srgb, var(--color-primary) 78%, black);
-    --color-orange-muted: color-mix(in srgb, var(--color-primary) 72%, white);
+    --color-blue-brand: var(--color-primary);
+    --color-blue-dark: color-mix(in srgb, var(--color-primary) 78%, black);
+    --color-blue-muted: color-mix(in srgb, var(--color-primary) 72%, white);
     --command-card-border: color-mix(
       in srgb,
       var(--color-border) 86%,
@@ -1192,10 +1186,10 @@ input::placeholder, textarea::placeholder {
     --color-border: #e7e2d8;
     --color-panel-dark: #f0ede7;
     --color-panel-deep: #eae6df;
-    /* Public cream pages: same brand orange as app root */
-    --color-primary: #ea580c;
-    --color-orange-brand: var(--color-primary);
-    --color-orange-dark: #c2410c;
+    /* Public cream pages: same brand blue as app root */
+    --color-primary: #2563eb;
+    --color-blue-brand: var(--color-primary);
+    --color-blue-dark: #1d4ed8;
     background: #f8f5f0;
   }
 
@@ -1353,7 +1347,7 @@ input::placeholder, textarea::placeholder {
   }
   .action-bar-btn:hover {
     border-color: color-mix(in srgb, var(--color-primary) 40%, transparent);
-    color: var(--color-orange-brand);
+    color: var(--color-blue-brand);
   }
   .action-bar-btn-primary {
     background: var(--color-primary);
@@ -1361,8 +1355,8 @@ input::placeholder, textarea::placeholder {
     color: #fff;
   }
   .action-bar-btn-primary:hover {
-    background: var(--color-orange-dark);
-    border-color: var(--color-orange-dark);
+    background: var(--color-blue-dark);
+    border-color: var(--color-blue-dark);
     color: #fff;
   }
 
@@ -1461,21 +1455,21 @@ input::placeholder, textarea::placeholder {
     justify-content: center;
     gap: 0.375rem;
     border-radius: 0.5rem;
-    background: #ea580c;
+    background: var(--color-primary);
     padding: 0.625rem 1rem;
     font-size: 0.875rem;
-    font-weight: 700;
-    color: #fff;
-    transition: all 0.15s ease;
+    font-weight: 600;
+    color: var(--color-primary-foreground);
+    transition: background 0.2s;
   }
   .btn-primary:hover {
-    background: #c2410c;
+    background: color-mix(in srgb, var(--color-primary) 80%, black);
   }
   .btn-primary:active {
     transform: scale(0.98);
   }
   .btn-primary:focus-visible {
-    outline: 2px solid #ea580c;
+    outline: 2px solid #2563eb;
     outline-offset: 2px;
   }
   .btn-primary:disabled {
@@ -1498,15 +1492,15 @@ input::placeholder, textarea::placeholder {
     transition: all 0.15s ease;
   }
   .btn-ghost:hover {
-    border-color: #fdba74;
-    background: #fff7ed;
-    color: #c2410c;
+    border-color: #93c5fd;
+    background: #eff6ff;
+    color: #1d4ed8;
   }
   .btn-ghost:active {
     transform: scale(0.98);
   }
   .btn-ghost:focus-visible {
-    outline: 2px solid #ea580c;
+    outline: 2px solid #2563eb;
     outline-offset: 2px;
   }
 
@@ -1726,7 +1720,7 @@ input::placeholder, textarea::placeholder {
     transition: border-color 150ms ease, box-shadow 150ms ease;
   }
   .glass-input:focus {
-    border-color: var(--color-orange-brand);
+    border-color: var(--color-blue-brand);
     box-shadow: 0 0 0 3px rgba(234,88,12,0.1);
     outline: none;
   }
@@ -1745,11 +1739,11 @@ input::placeholder, textarea::placeholder {
     transition: border-color 150ms ease, box-shadow 150ms ease;
   }
   .glass-input-shell:focus-within {
-    border-color: var(--color-orange-brand);
+    border-color: var(--color-blue-brand);
     box-shadow: 0 0 0 3px rgba(234,88,12,0.1);
   }
   .glass-input-shell[data-valid="true"] {
-    border-color: color-mix(in srgb, var(--color-orange-brand) 40%, var(--color-border));
+    border-color: color-mix(in srgb, var(--color-blue-brand) 40%, var(--color-border));
   }
   .glass-input-shell[data-valid="true"]:not(:focus-within) {
     box-shadow: none;
@@ -1779,15 +1773,15 @@ input::placeholder, textarea::placeholder {
   .glass-button-primary {
     position: relative;
     overflow: hidden;
-    border: 1px solid var(--color-orange-brand);
+    border: 1px solid var(--color-blue-brand);
     border-radius: 0.5rem;
     padding: 0.5rem 1rem;
-    background: var(--color-orange-brand);
+    background: var(--color-blue-brand);
     color: #ffffff;
     transition: all 0.2s ease;
   }
   .glass-button-primary:hover {
-    background: var(--color-orange-dark);
+    background: var(--color-blue-dark);
   }
   .glass-button-primary:active {
     transform: scale(0.98);
@@ -1840,7 +1834,7 @@ input::placeholder, textarea::placeholder {
 
   .glass-nav-item.active {
     background: var(--color-surface);
-    color: var(--color-orange-brand);
+    color: var(--color-blue-brand);
     box-shadow: 0 1px 3px rgba(0,0,0,0.04);
   }
 
@@ -1849,7 +1843,7 @@ input::placeholder, textarea::placeholder {
     position: absolute;
     inset: auto 25% 0;
     height: 2px;
-    background: var(--color-orange-brand);
+    background: var(--color-blue-brand);
     border-radius: var(--radius-full);
   }
 
@@ -1921,7 +1915,7 @@ input::placeholder, textarea::placeholder {
   }
 
   .text-copy-accent {
-    color: var(--color-orange-dark);
+    color: var(--color-blue-dark);
     text-shadow: var(--glow-text);
   }
 
@@ -1959,7 +1953,7 @@ input::placeholder, textarea::placeholder {
 
   .pdf-subheading {
     font-family: var(--font-sans);
-    color: var(--color-orange-light);
+    color: var(--color-blue-light);
     font-size: 12pt;
     font-weight: var(--font-medium);
   }
@@ -2113,4 +2107,9 @@ html.light[data-high-contrast="true"] {
   .animated-gradient-accent {
     animation-duration: 45s;
   }
+}
+
+/* Google Autocomplete Dropdown z-index fix */
+.pac-container {
+  z-index: 9999 !important;
 }

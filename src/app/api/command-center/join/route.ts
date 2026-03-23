@@ -120,21 +120,20 @@ export async function POST(req: NextRequest) {
     );
 
     if (claimError) {
-      // RPC may not exist yet if the migration hasn't been applied.
-      // Fall through to the legacy path so the join still works.
-      if (
-        claimError.code === "PGRST202" ||
-        claimError.message?.toLowerCase().includes("could not find the function")
-      ) {
-        return legacyJoin(db, userId, matchedBusiness);
-      }
-
       Sentry.captureException(claimError, {
         tags: { route: "join-by-code", step: "claim-seat-rpc" },
         extra: { userId, businessId: matchedBusiness.id },
       });
       return NextResponse.json(
-        { error: "Unable to claim a seat. Try again." },
+        {
+          error:
+            claimError.code === "PGRST202" ||
+            claimError.message
+              ?.toLowerCase()
+              .includes("could not find the function")
+              ? "Seat-claim migration is missing. Run database migrations and try again."
+              : "Unable to claim a seat. Try again.",
+        },
         { status: 500 },
       );
     }
@@ -187,88 +186,4 @@ export async function POST(req: NextRequest) {
       { status: 500 },
     );
   }
-}
-
-// ── Legacy path: used when the claim_business_seat RPC isn't deployed yet ────
-// Retains the pre-RPC check-insert-recount pattern with the rollback guard.
-async function legacyJoin(
-  db: ReturnType<typeof createServerClient>,
-  userId: string,
-  matchedBusiness: { id: string; name: string },
-): Promise<NextResponse> {
-  const { data: duplicateCheck } = await db
-    .from("memberships")
-    .select("id")
-    .eq("business_id", matchedBusiness.id)
-    .eq("user_id", userId)
-    .maybeSingle();
-
-  if (duplicateCheck?.id) {
-    return NextResponse.json(
-      { error: "You are already a member of this business." },
-      { status: 409 },
-    );
-  }
-
-  const { count: seatCount } = await db
-    .from("memberships")
-    .select("id", { count: "exact", head: true })
-    .eq("business_id", matchedBusiness.id);
-
-  if ((seatCount ?? 0) >= SEAT_LIMIT) {
-    return NextResponse.json(
-      {
-        error: `This team has reached its ${SEAT_LIMIT}-seat limit. Contact the business owner to expand.`,
-      },
-      { status: 403 },
-    );
-  }
-
-  const { data: inserted, error: insertError } = await db
-    .from("memberships")
-    .insert({ business_id: matchedBusiness.id, user_id: userId, role: "member" })
-    .select("id")
-    .single();
-
-  if (insertError) {
-    if (insertError.code === "23505") {
-      return NextResponse.json(
-        { error: "You are already a member of this business." },
-        { status: 409 },
-      );
-    }
-    return NextResponse.json(
-      { error: "Could not join the team right now. Try again." },
-      { status: 500 },
-    );
-  }
-
-  // Post-insert recount guard (last-seat race mitigation before RPC lands).
-  const { count: postCount } = await db
-    .from("memberships")
-    .select("id", { count: "exact", head: true })
-    .eq("business_id", matchedBusiness.id);
-
-  if ((postCount ?? 0) > SEAT_LIMIT) {
-    await db.from("memberships").delete().eq("id", inserted.id);
-    return NextResponse.json(
-      {
-        error: `This team has reached its ${SEAT_LIMIT}-seat limit. Contact the business owner to expand.`,
-      },
-      { status: 403 },
-    );
-  }
-
-  // Best-effort code rotation.
-  try {
-    await rotateBusinessJoinCode(db, matchedBusiness.id);
-  } catch {
-    // Non-fatal
-  }
-
-  return NextResponse.json({
-    ok: true,
-    businessName: matchedBusiness.name,
-    message: `You have joined ${matchedBusiness.name}.`,
-  });
 }

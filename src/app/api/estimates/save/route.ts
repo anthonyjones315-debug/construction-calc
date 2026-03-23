@@ -8,7 +8,9 @@ import {
   assertNoBusinessIdOverride,
   getBusinessContextForSession,
   getTenantScopeId,
+  getTenantScopeColumn,
 } from "@/lib/supabase/business";
+import { generateAutoEstimateName } from "@/lib/estimates/name-generator";
 import {
   FINANCIAL_DASHBOARD_TAG,
   SAVED_ESTIMATES_TAG,
@@ -128,9 +130,23 @@ export async function POST(req: NextRequest) {
       user_name: session.user.name ?? null,
     };
 
+    const tenantColumn = getTenantScopeColumn(businessContext);
+    let projectName = typeof inputObject.project_name === "string" ? inputObject.project_name : undefined;
+    if (!projectName && typeof body.name === "string") {
+      projectName = body.name; // fallback to user typed
+    }
+    const generatedName = await generateAutoEstimateName(
+      db,
+      tenantId,
+      tenantColumn,
+      body.client_name,
+      projectName,
+      body.job_site_address
+    );
+
     const insertPayload: Record<string, unknown> = {
       user_id: session.user.id,
-      name: body.name || "Untitled Estimate",
+      name: generatedName,
       calculator_id: body.calculator_id || "unknown",
       inputs: {
         ...inputObject,

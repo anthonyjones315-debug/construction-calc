@@ -1,30 +1,25 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { JsonLD, getBlogPostSchema, getPageMetadata } from "@/seo";
 import { BLOG_POSTS } from "@/data/blog";
 import { getBlogPostRoute } from "@routes";
+import { BrickWall, Hammer, Triangle, Layers } from "lucide-react";
 
-const BLOG_CATEGORY_IMAGES: Record<string, { src: string; alt: string }> = {
-  Concrete: {
-    src: "/images/concrete-slab.svg",
-    alt: "Concrete slab setup used for volume and bag calculations",
-  },
-  Framing: {
-    src: "/images/wall-framing.svg",
-    alt: "Wall framing layout with studs and plate lines",
-  },
-  Roofing: {
-    src: "/images/roof-pitch.svg",
-    alt: "Roof pitch triangle for rise-run and slope calculations",
-  },
-  Insulation: {
-    src: "/images/cellulose-insulation.svg",
-    alt: "Cellulose insulation bags staged for attic installation",
-  },
+// Map blog categories to brand icons
+const BLOG_CATEGORY_ICONS: Record<string, typeof BrickWall> = {
+  Concrete: BrickWall,
+  Framing: Hammer,
+  Roofing: Triangle,
+  Insulation: Layers,
 };
+
+// NOTE: Legacy image assets removed in favor of brand Lucide icons.
+// Keeping the constant for potential future use, but currently unused.
+  // Remove unused images constant
+  // const BLOG_CATEGORY_IMAGES = {};
+
 
 export const metadata: Metadata = getPageMetadata({
   title: "Construction Tips & Guides | Pro Construction Calc",
@@ -35,7 +30,7 @@ export const metadata: Metadata = getPageMetadata({
 
 export default function BlogPage() {
   return (
-    <div className="light public-page page-shell flex min-h-dvh flex-col">
+    <div className="light public-page page-shell flex min-h-dvh flex-col overflow-y-auto">
       <Header />
       <main id="main-content" className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
@@ -54,58 +49,43 @@ export default function BlogPage() {
           </div>
 
           <div className="space-y-6">
-            {BLOG_POSTS.map((post, index) => (
-              <article
-                key={post.slug}
-                className="content-card content-card-interactive p-6 transition-all duration-200 hover:border-[--color-orange-brand]/50 hover:shadow-[0_18px_38px_rgba(15,18,27,0.12)]"
-              >
-                <JsonLD schema={getBlogPostSchema(post)} />
-                <div className="trim-border-strong mb-4 overflow-hidden rounded-xl border">
-                  <Image
-                    src={
-                      (
-                        BLOG_CATEGORY_IMAGES[post.category] ??
-                        BLOG_CATEGORY_IMAGES.Concrete
-                      ).src
-                    }
-                    alt={
-                      (
-                        BLOG_CATEGORY_IMAGES[post.category] ??
-                        BLOG_CATEGORY_IMAGES.Concrete
-                      ).alt
-                    }
-                    width={1200}
-                    height={700}
-                    priority={index === 0}
-                    className="w-full h-40 object-cover"
-                  />
-                </div>
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-xs font-bold uppercase tracking-wider text-[--color-orange-brand] bg-[--color-orange-soft] px-2.5 py-1 rounded-full">
-                    {post.category}
-                  </span>
-                  <span className="text-xs text-[--color-ink-dim]">
-                    {post.date}
-                  </span>
-                </div>
-                <h2 className="text-xl font-display font-bold text-[--color-ink] mb-2">
-                  <Link
-                    href={getBlogPostRoute(post.slug)}
-                    className="hover:text-[--color-orange-brand] transition-colors"
-                  >
-                    {post.title}
-                  </Link>
-                </h2>
-                <p className="text-sm text-[--color-ink-dim] leading-relaxed mb-4">
-                  {post.description}
-                </p>
-                <Link
-                  href={getBlogPostRoute(post.slug)}
-                  className="text-sm font-semibold text-[--color-orange-brand] hover:text-[--color-orange-dark] transition-colors"
+            {BLOG_POSTS.map((post) => (
+              <Link key={post.slug} href={getBlogPostRoute(post.slug)} className="block hover:text-[--color-blue-brand] transition-colors">
+                <article
+                  key={post.slug}
+                  className="content-card content-card-interactive p-6 transition-all duration-200 hover:border-[--color-blue-brand]/50 hover:shadow-[0_18px_38px_rgba(15,18,27,0.12)]"
                 >
-                  Read more →
-                </Link>
-              </article>
+                  <JsonLD schema={getBlogPostSchema(post)} />
+                  <div className="trim-border-strong mb-4 overflow-hidden rounded-xl border">
+                    {(() => {
+                      const Icon = BLOG_CATEGORY_ICONS[post.category] ?? BrickWall;
+                      return (
+                        <Icon
+                          className="w-full h-40 text-[--color-blue-brand]"
+                          strokeWidth={1.2}
+                        />
+                      );
+                    })()}
+                  </div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-xs font-bold uppercase tracking-wider text-[--color-blue-brand] bg-[--color-blue-soft] px-2.5 py-1 rounded-full">
+                      {post.category}
+                    </span>
+                    <span className="text-xs text-[--color-ink-dim]">
+                      {post.date}
+                    </span>
+                  </div>
+                  <h2 className="text-xl font-display font-bold text-[--color-ink] mb-2">
+                    {post.title}
+                  </h2>
+                  <p className="text-sm text-[--color-ink-dim] leading-relaxed mb-4">
+                    {post.description}
+                  </p>
+                  <span className="text-sm font-semibold text-[--color-blue-brand] hover:text-[--color-blue-dark] transition-colors">
+                    Read more →
+                  </span>
+                </article>
+              </Link>
             ))}
           </div>
         </div>

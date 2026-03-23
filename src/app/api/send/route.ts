@@ -103,7 +103,7 @@ function buildEstimateEmailHtml(estimate: z.infer<typeof estimatePayloadSchema>)
   return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"></head><body style="margin:0;font-family:Inter,system-ui,sans-serif;background:#f6f4ef;padding:32px 20px;color:#334155;-webkit-font-smoothing:antialiased">
   <div style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #e2e0db;border-radius:16px;padding:24px 26px;box-shadow:0 4px 24px rgba(15,23,42,0.06)">
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:22px;padding-bottom:18px;border-bottom:1px solid #e2e0db">
-    <div style="width:36px;height:36px;background:#ea580c;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:15px">P</div>
+    <div style="width:36px;height:36px;background:#2563eb;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:15px">P</div>
     <span style="font-weight:700;font-size:18px;color:#0f172a;letter-spacing:-0.02em">Pro Construction Calc</span>
   </div>
   <h1 style="color:#0f172a;font-size:20px;font-weight:700;margin:0 0 8px;letter-spacing:-0.02em">${escapeHtml(estimate.title)}</h1>

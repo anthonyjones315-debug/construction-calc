@@ -43,21 +43,22 @@ function ensurePdfFonts() {
   fontsRegistered = true;
 }
 
-// Slate-950 / Orange-600 theme for branded PDFs
-const SLATE_950 = "#020617";
-const SLATE_200 = "#e2e8f0";
-const SLATE_400 = "#94a3b8";
-const ORANGE_600 = "#ea580c";
+// Zinc-950 / Blue-600 theme for high-end branded PDFs
+const ZINC_950 = "#09090b";
+const ZINC_200 = "#e4e4e7";
+const ZINC_500 = "#71717a";
+const ZINC_50 = "#fafafa";
+const ORANGE_600 = "#2563eb";
 
 const WHITE = "#ffffff";
 
 const colors = {
   page: WHITE,
-  text: SLATE_950,
-  muted: SLATE_400,
-  border: SLATE_200,
+  text: ZINC_950,
+  muted: ZINC_500,
+  border: ZINC_200,
   accent: ORANGE_600,
-  surface: "#f8fafc",
+  surface: ZINC_50,
 };
 
 const styles = StyleSheet.create({
@@ -76,91 +77,101 @@ const styles = StyleSheet.create({
   },
   heading: {
     fontFamily: "Oswald",
-    fontSize: 30,
-    color: SLATE_950,
+    fontSize: 32,
+    color: ZINC_950,
     textTransform: "uppercase",
+    letterSpacing: 1,
   },
   brandName: {
     fontFamily: "Oswald",
-    fontSize: 12,
+    fontSize: 14,
     color: ORANGE_600,
     textTransform: "uppercase",
   },
   brandRegion: {
     fontFamily: "Inter",
-    fontSize: 8,
-    color: SLATE_400,
-    marginTop: 1,
+    fontSize: 9,
+    color: ZINC_500,
+    marginTop: 2,
   },
   sectionTitle: {
     fontFamily: "Oswald",
-    fontSize: 10,
+    fontSize: 11,
     textTransform: "uppercase",
     color: colors.muted,
-    marginBottom: 4,
+    marginBottom: 6,
+    letterSpacing: 0.5,
   },
   box: {
     borderWidth: 1,
     borderColor: colors.border,
-    padding: 8,
+    borderRadius: 8,
+    padding: 12,
+    backgroundColor: colors.surface,
   },
   row: {
-    marginTop: 10,
+    marginTop: 16,
     flexDirection: "row",
-    gap: 10,
+    gap: 16,
   },
   col: {
     flex: 1,
   },
   line: {
     fontFamily: "Inter",
-    fontSize: 9,
+    fontSize: 10,
     color: colors.text,
-    lineHeight: 1.35,
+    lineHeight: 1.5,
   },
   muted: {
     color: colors.muted,
   },
   tableHeader: {
-    marginTop: 12,
-    backgroundColor: ORANGE_600,
-    paddingVertical: 6,
-    paddingHorizontal: 8,
+    marginTop: 20,
+    backgroundColor: ZINC_950,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderTopLeftRadius: 6,
+    borderTopRightRadius: 6,
   },
   tableHeaderText: {
     color: WHITE,
     fontFamily: "Oswald",
-    fontSize: 10,
+    fontSize: 11,
     textTransform: "uppercase",
     letterSpacing: 1,
   },
   table: {
-    borderWidth: 1,
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
+    borderBottomWidth: 1,
     borderColor: colors.border,
+    borderBottomLeftRadius: 6,
+    borderBottomRightRadius: 6,
   },
   trHead: {
     flexDirection: "row",
-    backgroundColor: SLATE_950,
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
-    paddingHorizontal: 8,
-    paddingVertical: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
   },
   tr: {
     flexDirection: "row",
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
-    paddingHorizontal: 8,
-    paddingVertical: 5,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
   },
   trLast: {
     borderBottomWidth: 0,
   },
-  c1: { width: "50%", fontSize: 9 },
-  c2: { width: "16%", fontSize: 9, textAlign: "right" },
-  c3: { width: "17%", fontSize: 9, textAlign: "right" },
-  c4: { width: "17%", fontSize: 9, textAlign: "right" },
-  th: { fontFamily: "Oswald", color: colors.muted },
+  c1: { width: "50%", fontSize: 10 },
+  c2: { width: "16%", fontSize: 10, textAlign: "right" },
+  c3: { width: "17%", fontSize: 10, textAlign: "right" },
+  c4: { width: "17%", fontSize: 10, textAlign: "right" },
+  th: { fontFamily: "Oswald", color: colors.text, fontSize: 10, textTransform: "uppercase" },
   td: { fontFamily: "Inter", color: colors.text },
   summary: {
     marginTop: 10,
@@ -270,7 +281,11 @@ export function createInvoicePDF(
           <View style={{ width: "55%" }}>
             <Text style={styles.heading}>Invoice</Text>
             <Text style={styles.brandName}>Pro Construction Calc</Text>
-            <Text style={styles.brandRegion}>Tri-County New York</Text>
+            {data.contractorProfile?.businessAddress ? (
+              <Text style={styles.brandRegion}>
+                {data.contractorProfile.businessAddress}
+              </Text>
+            ) : null}
           </View>
 
           <View style={[styles.box, { width: "45%" }]}>

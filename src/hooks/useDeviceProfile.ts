@@ -86,9 +86,9 @@ export function deriveDeviceProfile({
     /smart-tv|smarttv|hbbtv|appletv|googletv|tv/.test(normalizedUserAgent) ||
     longSide >= 2160 ||
     (normalizedWidth >= 2560 && normalizedHeight >= 1440);
-  const isMobile = shortSide < 768;
-  const isTablet = isIPadPro || (shortSide >= 768 && shortSide < 1024);
-  const isDesktop = shortSide >= 1024 && !isSmartTv && !isIPadPro;
+  const isMobile = normalizedWidth < 768;
+  const isTablet = isIPadPro || (normalizedWidth >= 768 && normalizedWidth < 1024) || (normalizedWidth < 1024 && /ipad|android/i.test(normalizedUserAgent));
+  const isDesktop = normalizedWidth >= 1024 && !isSmartTv && !isIPadPro;
   const isDesktopOrTv = isDesktop || isSmartTv;
 
   let phoneTier: PhoneTier = null;

@@ -71,7 +71,7 @@ const PRODUCTS: AdProduct[] = [
 ];
 
 // "Browse all" CTA — lands on contractor hand tools storefront
-const BROWSE_ALL_URL = buildUrl("/b", { node: "512152011", ref: "pcc_browse" });
+const BROWSE_ALL_URL = buildUrl("/s", { k: "contractor+tools", ref: "pcc_browse" });
 
 // ── Shared disclosure footer ──────────────────────────────────────────────────
 
@@ -95,7 +95,7 @@ function SignInAdStrip() {
       {/* Header */}
       <div className="mb-3 flex items-center gap-1.5">
         <ShoppingCart
-          className="h-3.5 w-3.5 shrink-0 text-[--color-orange-brand]"
+          className="h-3.5 w-3.5 shrink-0 text-[--color-blue-brand]"
           aria-hidden
         />
         <p className="section-kicker">Contractor Gear</p>
@@ -109,7 +109,7 @@ function SignInAdStrip() {
             href={item.url}
             target="_blank"
             rel="noopener noreferrer sponsored"
-            className="btn-tactile block rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-2 transition-all hover:border-[--color-orange-rim] hover:bg-[--color-orange-soft]"
+            className="btn-tactile block rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-2 transition-all hover:border-[--color-blue-rim] hover:bg-[--color-blue-soft]"
           >
             <p className="text-[11px] font-bold text-slate-800">{item.label}</p>
             <p className="mt-0.5 text-[10px] leading-tight text-slate-500">{item.desc}</p>
@@ -122,7 +122,7 @@ function SignInAdStrip() {
         href={BROWSE_ALL_URL}
         target="_blank"
         rel="noopener noreferrer sponsored"
-        className="btn-tactile mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl border border-slate-200 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-slate-600 transition-all hover:border-[--color-orange-rim] hover:text-[--color-orange-dark]"
+        className="btn-tactile mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl border border-slate-200 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-slate-600 transition-all hover:border-[--color-blue-rim] hover:text-[--color-blue-dark]"
       >
         Browse All Tools on Amazon
         <ExternalLink className="h-3 w-3" aria-hidden />
@@ -141,7 +141,7 @@ function HomeSidebarAd() {
       {/* Header */}
       <div className="mb-3 flex items-center gap-2">
         <ShoppingCart
-          className="h-4 w-4 shrink-0 text-[--color-orange-brand]"
+          className="h-4 w-4 shrink-0 text-[--color-blue-brand]"
           aria-hidden
         />
         <p className="section-kicker">Shop Contractor Gear</p>
@@ -155,7 +155,7 @@ function HomeSidebarAd() {
             href={item.url}
             target="_blank"
             rel="noopener noreferrer sponsored"
-            className="btn-tactile flex items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 transition-all hover:border-[--color-orange-rim] hover:bg-[--color-orange-soft]"
+            className="btn-tactile flex items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 transition-all hover:border-[--color-blue-rim] hover:bg-[--color-blue-soft]"
           >
             <div className="min-w-0">
               <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-slate-800">
@@ -178,7 +178,7 @@ function HomeSidebarAd() {
         href={BROWSE_ALL_URL}
         target="_blank"
         rel="noopener noreferrer sponsored"
-        className="btn-tactile mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-[--color-orange-brand] px-3 py-2.5 text-[11px] font-black uppercase tracking-[0.1em] text-white transition-all hover:opacity-90 active:scale-[0.98]"
+        className="btn-tactile mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-[--color-blue-brand] px-3 py-2.5 text-[11px] font-black uppercase tracking-[0.1em] text-white transition-all hover:opacity-90 active:scale-[0.98]"
       >
         Browse All Tools on Amazon
         <ShoppingCart className="h-3.5 w-3.5" aria-hidden />

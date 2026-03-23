@@ -33,7 +33,7 @@ export default function ContactPage() {
           </p>
           <div className="mb-6 grid gap-3 sm:grid-cols-2">
             <div className="content-card p-4">
-              <p className="text-[11px] font-black uppercase tracking-[0.14em] text-[--color-orange-brand]">
+              <p className="text-[11px] font-black uppercase tracking-[0.14em] text-[--color-blue-brand]">
                 Business
               </p>
               <p className="mt-2 text-sm font-semibold text-[--color-ink]">
@@ -41,7 +41,7 @@ export default function ContactPage() {
               </p>
             </div>
             <div className="content-card p-4">
-              <p className="text-[11px] font-black uppercase tracking-[0.14em] text-[--color-orange-brand]">
+              <p className="text-[11px] font-black uppercase tracking-[0.14em] text-[--color-blue-brand]">
                 Location
               </p>
               <p className="mt-2 text-sm font-semibold text-[--color-ink]">
@@ -54,7 +54,7 @@ export default function ContactPage() {
               Prefer email? Reach us at{" "}
               <a
                 href={`mailto:${BUSINESS_EMAIL}`}
-                className="font-semibold text-[--color-orange-brand] transition hover:text-[--color-orange-light]"
+                className="font-semibold text-[--color-blue-brand] transition hover:text-[--color-blue-light]"
               >
                 {BUSINESS_EMAIL}
               </a>

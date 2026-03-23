@@ -53,8 +53,8 @@ export default function GlobalError({
                 --color-ink: #0f1117;
                 --color-ink-mid: #334155;
                 --color-ink-dim: #64748b;
-                --color-orange-brand: #ea580c;
-                --color-orange-dark: #c2410c;
+                --color-blue-brand: #2563eb;
+                --color-blue-dark: #1d4ed8;
                 --color-text-primary: rgba(2, 6, 23, 0.96);
                 --color-text-secondary: rgba(15, 23, 42, 0.84);
                 --color-text-tertiary: rgba(51, 65, 85, 0.78);
@@ -75,9 +75,9 @@ export default function GlobalError({
                 cursor: pointer;
               }
               .glass-button-primary {
-                border: 1px solid var(--color-orange-brand);
+                border: 1px solid var(--color-blue-brand);
                 border-radius: 0.5rem;
-                background: var(--color-orange-brand);
+                background: var(--color-blue-brand);
                 color: #fff;
                 padding: 0.5rem 1rem;
                 cursor: pointer;

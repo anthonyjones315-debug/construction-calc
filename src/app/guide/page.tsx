@@ -109,7 +109,7 @@ export default function GuidePage() {
           >
             <Link
               href="/"
-              className="transition-colors hover:text-[--color-orange-brand]"
+              className="transition-colors hover:text-[--color-blue-brand]"
             >
               Home
             </Link>
@@ -118,7 +118,7 @@ export default function GuidePage() {
           </nav>
           {/* ── Compact inline header — no separate hero banner ── */}
           <div className="flex items-center gap-3 pb-1">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[--color-orange-brand]/12 text-[--color-orange-brand]">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[--color-blue-brand]/12 text-[--color-blue-brand]">
               <Compass className="h-4 w-4" aria-hidden />
             </div>
             <div className="min-w-0">
@@ -162,7 +162,7 @@ export default function GuidePage() {
                     </div>
                     <div className="guide-mini-card public-panel-muted">
                       <Save
-                        className="h-4 w-4 text-[--color-orange-brand]"
+                        className="h-4 w-4 text-[--color-blue-brand]"
                         aria-hidden
                       />
                       <p className="guide-mini-title">Material list</p>
@@ -219,7 +219,7 @@ export default function GuidePage() {
             <article className="guide-card public-panel">
               <div className="public-chip">
                 <Handshake
-                  className="h-3.5 w-3.5 text-[--color-orange-brand]"
+                  className="h-3.5 w-3.5 text-[--color-blue-brand]"
                   aria-hidden
                 />
                 Share & export
@@ -227,14 +227,14 @@ export default function GuidePage() {
               <div className="guide-list">
                 <p className="flex items-center gap-2">
                   <FileDown
-                    className="h-4 w-4 shrink-0 text-[--color-orange-brand]"
+                    className="h-4 w-4 shrink-0 text-[--color-blue-brand]"
                     aria-hidden
                   />
                   Download branded PDFs from the Results panel.
                 </p>
                 <p className="flex items-center gap-2">
                   <Save
-                    className="h-4 w-4 shrink-0 text-[--color-orange-brand]"
+                    className="h-4 w-4 shrink-0 text-[--color-blue-brand]"
                     aria-hidden
                   />
                   Save to Command Center to revisit inputs and outputs.

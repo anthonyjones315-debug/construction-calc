@@ -151,7 +151,7 @@ export function EmailEstimateModal({
                   value={to}
                   onChange={(e) => setTo(e.target.value)}
                   placeholder="client@example.com"
-                  className="h-10 rounded-xl border border-[--color-border] bg-[--color-surface] px-3 text-[--color-ink] placeholder:text-[--color-ink-dim] focus:border-[--color-orange-brand] focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/25"
+                  className="h-10 rounded-xl border border-[--color-border] bg-[--color-surface] px-3 text-[--color-ink] placeholder:text-[--color-ink-dim] focus:border-[--color-blue-brand] focus:outline-none focus:ring-2 focus:ring-[--color-blue-brand]/25"
                 />
               </label>
               <label className="flex flex-col gap-1 text-sm text-[--color-ink-mid]">
@@ -161,7 +161,7 @@ export function EmailEstimateModal({
                   value={replyToLocal}
                   onChange={(e) => setReplyToLocal(e.target.value)}
                   placeholder="you@yourcompany.com"
-                  className="h-10 rounded-xl border border-[--color-border] bg-[--color-surface] px-3 text-[--color-ink] placeholder:text-[--color-ink-dim] focus:border-[--color-orange-brand] focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/25"
+                  className="h-10 rounded-xl border border-[--color-border] bg-[--color-surface] px-3 text-[--color-ink] placeholder:text-[--color-ink-dim] focus:border-[--color-blue-brand] focus:outline-none focus:ring-2 focus:ring-[--color-blue-brand]/25"
                 />
                 <span className="text-xs text-[--color-ink-dim]">
                   Replies will go to this address. Leave blank to use your
@@ -175,7 +175,7 @@ export function EmailEstimateModal({
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
                   maxLength={200}
-                  className="h-10 rounded-xl border border-[--color-border] bg-[--color-surface] px-3 text-[--color-ink] placeholder:text-[--color-ink-dim] focus:border-[--color-orange-brand] focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/25"
+                  className="h-10 rounded-xl border border-[--color-border] bg-[--color-surface] px-3 text-[--color-ink] placeholder:text-[--color-ink-dim] focus:border-[--color-blue-brand] focus:outline-none focus:ring-2 focus:ring-[--color-blue-brand]/25"
                 />
               </label>
               {status === "error" && errorMessage && (
@@ -194,7 +194,7 @@ export function EmailEstimateModal({
                 <button
                   type="submit"
                   disabled={status === "sending"}
-                  className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[--color-orange-brand] px-4 text-sm font-bold text-white transition hover:bg-[--color-orange-dark] disabled:opacity-60"
+                  className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[--color-blue-brand] px-4 text-sm font-bold text-white transition hover:bg-[--color-blue-dark] disabled:opacity-60"
                 >
                   {status === "sending" ? (
                     <Loader2 className="h-4 w-4 animate-spin" aria-hidden />

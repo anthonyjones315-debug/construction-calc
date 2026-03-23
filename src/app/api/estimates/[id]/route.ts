@@ -24,6 +24,7 @@ import { isEstimateStatus, type EstimateStatus } from "@/lib/estimates/status";
 import { normalizeDollars } from "@/utils/money";
 import { verifyEstimate } from "@/app/actions/calculations";
 import { loadEstimateScope } from "@/lib/supabase/estimate-scope";
+import { generateAutoEstimateName } from "@/lib/estimates/name-generator";
 
 export async function DELETE(
   _req: NextRequest,
@@ -124,6 +125,8 @@ export async function PATCH(
       tax_basis_points?: number | null;
       verified_county?: string | null;
       verification_status?: string;
+      version?: number;
+
     } = {};
 
     if (body.name !== undefined)
@@ -210,6 +213,45 @@ export async function PATCH(
         { error: permission.error },
         { status: permission.status },
       );
+    }
+
+    // Auto-Name generation for updates
+    let projectName = updates.inputs?.project_name as string | undefined;
+    if (!projectName && typeof updates.name === "string") {
+      projectName = updates.name; // Use existing name if project name isn't changing
+    }
+    const generatedName = await generateAutoEstimateName(
+      db,
+      tenantId,
+      tenantColumn,
+      updates.client_name,
+      projectName,
+      updates.job_site_address,
+      id
+    );
+    updates.name = generatedName;
+
+    // Fetch previous state for revision tracking
+    const { data: previousEstimate } = await db
+      .from("saved_estimates")
+      .select("*")
+      .eq("id", id)
+      .eq(tenantColumn, tenantId)
+      .single();
+
+    const currentVersion = previousEstimate?.version || 1;
+    updates.version = currentVersion + 1;
+
+    // Insert revision snapshot
+    if (previousEstimate) {
+      await db.from("estimate_revisions").insert({
+        estimate_id: id,
+        author_id: session.user.id,
+        author_name: session.user.name || session.user.email || 'Unknown User',
+        revision_number: currentVersion,
+        snapshot: previousEstimate,
+        change_summary: "Updated via app"
+      });
     }
 
     const updateEstimate = (payload: typeof updates) =>

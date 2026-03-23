@@ -2,12 +2,14 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import Image from "next/image";
 import type { Route } from "next";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import { useSession } from "@/lib/auth/client";
 import * as Sentry from "@sentry/nextjs";
 import posthog from "posthog-js";
+import Autocomplete from "react-google-autocomplete";
 import { RoofingGlyph } from "./TradeGlyphs";
 import {
   getCalculatorAuditRef,
@@ -64,6 +66,7 @@ import {
   type TradePageDefinition,
 } from "../_lib/trade-pages";
 import { NYS_COUNTY_TAX_RATES } from "@/data/nys-tax-rates";
+// Business identity imports removed – not used in this component
 import {
   getFinancialCalculatorCopy,
   getFinancialTermDefinition,
@@ -152,27 +155,13 @@ type CalculatorResultsBundle = {
   materialList: string[];
 };
 
-type EstimateCountySelection =
-  | "Oneida"
-  | "Madison"
-  | "Herkimer"
-  | "None"
-  | "Custom";
-
-const ESTIMATE_COUNTY_OPTIONS: EstimateCountySelection[] = [
-  "Oneida",
-  "Madison",
-  "Herkimer",
-  "None",
-  "Custom",
-];
-
 type FramingMaterialKind =
   | "wall-studs"
   | "floor-joists"
   | "roof-rafters"
   | "ceiling-joists"
-  | "decking";
+  | "decking"
+  | "headers";
 
 type AreaInputMode = "dimensions" | "total-sq-ft";
 type VolumeInputMode = "dimensions" | "total-cu-yd" | "total-cu-ft";
@@ -199,6 +188,7 @@ function getFramingMaterialFromPath(path: string): FramingMaterialKind {
   if (p.includes("/framing/ceiling")) return "ceiling-joists";
   if (p.includes("/framing/roof") || p.includes("rafter"))
     return "roof-rafters";
+  if (p.includes("/framing/headers")) return "headers";
   return "wall-studs";
 }
 
@@ -209,6 +199,7 @@ function getLockedFramingMaterial(path: string): FramingMaterialKind | null {
   if (p.includes("/framing/ceiling")) return "ceiling-joists";
   if (p.includes("/framing/roof")) return "roof-rafters";
   if (p.includes("/framing/wall")) return "wall-studs";
+  if (p.includes("/framing/headers")) return "headers";
   return null;
 }
 
@@ -240,12 +231,19 @@ function getFramingInputLabels(material: FramingMaterialKind): {
       third: "Joist Length (ft)",
     };
   }
-
   if (material === "decking") {
     return {
-      first: "Deck Frame Width (ft)",
-      second: "Deck Joist Spacing (OC)",
-      third: "Deck Board Width (in)",
+      first: "Deck Run (ft)",
+      second: "Joist Spacing (OC)",
+      third: "Decking Width (in)",
+    };
+  }
+
+  if (material === "headers") {
+    return {
+      first: "Rough Opening Width (ft)",
+      second: "Unused",
+      third: "Unused",
     };
   }
 
@@ -594,12 +592,6 @@ function getInputLabels(
   if (p.includes("framing") || p.includes("decking")) {
     return getFramingInputLabels(selectedFramingMaterial);
   }
-  if (p.includes("header"))
-    return {
-      first: "Span Width (ft)",
-      second: "Plate Count",
-      third: "Header Depth (in)",
-    };
   if (p.includes("slab"))
     return {
       first: "Linear Feet (LF)",
@@ -674,15 +666,15 @@ function getInputLabels(
     };
   if (p.includes("btu"))
     return {
-      first: "BTU Load (sq ft)",
+      first: "Area (sq ft)",
       second: "Ceiling Height (ft)",
-      third: "Climate Zone Factor",
+      third: "Temp Rise (°F)",
     };
   if (p.includes("ventilation"))
     return {
-      first: "Ventilation CFM Area (sq ft)",
+      first: "Space Area (sq ft)",
       second: "Ceiling Height (ft)",
-      third: "Duct Static Pressure",
+      third: "Target Air Changes",
     };
   if (p.includes("duct"))
     return {
@@ -823,6 +815,28 @@ type CalculatorPageProps = {
   closeModal?: () => void;
 };
 
+function getHeroImageForKey(key: string): string {
+  const lowerKey = key.toLowerCase();
+  if (lowerKey.includes('concrete') || lowerKey.includes('block')) return 'concrete';
+  if (lowerKey.includes('rafter')) return 'rafters';
+  if (lowerKey.includes('pitch')) return 'roofPitch';
+  if (lowerKey.includes('square')) return 'roofingSquares';
+  if (lowerKey.includes('shingle') || lowerKey.includes('roof')) return 'roofing';
+  if (lowerKey.includes('framing') || lowerKey.includes('stud') || lowerKey.includes('header') || lowerKey.includes('joist') || lowerKey.includes('deck')) return 'framing';
+  if (lowerKey.includes('sprayfoam')) return 'sprayfoam';
+  if (lowerKey.includes('cellulose')) return 'cellulose';
+  if (lowerKey.includes('insulation') || lowerKey.includes('r-value')) return 'insulation';
+  if (lowerKey.includes('floor')) return 'flooring';
+  if (lowerKey.includes('siding')) return 'siding';
+  if (lowerKey.includes('paint')) return 'paint';
+  if (lowerKey.includes('labor') || lowerKey.includes('lead') || lowerKey.includes('margin') || lowerKey.includes('manage') || lowerKey.includes('business')) return 'labor';
+  if (lowerKey.includes('budget') || lowerKey.includes('tax')) return 'budget';
+  if (lowerKey.includes('unit') || lowerKey.includes('convert')) return 'unitConverter';
+  if (lowerKey.includes('finish') || lowerKey.includes('trim') || lowerKey.includes('stair') || lowerKey.includes('interior')) return 'flooring';
+  if (lowerKey.includes('mechanical') || lowerKey.includes('duct') || lowerKey.includes('vent') || lowerKey.includes('btu')) return 'unitConverter';
+  return 'framing';
+}
+
 export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   const calculatorShellRef = useRef<HTMLElement>(null);
   const { data: session } = useSession();
@@ -937,10 +951,6 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   const [estimateClientEmail, setEstimateClientEmail] = useState("");
   const [estimateJobName, setEstimateJobName] = useState("");
   const [estimateJobAddress, setEstimateJobAddress] = useState("");
-  const [estimateCountySelection, setEstimateCountySelection] = useState<
-    EstimateCountySelection | ""
-  >("");
-  const [estimateCountyCustom, setEstimateCountyCustom] = useState("");
   const [estimateQuoteNote, setEstimateQuoteNote] = useState("");
   const [estimateInternalNote, setEstimateInternalNote] = useState("");
 
@@ -1030,8 +1040,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     setEstimateClientEmail("");
     setEstimateJobName("");
     setEstimateJobAddress("");
-    setEstimateCountySelection("");
-    setEstimateCountyCustom("");
+
     setFinalizeOpen(false);
     setFinalizeError(null);
     setFinalizeSuccess(null);
@@ -1185,19 +1194,19 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   const canUseSignAndReturn = effectiveProMode && Boolean(session?.user?.id);
 
   const dimensionsAreaSquareFeet =
-    clampValue(baseMeasurement, 1, 10000) * clampValue(widthSpan, 1, 10000);
+    clampValue(baseMeasurement, 0, 10000) * clampValue(widthSpan, 0, 10000);
   const dimensionsLinealFeet =
-    clampValue(baseMeasurement, 1, 10000) * 2 +
-    clampValue(widthSpan, 1, 10000) * 2;
+    clampValue(baseMeasurement, 0, 10000) * 2 +
+    clampValue(widthSpan, 0, 10000) * 2;
   const dimensionsVolumeCubicFeet =
-    clampValue(baseMeasurement, 1, 10000) *
-    clampValue(widthSpan, 1, 10000) *
-    (clampValue(depthThickness, 1, 96) / 12);
+    clampValue(baseMeasurement, 0, 10000) *
+    clampValue(widthSpan, 0, 10000) *
+    (clampValue(depthThickness, 0, 96) / 12);
   const grossAreaSquareFeet = isAreaTotalMode
-    ? clampValue(totalSquareFeetInput, 1, 100000000)
+    ? clampValue(totalSquareFeetInput, 0, 100000000)
     : dimensionsAreaSquareFeet;
   const totalLinealFeet = isTrimTotalLfMode
-    ? clampValue(totalLinealFeetInput, 1, 100000000)
+    ? clampValue(totalLinealFeetInput, 0, 100000000)
     : dimensionsLinealFeet;
   const deductionSqFt = isSidingRoute
     ? clampValue(openingDeductionSqFt, 0, 100000000)
@@ -1206,7 +1215,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   const volumeCubicFeet = isConcreteTotalVolumeMode
     ? volumeInputMode === "total-cu-yd"
       ? clampValue(totalCubicYardsInput, 0.01, 1000000) * 27
-      : clampValue(totalCubicFeetInput, 1, 100000000)
+      : clampValue(totalCubicFeetInput, 0, 100000000)
     : dimensionsVolumeCubicFeet;
   const adjustedVolume =
     volumeCubicFeet * (1 + clampValue(wasteFactor, 0, MAX_WASTE_FACTOR) / 100);
@@ -1255,7 +1264,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     if (nextMode === "total-studs" && wallInputMode === "lineal-feet") {
       const spacingOcInches = clampValue(widthSpan, 8, 48);
       const spacingFeet = spacingOcInches / 12;
-      const runFeet = clampValue(baseMeasurement, 1, 10000);
+      const runFeet = clampValue(baseMeasurement, 0, 10000);
       const currentStuds = Math.max(8, Math.ceil(runFeet / spacingFeet) + 1);
       setTotalStudsInput(currentStuds);
     }
@@ -1294,18 +1303,18 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     const spacingOcInches = isWallFramingCalculator
       ? wallSpacingOcInches
       : clampValue(widthSpan, 8, 48);
-    const runFeet = clampValue(baseMeasurement, 1, 10000);
+    const runFeet = clampValue(baseMeasurement, 0, 10000);
     const wallStudLengthFeet = (() => {
       if (!isWallFramingCalculator) return null;
       if (wallStudHeightMode === "8-precut") return 92.625 / 12;
       if (wallStudHeightMode === "9-precut") return 104.625 / 12;
       if (wallStudHeightMode === "10") return 10;
       if (wallStudHeightMode === "12") return 12;
-      return clampValue(wallStudCustomHeightFeet, 1, 20);
+      return clampValue(wallStudCustomHeightFeet, 0, 20);
     })();
     const framingLengthFeet = isWallFramingCalculator
       ? (wallStudLengthFeet ?? 8)
-      : clampValue(depthThickness, 1, 10000);
+      : clampValue(depthThickness, 0, 10000);
     const nominalLength = Math.max(8, Math.ceil(framingLengthFeet));
     const wallStudTargetCount = Math.max(
       2,
@@ -1600,7 +1609,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     }
 
     if (isDrywallCalculator) {
-      const rawAreaSqFt = clampValue(baseMeasurement, 1, 100000000);
+      const rawAreaSqFt = clampValue(baseMeasurement, 0, 100000000);
       const adjustedArea = rawAreaSqFt * wasteMultiplier;
       const sheets4x8 = Math.max(1, Math.ceil(adjustedArea / 32));
       const sheets4x12 = Math.max(1, Math.ceil(adjustedArea / 48));
@@ -1624,9 +1633,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
           },
         ],
         materialList: [
-          `Order ${sheets4x8} Sheets 4x8 Drywall`,
-          `Order ${sheets4x12} Sheets 4x12 Drywall`,
-          `Order ${jointBuckets} Buckets Joint Compound`,
+          `${sheets4x8} sheets of 4x8 Fire-Rated Drywall (Type X / 5/8").`,
+          `Includes ${jointBuckets} buckets of Ready-Mixed All-Purpose Joint Compound.`,
         ],
       };
     }
@@ -1657,13 +1665,13 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
           },
         ],
         materialList: [
-          `Order ${stickCount} full sticks @ ${stockLengthFeet.toFixed(0)}'`,
+          `${stickCount} full sticks @ ${stockLengthFeet.toFixed(0)}'`,
         ],
       };
     }
 
     if (isFlooringCalculator) {
-      const sqFtPerBox = clampValue(depthThickness, 1, 250);
+      const sqFtPerBox = clampValue(depthThickness, 0, 250);
       const boxCount = Math.max(
         1,
         Math.ceil(adjustedAreaSquareFeet / sqFtPerBox),
@@ -1687,7 +1695,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
           },
         ],
         materialList: [
-          `Order ${boxCount} Flooring Boxes`,
+          `${boxCount} Flooring Boxes`,
           `Coverage planned: ${adjustedAreaSquareFeet.toFixed(2)} sq ft`,
         ],
       };
@@ -1724,9 +1732,57 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             },
           ],
           materialList: [
-            `Order ${totalJoists} Floor Joists @ ${floorWidth.toFixed(2)}' span`,
-            `Order ${rimJoistsLf.toFixed(1)} LF Rim Joist Material`,
-            `Order ${subfloorSheets} Sheets 4x8 Subfloor`,
+            `${totalJoists} Engineered I-Joists / Solid Sawn Floor Joists @ ${floorWidth.toFixed(2)}' span`,
+            `${rimJoistsLf.toFixed(1)} LF Engineered Rim Board / LSL Rim Joist`,
+            `${subfloorSheets} Sheets 3/4" Advantech / Premium T&G Subflooring`,
+          ],
+        };
+      }
+
+      if (activeFramingMaterial === "headers") {
+        const roughOpeningFeet = clampValue(baseMeasurement, 1, 16);
+        let lumberType = "2x4";
+        const plies = "Double";
+        let jackStuds = 1;
+
+        if (roughOpeningFeet <= 4) {
+          lumberType = "2x6";
+        } else if (roughOpeningFeet <= 6) {
+          lumberType = "2x8";
+        } else if (roughOpeningFeet <= 8) {
+          lumberType = "2x10";
+        } else if (roughOpeningFeet <= 10) {
+          lumberType = "2x12";
+        } else {
+          lumberType = "LVL Engineered";
+        }
+
+        if (roughOpeningFeet > 8) {
+          jackStuds = 2; // Generally openings > 8ft require 2 jack studs
+        }
+
+        return {
+          primary: {
+            label: "Header Size",
+            value: lumberType,
+            unit: plies,
+          },
+          secondary: [
+            {
+              label: "Rough Opening",
+              value: roughOpeningFeet.toFixed(2),
+              unit: "ft",
+            },
+            {
+              label: "Jack Studs",
+              value: jackStuds.toString(),
+              unit: "per side",
+            },
+          ],
+          materialList: [
+            `Recommended Size: ${plies} ${lumberType} (Based on standard residential load)`,
+            `Requires ${jackStuds} jack stud(s) on each side to support the header.`,
+            `* Verify with local building codes, as point loads or multiple stories may require LVL or larger sawn lumber.`,
           ],
         };
       }
@@ -1761,7 +1817,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             },
           ],
           materialList: [
-            `Order ${totalRafters} - 2x10x${nominalLength} Roof Rafters`,
+            `${totalRafters} - 2x10x${nominalLength} KD Doug Fir Premium Roof Rafters`,
           ],
         };
       }
@@ -1801,14 +1857,14 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             },
           ],
           materialList: [
-            `Order ${totalCeilingJoists} - 2x10x${nominalLength} Ceiling Joists`,
+            `${totalCeilingJoists} - 2x10x${nominalLength} KD Doug Fir Premium Ceiling Joists`,
           ],
         };
       }
 
       if (activeFramingMaterial === "decking") {
         const totalJoists = Math.max(2, Math.ceil(runFeet / spacingFeet) + 1);
-        const boardWidthFeet = clampValue(depthThickness, 1, 12) / 12;
+        const boardWidthFeet = clampValue(depthThickness, 0, 12) / 12;
         const deckAreaSquareFeet = runFeet * framingLengthFeet;
         const deckBoards = Math.max(
           1,
@@ -1846,8 +1902,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             },
           ],
           materialList: [
-            `Order ${totalJoists} - 2x10x${nominalLength} Deck Joists`,
-            `Order ${deckBoards} - 5/4x6x${nominalLength} Decking Boards`,
+            `${totalJoists} - 2x10x${nominalLength} Pressure Treated #1 Ground-Contact Deck Joists`,
+            `${deckBoards} - 5/4x6x${nominalLength} Premium Composite / Treated Decking Boards`,
           ],
         };
       }
@@ -1876,7 +1932,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
           if (wallStudHeightMode === "9-precut") return `9' precut (104 5/8")`;
           if (wallStudHeightMode === "10") return "10'";
           if (wallStudHeightMode === "12") return "12'";
-          return `${clampValue(wallStudCustomHeightFeet, 1, 20).toFixed(2)}' (custom)`;
+          return `${clampValue(wallStudCustomHeightFeet, 0, 20).toFixed(2)}' (custom)`;
         })();
         return {
           primary: {
@@ -1902,10 +1958,10 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             },
           ],
           materialList: [
-            `Order ${totalStuds} - 2x4x${studStockLabel} studs`,
+            `${totalStuds} - 2x4x${studStockLabel} KD Doug Fir Premium Studs`,
             staggeredStudWall
-              ? `Order ${totalPlateLf.toFixed(1)} LF plates (2 bottom + 2 top for staggered wall)`
-              : `Order ${totalPlateLf.toFixed(1)} LF plates (1 bottom + 1 top)`,
+              ? `${totalPlateLf.toFixed(1)} LF Pressure Treated / Premium Plate Stock (Staggered Assembly)`
+              : `${totalPlateLf.toFixed(1)} LF plates (1 bottom + 1 top)`,
           ],
         };
       }
@@ -1956,10 +2012,10 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
           },
         ],
         materialList: [
-          `Order ${commonStuds} - 2x4x${nominalLength} Common Studs`,
-          `Order ${jackStuds} - 2x4x${nominalLength} Jack Studs`,
-          `Order ${kingStuds} - 2x4x${nominalLength} King Studs`,
-          `Order (${plates16ft}) 16' Plates`,
+          `${commonStuds} - 2x4x${nominalLength} KD Doug Fir Common Studs`,
+          `${jackStuds} - 2x4x${nominalLength} KD Doug Fir Jack Studs`,
+          `${kingStuds} - 2x4x${nominalLength} KD Doug Fir King Studs`,
+          `(${plates16ft}) 16' Plates`,
         ],
       };
     }
@@ -1995,8 +2051,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             },
           ],
           materialList: [
-            `Order ${totalBlocks} ${blockSizeLabel}`,
-            `Order ${mortarBags} Bags Type S Mortar (70–75 lb)`,
+            `${totalBlocks} ${blockSizeLabel} Units`,
+            `${mortarBags} Bags Type S Portland Cement/Lime Premium Mortar (70–75 lb)`,
           ],
         };
       }
@@ -2029,9 +2085,9 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
           },
         ],
         materialList: [
-          `Order ${adjustedCubicYards.toFixed(2)} cu yd`,
-          `Order ${bags80} Bags (80lb)`,
-          `Order ${bags60} Bags (60lb)`,
+          `${adjustedCubicYards.toFixed(2)} cu yd Ready-Mix Concrete (3000-4000 PSI)`,
+          `${bags80} High-Strength Concrete Bags (80lb)`,
+          `${bags60} High-Strength Concrete Bags (60lb)`,
           `Approx payload: ${Math.round(estimatedWeightLbs).toLocaleString()} lbs`,
         ],
       };
@@ -2039,7 +2095,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
 
     if (page.category === "roofing") {
       if (isSidingCalculator) {
-        const pieceCoverageSqFt = clampValue(depthThickness, 1, 50);
+        const pieceCoverageSqFt = clampValue(depthThickness, 0, 50);
         const pieces = Math.max(
           1,
           Math.ceil(adjustedAreaSquareFeet / pieceCoverageSqFt),
@@ -2064,8 +2120,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             },
           ],
           materialList: [
-            `Order ${sidingSquares.toFixed(2)} Siding Squares`,
-            `Order ${pieces} Siding Pieces`,
+            `${sidingSquares.toFixed(2)} Premium Vinyl/Fiber Cement Siding Squares`,
+            `${pieces} Premium Vinyl/Fiber Cement Siding Pieces`,
           ],
         };
       }
@@ -2098,7 +2154,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
           return supportsAreaToggle && !isAreaTotalMode
             ? dimensionsAreaSquareFeet
             : supportsAreaToggle && isAreaTotalMode
-              ? clampValue(totalSquareFeetInput, 1, 100000000)
+              ? clampValue(totalSquareFeetInput, 0, 100000000)
               : adjustedAreaSquareFeet / wasteMultiplier;
         }
 
@@ -2106,8 +2162,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
           return clampValue(roofSquaresInput, 0.01, 1000000) * 100;
         }
 
-        const lengthFt = clampValue(baseMeasurement, 1, 10000);
-        const widthFt = clampValue(widthSpan, 1, 10000);
+        const lengthFt = clampValue(baseMeasurement, 0, 10000);
+        const widthFt = clampValue(widthSpan, 0, 10000);
         const overhangFt = clampValue(roofOverhangInches, 0, 48) / 12;
         const adjustedLength = lengthFt + overhangFt * 2;
         const adjustedWidth = widthFt + overhangFt * 2;
@@ -2125,8 +2181,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         const overhangFt = clampValue(roofOverhangInches, 0, 48) / 12;
         const perimeterFt =
           roofingInputMode === "dimensions"
-            ? (clampValue(baseMeasurement, 1, 10000) + overhangFt * 2) * 2 +
-              (clampValue(widthSpan, 1, 10000) + overhangFt * 2) * 2
+            ? (clampValue(baseMeasurement, 0, 10000) + overhangFt * 2) * 2 +
+              (clampValue(widthSpan, 0, 10000) + overhangFt * 2) * 2
             : Math.sqrt(baseRoofArea) * 4;
 
         return Math.max(1, Math.ceil((perimeterFt * 1.1) / 100));
@@ -2140,7 +2196,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       return {
         primary: {
           label: isRoofingShinglesCalculator
-            ? "Order Bundles"
+            ? "Bundles"
             : "Total Squares",
           value: isRoofingShinglesCalculator
             ? bundles.toString()
@@ -2149,7 +2205,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         },
         secondary: [
           {
-            label: "Order Squares",
+            label: "Squares",
             value: squares.toFixed(2),
             unit: "sq",
           },
@@ -2178,12 +2234,12 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             : []),
         ],
         materialList: [
-          `Order ${bundles} Shingle Bundles`,
-          `Order ${squares.toFixed(2)} Roofing Squares (pitched & waste-adjusted)`,
+          `${bundles} Architectural Dimensional Shingle Bundles`,
+          `${squares.toFixed(2)} HD Architectural Roofing Squares (pitched & waste-adjusted)`,
           ...(starterRidgeBundles
-            ? [`Order ${starterRidgeBundles} Starter & Ridge bundles (est.)`]
+            ? [`${starterRidgeBundles} Starter & Ridge bundles (est.)`]
             : []),
-          `Order ${rollsUnderlayment} Rolls Synthetic Underlayment`,
+          `${rollsUnderlayment} Rolls Synthetic Underlayment`,
           ...(isRoofingShinglesCalculator
             ? [
                 `Allow ~${nails.toLocaleString()} nails (≈320 nails/square @ 4 nails/shingle).`,
@@ -2224,7 +2280,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             },
           ],
           materialList: [
-            `Order ${rolls} sod rolls (10 sq ft ea)`,
+            `${rolls} sod rolls (10 sq ft ea)`,
             `Or ${pallets} pallets (~450 sq ft ea)`,
             `Seed alternative: ${seedLbs} lbs (4 lbs/1000 sq ft)`,
           ],
@@ -2233,7 +2289,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
 
       // Mulch, topsoil, gravel: area × depth → cu yd
       const areaSqFt = dimensionsAreaSquareFeet;
-      const depthIn = clampValue(depthThickness, 1, 36);
+      const depthIn = clampValue(depthThickness, 0, 36);
       const volumeCuFt = areaSqFt * (depthIn / 12);
       const cubicYards = (volumeCuFt / 27) * wasteMultiplier;
       const bags2CuFt = Math.ceil((volumeCuFt * wasteMultiplier) / 2);
@@ -2248,7 +2304,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       ];
 
       const matList: string[] = [
-        `Order ${cubicYards.toFixed(2)} cu yd bulk`,
+        `${cubicYards.toFixed(2)} cu yd bulk`,
         `Alternate: ${bags2CuFt} bags (2 cu ft ea)`,
       ];
 
@@ -2259,7 +2315,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
           value: tons.toFixed(2),
           unit: "tons",
         });
-        matList[0] = `Order ${tons.toFixed(2)} tons crushed stone`;
+        matList[0] = `${tons.toFixed(2)} tons crushed stone`;
         return {
           primary: { label: "Tons", value: tons.toFixed(2), unit: "tons" },
           secondary,
@@ -2296,7 +2352,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       const p = page.canonicalPath;
 
       if (p.includes("fence")) {
-        const linearFeet = clampValue(baseMeasurement, 1, 10000);
+        const linearFeet = clampValue(baseMeasurement, 0, 10000);
         const height = clampValue(widthSpan, 3, 12);
         const postSpacing = clampValue(depthThickness, 4, 12);
         const posts = Math.ceil(linearFeet / postSpacing) + 1;
@@ -2315,9 +2371,9 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             { label: "Sections", value: sections.toString(), unit: "sections" },
           ],
           materialList: [
-            `Order ${posts} posts (4×4, set 48 in below grade)`,
-            `Order ${rails} rails (2×4)`,
-            `Order ${pickets} pickets (includes waste)`,
+            `${posts} posts (4×4, set 48 in below grade)`,
+            `${rails} rails (2×4)`,
+            `${pickets} pickets (includes waste)`,
           ],
         };
       }
@@ -2344,9 +2400,9 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             },
           ],
           materialList: [
-            `Order ${pavers} pavers (4×8 standard)`,
-            `Order ${baseTons.toFixed(2)} tons gravel base (${baseDepthIn} in depth)`,
-            `Order ${sandTons.toFixed(2)} tons sand (1 in bedding)`,
+            `${pavers} pavers (4×8 standard)`,
+            `${baseTons.toFixed(2)} tons gravel base (${baseDepthIn} in depth)`,
+            `${sandTons.toFixed(2)} tons sand (1 in bedding)`,
             `Edge restraint: ${perimeter.toFixed(0)} LF`,
           ],
         };
@@ -2354,7 +2410,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
 
       if (p.includes("asphalt")) {
         const areaSqFt = dimensionsAreaSquareFeet;
-        const thicknessIn = clampValue(depthThickness, 1, 6);
+        const thicknessIn = clampValue(depthThickness, 0, 6);
         const volumeCuFt = areaSqFt * (thicknessIn / 12);
         const tons = ((volumeCuFt * 145) / 2000) * wasteMultiplier; // 145 lbs/cu ft
         return {
@@ -2364,8 +2420,133 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             { label: "Thickness", value: thicknessIn.toFixed(1), unit: "in" },
           ],
           materialList: [
-            `Order ${tons.toFixed(2)} tons hot mix asphalt`,
+            `${tons.toFixed(2)} tons hot mix asphalt`,
             `Coverage: ${areaSqFt.toFixed(0)} sq ft at ${thicknessIn.toFixed(1)} in compacted`,
+          ],
+        };
+      }
+    }
+
+    /* ── Mechanical & Drywall calculators ─────────────────────── */
+    if (page.canonicalPath.includes("drywall")) {
+      const areaSqFt = clampValue(baseMeasurement, 0, 100000);
+      const sheetSqFt = 32; // Standard 4x8 sheet
+      const grossSheets = areaSqFt / sheetSqFt;
+      const netSheets = Math.ceil(grossSheets * wasteMultiplier);
+      const screws = netSheets * 32; // Approx 32 screws per 4x8 sheet
+      const mudGallons = Math.ceil(netSheets * 0.05); // Approx 5 gallons per 100 sheets
+      const tapeFeet = Math.ceil(netSheets * 16.5); // Approx 16.5 ft of tape per sheet
+
+      return {
+        primary: {
+          label: "4×8 Sheets",
+          value: netSheets.toString(),
+          unit: "ea",
+        },
+        secondary: [
+          {
+            label: "Total Area",
+            value: (areaSqFt * wasteMultiplier).toFixed(0),
+            unit: "sq ft",
+          },
+          {
+            label: "Screws (est.)",
+            value: screws.toString(),
+            unit: "ea",
+          },
+          {
+            label: "Joint Tape",
+            value: tapeFeet.toString(),
+            unit: "ft",
+          },
+        ],
+        materialList: [
+          `${netSheets} sheets (4×8 × ¹/₂" standard)`,
+          `${screws.toLocaleString()} drywall screws (1¹/₄")`,
+          `${Math.ceil(tapeFeet / 250)} rolls of joint tape (250 ft/roll)`,
+          `${mudGallons} gallons premixed joint compound`,
+        ],
+      };
+    }
+
+    if (page.category === "mechanical") {
+      const p = page.canonicalPath;
+
+      if (p.includes("btu")) {
+        const areaSqFt = clampValue(baseMeasurement, 10, 100000);
+        const heightFt = clampValue(widthSpan, 7, 30);
+        const tempRise = clampValue(depthThickness, 10, 100);
+        
+        const volumeCuFt = areaSqFt * heightFt;
+        
+        // Standard insulation heating load approximation:
+        // BTU/hr = Volume(cu ft) * TempRise(°F) * 0.133
+        const heatingBtu = Math.ceil(volumeCuFt * tempRise * 0.133);
+        const coolingBtu = Math.ceil(areaSqFt * 25); // rough residential cooling rule of thumb
+        const tonnage = (coolingBtu / 12000).toFixed(1);
+
+        return {
+          primary: {
+            label: "Heating Load",
+            value: heatingBtu.toString(),
+            unit: "BTU/hr",
+          },
+          secondary: [
+            {
+              label: "Conditioned Vol",
+              value: volumeCuFt.toString(),
+              unit: "cu ft",
+            },
+            {
+              label: "Est. Cooling Load",
+              value: coolingBtu.toString(),
+              unit: "BTU/hr",
+            },
+            {
+              label: "Cooling Tonnage",
+              value: tonnage.toString(),
+              unit: "tons",
+            },
+          ],
+          materialList: [
+            `System must produce min. ${heatingBtu.toLocaleString()} BTU/hr for a ${tempRise}°F heat rise.`,
+            `Total conditioned space is ${volumeCuFt.toLocaleString()} cu ft.`,
+            `Estimated cooling requirement: ${tonnage} tons (${coolingBtu.toLocaleString()} BTU/hr).`,
+            `load with Manual J calculation prior to ordering plant equipment.`
+          ],
+        };
+      }
+
+      if (p.includes("ventilation")) {
+        const areaSqFt = clampValue(baseMeasurement, 10, 100000);
+        const heightFt = clampValue(widthSpan, 7, 30);
+        // ACH from the third input (default to 4 if missing/zero)
+        const airChangesPerHour = clampValue(depthThickness, 0.5, 20) || 4; 
+        const volumeCuFt = areaSqFt * heightFt;
+        const requiredCfm = Math.ceil((volumeCuFt * airChangesPerHour) / 60);
+
+        return {
+          primary: {
+            label: "Exhaust/Supply",
+            value: requiredCfm.toLocaleString(),
+            unit: "CFM",
+          },
+          secondary: [
+            {
+              label: "Conditioned Vol",
+              value: volumeCuFt.toLocaleString(),
+              unit: "cu ft",
+            },
+            {
+              label: "Air Changes",
+              value: airChangesPerHour.toString(),
+              unit: "ACH",
+            },
+          ],
+          materialList: [
+            `Requires a minimum of ${requiredCfm.toLocaleString()} CFM to achieve ${airChangesPerHour} air changes per hour (ACH).`,
+            `Total conditioned space is ${volumeCuFt.toLocaleString()} cu ft.`,
+            `actual building code requirements before ordering exhaust fans or ERV units.`,
           ],
         };
       }
@@ -2384,7 +2565,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
           unit: "units",
         },
       ],
-      materialList: [`Order ${materialQty} Material Units`],
+      materialList: [`${materialQty} Material Units`],
     };
   }, [
     adjustedAreaSquareFeet,
@@ -2434,12 +2615,6 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     };
   }, [calculatorResults, canShowPricing]);
 
-  const hasMonetaryOutput = useMemo(() => {
-    return (
-      isMonetaryResult(calculatorResults.primary) ||
-      calculatorResults.secondary.some(isMonetaryResult)
-    );
-  }, [calculatorResults]);
 
   async function runAiOptimizer() {
     if (aiOptimizeBusy) return;
@@ -2588,7 +2763,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
 
   async function handleSaveEstimate() {
     if (saveState !== "idle") return;
-    if (!ensureEstimateCountySelection()) return;
+
 
     setSaveState("saving");
     setFinalizeError(null);
@@ -2643,7 +2818,6 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       setSaveState("downloaded");
       setFinalizeSuccess("Estimate downloaded to this device.");
       haptic(10);
-      queueSaveStateReset();
     } catch (error) {
       Sentry.captureException(error);
       setSaveState("idle");
@@ -2735,12 +2909,10 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
 
   const primaryMaterialOrder = calculatorResults.materialList[0] ?? null;
   const resolvedEstimateCounty = useMemo(() => {
-    if (!estimateCountySelection) return null;
-    if (estimateCountySelection === "Custom") {
-      return estimateCountyCustom.trim() || null;
-    }
-    return estimateCountySelection;
-  }, [estimateCountyCustom, estimateCountySelection]);
+    // Since estimateCountySelection and estimateCountyCustom are removed,
+    // we default to taxCounty for tax-save or null otherwise.
+    return isBusinessTaxSave ? taxCounty : null;
+  }, [isBusinessTaxSave, taxCounty]);
 
   const shellClassName = useMemo(() => {
     const tabletShell =
@@ -2767,15 +2939,10 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
 
   const calculatorSurfaceClassName = useMemo(() => {
     if (deviceProfile.layoutMode === "command-center") {
-      return "grid gap-3 xl:grid-cols-[minmax(0,1.05fr)_minmax(320px,0.8fr)_minmax(280px,0.75fr)]";
+      return "grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,1fr)]";
     }
 
-    if (deviceProfile.layoutMode === "two-column") {
-      // Inputs left, results right — balanced columns that use the full container width
-      return "grid gap-0 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]";
-    }
-
-    return "grid gap-2";
+    return "grid gap-6 lg:grid-cols-2";
   }, [deviceProfile.layoutMode]);
 
   const liveAudit = useMemo(() => {
@@ -2858,7 +3025,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         calculator_path: page.canonicalPath,
         calculator_label: page.heroKicker,
         client_email: estimateClientEmail.trim() || null,
-        selected_county_mode: estimateCountySelection || null,
+        selected_county_mode: null,
         selected_county: resolvedEstimateCounty,
         internal_note: estimateInternalNote.trim() || null,
       },
@@ -2872,55 +3039,34 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
           month: "long",
           day: "numeric",
         }),
-        jobName:
-          estimateJobName.trim() || estimateName.trim() || page.heroKicker,
+        jobName: estimateJobName.trim() || null,
       },
-      ...(finalizeEstimateId ? { saved_estimate_id: finalizeEstimateId } : {}),
+      ...(finalizeEstimateId ? { id: finalizeEstimateId } : {}),
     }),
     [
-      calculatorResults.materialList,
-      calculatorResults.primary,
-      calculatorResults.secondary,
-      estimateClientName,
-      estimateClientEmail,
-      estimateCountySelection,
-      resolvedEstimateCounty,
-      estimateJobAddress,
-      estimateJobName,
       estimateName,
       estimateQuoteNote,
       estimateInternalNote,
       page.canonicalPath,
       page.heroKicker,
       page.title,
+      estimateClientName,
+      estimateClientEmail,
+
+      resolvedEstimateCounty,
+      estimateJobAddress,
+      estimateJobName,
+      calculatorResults.materialList,
+      calculatorResults.primary,
+      calculatorResults.secondary,
+      finalizeEstimateId,
     ],
   );
 
-  function ensureEstimateCountySelection() {
-    if (!estimateCountySelection) {
-      setFinalizeSuccess(null);
-      setFinalizeError(
-        "Choose Oneida, Madison, Herkimer, None, or Custom before exporting or saving this estimate.",
-      );
-      setFinalizeOpen(true);
-      return null;
-    }
 
-    if (estimateCountySelection === "Custom" && !estimateCountyCustom.trim()) {
-      setFinalizeSuccess(null);
-      setFinalizeError(
-        "Enter the custom county or tax market before continuing.",
-      );
-      setFinalizeOpen(true);
-      return null;
-    }
-
-    setFinalizeError(null);
-    return resolvedEstimateCounty;
-  }
 
   function openEmailEstimateModal() {
-    if (!ensureEstimateCountySelection()) return;
+
     setCrmModalOpen(true);
   }
 
@@ -2992,7 +3138,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
 
   async function handleDownloadPdf() {
     if (typeof window === "undefined") return;
-    if (!ensureEstimateCountySelection()) return;
+
     setFinalizeBusy("pdf");
     setFinalizeError(null);
     setFinalizeSuccess(null);
@@ -3060,7 +3206,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
       );
       return;
     }
-    if (!ensureEstimateCountySelection()) return;
+
     if (!estimateClientEmail.trim()) {
       setFinalizeError("Enter the client email before sending for signature.");
       return;
@@ -3187,7 +3333,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                 <button
                   type="button"
                   onClick={resetError}
-                  className="rounded-xl border border-[--color-orange-brand]/50 bg-[--color-orange-brand]/20 px-4 py-2 text-sm font-bold uppercase tracking-wide text-[--color-orange-brand]"
+                  className="rounded-xl border border-[--color-blue-brand]/50 bg-[--color-blue-brand]/20 px-4 py-2 text-sm font-bold uppercase tracking-wide text-[--color-blue-brand]"
                 >
                   Try again
                 </button>
@@ -3230,7 +3376,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         {closeModal && (
           <div className="sticky top-0 z-40 flex h-12 items-center justify-between border-b border-[--color-border] bg-[--color-surface-alt] px-3">
             <div className="min-w-0">
-              <p className="truncate text-[10px] font-bold uppercase tracking-[0.12em] text-[--color-orange-brand]/90">
+              <p className="truncate text-[10px] font-bold uppercase tracking-[0.12em] text-[--color-blue-brand]/90">
                 {page.heroKicker}
               </p>
               <p className="truncate text-sm font-semibold text-[--color-ink]">
@@ -3268,17 +3414,21 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                     {index > 0 ? (
                       <span className="text-[--color-nav-text]/45">&gt;</span>
                     ) : null}
-                    <Link
-                      href={crumb.href}
-                      className={`transition-all duration-300 ease-in-out ${
-                        isLast
-                          ? "font-semibold text-[--color-ink]"
-                          : "text-[--color-nav-text]/75 hover:text-[--color-orange-brand]"
-                      }`}
-                      aria-current={isLast ? "page" : undefined}
-                    >
-                      {crumb.label}
-                    </Link>
+                    {isLast ? (
+                      <span
+                        className="font-semibold text-[--color-ink]"
+                        aria-current="page"
+                      >
+                        {crumb.label}
+                      </span>
+                    ) : (
+                      <Link
+                        href={crumb.href}
+                        className="text-[--color-nav-text]/75 transition-all duration-300 ease-in-out hover:text-[--color-blue-brand]"
+                      >
+                        {crumb.label}
+                      </Link>
+                    )}
                   </div>
                 );
               })}
@@ -3287,7 +3437,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             <button
               type="button"
               onClick={() => setMobileMenuOpen((current) => !current)}
-              className="inline-flex min-h-9 items-center gap-2 rounded-xl border border-[--color-border] bg-[--color-surface-alt] px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-[--color-nav-text] transition-all duration-200 hover:border-[--color-orange-brand]/45 active:scale-[0.98] lg:hidden"
+              className="inline-flex min-h-9 items-center gap-2 rounded-xl border border-[--color-border] bg-[--color-surface-alt] px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-[--color-nav-text] transition-all duration-200 hover:border-[--color-blue-brand]/45 active:scale-[0.98] lg:hidden"
             >
               {mobileMenuOpen ? (
                 <X className="h-4 w-4" aria-hidden />
@@ -3309,7 +3459,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
                   placeholder="Search trade tools"
-                  className="h-10 w-full rounded-xl border border-[--color-border] bg-[--color-surface] pl-9 pr-3 text-sm text-[--color-ink] outline-none transition focus:border-[--color-orange-brand] focus:ring-2 focus:ring-[--color-orange-brand]/25"
+                  className="h-10 w-full rounded-xl border border-[--color-border] bg-[--color-surface] pl-9 pr-3 text-sm text-[--color-ink] outline-none transition focus:border-[--color-blue-brand] focus:ring-2 focus:ring-[--color-blue-brand]/25"
                 />
               </div>
               <div className="mt-3 grid gap-2 sm:grid-cols-2">
@@ -3318,7 +3468,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                     key={group.label}
                     className="rounded-xl border border-[--color-border] bg-[--color-surface-alt] p-3"
                   >
-                    <p className="mb-2 text-xs font-bold uppercase tracking-[0.15em] text-orange-brand">
+                    <p className="mb-2 text-xs font-bold uppercase tracking-[0.15em] text-blue-brand">
                       {group.label}
                     </p>
                     <ul className="space-y-1.5">
@@ -3358,33 +3508,40 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
           >
             {/* Hero header bar — spans full width at top */}
             <div
-              className={`grid grid-cols-1 gap-2 px-4 py-4 sm:px-6 sm:py-5 ${
+              className={`relative isolate overflow-hidden grid grid-cols-1 gap-2 border-b border-[--color-border] px-5 py-6 ${
                 deviceProfile.layoutMode === "command-center"
-                  ? "xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)] xl:items-start"
-                  : deviceProfile.layoutMode === "two-column"
-                    ? "lg:order-1 lg:border-b lg:border-[--color-border] lg:py-4"
-                    : ""
+                  ? "xl:items-start"
+                  : ""
               }`}
             >
+              <div className="absolute inset-0 z-0">
+                <Image
+                  src={`/images/calculators/${getHeroImageForKey(page.key)}.png`}
+                  alt={`${page.title} background`}
+                  fill
+                  priority
+                  className="object-cover object-center scale-105"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = '/images/trades/default.png';
+                  }}
+                />
+                <div className="absolute inset-0 bg-slate-900/80 mix-blend-multiply" />
+              </div>
+
               <div className="relative z-10 max-w-3xl">
-                <div className="inline-flex items-center gap-2 rounded-full border border-[#fed7aa] bg-[#fff7ed] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.15em] text-[--color-orange-brand]">
+                <div className="inline-flex items-center gap-2 rounded-full border border-blue-base/30 bg-blue-base/20 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.15em] text-blue-100 backdrop-blur-md">
                   <HardHat className="h-3.5 w-3.5" aria-hidden />
                   {page.heroKicker}
                 </div>
 
                 {!closeModal ? (
-                  <h1 className="mt-2 text-2xl font-black leading-tight text-display-heading md:text-3xl">
+                  <h1 className="mt-2 text-2xl font-black leading-tight text-white md:text-3xl drop-shadow-md">
                     {displayTitle(page.title)}
                   </h1>
                 ) : null}
-                <p className="mt-2 text-sm leading-relaxed text-copy-secondary sm:text-base lg:line-clamp-2">
+                <p className="mt-2 text-sm leading-relaxed text-slate-200 sm:text-base lg:line-clamp-2 drop-shadow-sm">
                   {page.description}
                 </p>
-
-                <div className="mt-3 inline-flex items-center gap-2 rounded-lg border border-orange-base/30 bg-orange-base/10 px-3 py-1.5 text-sm text-copy-accent lg:hidden">
-                  <MapPin className="h-3.5 w-3.5 shrink-0" aria-hidden />
-                  {page.localFocus}
-                </div>
 
                 <div className="mt-3 flex flex-wrap items-center gap-2">
                   <button
@@ -3403,53 +3560,55 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                     <Mail className="h-3.5 w-3.5" aria-hidden />
                     Email Estimate
                   </button>
-                  <button
-                    type="button"
-                    onClick={handleSaveEstimate}
-                    disabled={saveState !== "idle"}
-                    className={`glass-button inline-flex h-9 min-h-9 items-center gap-2 rounded-xl px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-[--color-ink] transition-all duration-200 hover:text-[--color-ink] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 ${saveState !== "idle" ? "scale-95" : ""} ${saveState === "corrected" ? "verified-lock-pulse border-primary text-primary" : ""}`}
-                  >
-                    {saveState === "saving" ? (
-                      <>
-                        <Save className="h-3.5 w-3.5" aria-hidden />
-                        Saving
-                      </>
-                    ) : saveState === "saved" ? (
-                      <>
-                        <Check
-                          className="h-3.5 w-3.5 text-emerald-400"
-                          aria-hidden
-                        />
-                        Saved
-                      </>
-                    ) : saveState === "corrected" ? (
-                      <>
-                        <Check
-                          className="h-3.5 w-3.5 text-primary"
-                          aria-hidden
-                        />
-                        Verified &amp; Locked
-                      </>
-                    ) : saveState === "downloaded" ? (
-                      <>
-                        <Check
-                          className="h-3.5 w-3.5 text-emerald-400"
-                          aria-hidden
-                        />
-                        Downloaded
-                      </>
-                    ) : (
-                      <>
-                        <Save className="h-3.5 w-3.5" aria-hidden />
-                        Save Estimate
-                      </>
-                    )}
-                  </button>
+                  {session ? (
+                    <button
+                      type="button"
+                      onClick={handleSaveEstimate}
+                      disabled={saveState !== "idle"}
+                      className={`glass-button inline-flex h-9 min-h-9 items-center gap-2 rounded-xl px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-[--color-ink] transition-all duration-200 hover:text-[--color-ink] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 ${saveState !== "idle" ? "scale-95" : ""} ${saveState === "corrected" ? "verified-lock-pulse border-primary text-primary" : ""}`}
+                    >
+                      {saveState === "saving" ? (
+                        <>
+                          <Save className="h-3.5 w-3.5" aria-hidden />
+                          Saving
+                        </>
+                      ) : saveState === "saved" ? (
+                        <>
+                          <Check
+                            className="h-3.5 w-3.5 text-emerald-400"
+                            aria-hidden
+                          />
+                          Saved
+                        </>
+                      ) : saveState === "corrected" ? (
+                        <>
+                          <Check
+                            className="h-3.5 w-3.5 text-primary"
+                            aria-hidden
+                          />
+                          Verified &amp; Locked
+                        </>
+                      ) : saveState === "downloaded" ? (
+                        <>
+                          <Check
+                            className="h-3.5 w-3.5 text-emerald-400"
+                            aria-hidden
+                          />
+                          Downloaded
+                        </>
+                      ) : (
+                        <>
+                          <Save className="h-3.5 w-3.5" aria-hidden />
+                          Save Estimate
+                        </>
+                      )}
+                    </button>
+                  ) : null}
                 </div>
 
                 {primaryMaterialOrder ? (
-                  <div className="mt-3 rounded-xl border border-orange-base/30 bg-orange-base/10 px-3 py-2">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-orange-brand]">
+                  <div className="mt-3 rounded-xl border border-blue-base/30 bg-blue-base/10 px-3 py-2">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-blue-brand]">
                       Material Order
                     </p>
                     <p className="mt-1 text-sm font-semibold text-copy-primary">
@@ -3483,7 +3642,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                       <label className="mt-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-copy-primary">
                         <input
                           type="checkbox"
-                          className="h-4 w-4 rounded glass-input text-orange-base"
+                          className="h-4 w-4 rounded glass-input text-blue-base"
                           checked={capitalImprovement}
                           onChange={(event) =>
                             setCapitalImprovement(event.target.checked)
@@ -3535,21 +3694,13 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             </div>
 
             {/* Calculator surface — inputs + results */}
-            <div
-              className={`space-y-2 p-3 sm:p-4 ${deviceProfile.layoutMode === "two-column" ? "lg:order-2" : "glass-container-deep"}`}
-            >
+            <div className="p-5 sm:p-6 lg:order-2 glass-container-deep">
               <div className={calculatorSurfaceClassName}>
-                <section
-                  className={`transition-colors ${effectiveProMode ? "p-3" : "p-3 sm:p-4"} ${
-                    deviceProfile.layoutMode === "two-column"
-                      ? "lg:border-r lg:border-[--color-border]"
-                      : "glass-container"
-                  }`}
-                >
+                  <section className="transition-colors p-5 sm:p-6 rounded-2xl border border-[--color-border] bg-white shadow-sm">
                   {/* Compact inputs header — icon inline with label, no large centered decoration */}
                   <div className="mb-2 flex items-center gap-2">
                     <div
-                      className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-orange-base/15 ${iconPulse ? "animate-pulse" : ""}`}
+                      className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-blue-base/15 ${iconPulse ? "animate-pulse" : ""}`}
                     >
                       {page.category === "roofing" ? (
                         <RoofingGlyph className="h-[18px] w-[18px]" />
@@ -3560,7 +3711,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                             <IconComponent
                               size={18}
                               strokeWidth={1.8}
-                              className="text-orange-base"
+                              className="text-blue-base"
                               aria-hidden
                             />
                           );
@@ -3583,7 +3734,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                         ? 250
                         : 96;
                     const thirdInputMinBase = isTrimRoute ? 4 : 1;
-                    const firstInputMin = financialCopy?.inputs[0].min ?? 1;
+                    const firstInputMin = financialCopy?.inputs[0].min ?? 0;
                     const firstInputMax =
                       financialCopy?.inputs[0].max ?? 100000000;
                     const secondInputMin = financialCopy?.inputs[1].min ?? 0;
@@ -3754,7 +3905,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                     ),
                                   );
                                 }}
-                                minFeet={1}
+                                minFeet={0}
                                 maxFeet={10000}
                                 minInches={0}
                                 maxInches={11}
@@ -3782,7 +3933,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                     ),
                                   );
                                 }}
-                                minFeet={1}
+                                minFeet={0}
                                 maxFeet={10000}
                                 minInches={0}
                                 maxInches={11}
@@ -3830,7 +3981,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                   <FeetInchesInput
                                     label="Roof Length"
                                     subLabel="Footprint length (before overhang)."
-                                    min={1}
+                                    min={0}
                                     max={10000}
                                     value={String(baseMeasurement)}
                                     onChange={(next: string) =>
@@ -3845,11 +3996,11 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                   <FeetInchesInput
                                     label="Roof Width"
                                     subLabel="Footprint width (before overhang)."
-                                    min={1}
+                                    min={0}
                                     max={10000}
                                     value={String(widthSpan)}
                                     onChange={(next: string) =>
-                                      parseAndSet(next, setWidthSpan, 1, 10000)
+                                      parseAndSet(next, setWidthSpan, 0, 10000)
                                     }
                                   />
                                   <ProInput
@@ -3970,7 +4121,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                   "Total Linear Feet (LF)",
                                 )}
                                 type="number"
-                                min={1}
+                                min={0}
                                 max={100000000}
                                 value={String(totalLinealFeetInput)}
                                 onChange={(next) =>
@@ -4002,7 +4153,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                   "Total Square Feet",
                                 )}
                                 type="number"
-                                min={1}
+                                min={0}
                                 max={100000000}
                                 value={String(totalSquareFeetInput)}
                                 onChange={(next) =>
@@ -4061,7 +4212,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                               <FeetInchesInput
                                 label={labels.first}
                                 subLabel={getInlineSubLabel(labels.first)}
-                                min={1}
+                                min={0}
                                 max={10000}
                                 value={String(baseMeasurement)}
                                 onChange={(next) =>
@@ -4139,7 +4290,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                   <FeetInchesInput
                                     label="Custom Stud Height"
                                     subLabel="Custom heights are capped at 20' for job-site realism."
-                                    min={1}
+                                    min={0}
                                     max={20}
                                     value={String(wallStudCustomHeightFeet)}
                                     onChange={(next) =>
@@ -4160,7 +4311,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                   }
                                   className={`inline-flex w-full items-center justify-between gap-3 rounded-xl border px-3 py-2 text-left text-sm font-semibold transition ${
                                     staggeredStudWall
-                                      ? "border-[--color-orange-brand]/50 bg-[--color-orange-soft] text-[--color-orange-dark]"
+                                      ? "border-[--color-blue-brand]/50 bg-[--color-blue-soft] text-[--color-blue-dark]"
                                       : "border-[--color-border] bg-[--color-surface-alt] text-[--color-ink] hover:border-[--color-border-strong]"
                                   }`}
                                   aria-pressed={staggeredStudWall}
@@ -4182,7 +4333,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                               <FeetInchesInput
                                 label={labels.first}
                                 subLabel={getInlineSubLabel(labels.first)}
-                                min={1}
+                                min={0}
                                 max={10000}
                                 value={String(baseMeasurement)}
                                 onChange={(next) =>
@@ -4248,11 +4399,10 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                     }}
                                   />
                                   {wallStudHeightMode === "custom" ? (
-                                    <ProInput
+                                    <FeetInchesInput
                                       label="Custom Stud Height"
                                       subLabel="Custom heights are capped at 20' for job-site realism."
-                                      type="number"
-                                      min={1}
+                                      min={0}
                                       max={20}
                                       value={String(wallStudCustomHeightFeet)}
                                       onChange={(next) =>
@@ -4263,7 +4413,6 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                           20,
                                         )
                                       }
-                                      unitSuffix="ft"
                                     />
                                   ) : null}
                                 </div>
@@ -4499,7 +4648,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                   ),
                                 )
                               }
-                              className="w-full accent-orange-base"
+                              className="w-full accent-blue-base"
                             />
                           </div>
                         </details>
@@ -4524,17 +4673,13 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                 <aside
                   ref={resultsCardRef}
                   suppressHydrationWarning
-                  className={`self-start pb-8 glass-container-elevated ${
+                  className={`self-start p-5 sm:p-6 rounded-2xl border border-[--color-border] bg-white shadow-sm transition-colors ${
                     deviceProfile.layoutMode === "glass-stack"
                       ? ""
-                      : "lg:sticky lg:top-[calc(var(--shell-header-h,52px)+16px)] lg:self-start lg:pb-0"
+                      : "lg:sticky lg:top-[calc(var(--shell-header-h,52px)+16px)] lg:self-start"
                   } ${
                     deviceProfile.layoutMode === "command-center"
                       ? "xl:col-start-2"
-                      : ""
-                  } ${
-                    deviceProfile.tabletTier === "large"
-                      ? "tablet-bottom-tray order-3 mt-2 border-t border-[--color-border] pt-3"
                       : ""
                   }`}
                 >
@@ -4563,14 +4708,14 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                   <section className="glass-panel p-3 transition-colors">
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <div className="rounded-md bg-orange-base p-1.5 text-white">
+                        <div className="rounded-md bg-blue-base p-1.5 text-white">
                           <Sparkles className="h-3.5 w-3.5" aria-hidden />
                         </div>
                         <div>
-                          <p className="text-sm font-bold text-copy-primary">
+                          <p className="text-sm font-bold text-[--color-ink]">
                             AI Material Optimizer
                           </p>
-                          <p className="text-xs text-copy-tertiary">
+                          <p className="text-xs text-[--color-ink-dim]">
                             Cost savings & best practices
                           </p>
                         </div>
@@ -4579,7 +4724,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                         type="button"
                         onClick={runAiOptimizer}
                         disabled={aiOptimizeBusy}
-                        className="glass-button min-h-9 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.12em] transition-all duration-200 hover:text-[--color-ink] active:scale-[0.98]"
+                        className="rounded-xl border border-[--color-border] px-3 py-1.5 text-xs font-bold uppercase tracking-[0.12em] transition-all duration-200 hover:border-[--color-blue-brand] hover:text-[--color-blue-brand] active:scale-[0.98]"
                       >
                         {aiOptimizeBusy ? "Optimizing…" : "Optimize"}
                       </button>
@@ -4601,40 +4746,37 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                   ) : null}
 
                   {terminologyTerms.length ? (
-                    <section className="glass-panel mt-2 p-3 transition-colors">
+                    <section className="mt-4 rounded-xl border border-[--color-border] bg-[--color-surface-alt] p-4 transition-colors">
                       <div className="flex items-center justify-between gap-2">
                         <div>
-                          <p className="text-[10px] font-black uppercase tracking-[0.14em] text-copy-accent">
+                          <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[--color-blue-brand]">
                             Terminology
-                          </p>
-                          <p className="text-xs text-copy-secondary">
-                            Industry-standard inputs used in this calculator.
                           </p>
                         </div>
                         <Link
                           href={routes.glossary}
-                          className="text-[11px] font-semibold uppercase tracking-[0.12em] text-copy-primary underline-offset-4 hover:text-orange-base"
+                          className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[--color-blue-brand] underline-offset-4 hover:underline"
                         >
-                          Glossary
+                          Glossary terms
                         </Link>
                       </div>
                       <ul className="mt-3 space-y-2">
                         {terminologyTerms.slice(0, 3).map((term) => (
                           <li
                             key={term.key}
-                            className="glass-panel-deep rounded-lg px-3 py-2"
+                            className="rounded-lg border border-[--color-border]/50 bg-white px-3 py-2"
                           >
                             <div className="flex items-center justify-between gap-2">
-                              <span className="text-xs font-bold uppercase tracking-[0.12em] text-copy-primary">
+                              <span className="text-xs font-bold uppercase tracking-[0.12em] text-[--color-ink]">
                                 {term.label}
                               </span>
                               {term.unit ? (
-                                <span className="text-[10px] uppercase tracking-[0.12em] text-copy-secondary">
+                                <span className="text-[10px] uppercase tracking-[0.12em] text-[--color-ink-dim]">
                                   {term.unit}
                                 </span>
                               ) : null}
                             </div>
-                            <p className="mt-1 text-xs leading-relaxed text-copy-secondary">
+                            <p className="mt-1 text-xs leading-relaxed text-[--color-ink-mid] line-clamp-2">
                               {term.definition}
                             </p>
                           </li>
@@ -4670,7 +4812,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
               </div>
 
               <section
-                className={`glass-container p-3 sm:p-4 transition-colors ${
+                className={`p-5 sm:p-6 rounded-2xl border border-[--color-border] bg-white shadow-sm transition-colors ${
                   deviceProfile.layoutMode === "command-center" ? "xl:mt-1" : ""
                 }`}
               >
@@ -4682,10 +4824,10 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                     <Link
                       key={item.href}
                       href={item.href}
-                      className="glass-button group flex min-h-9 items-center gap-2 rounded-xl px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.08em] transition-all duration-200 hover:text-[--color-orange-brand] active:scale-[0.98]"
+                      className="glass-button group flex min-h-9 items-center gap-2 rounded-xl px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.08em] transition-all duration-200 hover:text-[--color-blue-brand] active:scale-[0.98]"
                     >
                       <item.icon
-                        className="h-3.5 w-3.5 transition-all duration-200 group-hover:text-orange-base"
+                        className="h-3.5 w-3.5 transition-all duration-200 group-hover:text-blue-base"
                         aria-hidden
                       />
                       <span className="truncate">{item.label}</span>
@@ -4701,7 +4843,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                         className="inline-flex items-center gap-2 text-sm text-copy-secondary transition-all duration-300 ease-in-out hover:text-primary"
                       >
                         <ArrowRight
-                          className="h-3.5 w-3.5 text-orange-base"
+                          className="h-3.5 w-3.5 text-blue-base"
                           aria-hidden
                         />
                         {normalizeDisplayedLabel(
@@ -4713,8 +4855,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                   ))}
                 </ul>
 
-                <div className="mt-3 rounded-xl border border-orange-base/35 bg-orange-base/10 p-3">
-                  <p className="text-xs font-bold uppercase tracking-[0.15em] text-[--color-orange-brand]">
+                <div className="mt-3 rounded-xl border border-blue-base/35 bg-blue-base/10 p-3">
+                  <p className="text-xs font-bold uppercase tracking-[0.15em] text-[--color-blue-brand]">
                     Field Notes
                   </p>
                   <p className="mt-2 text-sm text-copy-secondary">
@@ -4732,8 +4874,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
               </section>
 
               {/* Tool Navigator — at bottom, hidden on mobile */}
-              <aside className="hidden glass-panel lg:block">
-                <h2 className="text-sm font-black uppercase tracking-[0.12em] text-display-heading">
+              <aside className="hidden lg:block p-5 sm:p-6 rounded-2xl border border-[--color-border] bg-white shadow-sm h-fit">
+                <h2 className="text-sm font-black uppercase tracking-[0.12em] text-[--color-ink]">
                   Tool Navigator
                 </h2>
                 <div className="relative mt-3">
@@ -4767,7 +4909,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                         className="glass-button flex min-h-11 w-full flex-col items-center justify-center gap-1 rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-[0.09em] text-copy-secondary transition-all duration-200 ease-in-out hover:text-[--color-ink] active:scale-[0.98]"
                       >
                         <group.icon
-                          className="h-4 w-4 text-orange-base"
+                          className="h-4 w-4 text-blue-base"
                           aria-hidden
                         />
                         {group.label}
@@ -4791,12 +4933,12 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                             onClick={() => setOpenModuleGroup(null)}
                             className={`glass-nav-item mb-1 flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs transition last:mb-0 ${
                               page.canonicalPath === module.href
-                                ? "bg-[--color-orange-brand]/25 text-[--color-orange-brand]"
+                                ? "bg-[--color-blue-brand]/25 text-[--color-blue-brand]"
                                 : "text-[--color-nav-text] hover:bg-[--color-surface-alt] hover:text-[--color-ink]"
                             }`}
                           >
                             <module.icon
-                              className="h-3.5 w-3.5 text-[--color-orange-brand]"
+                              className="h-3.5 w-3.5 text-[--color-blue-brand]"
                               aria-hidden
                             />
                             {normalizeDisplayedLabel(
@@ -4828,7 +4970,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             <button
               type="button"
               onClick={() => setMobileMenuOpen((current) => !current)}
-              className="glass-button inline-flex min-h-9 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-orange-base transition-all duration-200 active:scale-[0.98]"
+              className="glass-button inline-flex min-h-9 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-blue-base transition-all duration-200 active:scale-[0.98]"
             >
               <Menu className="h-3.5 w-3.5" aria-hidden />
               Modules
@@ -4895,12 +5037,12 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                 onClick={() =>
                   finalizeBusy ? undefined : setFinalizeOpen(false)
                 }
-                className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full glass-button text-copy-tertiary transition hover:border-orange-base hover:text-primary"
+                className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full glass-button text-copy-tertiary transition hover:border-blue-base hover:text-primary"
                 aria-label="Close Finalize Estimate"
               >
                 <X className="h-4 w-4" aria-hidden />
               </button>
-              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[--color-orange-brand]">
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[--color-blue-brand]">
                 Finalize Estimate
               </p>
               <h3 className="mt-2 text-xl font-black text-display-heading">
@@ -4913,11 +5055,15 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
 
               <div className="mt-4 grid gap-3">
                 <label className="text-sm text-copy-secondary">
-                  Estimate Name
+                  Estimate Name (Auto-Generated)
                   <input
-                    value={estimateName}
-                    onChange={(event) => setEstimateName(event.target.value)}
-                    className="glass-input mt-1 h-11 w-full rounded-xl px-3 outline-none"
+                    value={
+                      estimateName && !estimateJobName && !estimateClientName
+                      ? estimateName
+                      : `${estimateClientName.trim().split(' ').pop() || 'Client'} - ${estimateJobName || 'Project'}`
+                    }
+                    readOnly
+                    className="glass-input mt-1 h-11 w-full rounded-xl px-3 outline-none opacity-80 cursor-not-allowed cursor-not-allowed text-copy-tertiary"
                   />
                 </label>
                 <label className="text-sm text-copy-secondary">
@@ -4954,63 +5100,47 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                 </label>
                 <label className="text-sm text-copy-secondary">
                   Job Site Address
-                  <input
-                    value={estimateJobAddress}
-                    onChange={(event) =>
-                      setEstimateJobAddress(event.target.value)
-                    }
-                    className="glass-input mt-1 h-11 w-full rounded-xl px-3 outline-none"
-                    placeholder="Optional"
-                  />
-                </label>
-                {hasMonetaryOutput ? (
-                  <>
-                    <label className="text-sm text-copy-secondary">
-                      County For This Estimate
-                      <select
-                        value={estimateCountySelection}
-                        onChange={(event) =>
-                          setEstimateCountySelection(
-                            event.target.value as EstimateCountySelection | "",
-                          )
+                  <div className="relative mt-1">
+                    <Autocomplete
+                      apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+                      onPlaceSelected={(place) => {
+                        if (place.formatted_address) {
+                          setEstimateJobAddress(place.formatted_address);
+                        } else if (place.name) {
+                          setEstimateJobAddress(place.name);
                         }
-                        className="glass-input mt-1 h-11 w-full rounded-xl px-3 outline-none"
-                      >
-                        <option value="">Choose county or tax handling</option>
-                        {ESTIMATE_COUNTY_OPTIONS.map((option) => (
-                          <option key={option} value={option}>
-                            {option === "None"
-                              ? "None (no county selected)"
-                              : option}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                    {estimateCountySelection === "Custom" ? (
-                      <label className="text-sm text-copy-secondary">
-                        Custom County / Tax Market
-                        <input
-                          value={estimateCountyCustom}
-                          onChange={(event) =>
-                            setEstimateCountyCustom(event.target.value)
-                          }
-                          className="glass-input mt-1 h-11 w-full rounded-xl px-3 outline-none"
-                          placeholder="Example: Onondaga or tax exempt"
-                        />
-                      </label>
-                    ) : null}
-                  </>
-                ) : (
-                  <div className="rounded-xl border border-white/10 bg-white/5 px-3 py-3">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-copy-tertiary">
-                      Waste Calculation Audit
-                    </p>
-                    <p className="mt-1 text-xs text-copy-tertiary">
-                      This calculator produces unit quantities only. Tax and
-                      county settings apply when a dollar amount is present.
-                    </p>
+                      }}
+                      options={{ types: ["address"] }}
+                      defaultValue={estimateJobAddress}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEstimateJobAddress(e.target.value)}
+                      className="glass-input h-11 w-full rounded-xl pl-3 pr-10 outline-none"
+                      placeholder="Optional"
+                    />
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if ("geolocation" in navigator) {
+                          navigator.geolocation.getCurrentPosition(async (pos) => {
+                            const { latitude, longitude } = pos.coords;
+                            try {
+                              const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
+                              const data = await res.json();
+                              if (data && data.display_name) {
+                                setEstimateJobAddress(data.display_name);
+                              }
+                            } catch {}
+                          })
+                        }
+                      }}
+                      className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-[--color-ink-dim] hover:text-[--color-blue-brand] transition-colors"
+                      title="Use Current Location"
+                    >
+                      <MapPin className="h-4 w-4" aria-hidden />
+                    </button>
                   </div>
-                )}
+                </label>
+
                 <label className="text-sm text-copy-secondary">
                   Quote Note{" "}
                   <span className="text-copy-tertiary text-xs font-normal">
@@ -5051,8 +5181,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
               </p>
 
               {primaryMaterialOrder ? (
-                <div className="mt-4 rounded-2xl border border-orange-base/30 bg-orange-base/10 px-4 py-3">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-orange-brand]">
+                <div className="mt-4 rounded-2xl border border-blue-base/30 bg-blue-base/10 px-4 py-3">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-blue-brand]">
                     First Material Order
                   </p>
                   <p className="mt-1 text-sm font-semibold text-copy-primary">
@@ -5073,7 +5203,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                     <button
                       type="button"
                       onClick={handleCopySignUrl}
-                      className="glass-button inline-flex min-h-10 flex-1 items-center justify-center rounded-xl border border-orange-base/40 px-3 text-sm font-semibold text-[--color-orange-brand]"
+                      className="glass-button inline-flex min-h-10 flex-1 items-center justify-center rounded-xl border border-blue-base/40 px-3 text-sm font-semibold text-[--color-blue-brand]"
                     >
                       Copy Link
                     </button>
@@ -5145,27 +5275,29 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                   type="button"
                   onClick={handleDownloadPdf}
                   disabled={finalizeBusy !== null}
-                  className="glass-button inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold text-copy-primary transition hover:border-orange-base disabled:opacity-60"
+                  className="glass-button inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold text-copy-primary transition hover:border-blue-base disabled:opacity-60"
                 >
                   <FileDown className="h-4 w-4" aria-hidden />
                   {finalizeBusy === "pdf" ? "Generating..." : "Download PDF"}
                 </button>
-                <button
-                  type="button"
-                  onClick={handleAddToCart}
-                  disabled={finalizeBusy !== null}
-                  className="glass-button inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold text-copy-primary transition hover:border-orange-base disabled:opacity-60"
-                >
-                  <ClipboardList className="h-4 w-4" aria-hidden />
-                  Add to Estimate Queue
-                </button>
+                {session ? (
+                  <button
+                    type="button"
+                    onClick={handleAddToCart}
+                    disabled={finalizeBusy !== null}
+                    className="glass-button inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold text-copy-primary transition hover:border-blue-base disabled:opacity-60"
+                  >
+                    <ClipboardList className="h-4 w-4" aria-hidden />
+                    Add to Estimate Queue
+                  </button>
+                ) : null}
                 <button
                   type="button"
                   onClick={() => {
                     openEmailEstimateModal();
                   }}
                   disabled={finalizeBusy !== null}
-                  className="glass-button inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold text-copy-primary transition hover:border-orange-base disabled:opacity-60"
+                  className="glass-button inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold text-copy-primary transition hover:border-blue-base disabled:opacity-60"
                 >
                   <Mail className="h-4 w-4" aria-hidden />
                   Email Client
@@ -5175,7 +5307,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                     type="button"
                     onClick={handleSendForSignature}
                     disabled={finalizeBusy !== null}
-                    className="glass-button-primary rim-light-active inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-bold text-white transition hover:bg-orange-light disabled:opacity-60"
+                    className="glass-button-primary rim-light-active inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-bold text-white transition hover:bg-blue-light disabled:opacity-60"
                   >
                     <Mail className="h-4 w-4" aria-hidden />
                     {finalizeBusy === "sign"

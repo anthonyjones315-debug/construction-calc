@@ -1,4 +1,14 @@
 import { defineConfig, devices } from "@playwright/test";
+import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+/**
+ * Read environment variables from file.
+ * https://github.com/motdotla/dotenv
+ */
+dotenv.config({ path: path.resolve(__dirname, ".env.local") });
 
 export default defineConfig({
   testDir: "./e2e",
@@ -26,6 +36,7 @@ export default defineConfig({
         ...devices["Desktop Chrome"],
         storageState: "e2e/.auth/user.json",
       },
+      testIgnore: /.*\.noauth\.spec\.ts/,
       dependencies: ["setup"],
     },
     {
@@ -34,6 +45,7 @@ export default defineConfig({
         ...devices["Desktop Firefox"],
         storageState: "e2e/.auth/user.json",
       },
+      testIgnore: /.*\.noauth\.spec\.ts/,
       dependencies: ["setup"],
     },
     {
@@ -42,6 +54,7 @@ export default defineConfig({
         ...devices["Desktop Safari"],
         storageState: "e2e/.auth/user.json",
       },
+      testIgnore: /.*\.noauth\.spec\.ts/,
       dependencies: ["setup"],
     },
     // Mobile — contractor's actual device
@@ -51,6 +64,7 @@ export default defineConfig({
         ...devices["Pixel 7"],
         storageState: "e2e/.auth/user.json",
       },
+      testIgnore: /.*\.noauth\.spec\.ts/,
       dependencies: ["setup"],
     },
     {
@@ -59,6 +73,7 @@ export default defineConfig({
         ...devices["iPhone 14"],
         storageState: "e2e/.auth/user.json",
       },
+      testIgnore: /.*\.noauth\.spec\.ts/,
       dependencies: ["setup"],
     },
     // Unauthenticated — public routes only
@@ -69,7 +84,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "npm run dev",
+    command: "npm run start",
     url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

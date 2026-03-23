@@ -43,17 +43,18 @@ export function CalculatorBreadcrumb({ page }: { page: TradePageDefinition }) {
         {crumbs.map((crumb, i) => (
           <li key={crumb.href} className="flex items-center gap-1.5">
             {i > 0 && <span className="text-slate-300">/</span>}
-            <Link
-              href={crumb.href}
-              className={
-                i === crumbs.length - 1
-                  ? "font-semibold text-slate-800"
-                  : "hover:text-[--color-orange-brand] transition-colors"
-              }
-              aria-current={i === crumbs.length - 1 ? "page" : undefined}
-            >
-              {crumb.label}
-            </Link>
+            {i === crumbs.length - 1 ? (
+              <span className="font-semibold text-slate-800" aria-current="page">
+                {crumb.label}
+              </span>
+            ) : (
+              <Link
+                href={crumb.href}
+                className="transition-colors hover:text-[--color-blue-brand]"
+              >
+                {crumb.label}
+              </Link>
+            )}
           </li>
         ))}
       </ol>

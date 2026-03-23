@@ -11,7 +11,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { routes } from "@routes";
-import { GlassFeatureItem } from "@/components/ui/glass-elements";
+
 
 const STORAGE_KEY = "pcc_welcome_guide_dismissed_v1";
 const SESSION_KEY = "pcc_welcome_guide_seen_v1";
@@ -117,11 +117,11 @@ export function WelcomeGuidePopup({
           </button>
 
           <div className="relative mb-4 flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[--color-orange-soft] text-orange-brand">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[--color-blue-soft] text-blue-brand">
               <BookOpenCheck className="h-5 w-5" aria-hidden />
             </div>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-orange-brand">
+              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-blue-brand">
                 Welcome
               </p>
               <h2
@@ -146,7 +146,7 @@ export function WelcomeGuidePopup({
                 className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700"
               >
                 <Icon
-                  className="h-4 w-4 shrink-0 text-orange-brand"
+                  className="h-4 w-4 shrink-0 text-blue-brand"
                   aria-hidden
                 />
                 <span>{label}</span>
@@ -159,7 +159,7 @@ export function WelcomeGuidePopup({
               type="checkbox"
               checked={dontShowAgain}
               onChange={(event) => setDontShowAgain(event.target.checked)}
-              className="h-4 w-4 rounded border-slate-300 text-orange-brand focus:ring-[--color-orange-brand]/30"
+              className="h-4 w-4 rounded border-slate-300 text-blue-brand focus:ring-[--color-blue-brand]/30"
             />
             Don&apos;t show this popup again
           </label>
@@ -167,7 +167,7 @@ export function WelcomeGuidePopup({
           <div className="mt-3 flex flex-col gap-2 pb-[env(safe-area-inset-bottom,0px)]">
             <Link
               href={routes.guide}
-              className="flex min-h-[44px] w-full items-center justify-center rounded-xl bg-orange-brand px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[--color-orange-dark]"
+              className="flex min-h-[44px] w-full items-center justify-center rounded-xl bg-blue-brand px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[--color-blue-dark]"
               onClick={dismiss}
             >
               Open Welcome Guide

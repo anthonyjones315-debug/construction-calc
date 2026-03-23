@@ -82,7 +82,7 @@ export function ContactAutoOpenFeedback() {
             if (!ok) setOpenFailed(true);
           });
         }}
-        className="btn-tactile inline-flex min-h-11 items-center justify-center rounded-xl bg-orange-brand px-4 py-2 text-sm font-black uppercase text-white transition-all duration-200 hover:bg-[--color-orange-dark] active:scale-[0.98]"
+        className="btn-tactile inline-flex min-h-11 items-center justify-center rounded-xl bg-blue-brand px-4 py-2 text-sm font-black uppercase text-white transition-all duration-200 hover:bg-[--color-blue-dark] active:scale-[0.98]"
       >
         Open Feedback Form
       </button>

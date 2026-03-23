@@ -1,6 +1,6 @@
 /**
  * 2FA OTP email — light SaaS system (warm page, white card, restrained accent).
- * Matches app tokens: page #f6f4ef, brand #ea580c.
+ * Matches app tokens: page #f6f4ef, brand #2563eb.
  */
 
 import { designTokens } from "@/lib/design-tokens";
@@ -50,7 +50,7 @@ export function generateOtpEmailHtml(input: OtpEmailInput): string {
         This code expires in ${expiryMinutes} minutes and works once.
       </p>
 
-      <div style="padding:14px 16px;background:#fff7ed;border-radius:12px;border:1px solid rgba(234,88,12,0.2);">
+      <div style="padding:14px 16px;background:#eff6ff;border-radius:12px;border:1px solid rgba(37,99,235,0.2);">
         <p style="margin:0;font-size:13px;line-height:1.65;color:#57534e;">
           If you didn’t try to sign in at <span style="color:${brand.orangeDark};font-weight:600;">${siteUrl}</span>, you can ignore this email. Consider updating your password if you’re unsure.
         </p>

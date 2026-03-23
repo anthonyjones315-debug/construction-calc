@@ -102,7 +102,7 @@ export default function ResetPasswordPage() {
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2.5 mb-3">
             <HardHat
-              className="h-10 w-10 text-orange-brand shrink-0"
+              className="h-10 w-10 text-blue-brand shrink-0"
               aria-hidden
             />
             <span className="text-[--color-ink] font-display font-bold text-xl tracking-tight uppercase">
@@ -152,7 +152,7 @@ export default function ResetPasswordPage() {
               minLength={PASSWORD_MIN_LENGTH}
               placeholder={`At least ${PASSWORD_MIN_LENGTH} characters`}
               aria-describedby="reset-password-requirements"
-              className="w-full rounded-lg border border-[--color-border] bg-[--color-bg] px-3.5 py-2.5 text-sm text-[--color-ink] placeholder-copy-tertiary outline-none focus:border-[--color-orange-brand] focus:ring-2 focus:ring-[--color-orange-brand]/30 transition"
+              className="w-full rounded-lg border border-[--color-border] bg-[--color-bg] px-3.5 py-2.5 text-sm text-[--color-ink] placeholder-copy-tertiary outline-none focus:border-[--color-blue-brand] focus:ring-2 focus:ring-[--color-blue-brand]/30 transition"
             />
           </div>
 
@@ -176,7 +176,7 @@ export default function ResetPasswordPage() {
               required
               minLength={PASSWORD_MIN_LENGTH}
               placeholder="Re-enter your new password"
-              className="w-full rounded-lg border border-[--color-border] bg-[--color-bg] px-3.5 py-2.5 text-sm text-[--color-ink] placeholder-copy-tertiary outline-none focus:border-[--color-orange-brand] focus:ring-2 focus:ring-[--color-orange-brand]/30 transition"
+              className="w-full rounded-lg border border-[--color-border] bg-[--color-bg] px-3.5 py-2.5 text-sm text-[--color-ink] placeholder-copy-tertiary outline-none focus:border-[--color-blue-brand] focus:ring-2 focus:ring-[--color-blue-brand]/30 transition"
             />
           </div>
 
@@ -192,7 +192,7 @@ export default function ResetPasswordPage() {
           <button
             type="submit"
             disabled={!canSubmit}
-            className="w-full rounded-lg bg-[--color-orange-brand] px-4 py-3 text-sm font-black text-white transition hover:bg-[--color-orange-dark] focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/35 focus:ring-offset-2 disabled:cursor-wait disabled:opacity-60"
+            className="w-full rounded-lg bg-[--color-blue-brand] px-4 py-3 text-sm font-black text-white transition hover:bg-[--color-blue-dark] focus:outline-none focus:ring-2 focus:ring-[--color-blue-brand]/35 focus:ring-offset-2 disabled:cursor-wait disabled:opacity-60"
           >
             {isLoading ? "Updating…" : "UPDATE & SIGN IN"}
           </button>
@@ -201,7 +201,7 @@ export default function ResetPasswordPage() {
         <div className="mt-6 text-center">
           <Link
             href={routes.auth.signIn}
-            className="inline-flex items-center justify-center w-full rounded-lg border-2 border-[--color-border] bg-transparent px-4 py-2.5 text-sm font-medium text-[--color-ink] transition-colors hover:bg-[--color-surface-alt] focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/30 focus:ring-offset-2"
+            className="inline-flex items-center justify-center w-full rounded-lg border-2 border-[--color-border] bg-transparent px-4 py-2.5 text-sm font-medium text-[--color-ink] transition-colors hover:bg-[--color-surface-alt] focus:outline-none focus:ring-2 focus:ring-[--color-blue-brand]/30 focus:ring-offset-2"
           >
             Back to Login
           </Link>

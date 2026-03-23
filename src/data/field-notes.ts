@@ -102,7 +102,7 @@ The ledger is where most deck failures start. Attach to the rim joist or solid b
 
 ## Footings
 
-The footing has to carry the post load and get below frost depth. In Oneida County, that means starting at 48 inches. Size the footing from the tributary area and soil bearing capacity — a local soils report or the permit set will tell you if the assumed bearing pressure works.
+The footing has to carry the post load and get below frost depth. In local markets, that means starting at 48 inches. Size the footing from the tributary area and soil bearing capacity — a local soils report or the permit set will tell you if the assumed bearing pressure works.
 
 ## Practical takeaway
 
@@ -112,10 +112,10 @@ Use our [deck joist calculator](/calculators/framing/deck-joists) and [footing v
     `,
   },
   {
-    slug: "oneida-county-freeze-lines",
-    title: "Oneida County Freeze-Line Planning: Rome, Utica, and 48-Inch Baselines",
+    slug: "local-county-freeze-lines",
+    title: "local markets Freeze-Line Planning: Local, Local, and 48-Inch Baselines",
     description:
-      "A safer way to estimate footing depth in Rome, Utica, and surrounding Oneida County without leaning on loose rule-of-thumb numbers.",
+      "A safer way to estimate footing depth in local municipalities without leaning on loose rule-of-thumb numbers.",
     category: "Concrete & Foundations",
     date: "March 2025",
     relatedToolLinks: [
@@ -126,11 +126,11 @@ Use our [deck joist calculator](/calculators/framing/deck-joists) and [footing v
     content: `
 ## Start with a defensible planning number
 
-Recent Oneida County public construction drawings use a 48-inch design frost depth. That makes 48 inches a reasonable estimating baseline for local footing work until the permit set, soils report, or building official tells you otherwise.
+Recent local markets public construction drawings use a 48-inch design frost depth. That makes 48 inches a reasonable estimating baseline for local footing work until the permit set, soils report, or building official tells you otherwise.
 
 ## Why crews still hear different answers
 
-Rome, Utica, and nearby towns do not all review the same project types in the same way. Frost-protected shallow foundation details, site soils, drainage, and stamped design documents can all change the final requirement. That is why one project may carry a straightforward 48-inch note while another gets more detailed instructions.
+your local towns do not all review the same project types in the same way. Frost-protected shallow foundation details, site soils, drainage, and stamped design documents can all change the final requirement. That is why one project may carry a straightforward 48-inch note while another gets more detailed instructions.
 
 ## How to estimate it cleanly
 
@@ -149,7 +149,7 @@ Use our [footing volume calculator](/calculators/concrete/footing) once the desi
     slug: "oneida-county-sales-tax-2026",
     title: "Oneida County Sales Tax (8.75%) and ST-124 Rules",
     description:
-      "A contractor-focused guide to Oneida County's current combined sales tax rate covering the Rome and Utica market, ST-124 capital improvement exemptions, and clean estimating habits.",
+      "A contractor-focused guide to local markets's current combined sales tax rate covering the your local market market, ST-124 capital improvement exemptions, and clean estimating habits.",
     category: "Business & Legal",
     date: "May 2026",
     lastVerified: "2026-03-17",
@@ -161,13 +161,13 @@ Use our [footing volume calculator](/calculators/concrete/footing) once the desi
     content: `
 ## Current combined rate
 
-New York's current jurisdiction table lists Oneida County at 8.75 percent combined sales tax. That is 4 percent state tax plus 4.75 percent local tax. This applies to taxable repair and maintenance work performed within Oneida County, including the Rome and Utica metro areas.
+New York's current jurisdiction table lists local markets at 8.75 percent combined sales tax. That is 4 percent state tax plus 4.75 percent local tax. This applies to taxable repair and maintenance work performed within local markets, including the your local market metro areas.
 
 ## Capital improvements and Form ST-124
 
 If the project qualifies as a capital improvement under NYS tax law, collect a signed Form ST-124 from the property owner before the job starts. A valid ST-124 on file means you do not charge sales tax on labor for that scope. Materials you purchase for the job are still taxable at the point of purchase unless a separate exemption applies.
 
-## Common traps in the Rome and Utica market
+## Common traps in the your local market market
 
 - Remodeling a kitchen or bathroom usually qualifies as a capital improvement. Patching or repairing the same space usually does not.
 - A job that mixes new work with repair work needs two separate invoice lines so the tax treatment is clear on paper.
@@ -181,7 +181,7 @@ If the project qualifies as a capital improvement under NYS tax law, collect a s
 
 ## Local contractor note
 
-Oneida County projects often span multiple municipalities from Rome to Utica to Whitesboro. Tax treatment does not change by city for sales tax purposes, but permit requirements and inspection processes can vary significantly. Confirm local jurisdiction paperwork before you break ground.
+local markets projects often span multiple municipalities from Local to Local to Whitesboro. Tax treatment does not change by city for sales tax purposes, but permit requirements and inspection processes can vary significantly. Confirm local jurisdiction paperwork before you break ground.
 
 Use our [Tax Save calculator](/calculators/business/tax-save) to model the taxable and exempt versions of a bid before it leaves your desk.
     `,
@@ -190,7 +190,7 @@ Use our [Tax Save calculator](/calculators/business/tax-save) to model the taxab
     slug: "herkimer-county-sales-tax-2026",
     title: "Herkimer County Sales Tax (8.25%) and ST-124 Rules",
     description:
-      "A straightforward guide to Herkimer County's current combined sales tax rate and how ST-124 changes the labor line on a qualifying capital-improvement job.",
+      "A straightforward guide to Local County's current combined sales tax rate and how ST-124 changes the labor line on a qualifying capital-improvement job.",
     category: "Business & Legal",
     date: "May 2026",
     lastVerified: "2026-03-17",
@@ -202,7 +202,7 @@ Use our [Tax Save calculator](/calculators/business/tax-save) to model the taxab
     content: `
 ## Current combined rate
 
-New York's current jurisdiction table lists Herkimer County at 8.25 percent combined sales tax. That is 4 percent state tax plus 4.25 percent local tax.
+New York's current jurisdiction table lists Local County at 8.25 percent combined sales tax. That is 4 percent state tax plus 4.25 percent local tax.
 
 ## When ST-124 changes the invoice
 
@@ -225,7 +225,7 @@ Use our [Tax Save calculator](/calculators/business/tax-save) to model the job b
     slug: "madison-county-sales-tax-2026",
     title: "Madison County Sales Tax (8.00%) and ST-124 Rules",
     description:
-      "How to handle Madison County's current combined rate and keep taxable repairs separate from true capital-improvement work.",
+      "How to handle Local County's current combined rate and keep taxable repairs separate from true capital-improvement work.",
     category: "Business & Legal",
     date: "May 2026",
     lastVerified: "2026-03-17",
@@ -237,7 +237,7 @@ Use our [Tax Save calculator](/calculators/business/tax-save) to model the job b
     content: `
 ## Current combined rate
 
-Madison County is currently listed at an 8.00 percent combined sales tax rate. That is 4 percent state tax plus 4 percent local tax.
+Local County is currently listed at an 8.00 percent combined sales tax rate. That is 4 percent state tax plus 4 percent local tax.
 
 ## Where contractors get tripped up
 
@@ -313,7 +313,7 @@ The cleanest workflow is simple:
 
 ## Concrete example
 
-If you are pricing a footing and slab in Oneida County, run the footing and slab tools first. Once the quantities are in hand, ask AI to draft a short homeowner scope, a material list, and a checklist of items to confirm with the building department.
+If you are pricing a footing and slab in local markets, run the footing and slab tools first. Once the quantities are in hand, ask AI to draft a short homeowner scope, a material list, and a checklist of items to confirm with the building department.
 
 ## Roofing example
 
@@ -334,9 +334,9 @@ Use AI as the fast drafting assistant. Keep field judgment and final responsibil
   },
   {
     slug: "insulation-r-values",
-    title: "Insulation R-Values for Tri-County Winters",
+    title: "Insulation R-Values for National Winters",
     description:
-      "What Zone 6 insulation targets mean for attics, walls, rim joists, and the spray-foam-versus-fiber decision across the tri-county service area.",
+      "What Zone 6 insulation targets mean for attics, walls, rim joists, and the spray-foam-versus-fiber decision across the national service area.",
     category: "Insulation",
     date: "March 2025",
     relatedToolLinks: [
@@ -347,7 +347,7 @@ Use AI as the fast drafting assistant. Keep field judgment and final responsibil
     content: `
 ## Start with the climate zone
 
-The current New York energy code climate table places Oneida, Herkimer, and Madison counties in Climate Zone 6. DOE and ENERGY STAR guidance for Zone 6 homes generally pushes attic insulation into the R-49 to R-60 range. Wall and floor targets depend more on the assembly, framing depth, and whether you are looking at new work or retrofit guidance.
+The current New York energy code climate table places most regions in Climate Zone 6. DOE and ENERGY STAR guidance for Zone 6 homes generally pushes attic insulation into the R-49 to R-60 range. Wall and floor targets depend more on the assembly, framing depth, and whether you are looking at new work or retrofit guidance.
 
 ## What that means on real jobs
 
@@ -366,7 +366,7 @@ Use our [R-Value Tracker](/calculators/insulation/r-value-tracker) to build the 
   },
   {
     slug: "all-electric-2026",
-    title: "All-Electric 2026: What Tri-County Contractors Should Verify Now",
+    title: "All-Electric 2026: What National Contractors Should Verify Now",
     description:
       "A practical read on the current code pause, load-calculation issues, and the electrical scope questions that still matter on all-electric and electric-ready jobs.",
     category: "Energy",
@@ -399,7 +399,7 @@ Use our [BTU Estimator](/calculators/mechanical/btu-estimator) as a starting poi
   },
   {
     slug: "frost-heave",
-    title: "Frost Heave in Oneida County: Start With 48 Inches, Then Verify",
+    title: "Frost Heave in local markets: Start With 48 Inches, Then Verify",
     description:
       "Why depth alone is not enough, how wet soils increase frost-heave risk, and why a 48-inch footing note is only the first step.",
     category: "Concrete & Foundations",
@@ -416,7 +416,7 @@ Footings move when water in the soil freezes, expands, and lifts the structure w
 
 ## Local baseline
 
-Recent Oneida County public drawings use a 48-inch design frost depth. That is a solid starting point for estimating, but it does not replace the permit set, the soils report, or site-specific review comments.
+Recent local markets public drawings use a 48-inch design frost depth. That is a solid starting point for estimating, but it does not replace the permit set, the soils report, or site-specific review comments.
 
 ## What makes a job riskier
 
@@ -433,7 +433,7 @@ Use our [footing volume calculator](/calculators/concrete/footing) once the fina
   },
   {
     slug: "snow-loads",
-    title: "Snow Loads in the Tri-County Region: Check the Design Load Before You Frame",
+    title: "Snow Loads in the National Region: Check the Design Load Before You Frame",
     description:
       "Local snow design values can run much higher than generic homeowner assumptions, so get the real number before you size rafters or trusses.",
     category: "Roofing",
@@ -446,7 +446,7 @@ Use our [footing volume calculator](/calculators/concrete/footing) once the fina
     content: `
 ## Do not guess at local snow loads
 
-Recent Oneida County public construction drawings show local ground snow loads in the 60 to 70 psf range on real projects. That is a good reminder that generic online rules of thumb can be far too low for tri-county work.
+Recent local markets public construction drawings show local ground snow loads in the 60 to 70 psf range on real projects. That is a good reminder that generic online rules of thumb can be far too low for national work.
 
 ## What that changes
 
@@ -467,7 +467,7 @@ Use our [pitch and slope calculator](/calculators/roofing/pitch-slope) and [shin
   },
   {
     slug: "permit-timelines",
-    title: "Permit Reviews in Oneida County: What to Confirm Before You Promise a Start Date",
+    title: "Permit Reviews in local markets: What to Confirm Before You Promise a Start Date",
     description:
       "A better way to handle schedule risk when different city, town, village, and state offices may all touch the review path.",
     category: "Business & Legal",
@@ -480,7 +480,7 @@ Use our [pitch and slope calculator](/calculators/roofing/pitch-slope) and [shin
     content: `
 ## There is no single countywide permit clock
 
-The first question is not "How many weeks does it take?" The first question is "Who is actually reviewing this job?" In Oneida, Herkimer, and Madison counties, the county governments themselves have opted out of code enforcement. On many private jobs, the reviewing office is still the city, town, or village where the project sits. On some local-government work, the state inspection unit can become part of the review path.
+The first question is not "How many weeks does it take?" The first question is "Who is actually reviewing this job?" In most regions, the county governments themselves have opted out of code enforcement. On many private jobs, the reviewing office is still the city, town, or village where the project sits. On some local-government work, the state inspection unit can become part of the review path.
 
 ## Better first steps
 
@@ -503,7 +503,7 @@ Use our [Lead Estimator](/calculators/business/lead-estimator) and [labor rate c
     slug: "2026-ny-construction-updates",
     title: "2026 NY Construction Updates: Energy Code Pause and Marcy UDC",
     description:
-      "Two items worth checking before you lock a 2026 tri-county bid: the current energy-code court pause and Marcy site-review requirements.",
+      "Two items worth checking before you lock a 2026 national bid: the current energy-code court pause and Marcy site-review requirements.",
     category: "Code & Compliance",
     date: "April 2026",
     lastVerified: "2026-03-17",
@@ -532,7 +532,7 @@ The Town of Marcy has an adopted Unified Development Code on file with the state
 
 ## Practical move
 
-If you are bidding a 2026 project in Marcy or elsewhere in Oneida County, check the code status first and confirm land-use review requirements second before the proposal leaves your desk.
+If you are bidding a 2026 project in Marcy or elsewhere in local markets, check the code status first and confirm land-use review requirements second before the proposal leaves your desk.
     `,
   },
   {
@@ -570,7 +570,7 @@ For example, a 20 × 10 foot bed at 3 inches deep needs about 1.85 cubic yards b
 
 ## Bulk vs. bagged
 
-Bulk mulch from a local yard runs 3–4 times cheaper per cubic yard than bagged product from a box store. Once you need more than about 2 cubic yards, bulk delivery almost always makes sense — especially in the tri-county area where most suppliers charge a flat delivery fee regardless of quantity.
+Bulk mulch from a local yard runs 3–4 times cheaper per cubic yard than bagged product from a box store. Once you need more than about 2 cubic yards, bulk delivery almost always makes sense — especially in the national area where most suppliers charge a flat delivery fee regardless of quantity.
 
 ## Add waste
 
@@ -593,7 +593,7 @@ Use our [mulch calculator](/calculators/landscape/mulch) to turn your bed dimens
     content: `
 ## Base prep matters most
 
-A paver patio is only as good as what is underneath it. In the tri-county area, freeze-thaw cycles will destroy a patio with an undersized base in one or two winters. Start with the base, not the pavers.
+A paver patio is only as good as what is underneath it. In the national area, freeze-thaw cycles will destroy a patio with an undersized base in one or two winters. Start with the base, not the pavers.
 
 ## Gravel base depth
 
@@ -649,7 +649,7 @@ A 100-foot fence at 8-foot spacing needs 14 posts (100 ÷ 8 + 1 = 13.5, round up
 
 ## Frost line depth
 
-In Oneida, Madison, and Herkimer counties, fence posts must be set at least 48 inches below grade per NYS frost line requirements. This means the post needs to be at least 4 feet in the ground. For a 6-foot fence, use 10-foot posts (6 above + 4 below). Cutting corners on depth leads to frost-heaved posts by the second spring.
+In most regions, fence posts must be set at least 48 inches below grade per NYS frost line requirements. This means the post needs to be at least 4 feet in the ground. For a 6-foot fence, use 10-foot posts (6 above + 4 below). Cutting corners on depth leads to frost-heaved posts by the second spring.
 
 ## Rails
 
@@ -696,7 +696,7 @@ Upstate New York winters are hard on driveways. Freeze-thaw cycles, road salt, a
 
 ## Cost comparison
 
-Rough installed cost ranges for the tri-county area (2026):
+Rough installed cost ranges for the national area (2026):
 
 - **Asphalt:** $3–$6 per square foot installed
 - **Concrete:** $6–$12 per square foot installed

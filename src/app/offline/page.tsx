@@ -12,8 +12,8 @@ export default function OfflinePage() {
   return (
     <div className="page-shell flex min-h-screen items-center justify-center px-4">
       <div className="dark-feature-panel w-full max-w-lg p-8 text-center text-[--color-ink]">
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[--color-orange-soft]">
-          <WifiOff className="w-8 h-8 text-[--color-orange-brand]" />
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[--color-blue-soft]">
+          <WifiOff className="w-8 h-8 text-[--color-blue-brand]" />
         </div>
         <h1 className="mb-2 text-2xl font-display font-bold text-[--color-ink]">
           You&apos;re offline
@@ -25,21 +25,21 @@ export default function OfflinePage() {
         <div className="grid gap-3 sm:grid-cols-3">
           <Link
             href={routes.calculators}
-            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[--color-orange-brand] px-5 py-3 font-bold text-white transition hover:bg-[--color-orange-dark]"
+            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[--color-blue-brand] px-5 py-3 font-bold text-white transition hover:bg-[--color-blue-dark]"
           >
             <Calculator className="w-4 h-4" aria-hidden />
             Calculators
           </Link>
           <Link
             href={routes.saved}
-            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-[--color-border] bg-[--color-surface-alt] px-5 py-3 font-semibold text-[--color-ink] transition hover:border-[--color-orange-brand]/40"
+            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-[--color-border] bg-[--color-surface-alt] px-5 py-3 font-semibold text-[--color-ink] transition hover:border-[--color-blue-brand]/40"
           >
             <FileText className="w-4 h-4" aria-hidden />
             Saved
           </Link>
           <Link
             href={routes.guide}
-            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-[--color-border] bg-[--color-surface-alt] px-5 py-3 font-semibold text-[--color-ink] transition hover:border-[--color-orange-brand]/40"
+            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-[--color-border] bg-[--color-surface-alt] px-5 py-3 font-semibold text-[--color-ink] transition hover:border-[--color-blue-brand]/40"
           >
             <BookOpenCheck className="w-4 h-4" aria-hidden />
             Guide

@@ -182,7 +182,7 @@ export function EstimateDetailClient({
       <article className="rounded-2xl border border-slate-300 bg-white px-4 py-4 shadow-sm sm:px-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-brand">
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-brand">
               Estimate
             </p>
             <h1 className="mt-1 text-xl font-black text-slate-900 sm:text-2xl">
@@ -219,11 +219,11 @@ export function EstimateDetailClient({
 
         {/* Total */}
         {estimate.totalCost != null && (
-          <div className="mt-4 rounded-xl border border-[--color-orange-soft] bg-[--color-orange-soft] px-4 py-3">
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-orange-dark]">
+          <div className="mt-4 rounded-xl border border-[--color-blue-soft] bg-[--color-blue-soft] px-4 py-3">
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-blue-dark]">
               Total
             </p>
-            <p className="mt-0.5 text-2xl font-black text-[--color-orange-dark]">
+            <p className="mt-0.5 text-2xl font-black text-[--color-blue-dark]">
               {formatDollars(estimate.totalCost)}
             </p>
           </div>
@@ -235,7 +235,7 @@ export function EstimateDetailClient({
             type="button"
             onClick={handleDownloadPdf}
             disabled={downloadingPdf}
-            className="inline-flex h-10 items-center gap-2 rounded-xl bg-orange-brand px-4 text-xs font-bold uppercase tracking-[0.08em] text-white transition hover:bg-[--color-orange-dark] disabled:opacity-60"
+            className="inline-flex h-10 items-center gap-2 rounded-xl bg-blue-brand px-4 text-xs font-bold uppercase tracking-[0.08em] text-white transition hover:bg-[--color-blue-dark] disabled:opacity-60"
           >
             {downloadingPdf ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -251,7 +251,7 @@ export function EstimateDetailClient({
                 href={estimate.signUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-xs font-bold uppercase tracking-[0.08em] text-slate-700 transition hover:border-[--color-orange-rim] hover:text-[--color-orange-dark]"
+                className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-xs font-bold uppercase tracking-[0.08em] text-slate-700 transition hover:border-[--color-blue-rim] hover:text-[--color-blue-dark]"
               >
                 <ExternalLink className="h-4 w-4" />
                 Open Signing Link
@@ -263,7 +263,7 @@ export function EstimateDetailClient({
                   setCopiedLink(true);
                   setTimeout(() => setCopiedLink(false), 2000);
                 }}
-                className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-xs font-bold uppercase tracking-[0.08em] text-slate-700 transition hover:border-[--color-orange-rim] hover:text-[--color-orange-dark]"
+                className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-xs font-bold uppercase tracking-[0.08em] text-slate-700 transition hover:border-[--color-blue-rim] hover:text-[--color-blue-dark]"
               >
                 {copiedLink ? (
                   <CheckCircle2 className="h-4 w-4 text-emerald-600" />
@@ -302,7 +302,7 @@ export function EstimateDetailClient({
       {estimate.lineItems.length > 0 && (
         <article className="rounded-2xl border border-slate-300 bg-white shadow-sm">
           <div className="px-4 pt-4 sm:px-5">
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-brand">
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-brand">
               Line Items
             </p>
           </div>
@@ -356,7 +356,7 @@ export function EstimateDetailClient({
 
       {/* Signatures */}
       <article className="rounded-2xl border border-slate-300 bg-white px-4 py-4 shadow-sm sm:px-5">
-        <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.16em] text-orange-brand">
+        <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.16em] text-blue-brand">
           Signatures
         </p>
 
@@ -426,7 +426,7 @@ export function EstimateDetailClient({
                     href={estimate.signUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-2 inline-flex items-center gap-1 text-[10px] font-semibold text-orange-brand hover:text-[--color-orange-dark]"
+                    className="mt-2 inline-flex items-center gap-1 text-[10px] font-semibold text-blue-brand hover:text-[--color-blue-dark]"
                   >
                     <ExternalLink className="h-3 w-3" />
                     Open signing link

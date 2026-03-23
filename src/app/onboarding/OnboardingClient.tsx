@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { routes } from "@routes";
+// routes import removed – not used
 import {
   AlertCircle,
   ArrowRight,
@@ -37,7 +37,7 @@ function OwnerSetup({
     <div className="w-full max-w-lg">
       {/* Brand header */}
       <div className="mb-6 flex items-center gap-3">
-        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-orange-600 text-white font-black text-lg shadow-sm">
+        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-700 text-white font-black text-lg shadow-sm">
           P
         </div>
         <div>
@@ -49,7 +49,7 @@ function OwnerSetup({
       </div>
 
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_8px_24px_rgba(0,0,0,0.06)]">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-orange-300 bg-orange-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-orange-700">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-blue-300 bg-blue-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-blue-800">
           <Crown className="h-3 w-3" aria-hidden /> Owner Setup
         </span>
         <h1 className="mt-3 text-2xl font-black uppercase text-slate-900">
@@ -71,7 +71,7 @@ function OwnerSetup({
               key={label}
               className="flex flex-col items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 py-3 px-2"
             >
-              <Icon className="h-5 w-5 text-orange-600" aria-hidden />
+              <Icon className="h-5 w-5 text-blue-700" aria-hidden />
               <p className="text-[11px] font-semibold text-slate-600">
                 {label}
               </p>
@@ -100,7 +100,7 @@ function OwnerSetup({
               required
               autoFocus
               placeholder="Acme Construction Co."
-              className="h-11 rounded-xl border border-slate-300 bg-white px-3 text-slate-900 placeholder:text-slate-400 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+              className="h-11 rounded-xl border border-slate-300 bg-white px-3 text-slate-900 placeholder:text-slate-400 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
             />
             <span className="text-[11px] font-normal text-slate-400">
               This appears on every estimate you send — keep it professional.
@@ -109,7 +109,7 @@ function OwnerSetup({
 
           <button
             type="submit"
-            className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-orange-600 px-5 text-sm font-black uppercase tracking-[0.08em] text-white shadow-sm transition hover:bg-orange-700"
+            className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-blue-700 px-5 text-sm font-black uppercase tracking-[0.08em] text-white shadow-sm transition hover:bg-blue-800"
           >
             Create Business &amp; Enter
             <ArrowRight className="h-4 w-4" aria-hidden />
@@ -120,7 +120,7 @@ function OwnerSetup({
           Have a join code?{" "}
           <Link
             href={`/onboarding?mode=join`}
-            className="font-semibold text-orange-600 hover:text-orange-700"
+            className="font-semibold text-blue-700 hover:text-blue-800"
           >
             Join an existing business instead
           </Link>
@@ -179,7 +179,7 @@ function CrewJoin({ nextPath }: { nextPath: string }) {
     <div className="w-full max-w-lg">
       {/* Brand header */}
       <div className="mb-6 flex items-center gap-3">
-        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-orange-600 text-white font-black text-lg shadow-sm">
+        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-700 text-white font-black text-lg shadow-sm">
           P
         </div>
         <div>
@@ -215,7 +215,7 @@ function CrewJoin({ nextPath }: { nextPath: string }) {
               key={text}
               className="flex items-center gap-2.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5"
             >
-              <Icon className="h-4 w-4 shrink-0 text-orange-600" aria-hidden />
+              <Icon className="h-4 w-4 shrink-0 text-blue-700" aria-hidden />
               <p className="text-xs font-semibold text-slate-700">{text}</p>
             </div>
           ))}
@@ -242,7 +242,7 @@ function CrewJoin({ nextPath }: { nextPath: string }) {
                 required
                 autoFocus
                 placeholder="e.g. ABCD1234"
-                className="h-11 rounded-xl border border-slate-300 bg-white px-3 font-mono text-base tracking-[0.12em] text-slate-900 placeholder:font-sans placeholder:text-sm placeholder:tracking-normal placeholder:text-slate-400 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+                className="h-11 rounded-xl border border-slate-300 bg-white px-3 font-mono text-base tracking-[0.12em] text-slate-900 placeholder:font-sans placeholder:text-sm placeholder:tracking-normal placeholder:text-slate-400 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
               />
               <span className="text-[11px] font-normal text-slate-400">
                 6–12 characters, no spaces. Ask your owner if you don&apos;t
@@ -263,7 +263,7 @@ function CrewJoin({ nextPath }: { nextPath: string }) {
             <button
               type="submit"
               disabled={state === "submitting" || !code.trim()}
-              className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-orange-600 px-5 text-sm font-black uppercase tracking-[0.08em] text-white shadow-sm transition hover:bg-orange-700 disabled:opacity-60"
+              className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-blue-700 px-5 text-sm font-black uppercase tracking-[0.08em] text-white shadow-sm transition hover:bg-blue-800 disabled:opacity-60"
             >
               {state === "submitting" ? "Joining…" : "Join Team"}
               {state !== "submitting" && (
@@ -277,7 +277,7 @@ function CrewJoin({ nextPath }: { nextPath: string }) {
           Are you the business owner?{" "}
           <Link
             href="/onboarding"
-            className="font-semibold text-orange-600 hover:text-orange-700"
+            className="font-semibold text-blue-700 hover:text-blue-800"
           >
             Create a new business instead
           </Link>

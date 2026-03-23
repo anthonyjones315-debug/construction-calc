@@ -5,7 +5,8 @@ test.describe("Security", () => {
     const context = await browser.newContext();
     const page = await context.newPage();
     await page.goto("/saved");
-    await expect(page).toHaveURL(/sign-in/);
+    await expect(page).toHaveURL(/\/saved/);
+    await expect(page.getByRole("heading", { name: /welcome to pro construction calc/i })).toBeVisible();
     await context.close();
   });
 
@@ -13,7 +14,8 @@ test.describe("Security", () => {
     const context = await browser.newContext();
     const page = await context.newPage();
     await page.goto("/settings");
-    await expect(page).toHaveURL(/sign-in/);
+    await expect(page).toHaveURL(/\/settings/);
+    await expect(page.getByRole("heading", { name: /welcome to pro construction calc/i })).toBeVisible();
     await context.close();
   });
 
@@ -23,7 +25,8 @@ test.describe("Security", () => {
     const context = await browser.newContext();
     const page = await context.newPage();
     await page.goto("/command-center");
-    await expect(page).toHaveURL(/sign-in/);
+    await expect(page).toHaveURL(/\/command-center/);
+    await expect(page.getByRole("heading", { name: /welcome to pro construction calc/i })).toBeVisible();
     await context.close();
   });
 
@@ -31,7 +34,8 @@ test.describe("Security", () => {
     const context = await browser.newContext();
     const page = await context.newPage();
     await page.goto("/pricebook");
-    await expect(page).toHaveURL(/sign-in/);
+    await expect(page).toHaveURL(/\/pricebook/);
+    await expect(page.getByRole("heading", { name: /welcome to pro construction calc/i })).toBeVisible();
     await context.close();
   });
 

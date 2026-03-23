@@ -5,10 +5,10 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSession } from "@/lib/auth/client";
 import {
-  HardHat,
   LayoutDashboard,
   Menu,
   X,
@@ -110,18 +110,21 @@ export function Header() {
   }, [mobileNavOpen]);
 
   return (
-    <header ref={headerRef} className="site-header-shell sticky top-0 z-50">
-      <div className="mx-auto flex h-[var(--shell-header-h)] min-w-0 max-w-7xl items-center justify-between gap-1 px-3 sm:gap-1.5 sm:px-3">
+    <header ref={headerRef} className="site-header-shell sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50 shadow-sm transition-all duration-300">
+      <div className="mx-auto flex h-[var(--shell-header-h)] min-w-0 max-w-7xl items-center justify-between gap-1 px-4 sm:gap-2 sm:px-6 lg:px-8">
         {/* Logo */}
         <Link
           href={brandHref}
           prefetch={false}
-          className="flex shrink-0 items-center gap-1 text-xs font-display font-black tracking-wide text-slate-900 transition-colors hover:text-[--color-orange-brand] sm:text-base"
+          className="flex shrink-0 items-center gap-1 text-xs font-display font-black tracking-wide text-slate-900 transition-colors hover:text-[--color-blue-brand] sm:text-base"
           aria-label="Pro Construction Calc - Command Center"
         >
-          <HardHat
-            className="h-4 w-4 text-orange-brand sm:h-[18px] sm:w-[18px]"
-            aria-hidden
+          <Image
+            src="/images/app-logo-transparent.png"
+            alt="Pro Construction Calc"
+            width={24}
+            height={24}
+            className="h-6 w-6 sm:h-8 sm:w-8 mr-2 drop-shadow-sm object-contain"
           />
           <span className="hidden sm:block">Pro Construction Calc</span>
           <span className="sm:hidden">ProCalc</span>
@@ -134,16 +137,20 @@ export function Header() {
         >
           {primaryNavigation.map(({ href, label }) => {
             const isActive = pathname === href || pathname.startsWith(href + "/");
-            return (
+            return isActive ? (
+              <span
+                key={label}
+                className="flex min-h-7 items-center rounded-lg px-2 py-1 text-xs font-semibold text-blue-brand underline underline-offset-4 decoration-[--color-blue-rim]"
+                aria-current="page"
+              >
+                {label}
+              </span>
+            ) : (
               <Link
                 key={href}
                 href={href}
                 prefetch={false}
-                className={`flex min-h-7 items-center rounded-lg px-2 py-1 text-xs transition-colors ${
-                  isActive
-                    ? "font-semibold text-orange-brand underline underline-offset-4 decoration-[--color-orange-rim]"
-                    : "text-slate-600 hover:text-[--color-orange-brand]"
-                }`}
+                className="flex min-h-7 items-center rounded-lg px-2 py-1 text-xs text-slate-600 transition-colors hover:text-[--color-blue-brand]"
               >
                 {label}
               </Link>
@@ -159,8 +166,8 @@ export function Header() {
             prefetch={false}
             className={`inline-flex h-7 min-w-[84px] items-center justify-center rounded-full border px-2 text-[9px] font-black uppercase tracking-[0.16em] ${
               isCommandCenterActive
-                ? "border-[--color-orange-brand]/45 bg-[--color-orange-soft] text-[--color-orange-dark]"
-                : "border-slate-300 bg-white text-slate-700 hover:border-[--color-orange-brand]/45 hover:text-[--color-orange-brand]"
+                ? "border-[--color-blue-brand]/45 bg-[--color-blue-soft] text-[--color-blue-dark]"
+                : "border-slate-300 bg-white text-slate-700 hover:border-[--color-blue-brand]/45 hover:text-[--color-blue-brand]"
             } hidden xs:inline-flex sm:hidden`}
             aria-label="Open Command Center dashboard"
           >
@@ -172,13 +179,13 @@ export function Header() {
           <Link
             href={routes.cart}
             prefetch={false}
-            className="inline-flex min-h-7 items-center gap-1 rounded-full border border-slate-300 bg-white px-1.5 py-1 text-[9px] font-semibold uppercase tracking-[0.14em] text-slate-700 transition hover:border-[--color-orange-brand]/45 hover:text-[--color-orange-brand] sm:px-2.5"
+            className="inline-flex min-h-7 items-center gap-1 rounded-full border border-slate-300 bg-white px-1.5 py-1 text-[9px] font-semibold uppercase tracking-[0.14em] text-slate-700 transition hover:border-[--color-blue-brand]/45 hover:text-[--color-blue-brand] sm:px-2.5"
             aria-label={`Estimate queue ${estimateCount} item${estimateCount === 1 ? "" : "s"}`}
           >
             <ClipboardList className="h-3.5 w-3.5" aria-hidden />
             <span className="hidden sm:inline">Estimates</span>
             {estimateCount > 0 && (
-              <span className="rounded-full bg-orange-brand px-1.5 py-[2px] text-[9px] font-black text-white">
+              <span className="rounded-full bg-blue-brand px-1.5 py-[2px] text-[9px] font-black text-white">
                 {estimateCount}
               </span>
             )}
@@ -203,7 +210,7 @@ export function Header() {
           ) : status === "loading" && loadingTimedOut ? (
             <Link
               href={routes.auth.signIn}
-              className="btn-tactile flex min-h-7 items-center rounded-lg bg-orange-brand px-2 text-[10px] font-black uppercase text-white transition-all duration-200 hover:bg-[--color-orange-dark] active:scale-[0.98] sm:px-2.5 sm:text-[11px]"
+              className="btn-tactile flex min-h-7 items-center rounded-lg bg-blue-brand px-2 text-[10px] font-black uppercase text-white transition-all duration-200 hover:bg-[--color-blue-dark] active:scale-[0.98] sm:px-2.5 sm:text-[11px]"
             >
               Sign In
             </Link>
@@ -242,7 +249,7 @@ export function Header() {
               >
                 <button
                   type="button"
-                  className="btn-tactile flex min-h-7 items-center rounded-lg bg-orange-brand px-2 text-[10px] font-black uppercase text-white transition-all duration-200 hover:bg-[--color-orange-dark] active:scale-[0.98] sm:px-2.5 sm:text-[11px]"
+                  className="btn-tactile flex min-h-7 items-center rounded-lg bg-blue-brand px-2 text-[10px] font-black uppercase text-white transition-all duration-200 hover:bg-[--color-blue-dark] active:scale-[0.98] sm:px-2.5 sm:text-[11px]"
                   aria-label="Sign in to your Estimating Cockpit"
                 >
                   Sign In
@@ -254,7 +261,7 @@ export function Header() {
               >
                 <button
                   type="button"
-                  className="btn-tactile hidden min-h-7 items-center rounded-lg border border-slate-300 bg-white px-2 text-[10px] font-black uppercase text-slate-700 transition-all duration-200 hover:border-[--color-orange-brand]/45 hover:text-[--color-orange-brand] active:scale-[0.98] xs:inline-flex sm:px-2.5 sm:text-[11px]"
+                  className="btn-tactile hidden min-h-7 items-center rounded-lg border border-slate-300 bg-white px-2 text-[10px] font-black uppercase text-slate-700 transition-all duration-200 hover:border-[--color-blue-brand]/45 hover:text-[--color-blue-brand] active:scale-[0.98] xs:inline-flex sm:px-2.5 sm:text-[11px]"
                   aria-label="Create an account"
                 >
                   Sign Up
@@ -284,7 +291,7 @@ export function Header() {
       {mobileNavOpen && (
         <nav
           id="mobile-navigation"
-          className="flex flex-col gap-1 border-t-2 border-[--color-orange-brand] bg-white px-4 py-2 shadow-lg md:hidden"
+          className="flex flex-col gap-1 border-t-2 border-[--color-blue-brand] bg-white px-4 py-2 shadow-lg md:hidden"
           aria-label="Mobile navigation"
         >
           {session && businessName && (
@@ -298,15 +305,15 @@ export function Header() {
               href={routes.commandCenter}
               prefetch={false}
               onClick={() => setMobileNavOpen(false)}
-              className={`flex min-h-10 items-center gap-2 rounded-lg px-4 py-1.5 text-sm transition-colors hover:bg-[--color-orange-soft] hover:text-[--color-orange-brand] ${
+              className={`flex min-h-10 items-center gap-2 rounded-lg px-4 py-1.5 text-sm transition-colors hover:bg-[--color-blue-soft] hover:text-[--color-blue-brand] ${
                 isCommandCenterActive
-                  ? "text-orange-brand font-bold"
+                  ? "text-blue-brand font-bold"
                   : "text-slate-700"
               }`}
             >
               <LayoutDashboard
                 className={`h-4 w-4 shrink-0 ${
-                  isCommandCenterActive ? "text-orange-brand" : "text-slate-400"
+                  isCommandCenterActive ? "text-blue-brand" : "text-slate-400"
                 }`}
                 aria-hidden
               />
@@ -319,7 +326,7 @@ export function Header() {
               href={href}
               prefetch={false}
               onClick={() => setMobileNavOpen(false)}
-              className="flex min-h-10 items-center rounded-lg px-4 py-1.5 text-sm text-slate-700 transition-colors hover:bg-[--color-orange-soft] hover:text-[--color-orange-brand]"
+              className="flex min-h-10 items-center rounded-lg px-4 py-1.5 text-sm text-slate-700 transition-colors hover:bg-[--color-blue-soft] hover:text-[--color-blue-brand]"
             >
               {label}
             </Link>
@@ -328,7 +335,7 @@ export function Header() {
             href={routes.cart}
             prefetch={false}
             onClick={() => setMobileNavOpen(false)}
-            className="flex min-h-10 items-center rounded-lg px-4 py-1.5 text-sm text-slate-700 transition-colors hover:bg-[--color-orange-soft] hover:text-[--color-orange-brand]"
+            className="flex min-h-10 items-center rounded-lg px-4 py-1.5 text-sm text-slate-700 transition-colors hover:bg-[--color-blue-soft] hover:text-[--color-blue-brand]"
           >
             <ClipboardList
               className="h-4 w-4 mr-2 text-slate-400"
@@ -345,7 +352,7 @@ export function Header() {
                 <button
                   type="button"
                   onClick={() => setMobileNavOpen(false)}
-                  className="btn-tactile flex min-h-10 w-full items-center justify-center rounded-lg bg-orange-brand px-4 text-xs font-black uppercase text-white"
+                  className="btn-tactile flex min-h-10 w-full items-center justify-center rounded-lg bg-blue-brand px-4 text-xs font-black uppercase text-white"
                 >
                   Sign In
                 </button>

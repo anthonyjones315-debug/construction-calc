@@ -14,6 +14,7 @@ import { PostHogPageView } from "@/components/providers/PostHogPageView";
 import { WebVitals } from "@/components/providers/WebVitals";
 import { Providers } from "@app/providers";
 import TermlyCMP from "@/components/TermlyCMP";
+import { AuthGuard } from "@/app/components/AuthGuard";
 import { JsonLD, getLocalBusinessSchema, getVerifiedReviewSchema } from "@/seo";
 import {
   BUSINESS_NAME,
@@ -140,7 +141,7 @@ export default function RootLayout({
   const verifiedReviewSchema = getVerifiedReviewSchema();
 
   return (
-    <html lang="en" className="command-theme light" suppressHydrationWarning>
+    <html lang="en" className="command-theme light" data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         {SHOULD_LINK_MANIFEST ? (
@@ -168,9 +169,9 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-title" content="Pro Calc" />
         <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="theme-color" content="#ea580c" />
+        <meta name="theme-color" content="#2563eb" />
         {/*
-          Critical CSS vars injected inline so Slate & Orange theme colors
+          Critical CSS vars injected inline so Slate & Blue theme colors
           are available before the external stylesheet or any font loads.
           This prevents a flash of white/unstyled background on first paint.
         */}
@@ -185,11 +186,11 @@ export default function RootLayout({
                 --color-ink-mid: #334155;
                 --color-ink-dim: #64748b;
                 --color-border: #e2e0db;
-                --color-primary: #ea580c;
-                --color-primary-rgb: 234 88 12;
-                --color-orange-brand: #ea580c;
-                --color-orange-dark: #c2410c;
-                --color-nav-bg: rgba(255, 247, 237, 0.94);
+                --color-primary: #2563eb;
+                --color-primary-rgb: 37 99 235;
+                --color-blue-brand: #2563eb;
+                --color-blue-dark: #1d4ed8;
+                --color-nav-bg: rgba(255, 255, 255, 0.94);
                 --shell-header-h: 52px;
               }
               html { background: var(--color-bg); color: var(--color-ink); }
@@ -206,6 +207,20 @@ export default function RootLayout({
         {/* ClerkProvider reads request auth (cookies/headers); Next.js 16 requires Suspense */}
         <Suspense fallback={null}>
           <ClerkProvider
+            appearance={{
+              variables: {
+                colorPrimary: "#2563eb",
+                colorText: "#111827",
+                colorTextSecondary: "#64748b",
+              },
+              layout: {
+                logoImageUrl: "/images/app-logo-transparent.png",
+              },
+              elements: {
+                card: "rounded-2xl border border-[--color-border] shadow-xl",
+                formButtonPrimary: "rounded-xl font-bold uppercase tracking-[0.08em]",
+              }
+            }}
             {...(clerkPublishableKey
               ? { publishableKey: clerkPublishableKey }
               : {})}
@@ -236,7 +251,7 @@ export default function RootLayout({
                       />
                     )}
                   <WebVitals />
-                  {children}
+                    <AuthGuard>{children}</AuthGuard>
                 </Providers>
               </CSPostHogProvider>
             </Suspense>

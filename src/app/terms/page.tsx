@@ -56,7 +56,7 @@ export default function TermsPage() {
               <h2 className="text-lg font-bold text-[--color-ink] mb-2">
                 2. Disclaimer — Estimation Purposes Only
               </h2>
-              <div className="trim-accent-border rounded-xl border bg-[--color-orange-soft] p-4 text-[--color-ink]">
+              <div className="trim-accent-border rounded-xl border bg-[--color-blue-soft] p-4 text-[--color-ink]">
                 <p className="font-bold mb-1">
                   ⚠️ Important Limitation of Liability
                 </p>
@@ -208,7 +208,7 @@ export default function TermsPage() {
                 For questions about these Terms, contact us at{" "}
                 <a
                   href={`mailto:${BUSINESS_EMAIL}`}
-                  className="text-[--color-orange-brand] hover:underline"
+                  className="text-[--color-blue-brand] hover:underline"
                 >
                   {BUSINESS_EMAIL}
                 </a>

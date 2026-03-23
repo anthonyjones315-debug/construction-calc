@@ -56,6 +56,10 @@ export interface BusinessProfile {
   business_address: string | null;
   business_website: string | null;
   logo_url: string | null;
+  brand_color: string | null;
+  invoice_terms: string | null;
+  hide_material_list: boolean;
+  hide_pricing_details: boolean;
   created_at: string;
   updated_at: string;
 }

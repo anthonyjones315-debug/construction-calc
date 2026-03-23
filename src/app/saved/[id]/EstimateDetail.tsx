@@ -846,7 +846,7 @@ export function EstimateDetail({ estimate }: Props) {
             <input
               value={estimateControlNumber}
               readOnly
-              className="rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-[--color-orange-brand] focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/30"
+              className="rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-[--color-blue-brand] focus:outline-none focus:ring-2 focus:ring-[--color-blue-brand]/30"
             />
           </label>
 
@@ -855,7 +855,7 @@ export function EstimateDetail({ estimate }: Props) {
             <input
               value={draft.name}
               onChange={(e) => patchDraft({ name: e.target.value })}
-              className="rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-[--color-orange-brand] focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/30"
+              className="rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-[--color-blue-brand] focus:outline-none focus:ring-2 focus:ring-[--color-blue-brand]/30"
             />
           </label>
 
@@ -866,7 +866,7 @@ export function EstimateDetail({ estimate }: Props) {
               onChange={(e) =>
                 patchDraft({ status: e.target.value as EstimateStatus })
               }
-              className="rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-[--color-orange-brand] focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/30"
+              className="rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-[--color-blue-brand] focus:outline-none focus:ring-2 focus:ring-[--color-blue-brand]/30"
             >
               <option value="Draft">Draft</option>
               <option value="Sent">Sent</option>
@@ -885,7 +885,7 @@ export function EstimateDetail({ estimate }: Props) {
               step="0.01"
               value={draft.totalCost}
               onChange={(e) => patchDraft({ totalCost: e.target.value })}
-              className="rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-[--color-orange-brand] focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/30"
+              className="rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-[--color-blue-brand] focus:outline-none focus:ring-2 focus:ring-[--color-blue-brand]/30"
             />
           </label>
 
@@ -894,7 +894,7 @@ export function EstimateDetail({ estimate }: Props) {
             <input
               value={draft.clientName}
               onChange={(e) => patchDraft({ clientName: e.target.value })}
-              className="rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-[--color-orange-brand] focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/30"
+              className="rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-[--color-blue-brand] focus:outline-none focus:ring-2 focus:ring-[--color-blue-brand]/30"
             />
           </label>
         </div>
@@ -904,7 +904,7 @@ export function EstimateDetail({ estimate }: Props) {
           <input
             value={draft.jobSiteAddress}
             onChange={(e) => patchDraft({ jobSiteAddress: e.target.value })}
-            className="rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-[--color-orange-brand] focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/30"
+            className="rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-[--color-blue-brand] focus:outline-none focus:ring-2 focus:ring-[--color-blue-brand]/30"
           />
         </label>
       </section>
@@ -944,7 +944,7 @@ export function EstimateDetail({ estimate }: Props) {
                       next[i] = { ...next[i], actualCost: e.target.value };
                       patchDraft({ budgetRows: next });
                     }}
-                    className="w-28 rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-[--color-orange-brand] focus:outline-none focus:ring-2 focus:ring-[--color-orange-brand]/30"
+                    className="w-28 rounded-lg border border-slate-500 bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink] focus:border-[--color-blue-brand] focus:outline-none focus:ring-2 focus:ring-[--color-blue-brand]/30"
                   />
                 </div>
               );
@@ -962,7 +962,7 @@ export function EstimateDetail({ estimate }: Props) {
           <button
             type="button"
             onClick={addInvoice}
-            className="inline-flex items-center gap-1 rounded-lg border-2 border-slate-500 px-3 py-1.5 text-xs font-medium text-[--color-ink] transition-colors hover:border-[--color-orange-brand]/45"
+            className="inline-flex items-center gap-1 rounded-lg border-2 border-slate-500 px-3 py-1.5 text-xs font-medium text-[--color-ink] transition-colors hover:border-[--color-blue-brand]/45"
           >
             <Plus className="w-3.5 h-3.5" aria-hidden />
             Add Invoice
@@ -1110,7 +1110,7 @@ export function EstimateDetail({ estimate }: Props) {
                       type="button"
                       onClick={() => downloadInvoicePdf(invoice)}
                       disabled={busy !== null}
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-[--color-border] px-3 py-1.5 text-xs font-medium text-[--color-ink] hover:border-[--color-orange-brand] transition-colors disabled:opacity-50"
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-[--color-border] px-3 py-1.5 text-xs font-medium text-[--color-ink] hover:border-[--color-blue-brand] transition-colors disabled:opacity-50"
                     >
                       <FileDown className="w-3.5 h-3.5" aria-hidden />
                       {busy === invoice.id
@@ -1121,7 +1121,7 @@ export function EstimateDetail({ estimate }: Props) {
                       type="button"
                       onClick={() => emailInvoice(invoice)}
                       disabled={busy !== null}
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-[--color-orange-brand]/40 px-3 py-1.5 text-xs font-medium text-[--color-orange-brand] hover:border-[--color-orange-brand] transition-colors disabled:opacity-50"
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-[--color-blue-brand]/40 px-3 py-1.5 text-xs font-medium text-[--color-blue-brand] hover:border-[--color-blue-brand] transition-colors disabled:opacity-50"
                     >
                       {isMobile() ? (
                         <Share2 className="w-3.5 h-3.5" aria-hidden />
@@ -1170,7 +1170,7 @@ export function EstimateDetail({ estimate }: Props) {
               href={signLinkPath as import("next").Route}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 rounded-xl border border-[--color-border] px-4 py-2 text-sm font-medium text-[--color-ink] hover:border-[--color-orange-brand] transition-colors"
+              className="inline-flex items-center gap-2 rounded-xl border border-[--color-border] px-4 py-2 text-sm font-medium text-[--color-ink] hover:border-[--color-blue-brand] transition-colors"
             >
               Open Sign Page
             </Link>
@@ -1179,7 +1179,7 @@ export function EstimateDetail({ estimate }: Props) {
             type="button"
             onClick={regenCode}
             disabled={regenShareBusy}
-            className="inline-flex items-center gap-2 rounded-xl border border-[--color-orange-brand]/40 px-4 py-2 text-sm font-medium text-[--color-orange-brand] hover:border-[--color-orange-brand] disabled:opacity-50 transition-colors"
+            className="inline-flex items-center gap-2 rounded-xl border border-[--color-blue-brand]/40 px-4 py-2 text-sm font-medium text-[--color-blue-brand] hover:border-[--color-blue-brand] disabled:opacity-50 transition-colors"
           >
             <RefreshCw className={`w-4 h-4 ${regenShareBusy ? "animate-spin" : ""}`} aria-hidden />
             {regenShareBusy ? "Regenerating…" : "Regenerate code"}
@@ -1193,7 +1193,7 @@ export function EstimateDetail({ estimate }: Props) {
           type="button"
           onClick={handleSave}
           disabled={saving || saveButtonLocked}
-          className={`inline-flex items-center justify-center gap-1.5 rounded-xl bg-[--color-orange-brand] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[--color-orange-dark] transition-all duration-200 disabled:opacity-60 ${saveButtonLocked ? "scale-95" : ""}`}
+          className={`inline-flex items-center justify-center gap-1.5 rounded-xl bg-[--color-blue-brand] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[--color-blue-dark] transition-all duration-200 disabled:opacity-60 ${saveButtonLocked ? "scale-95" : ""}`}
         >
           {saving ? (
             "Saving…"
@@ -1211,7 +1211,7 @@ export function EstimateDetail({ estimate }: Props) {
           type="button"
           onClick={downloadEstimatePdf}
           disabled={busy !== null}
-          className="inline-flex items-center gap-2 rounded-xl border border-[--color-border] bg-[--color-surface] px-6 py-2.5 text-sm font-medium text-[--color-ink] hover:border-[--color-orange-brand] disabled:opacity-50 transition-colors"
+          className="inline-flex items-center gap-2 rounded-xl border border-[--color-border] bg-[--color-surface] px-6 py-2.5 text-sm font-medium text-[--color-ink] hover:border-[--color-blue-brand] disabled:opacity-50 transition-colors"
         >
           <FileDown className="w-4 h-4" aria-hidden />
           {busy === "estimate-pdf" ? "Generating…" : "Estimate PDF"}
@@ -1221,7 +1221,7 @@ export function EstimateDetail({ estimate }: Props) {
           type="button"
           onClick={shareEstimate}
           disabled={busy !== null}
-          className="inline-flex items-center gap-2 rounded-xl border border-[--color-orange-brand]/40 px-6 py-2.5 text-sm font-medium text-[--color-orange-brand] hover:border-[--color-orange-brand] disabled:opacity-50 transition-colors"
+          className="inline-flex items-center gap-2 rounded-xl border border-[--color-blue-brand]/40 px-6 py-2.5 text-sm font-medium text-[--color-blue-brand] hover:border-[--color-blue-brand] disabled:opacity-50 transition-colors"
         >
           {isMobile() ? (
             <Share2 className="w-4 h-4" aria-hidden />

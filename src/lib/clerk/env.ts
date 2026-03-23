@@ -7,6 +7,8 @@
  * throwing inside `clerkMiddleware` (which causes 500s and broken `_next` assets).
  */
 export function shouldUseClerkMiddleware(): boolean {
+  // Removed hardcoded dev-bypass so Clerk can protect routes properly
+
   const pk = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.trim() ?? "";
   const sk = process.env.CLERK_SECRET_KEY?.trim() ?? "";
 

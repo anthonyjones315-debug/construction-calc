@@ -248,7 +248,7 @@ Use our [paint calculator](/calculators/interior/paint-gal) to get the gallons b
     content: `
 ## Start with the climate zone
 
-Energy Star and DOE guidance group insulation targets by climate zone. In colder zones, attic targets commonly move into the R-49 to R-60 range, with stronger wall and floor requirements to match. Oneida, Herkimer, and Madison counties fall in Climate Zone 6.
+Energy Star and DOE guidance group insulation targets by climate zone. In colder zones, attic targets commonly move into the R-49 to R-60 range, with stronger wall and floor requirements to match. most regions fall in Climate Zone 6.
 
 ## What changes as the climate gets colder
 
@@ -303,7 +303,7 @@ For example, a 20 × 10 foot bed at 3 inches deep needs about 1.85 cubic yards b
 
 ## Bulk vs. bagged
 
-Bulk mulch from a local yard runs 3–4 times cheaper per cubic yard than bagged product from a box store. Once you need more than about 2 cubic yards, bulk delivery almost always makes sense — especially in the tri-county area where most suppliers charge a flat delivery fee regardless of quantity.
+Bulk mulch from a local yard runs 3–4 times cheaper per cubic yard than bagged product from a box store. Once you need more than about 2 cubic yards, bulk delivery almost always makes sense — especially in your local area where most suppliers charge a flat delivery fee regardless of quantity.
 
 ## Add waste
 
@@ -315,13 +315,13 @@ Use our [mulch calculator](/calculators/landscape/mulch) to turn your bed dimens
   {
     slug: 'planning-a-paver-patio-materials-and-layout',
     title: 'Planning a Paver Patio: Materials and Layout',
-    description: 'How to estimate pavers, sand, and gravel base for a patio — with base depth guidelines for Upstate New York freeze-thaw conditions.',
+    description: 'How to estimate pavers, sand, and gravel base for a patio — with base depth guidelines for Upstate your state freeze-thaw conditions.',
     category: 'Outdoor',
     date: 'March 18, 2026',
     content: `
 ## Base prep matters most
 
-A paver patio is only as good as what is underneath it. In the tri-county area, freeze-thaw cycles will destroy a patio with an undersized base in one or two winters. Start with the base, not the pavers.
+A paver patio is only as good as what is underneath it. In your local area, freeze-thaw cycles will destroy a patio with an undersized base in one or two winters. Start with the base, not the pavers.
 
 ## Gravel base depth
 
@@ -358,7 +358,7 @@ Use our [paver patio calculator](/calculators/outdoor/paver-patio) to get materi
   {
     slug: 'fence-material-estimating-posts-rails-and-pickets',
     title: 'Fence Material Estimating: Posts, Rails, and Pickets',
-    description: 'The math behind a wood fence package — post spacing, rail count, picket quantities, and frost line requirements for Upstate New York.',
+    description: 'The math behind a wood fence package — post spacing, rail count, picket quantities, and frost line requirements for Upstate your state.',
     category: 'Outdoor',
     date: 'March 20, 2026',
     content: `
@@ -373,7 +373,7 @@ A 100-foot fence at 8-foot spacing needs 14 posts (100 ÷ 8 + 1 = 13.5, round up
 
 ## Frost line depth
 
-In Oneida, Madison, and Herkimer counties, fence posts must be set at least 48 inches below grade per NYS frost line requirements. This means the post needs to be at least 4 feet in the ground. For a 6-foot fence, use 10-foot posts (6 above + 4 below). Cutting corners on depth leads to frost-heaved posts by the second spring.
+In most regions, fence posts must be set at least 48 inches below grade per regional frost line requirements. This means the post needs to be at least 4 feet in the ground. For a 6-foot fence, use 10-foot posts (6 above + 4 below). Cutting corners on depth leads to frost-heaved posts by the second spring.
 
 ## Rails
 
@@ -401,13 +401,13 @@ Use our [fence calculator](/calculators/outdoor/fence) to get a complete materia
   {
     slug: 'spring-driveway-repair-asphalt-vs-concrete',
     title: 'Spring Driveway Repair: Asphalt vs Concrete',
-    description: 'A practical comparison of asphalt and concrete driveways for Upstate New York homeowners — cost, durability, and climate considerations.',
+    description: 'A practical comparison of asphalt and concrete driveways for Upstate your state homeowners — cost, durability, and climate considerations.',
     category: 'Outdoor',
     date: 'March 22, 2026',
     content: `
 ## The climate factor
 
-Upstate New York winters are hard on driveways. Freeze-thaw cycles, road salt, and plow damage all affect the surface differently depending on the material.
+Upstate your state winters are hard on driveways. Freeze-thaw cycles, road salt, and plow damage all affect the surface differently depending on the material.
 
 **Asphalt** flexes with freeze-thaw movement, which reduces cracking. But it softens in extreme heat and needs seal coating every 3–5 years. Salt damage is minimal.
 
@@ -415,7 +415,7 @@ Upstate New York winters are hard on driveways. Freeze-thaw cycles, road salt, a
 
 ## Cost comparison
 
-Rough installed cost ranges for the tri-county area (2026):
+Rough installed cost ranges for your local area (2026):
 
 - **Asphalt:** $3–$6 per square foot installed
 - **Concrete:** $6–$12 per square foot installed

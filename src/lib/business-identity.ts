@@ -15,14 +15,14 @@ export const BUSINESS_WHATSAPP_URL =
   process.env.NEXT_PUBLIC_BUSINESS_WHATSAPP_URL ??
   process.env.BUSINESS_WHATSAPP_URL ??
   null;
-export const BUSINESS_CITY_STATE = "Rome, NY";
-export const BUSINESS_REGION = "Tri-County New York";
+export const BUSINESS_CITY_STATE = "USA";
+export const BUSINESS_REGION = "United States";
 export const BUSINESS_STATE = "NY";
 export const BUSINESS_COUNTRY = "US";
 
 export const BUSINESS_AREAS_SERVED = [
-  { "@type": "AdministrativeArea", name: "Oneida County, NY" },
-  { "@type": "AdministrativeArea", name: "Madison County, NY" },
-  { "@type": "AdministrativeArea", name: "Herkimer County, NY" },
-  { "@type": "AdministrativeArea", name: "Tri-County New York" },
+  { "@type": "AdministrativeArea", name: "USA" },
+  { "@type": "AdministrativeArea", name: "USA" },
+  { "@type": "AdministrativeArea", name: "USA" },
+  { "@type": "AdministrativeArea", name: "United States" },
 ] as const;
