@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import { Check, Copy } from "lucide-react";
 
 function cx(...parts: Array<string | false | null | undefined>) {
   return parts.filter(Boolean).join(" ");
@@ -334,6 +335,14 @@ export function ProResult({
   finalizeIcon,
   containerClassName = "glass-container-elevated",
 }: ProResultProps) {
+  const [copied, setCopied] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!copied) return;
+    const timer = setTimeout(() => setCopied(false), 2000);
+    return () => clearTimeout(timer);
+  }, [copied]);
+
   return (
     <section
       className={`${containerClassName} relative flex min-h-[180px] flex-col gap-2 p-3`}
@@ -403,10 +412,25 @@ export function ProResult({
             {onCopyOrder ? (
               <GlassButton
                 type="button"
-                onClick={onCopyOrder}
+                onClick={() => {
+                  onCopyOrder();
+                  setCopied(true);
+                }}
                 className="min-h-7 rounded-lg border-[--color-border] px-2 py-1 text-xs font-bold uppercase tracking-widest text-copy-secondary hover:border-primary/40"
               >
-                Copy
+                <span className="flex items-center gap-1">
+                  {copied ? (
+                    <>
+                      <Check className="h-3 w-3 text-emerald-500" />
+                      Copied
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-3 w-3" />
+                      Copy
+                    </>
+                  )}
+                </span>
               </GlassButton>
             ) : null}
           </div>

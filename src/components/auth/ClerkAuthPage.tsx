@@ -98,6 +98,11 @@ export function ClerkAuthPage({
   const router = useRouter();
   const [timedOut, setTimedOut] = useState(false);
 
+  // Adjust state during render to avoid cascading renders in useEffect
+  if (isLoaded && timedOut) {
+    setTimedOut(false);
+  }
+
   useEffect(() => {
     if (!isLoaded || !isSignedIn) {
       return;
@@ -108,7 +113,6 @@ export function ClerkAuthPage({
 
   useEffect(() => {
     if (isLoaded) {
-      setTimedOut(false);
       return;
     }
 
