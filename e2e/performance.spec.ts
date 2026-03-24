@@ -103,8 +103,10 @@ test.describe("Performance — Core Web Vitals", () => {
       }
     });
 
-    await page.goto("/calculators");
-    await page.waitForLoadState("networkidle");
+    await page.goto("/calculators", { waitUntil: "domcontentloaded" });
+    await expect(
+      page.getByRole("heading", { name: /calculators/i }).first(),
+    ).toBeVisible();
     expect(hydrationErrors).toHaveLength(0);
   });
 });

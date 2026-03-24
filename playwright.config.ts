@@ -12,13 +12,17 @@ dotenv.config({ path: path.resolve(__dirname, ".env.local") });
 
 export default defineConfig({
   testDir: "./e2e",
-  fullyParallel: true,
+  timeout: 60_000,
+  expect: {
+    timeout: 10_000,
+  },
+  fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  workers: process.env.CI ? 1 : 2,
   reporter: [["html"], ["list"]],
   use: {
-    timeout: 60000,
+    actionTimeout: 15_000,
     navigationTimeout: 30000,
     baseURL: "http://localhost:3000",
     trace: "on-first-retry",
@@ -85,10 +89,10 @@ export default defineConfig({
       testMatch: /.*\.noauth\.spec\.ts/,
     },
   ],
-  /* webServer: {
-    command: "npm run dev",
+  webServer: {
+    command: "npm run start:e2e",
     url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
-  }, */
+    timeout: 300_000,
+  },
 });

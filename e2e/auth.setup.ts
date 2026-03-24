@@ -111,23 +111,12 @@ setup("authenticate", async ({ page, context }) => {
   }
 
   const pageContext = await page.context();
-  let cookies = await pageContext.cookies();
-  let retries = 0;
-
-  // clerk polls the session cookie, so we have to set a wait
-  while (!cookies.some(c => c.name === '__session') && retries < 100) {
-    await page.waitForTimeout(100);
-    cookies = await pageContext.cookies();
-    retries++;
-  }
-
-  if (!cookies.some(c => c.name === '__session')) {
-    throw new Error('Failed to find __session cookie after sign in');
-  }
-
-  // Check the URL manually or wait
-  // No need to click anything or wait for URL match, but let's wait a moment just to ensure storage state is fully stable
-  await page.waitForTimeout(1000);
+  await expect
+    .poll(async () => {
+      const cookies = await pageContext.cookies();
+      return cookies.some((cookie) => cookie.name === "__session");
+    })
+    .toBe(true);
 
   // store the cookies in the state.json
   await pageContext.storageState({ path: authFile });

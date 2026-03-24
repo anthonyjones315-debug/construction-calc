@@ -19,6 +19,7 @@ const ignoredDirectories = new Set([
 ]);
 const approvedFiles = new Set([
   "eslint.config.mjs",
+  "e2e/lib/axe.min.js",
   "postcss.config.mjs",
   "scripts/benchmark-frontend-metrics.mjs",
   "scripts/check-calculations.mjs",
@@ -30,6 +31,7 @@ const approvedFiles = new Set([
   "scripts/liquid-orange-glass-performance-test.mjs",
   "scripts/performance-test.js",
   "scripts/rewrite-calcs-paths.mjs",
+  "scripts/test-supabase.mjs",
 ]);
 
 async function collectViolations(currentDir, violations) {

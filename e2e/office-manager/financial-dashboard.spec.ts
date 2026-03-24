@@ -26,12 +26,9 @@ test.describe("Office Manager — Financial Dashboard", () => {
 
   test("financial data loads without infinite spinner", async ({ page }) => {
     await openCommandCenterOrSkip(page);
-
-    // Wait for data to load
-    await page.waitForLoadState("networkidle");
+    await expect(page.locator("main")).toBeVisible();
 
     const spinner = page.getByTestId("loading-spinner");
-    // Spinner should not persist after network idle
     await expect(spinner).not.toBeVisible({ timeout: 5000 });
   });
 
@@ -39,7 +36,7 @@ test.describe("Office Manager — Financial Dashboard", () => {
     page,
   }) => {
     await openCommandCenterOrSkip(page);
-    await page.waitForLoadState("networkidle");
+    await expect(page.locator("main")).toBeVisible();
 
     const revenueEl = page.getByTestId("total-revenue");
     if (await revenueEl.isVisible()) {
@@ -53,7 +50,7 @@ test.describe("Office Manager — Financial Dashboard", () => {
     page,
   }) => {
     await openCommandCenterOrSkip(page);
-    await page.waitForLoadState("networkidle");
+    await expect(page.locator("main")).toBeVisible();
 
     const mtd = page.getByTestId("revenue-mtd");
     const ytd = page.getByTestId("revenue-ytd");

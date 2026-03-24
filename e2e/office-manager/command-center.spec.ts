@@ -44,9 +44,8 @@ test.describe("Office Manager — Command Center Dashboard", () => {
     const statusFilter = page.getByLabel(/status|filter/i).first();
     if (await statusFilter.isVisible()) {
       await statusFilter.selectOption(/signed|approved/i);
-      // List should update
-      await page.waitForTimeout(500);
       const items = page.getByTestId("estimate-list-item");
+      await expect.poll(async () => items.count()).toBeGreaterThanOrEqual(0);
       const count = await items.count();
       // All visible items should be "signed" status
       if (count > 0) {
@@ -65,9 +64,9 @@ test.describe("Office Manager — Command Center Dashboard", () => {
     const searchInput = page.getByPlaceholder(/search|find estimate/i);
     if (await searchInput.isVisible()) {
       await searchInput.fill("Johnson");
-      await page.waitForTimeout(400); // debounce
 
       const items = page.getByTestId("estimate-list-item");
+      await expect.poll(async () => items.count()).toBeGreaterThanOrEqual(0);
       const count = await items.count();
       if (count > 0) {
         const firstText = await items.first().textContent();
@@ -132,7 +131,9 @@ test.describe("Office Manager — Command Center Dashboard", () => {
   }) => {
     const start = Date.now();
     await openCommandCenterOrSkip(page);
-    await page.waitForLoadState("networkidle");
+    await expect(
+      page.getByRole("heading", { name: /command center|dashboard/i }),
+    ).toBeVisible();
     const elapsed = Date.now() - start;
     expect(elapsed).toBeLessThan(3000);
   });

@@ -1,9 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 test("Clerk login modal appears", async ({ page }) => {
-  await page.goto("/");
-  // Wait for the page to load
-  await page.waitForLoadState("networkidle");
+  await page.goto("/", { waitUntil: "domcontentloaded" });
   
   const signInButton = page.getByRole("button", { name: /sign in/i }).first();
   await expect(signInButton).toBeVisible();

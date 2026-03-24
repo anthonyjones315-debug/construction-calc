@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import path from "path";
 
 test.describe("Accessibility — WCAG 2.1 AA", () => {
 
@@ -12,10 +13,11 @@ test.describe("Accessibility — WCAG 2.1 AA", () => {
 
   for (const route of keyPages) {
     test(`${route} — no critical ARIA violations`, async ({ page }) => {
-      await page.goto(route);
+      await page.goto(route, { waitUntil: "domcontentloaded" });
+      await expect(page.locator("main, body").first()).toBeVisible();
       // Inject axe-core for audit
       await page.addScriptTag({
-        url: "https://cdnjs.cloudflare.com/ajax/libs/axe-core/4.9.1/axe.min.js",
+        path: path.resolve(__dirname, "lib/axe.min.js"),
       });
 
       const violations = await page.evaluate(async () => {

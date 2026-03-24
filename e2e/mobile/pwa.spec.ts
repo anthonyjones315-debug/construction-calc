@@ -62,7 +62,15 @@ test.describe("PWA — Mobile Experience", () => {
   test("offline fallback page appears when network is down", async ({ page, context }) => {
     // Load the app first so SW caches it
     await page.goto("/");
-    await page.waitForTimeout(1000);
+    await expect
+      .poll(async () => {
+        return page.evaluate(async () => {
+          if (!("serviceWorker" in navigator)) return false;
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          return registrations.length > 0;
+        });
+      })
+      .toBe(true);
 
     // Simulate offline
     await context.setOffline(true);
