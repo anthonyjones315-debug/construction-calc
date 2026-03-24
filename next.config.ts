@@ -36,10 +36,6 @@ const nextConfig: NextConfig = {
         source: "/ingest/:path*",
         destination: "https://us.i.posthog.com/:path*",
       },
-      {
-        source: "/__clerk/:path*",
-        destination: "https://cdn.clerk.com/:path*",
-      },
     ];
   },
   async redirects() {
@@ -142,13 +138,13 @@ const nextConfig: NextConfig = {
       scriptSrc,
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://client.crisp.chat",
       "font-src 'self' data: https://fonts.gstatic.com https://client.crisp.chat",
-      "img-src 'self' data: blob: https://images.unsplash.com https://maps.gstatic.com https://maps.googleapis.com https://www.googletagmanager.com https://*.google-analytics.com https://*.googlesyndication.com https://*.doubleclick.net https://*.supabase.co https://*.googleusercontent.com https://lh3.googleusercontent.com http://googleusercontent.com https://*.adtrafficquality.google https://ep1.adtrafficquality.google https://client.crisp.chat https://image.crisp.chat https://proconstructioncalc.com https://app.termly.io https://img.clerk.com",
+      "img-src 'self' data: blob: https://images.unsplash.com https://maps.gstatic.com https://maps.googleapis.com https://www.googletagmanager.com https://*.google-analytics.com https://*.googlesyndication.com https://*.doubleclick.net https://*.supabase.co https://*.googleusercontent.com https://lh3.googleusercontent.com http://googleusercontent.com https://*.adtrafficquality.google https://ep1.adtrafficquality.google https://client.crisp.chat https://image.crisp.chat https://proconstructioncalc.com https://app.termly.io https://img.clerk.com https://*.clerk.com https://cdn.clerk.com",
       // Sentry ingest + Vercel + Google Analytics + ads + Supabase Auth (required for password reset / auth recovery)
       connectSrc,
       "media-src 'none'",
       "object-src 'none'",
       "worker-src 'self' blob:",
-      "frame-src 'self' https://googleads.g.doubleclick.net https://*.googlesyndication.com https://*.google.com https://accounts.google.com https://*.adtrafficquality.google https://challenges.cloudflare.com https://*.clerk.accounts.dev https://clerk.accounts.dev https://clerk.com https://*.clerk.com https://*.proconstructioncalc.com https://vercel.live",
+      "frame-src 'self' https://googleads.g.doubleclick.net https://*.googlesyndication.com https://*.google.com https://accounts.google.com https://*.adtrafficquality.google https://challenges.cloudflare.com https://*.clerk.accounts.dev https://clerk.accounts.dev https://clerk.com https://*.clerk.com https://cdn.clerk.com https://*.proconstructioncalc.com https://vercel.live",
       // frame-ancestors mirrors X-Frame-Options: DENY for CSP-aware browsers
       "frame-ancestors 'none'",
       "base-uri 'self'",
