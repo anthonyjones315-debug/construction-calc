@@ -25,6 +25,7 @@ const approvedFiles = new Set([
   "scripts/check-color-contrast.mjs",
   "scripts/check-structural-syntax.mjs",
   "scripts/enforce-types-only.mjs",
+  "scripts/generate-tests.js",
   "scripts/liquid-orange-glass-performance-test.js",
   "scripts/liquid-orange-glass-performance-test.mjs",
   "scripts/performance-test.js",

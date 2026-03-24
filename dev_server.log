@@ -1,0 +1,441 @@
+
+> proconstructioncalc@1.0.0 dev /app
+> next dev --turbopack
+
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+✓ Ready in 595ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+- Cache Components enabled
+- Experiments (use with caution):
+  · clientTraceMetadata
+  · optimizePackageImports
+
+○ Compiling /calculators/concrete/slab ...
+
+[35m
+[Clerk]:[0m You are running in keyless mode.
+You can [35mclaim your keys[0m by visiting https://dashboard.clerk.com/apps/claim?framework=nextjs&token=tnmk1yt62q98wayh46v4ou4e98idqphrvaixrzzj&return_url=http%3A%2F%2Flocalhost%3A3000%2F
+
+ GET /calculators/concrete/slab 200 in 24.1s (next.js: 19.5s, proxy.ts: 237ms, application-code: 4.4s)
+[clerk debug start: clerkMiddleware]
+  options, {
+    "publishableKey": "pk_test_aW50ZXJuYWwtZ29iYmxlci05NC5jbGVyay5hY2NvdW50cy5kZXYk",
+    "secretKey": "sk_test_*********2uw",
+    "signInUrl": "",
+    "signUpUrl": "",
+    "debug": true
+  }
+  url, {
+    "url": "https://localhost:3000/calculators/concrete/slab",
+    "method": "GET",
+    "headers": "{\"accept\":\"text/x-component\",\"accept-encoding\":\"gzip, deflate\",\"accept-language\":\"*\",\"access-control-allow-headers\":\"RSC, Next-Router-Prefetch, Next-Router-State-Tree, Next-Router-Segment-Prefetch, next-router-segment-prefetch, Next-Url, next-url, Content-Type, Authorization\",\"cache-control\":\"no-cache, no-store, max-age=0, must-revalidate\",\"connection\":\"keep-alive\",\"content-security-policy\":\"default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://va.vercel-scripts.com https://cdn.vercel-insights.com https://vercel.live https://browser.sentry-cdn.com https://js.sentry-cdn.com https://*.googletagmanager.com https://maps.googleapis.com https://static.cloudflareinsights.com https://pagead2.googlesyndication.com https://adservice.google.com https://*.adtrafficquality.google https://*.google-analytics.com https://accounts.google.com https://us-assets.i.posthog.com https://app.termly.io https://client.crisp.chat https://*.clerk.accounts.dev https://clerk.accounts.dev https://*.clerk.com https://challenges.cloudflare.com https://*.proconstructioncalc.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://client.crisp.chat; font-src 'self' data: https://fonts.gstatic.com https://client.crisp.chat; img-src 'self' data: blob: https://images.unsplash.com https://maps.gstatic.com https://maps.googleapis.com https://www.googletagmanager.com https://*.google-analytics.com https://*.googlesyndication.com https://*.doubleclick.net https://*.supabase.co https://*.googleusercontent.com https://lh3.googleusercontent.com http://googleusercontent.com https://*.adtrafficquality.google https://ep1.adtrafficquality.google https://client.crisp.chat https://image.crisp.chat https://proconstructioncalc.com https://app.termly.io https://img.clerk.com; connect-src 'self' data: blob: https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.g.doubleclick.net https://*.pagead2.googlesyndication.com https://*.googlesyndication.com https://*.adtrafficquality.google https://ep1.adtrafficquality.google https://*.google.com https://maps.googleapis.com https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com https://*.sentry.io https://o4511044273766400.ingest.us.sentry.io https://us.i.posthog.com https://us-assets.i.posthog.com https://vitals.vercel-insights.com https://va.vercel-scripts.com https://vercel.live https://app.termly.io https://us.consent.api.termly.io https://proconstructioncalc.com https://*.supabase.co https://lh3.googleusercontent.com https://client.relay.crisp.chat https://client.crisp.chat wss://client.relay.crisp.chat wss://client.crisp.chat https://*.clerk.accounts.dev https://clerk.accounts.dev https://clerk.com https://*.clerk.com https://clerk-telemetry.com https://*.clerk-telemetry.com https://static.cloudflareinsights.com https://cloudflareinsights.com https://*.proconstructioncalc.com; media-src 'none'; object-src 'none'; worker-src 'self' blob:; frame-src 'self' https://googleads.g.doubleclick.net https://*.googlesyndication.com https://*.google.com https://accounts.google.com https://*.adtrafficquality.google https://challenges.cloudflare.com https://*.clerk.accounts.dev https://clerk.accounts.dev https://clerk.com https://*.clerk.com https://*.proconstructioncalc.com https://vercel.live; frame-ancestors 'none'; base-uri 'self'; form-action 'self'\",\"content-type\":\"text/plain;charset=UTF-8\",\"cookie\":\"__clerk_keys_a172cedcae47474b=%7B%22claimUrl%22%3A%22https%3A%2F%2Fdashboard.clerk.com%2Fapps%2Fclaim%3Fframework%3Dnextjs%26token%3Dtnmk1yt62q98wayh46v4ou4e98idqphrvaixrzzj%22%2C%22publishableKey%22%3A%22pk_test_aW50ZXJuYWwtZ29iYmxlci05NC5jbGVyay5hY2NvdW50cy5kZXYk%22%2C%22secretKey%22%3A%22sk_test_tnGIvGdW1LdTfie9hTC6OG0lOHIWOn7A9FNgmaQ2uw%22%7D\",\"cross-origin-opener-policy\":\"same-origin\",\"host\":\"localhost:3000\",\"origin\":\"http://localhost:3000\",\"permissions-policy\":\"camera=(), microphone=(), interest-cohort=(), geolocation=(self \\\"https://maps.googleapis.com\\\")\",\"referer\":\"http://localhost:3000/calculators/concrete/slab\",\"referrer-policy\":\"strict-origin-when-cross-origin\",\"sec-ch-ua\":\"\\\"Not:A-Brand\\\";v=\\\"99\\\", \\\"HeadlessChrome\\\";v=\\\"145\\\", \\\"Chromium\\\";v=\\\"145\\\"\",\"sec-ch-ua-mobile\":\"?0\",\"sec-ch-ua-platform\":\"\\\"Linux\\\"\",\"sec-fetch-dest\":\"empty\",\"sec-fetch-mode\":\"cors\",\"sec-fetch-site\":\"same-origin\",\"strict-transport-security\":\"max-age=63072000; includeSubDomains; preload\",\"user-agent\":\"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36\",\"vary\":\"rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch\",\"x-action-redirect\":\"/clerk-sync-keyless?returnUrl=http://localhost:3000/calculators/concrete/slab;replace\",\"x-action-revalidated\":\"1\",\"x-clerk-auth-status\":\"signed-out\",\"x-content-type-options\":\"nosniff\",\"x-forwarded-for\":\"::1\",\"x-forwarded-host\":\"localhost:3000\",\"x-forwarded-port\":\"3000\",\"x-forwarded-proto\":\"https\",\"x-frame-options\":\"DENY\",\"x-nextjs-html-request-id\":\"lEegv_gaaOIvDXqQ4x-97\",\"x-nextjs-request-id\":\"c214d5e3\"}",
+    "clerkUrl": "https://localhost:3000/calculators/concrete/slab",
+    "cookies": "{\"__clerk_keys_a172cedcae47474b\":\"{\\\"claimUrl\\\":\\\"https://dashboard.clerk.com/apps/claim?framework=nextjs&token=tnmk1yt62q98wayh46v4ou4e98idqphrvaixrzzj\\\",\\\"publishableKey\\\":\\\"pk_test_aW50ZXJuYWwtZ29iYmxlci05NC5jbGVyay5hY2NvdW50cy5kZXYk\\\",\\\"secretKey\\\":\\\"sk_test_tnGIvGdW1LdTfie9hTC6OG0lOHIWOn7A9FNgmaQ2uw\\\"}\"}"
+  }
+  Content-Security-Policy detected, {
+    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://va.vercel-scripts.com https://cdn.vercel-insights.com https://vercel.live https://browser.sentry-cdn.com https://js.sentry-cdn.com https://*.googletagmanager.com https://maps.googleapis.com https://static.cloudflareinsights.com https://pagead2.googlesyndication.com https://adservice.google.com https://*.adtrafficquality.google https://*.google-analytics.com https://accounts.google.com https://us-assets.i.posthog.com https://app.termly.io https://client.crisp.chat https://*.clerk.accounts.dev https://clerk.accounts.dev https://*.clerk.com https://challenges.cloudflare.com https://*.proconstructioncalc.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://client.crisp.chat; font-src 'self' data: https://fonts.gstatic.com https://client.crisp.chat; img-src 'self' data: blob: https://images.unsplash.com https://maps.gstatic.com https://maps.googleapis.com https://www.googletagmanager.com https://*.google-analytics.com https://*.googlesyndication.com https://*.doubleclick.net https://*.supabase.co https://*.googleusercontent.com https://lh3.googleusercontent.com http://googleusercontent.com https://*.adtrafficquality.google https://ep1.adtrafficquality.google https://client.crisp.chat https://image.crisp.chat https://proconstructioncalc.com https://app.termly.io https://img.clerk.com; connect-src 'self' data: blob: https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.g.doubleclick.net https://*.pagead2.googlesyndication.com https://*.googlesyndication.com https://*.adtrafficquality.google https://ep1.adtrafficquality.google https://*.google.com https://maps.googleapis.com https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com https://*.sentry.io https://o4511044273766400.ingest.us.sentry.io https://us.i.posthog.com https://us-assets.i.posthog.com https://vitals.vercel-insights.com https://va.vercel-scripts.com https://vercel.live https://app.termly.io https://us.consent.api.termly.io https://proconstructioncalc.com https://*.supabase.co https://lh3.googleusercontent.com https://client.relay.crisp.chat https://client.crisp.chat wss://client.relay.crisp.chat wss://client.crisp.chat https://*.clerk.accounts.dev https://clerk.accounts.dev https://clerk.com https://*.clerk.com https://clerk-telemetry.com https://*.clerk-telemetry.com https://static.cloudflareinsights.com https://cloudflareinsights.com https://*.proconstructioncalc.com; media-src 'none'; object-src 'none'; worker-src 'self' blob:; frame-src 'self' https://googleads.g.doubleclick.net https://*.googlesyndication.com https://*.google.com https://accounts.google.com https://*.adtrafficquality.google https://challenges.cloudflare.com https://*.clerk.accounts.dev https://clerk.accounts.dev https://clerk.com https://*.clerk.com https://*.proconstructioncalc.com https://vercel.live; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+  }
+  requestState, {
+    "status": "signed-out",
+    "headers": "{\"x-clerk-auth-reason\":\"dev-browser-missing\",\"x-clerk-auth-status\":\"signed-out\"}",
+    "reason": "dev-browser-missing"
+  }
+  auth, {
+    "auth": {
+      "tokenType": "session_token",
+      "sessionClaims": null,
+      "sessionId": null,
+      "sessionStatus": null,
+      "userId": null,
+      "actor": null,
+      "orgId": null,
+      "orgRole": null,
+      "orgSlug": null,
+      "orgPermissions": null,
+      "factorVerificationAge": null,
+      "isAuthenticated": false
+    },
+    "debug": {
+      "cookieSuffix": "FviHJlWg",
+      "clerkRequest": {
+        "url": "https://localhost:3000/calculators/concrete/slab",
+        "method": "GET",
+        "headers": "{\"accept\":\"text/x-component\",\"accept-encoding\":\"gzip, deflate\",\"accept-language\":\"*\",\"access-control-allow-headers\":\"RSC, Next-Router-Prefetch, Next-Router-State-Tree, Next-Router-Segment-Prefetch, next-router-segment-prefetch, Next-Url, next-url, Content-Type, Authorization\",\"cache-control\":\"no-cache, no-store, max-age=0, must-revalidate\",\"connection\":\"keep-alive\",\"content-security-policy\":\"default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://va.vercel-scripts.com https://cdn.vercel-insights.com https://vercel.live https://browser.sentry-cdn.com https://js.sentry-cdn.com https://*.googletagmanager.com https://maps.googleapis.com https://static.cloudflareinsights.com https://pagead2.googlesyndication.com https://adservice.google.com https://*.adtrafficquality.google https://*.google-analytics.com https://accounts.google.com https://us-assets.i.posthog.com https://app.termly.io https://client.crisp.chat https://*.clerk.accounts.dev https://clerk.accounts.dev https://*.clerk.com https://challenges.cloudflare.com https://*.proconstructioncalc.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://client.crisp.chat; font-src 'self' data: https://fonts.gstatic.com https://client.crisp.chat; img-src 'self' data: blob: https://images.unsplash.com https://maps.gstatic.com https://maps.googleapis.com https://www.googletagmanager.com https://*.google-analytics.com https://*.googlesyndication.com https://*.doubleclick.net https://*.supabase.co https://*.googleusercontent.com https://lh3.googleusercontent.com http://googleusercontent.com https://*.adtrafficquality.google https://ep1.adtrafficquality.google https://client.crisp.chat https://image.crisp.chat https://proconstructioncalc.com https://app.termly.io https://img.clerk.com; connect-src 'self' data: blob: https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.g.doubleclick.net https://*.pagead2.googlesyndication.com https://*.googlesyndication.com https://*.adtrafficquality.google https://ep1.adtrafficquality.google https://*.google.com https://maps.googleapis.com https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com https://*.sentry.io https://o4511044273766400.ingest.us.sentry.io https://us.i.posthog.com https://us-assets.i.posthog.com https://vitals.vercel-insights.com https://va.vercel-scripts.com https://vercel.live https://app.termly.io https://us.consent.api.termly.io https://proconstructioncalc.com https://*.supabase.co https://lh3.googleusercontent.com https://client.relay.crisp.chat https://client.crisp.chat wss://client.relay.crisp.chat wss://client.crisp.chat https://*.clerk.accounts.dev https://clerk.accounts.dev https://clerk.com https://*.clerk.com https://clerk-telemetry.com https://*.clerk-telemetry.com https://static.cloudflareinsights.com https://cloudflareinsights.com https://*.proconstructioncalc.com; media-src 'none'; object-src 'none'; worker-src 'self' blob:; frame-src 'self' https://googleads.g.doubleclick.net https://*.googlesyndication.com https://*.google.com https://accounts.google.com https://*.adtrafficquality.google https://challenges.cloudflare.com https://*.clerk.accounts.dev https://clerk.accounts.dev https://clerk.com https://*.clerk.com https://*.proconstructioncalc.com https://vercel.live; frame-ancestors 'none'; base-uri 'self'; form-action 'self'\",\"content-type\":\"text/plain;charset=UTF-8\",\"cookie\":\"__clerk_keys_a172cedcae47474b=%7B%22claimUrl%22%3A%22https%3A%2F%2Fdashboard.clerk.com%2Fapps%2Fclaim%3Fframework%3Dnextjs%26token%3Dtnmk1yt62q98wayh46v4ou4e98idqphrvaixrzzj%22%2C%22publishableKey%22%3A%22pk_test_aW50ZXJuYWwtZ29iYmxlci05NC5jbGVyay5hY2NvdW50cy5kZXYk%22%2C%22secretKey%22%3A%22sk_test_tnGIvGdW1LdTfie9hTC6OG0lOHIWOn7A9FNgmaQ2uw%22%7D\",\"cross-origin-opener-policy\":\"same-origin\",\"host\":\"localhost:3000\",\"origin\":\"http://localhost:3000\",\"permissions-policy\":\"camera=(), microphone=(), interest-cohort=(), geolocation=(self \\\"https://maps.googleapis.com\\\")\",\"referer\":\"http://localhost:3000/calculators/concrete/slab\",\"referrer-policy\":\"strict-origin-when-cross-origin\",\"sec-ch-ua\":\"\\\"Not:A-Brand\\\";v=\\\"99\\\", \\\"HeadlessChrome\\\";v=\\\"145\\\", \\\"Chromium\\\";v=\\\"145\\\"\",\"sec-ch-ua-mobile\":\"?0\",\"sec-ch-ua-platform\":\"\\\"Linux\\\"\",\"sec-fetch-dest\":\"empty\",\"sec-fetch-mode\":\"cors\",\"sec-fetch-site\":\"same-origin\",\"strict-transport-security\":\"max-age=63072000; includeSubDomains; preload\",\"user-agent\":\"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36\",\"vary\":\"rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch\",\"x-action-redirect\":\"/clerk-sync-keyless?returnUrl=http://localhost:3000/calculators/concrete/slab;replace\",\"x-action-revalidated\":\"1\",\"x-clerk-auth-status\":\"signed-out\",\"x-content-type-options\":\"nosniff\",\"x-forwarded-for\":\"::1\",\"x-forwarded-host\":\"localhost:3000\",\"x-forwarded-port\":\"3000\",\"x-forwarded-proto\":\"https\",\"x-frame-options\":\"DENY\",\"x-nextjs-html-request-id\":\"lEegv_gaaOIvDXqQ4x-97\",\"x-nextjs-request-id\":\"c214d5e3\"}",
+        "clerkUrl": "https://localhost:3000/calculators/concrete/slab",
+        "cookies": "{\"__clerk_keys_a172cedcae47474b\":\"{\\\"claimUrl\\\":\\\"https://dashboard.clerk.com/apps/claim?framework=nextjs&token=tnmk1yt62q98wayh46v4ou4e98idqphrvaixrzzj\\\",\\\"publishableKey\\\":\\\"pk_test_aW50ZXJuYWwtZ29iYmxlci05NC5jbGVyay5hY2NvdW50cy5kZXYk\\\",\\\"secretKey\\\":\\\"sk_test_tnGIvGdW1LdTfie9hTC6OG0lOHIWOn7A9FNgmaQ2uw\\\"}\"}"
+      },
+      "originalFrontendApi": "internal-gobbler-94.clerk.accounts.dev",
+      "publishableKey": "pk_test_aW50ZXJuYWwtZ29iYmxlci05NC5jbGVyay5hY2NvdW50cy5kZXYk",
+      "instanceType": "development",
+      "frontendApi": "internal-gobbler-94.clerk.accounts.dev",
+      "origin": "http://localhost:3000",
+      "host": "localhost:3000",
+      "forwardedHost": "localhost:3000",
+      "forwardedProto": "https",
+      "referrer": "http://localhost:3000/calculators/concrete/slab",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36",
+      "secFetchDest": "empty",
+      "accept": "text/x-component",
+      "clientUat": 0,
+      "handshakeRedirectLoopCounter": 0,
+      "secretKey": "sk_test",
+      "signInUrl": "",
+      "signUpUrl": "",
+      "debug": true,
+      "proxyUrl": "",
+      "isSatellite": false,
+      "domain": "",
+      "acceptsToken": "any",
+      "machineSecretKey": "",
+      "jwtKey": "",
+      "apiUrl": "https://api.clerk.com",
+      "apiVersion": "v1",
+      "audience": "",
+      "apiClient": {
+        "__experimental_accountlessApplications": {},
+        "actorTokens": {},
+        "agentTasks": {},
+        "allowlistIdentifiers": {},
+        "apiKeys": {},
+        "betaFeatures": {},
+        "blocklistIdentifiers": {},
+        "billing": {},
+        "clients": {},
+        "domains": {},
+        "emailAddresses": {},
+        "enterpriseConnections": {},
+        "idPOAuthAccessToken": {},
+        "instance": {},
+        "invitations": {},
+        "jwks": {},
+        "jwtTemplates": {},
+        "machines": {},
+        "m2m": {},
+        "oauthApplications": {},
+        "organizations": {},
+        "phoneNumbers": {},
+        "proxyChecks": {},
+        "redirectUrls": {},
+        "sessions": {},
+        "signInTokens": {},
+        "signUps": {},
+        "testingTokens": {},
+        "users": {},
+        "waitlistEntries": {},
+        "webhooks": {},
+        "samlConnections": {}
+      },
+      "clerkUrl": "https://localhost:3000/calculators/concrete/slab",
+      "status": "signed-out",
+      "reason": "dev-browser-missing",
+      "message": ""
+    }
+  }
+[clerk debug end: clerkMiddleware] (@clerk/nextjs=7.0.6,next=16.2.1,timestamp=1774312809)
+[browser] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview (https://internal-gobbler-94.clerk.accounts.dev/npm/@clerk/clerk-js@6/dist/clerk.browser.js:12:3226)
+ GET /calculators/concrete/slab 200 in 183ms (next.js: 7ms, proxy.ts: 56ms, application-code: 121ms)
+ POST /calculators/concrete/slab 303 in 268ms (next.js: 7ms, proxy.ts: 18ms, application-code: 242ms)
+  └─ ƒ syncKeylessConfigAction({"apiKeysUrl":"https://dashboard.clerk.com/apps/app_3BMxaagbd4HuSsh8IDlBbg0JBPc/instances/ins_3BMxadYrzyqdAz5mYbZ3dctaeM2/api-keys","claimUrl":"https://dashboard.clerk.com/apps/claim?framework=nextjs&token=tnmk1yt62q98wayh46v4ou4e98idqphrvaixrzzj","...":"3 items not stringified"}) in 8ms node_modules/.pnpm/@clerk+nextjs@7.0.6_next@16.2.1_@babel+core@7.29.0_@opentelemetry+api@1.9.0_@playwright_7c6c67b34b9db6a7abdfc15e54326f79/node_modules/@clerk/nextjs/dist/esm-router/keyless-actions.js
+[clerk debug start: clerkMiddleware]
+  options, {
+    "publishableKey": "pk_test_aW50ZXJuYWwtZ29iYmxlci05NC5jbGVyay5hY2NvdW50cy5kZXYk",
+    "secretKey": "sk_test_*********2uw",
+    "signInUrl": "",
+    "signUpUrl": "",
+    "debug": true
+  }
+  url, {
+    "url": "http://localhost:3000/calculators/concrete/slab",
+    "method": "GET",
+    "headers": "{\"accept\":\"*/*\",\"accept-encoding\":\"gzip, deflate, br, zstd\",\"connection\":\"keep-alive\",\"cookie\":\"__clerk_db_jwt_FviHJlWg=dvb_3BMxbCb8lnDa61YAeJdBQ992m6Q; __clerk_db_jwt=dvb_3BMxbCb8lnDa61YAeJdBQ992m6Q; __clerk_keys_a172cedcae47474b=%7B%22claimUrl%22%3A%22https%3A%2F%2Fdashboard.clerk.com%2Fapps%2Fclaim%3Fframework%3Dnextjs%26token%3Dtnmk1yt62q98wayh46v4ou4e98idqphrvaixrzzj%22%2C%22publishableKey%22%3A%22pk_test_aW50ZXJuYWwtZ29iYmxlci05NC5jbGVyay5hY2NvdW50cy5kZXYk%22%2C%22secretKey%22%3A%22sk_test_tnGIvGdW1LdTfie9hTC6OG0lOHIWOn7A9FNgmaQ2uw%22%7D\",\"host\":\"localhost:3000\",\"next-url\":\"/calculators/concrete/slab\",\"referer\":\"http://localhost:3000/calculators/concrete/slab\",\"sec-ch-ua\":\"\\\"Not:A-Brand\\\";v=\\\"99\\\", \\\"HeadlessChrome\\\";v=\\\"145\\\", \\\"Chromium\\\";v=\\\"145\\\"\",\"sec-ch-ua-mobile\":\"?0\",\"sec-ch-ua-platform\":\"\\\"Linux\\\"\",\"sec-fetch-dest\":\"empty\",\"sec-fetch-mode\":\"cors\",\"sec-fetch-site\":\"same-origin\",\"user-agent\":\"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36\",\"x-forwarded-for\":\"::1\",\"x-forwarded-host\":\"localhost:3000\",\"x-forwarded-port\":\"3000\",\"x-forwarded-proto\":\"http\",\"x-nextjs-html-request-id\":\"lEegv_gaaOIvDXqQ4x-97\",\"x-nextjs-request-id\":\"1a5a9797\"}",
+    "clerkUrl": "http://localhost:3000/calculators/concrete/slab",
+    "cookies": "{\"__clerk_db_jwt_FviHJlWg\":\"dvb_3BMxbCb8lnDa61YAeJdBQ992m6Q\",\"__clerk_db_jwt\":\"dvb_3BMxbCb8lnDa61YAeJdBQ992m6Q\",\"__clerk_keys_a172cedcae47474b\":\"{\\\"claimUrl\\\":\\\"https://dashboard.clerk.com/apps/claim?framework=nextjs&token=tnmk1yt62q98wayh46v4ou4e98idqphrvaixrzzj\\\",\\\"publishableKey\\\":\\\"pk_test_aW50ZXJuYWwtZ29iYmxlci05NC5jbGVyay5hY2NvdW50cy5kZXYk\\\",\\\"secretKey\\\":\\\"sk_test_tnGIvGdW1LdTfie9hTC6OG0lOHIWOn7A9FNgmaQ2uw\\\"}\"}"
+  }
+  requestState, {
+    "status": "signed-out",
+    "headers": "{\"x-clerk-auth-reason\":\"session-token-and-uat-missing\",\"x-clerk-auth-status\":\"signed-out\"}",
+    "reason": "session-token-and-uat-missing"
+  }
+  auth, {
+    "auth": {
+      "tokenType": "session_token",
+      "sessionClaims": null,
+      "sessionId": null,
+      "sessionStatus": null,
+      "userId": null,
+      "actor": null,
+      "orgId": null,
+      "orgRole": null,
+      "orgSlug": null,
+      "orgPermissions": null,
+      "factorVerificationAge": null,
+      "isAuthenticated": false
+    },
+    "debug": {
+      "cookieSuffix": "FviHJlWg",
+      "clerkRequest": {
+        "url": "http://localhost:3000/calculators/concrete/slab",
+        "method": "GET",
+        "headers": "{\"accept\":\"*/*\",\"accept-encoding\":\"gzip, deflate, br, zstd\",\"connection\":\"keep-alive\",\"cookie\":\"__clerk_db_jwt_FviHJlWg=dvb_3BMxbCb8lnDa61YAeJdBQ992m6Q; __clerk_db_jwt=dvb_3BMxbCb8lnDa61YAeJdBQ992m6Q; __clerk_keys_a172cedcae47474b=%7B%22claimUrl%22%3A%22https%3A%2F%2Fdashboard.clerk.com%2Fapps%2Fclaim%3Fframework%3Dnextjs%26token%3Dtnmk1yt62q98wayh46v4ou4e98idqphrvaixrzzj%22%2C%22publishableKey%22%3A%22pk_test_aW50ZXJuYWwtZ29iYmxlci05NC5jbGVyay5hY2NvdW50cy5kZXYk%22%2C%22secretKey%22%3A%22sk_test_tnGIvGdW1LdTfie9hTC6OG0lOHIWOn7A9FNgmaQ2uw%22%7D\",\"host\":\"localhost:3000\",\"next-url\":\"/calculators/concrete/slab\",\"referer\":\"http://localhost:3000/calculators/concrete/slab\",\"sec-ch-ua\":\"\\\"Not:A-Brand\\\";v=\\\"99\\\", \\\"HeadlessChrome\\\";v=\\\"145\\\", \\\"Chromium\\\";v=\\\"145\\\"\",\"sec-ch-ua-mobile\":\"?0\",\"sec-ch-ua-platform\":\"\\\"Linux\\\"\",\"sec-fetch-dest\":\"empty\",\"sec-fetch-mode\":\"cors\",\"sec-fetch-site\":\"same-origin\",\"user-agent\":\"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36\",\"x-forwarded-for\":\"::1\",\"x-forwarded-host\":\"localhost:3000\",\"x-forwarded-port\":\"3000\",\"x-forwarded-proto\":\"http\",\"x-nextjs-html-request-id\":\"lEegv_gaaOIvDXqQ4x-97\",\"x-nextjs-request-id\":\"1a5a9797\"}",
+        "clerkUrl": "http://localhost:3000/calculators/concrete/slab",
+        "cookies": "{\"__clerk_db_jwt_FviHJlWg\":\"dvb_3BMxbCb8lnDa61YAeJdBQ992m6Q\",\"__clerk_db_jwt\":\"dvb_3BMxbCb8lnDa61YAeJdBQ992m6Q\",\"__clerk_keys_a172cedcae47474b\":\"{\\\"claimUrl\\\":\\\"https://dashboard.clerk.com/apps/claim?framework=nextjs&token=tnmk1yt62q98wayh46v4ou4e98idqphrvaixrzzj\\\",\\\"publishableKey\\\":\\\"pk_test_aW50ZXJuYWwtZ29iYmxlci05NC5jbGVyay5hY2NvdW50cy5kZXYk\\\",\\\"secretKey\\\":\\\"sk_test_tnGIvGdW1LdTfie9hTC6OG0lOHIWOn7A9FNgmaQ2uw\\\"}\"}"
+      },
+      "originalFrontendApi": "internal-gobbler-94.clerk.accounts.dev",
+      "publishableKey": "pk_test_aW50ZXJuYWwtZ29iYmxlci05NC5jbGVyay5hY2NvdW50cy5kZXYk",
+      "instanceType": "development",
+      "frontendApi": "internal-gobbler-94.clerk.accounts.dev",
+      "host": "localhost:3000",
+      "forwardedHost": "localhost:3000",
+      "forwardedProto": "http",
+      "referrer": "http://localhost:3000/calculators/concrete/slab",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36",
+      "secFetchDest": "empty",
+      "accept": "*/*",
+      "clientUat": 0,
+      "devBrowserToken": "dvb_3BMxbCb8lnDa61YAeJdBQ992m6Q",
+      "handshakeRedirectLoopCounter": 0,
+      "secretKey": "sk_test",
+      "signInUrl": "",
+      "signUpUrl": "",
+      "debug": true,
+      "proxyUrl": "",
+      "isSatellite": false,
+      "domain": "",
+      "acceptsToken": "any",
+      "machineSecretKey": "",
+      "jwtKey": "",
+      "apiUrl": "https://api.clerk.com",
+      "apiVersion": "v1",
+      "audience": "",
+      "apiClient": {
+        "__experimental_accountlessApplications": {},
+        "actorTokens": {},
+        "agentTasks": {},
+        "allowlistIdentifiers": {},
+        "apiKeys": {},
+        "betaFeatures": {},
+        "blocklistIdentifiers": {},
+        "billing": {},
+        "clients": {},
+        "domains": {},
+        "emailAddresses": {},
+        "enterpriseConnections": {},
+        "idPOAuthAccessToken": {},
+        "instance": {},
+        "invitations": {},
+        "jwks": {},
+        "jwtTemplates": {},
+        "machines": {},
+        "m2m": {},
+        "oauthApplications": {},
+        "organizations": {},
+        "phoneNumbers": {},
+        "proxyChecks": {},
+        "redirectUrls": {},
+        "sessions": {},
+        "signInTokens": {},
+        "signUps": {},
+        "testingTokens": {},
+        "users": {},
+        "waitlistEntries": {},
+        "webhooks": {},
+        "samlConnections": {}
+      },
+      "clerkUrl": "http://localhost:3000/calculators/concrete/slab",
+      "status": "signed-out",
+      "reason": "session-token-and-uat-missing",
+      "message": ""
+    }
+  }
+[clerk debug end: clerkMiddleware] (@clerk/nextjs=7.0.6,next=16.2.1,timestamp=1774312809)
+ GET /calculators/concrete/slab 200 in 36ms (next.js: 6ms, proxy.ts: 16ms, application-code: 14ms)
+[clerk debug start: clerkMiddleware]
+  options, {
+    "publishableKey": "pk_test_aW50ZXJuYWwtZ29iYmxlci05NC5jbGVyay5hY2NvdW50cy5kZXYk",
+    "secretKey": "sk_test_*********2uw",
+    "signInUrl": "",
+    "signUpUrl": "",
+    "debug": true
+  }
+  url, {
+    "url": "http://localhost:3000/calculators/concrete/slab",
+    "method": "GET",
+    "headers": "{\"accept\":\"*/*\",\"accept-encoding\":\"gzip, deflate, br, zstd\",\"connection\":\"keep-alive\",\"cookie\":\"__clerk_db_jwt_FviHJlWg=dvb_3BMxbCb8lnDa61YAeJdBQ992m6Q; __clerk_db_jwt=dvb_3BMxbCb8lnDa61YAeJdBQ992m6Q; __clerk_keys_a172cedcae47474b=%7B%22claimUrl%22%3A%22https%3A%2F%2Fdashboard.clerk.com%2Fapps%2Fclaim%3Fframework%3Dnextjs%26token%3Dtnmk1yt62q98wayh46v4ou4e98idqphrvaixrzzj%22%2C%22publishableKey%22%3A%22pk_test_aW50ZXJuYWwtZ29iYmxlci05NC5jbGVyay5hY2NvdW50cy5kZXYk%22%2C%22secretKey%22%3A%22sk_test_tnGIvGdW1LdTfie9hTC6OG0lOHIWOn7A9FNgmaQ2uw%22%7D; __client_uat_FviHJlWg=0; __client_uat=0\",\"host\":\"localhost:3000\",\"next-url\":\"/calculators/concrete/slab\",\"referer\":\"http://localhost:3000/calculators/concrete/slab\",\"sec-ch-ua\":\"\\\"Not:A-Brand\\\";v=\\\"99\\\", \\\"HeadlessChrome\\\";v=\\\"145\\\", \\\"Chromium\\\";v=\\\"145\\\"\",\"sec-ch-ua-mobile\":\"?0\",\"sec-ch-ua-platform\":\"\\\"Linux\\\"\",\"sec-fetch-dest\":\"empty\",\"sec-fetch-mode\":\"cors\",\"sec-fetch-site\":\"same-origin\",\"user-agent\":\"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36\",\"x-forwarded-for\":\"::1\",\"x-forwarded-host\":\"localhost:3000\",\"x-forwarded-port\":\"3000\",\"x-forwarded-proto\":\"http\",\"x-nextjs-html-request-id\":\"lEegv_gaaOIvDXqQ4x-97\",\"x-nextjs-request-id\":\"d05454da\"}",
+    "clerkUrl": "http://localhost:3000/calculators/concrete/slab",
+    "cookies": "{\"__clerk_db_jwt_FviHJlWg\":\"dvb_3BMxbCb8lnDa61YAeJdBQ992m6Q\",\"__clerk_db_jwt\":\"dvb_3BMxbCb8lnDa61YAeJdBQ992m6Q\",\"__clerk_keys_a172cedcae47474b\":\"{\\\"claimUrl\\\":\\\"https://dashboard.clerk.com/apps/claim?framework=nextjs&token=tnmk1yt62q98wayh46v4ou4e98idqphrvaixrzzj\\\",\\\"publishableKey\\\":\\\"pk_test_aW50ZXJuYWwtZ29iYmxlci05NC5jbGVyay5hY2NvdW50cy5kZXYk\\\",\\\"secretKey\\\":\\\"sk_test_tnGIvGdW1LdTfie9hTC6OG0lOHIWOn7A9FNgmaQ2uw\\\"}\",\"__client_uat_FviHJlWg\":\"0\",\"__client_uat\":\"0\"}"
+  }
+  requestState, {
+    "status": "signed-out",
+    "headers": "{\"x-clerk-auth-reason\":\"session-token-and-uat-missing\",\"x-clerk-auth-status\":\"signed-out\"}",
+    "reason": "session-token-and-uat-missing"
+  }
+  auth, {
+    "auth": {
+      "tokenType": "session_token",
+      "sessionClaims": null,
+      "sessionId": null,
+      "sessionStatus": null,
+      "userId": null,
+      "actor": null,
+      "orgId": null,
+      "orgRole": null,
+      "orgSlug": null,
+      "orgPermissions": null,
+      "factorVerificationAge": null,
+      "isAuthenticated": false
+    },
+    "debug": {
+      "cookieSuffix": "FviHJlWg",
+      "clerkRequest": {
+        "url": "http://localhost:3000/calculators/concrete/slab",
+        "method": "GET",
+        "headers": "{\"accept\":\"*/*\",\"accept-encoding\":\"gzip, deflate, br, zstd\",\"connection\":\"keep-alive\",\"cookie\":\"__clerk_db_jwt_FviHJlWg=dvb_3BMxbCb8lnDa61YAeJdBQ992m6Q; __clerk_db_jwt=dvb_3BMxbCb8lnDa61YAeJdBQ992m6Q; __clerk_keys_a172cedcae47474b=%7B%22claimUrl%22%3A%22https%3A%2F%2Fdashboard.clerk.com%2Fapps%2Fclaim%3Fframework%3Dnextjs%26token%3Dtnmk1yt62q98wayh46v4ou4e98idqphrvaixrzzj%22%2C%22publishableKey%22%3A%22pk_test_aW50ZXJuYWwtZ29iYmxlci05NC5jbGVyay5hY2NvdW50cy5kZXYk%22%2C%22secretKey%22%3A%22sk_test_tnGIvGdW1LdTfie9hTC6OG0lOHIWOn7A9FNgmaQ2uw%22%7D; __client_uat_FviHJlWg=0; __client_uat=0\",\"host\":\"localhost:3000\",\"next-url\":\"/calculators/concrete/slab\",\"referer\":\"http://localhost:3000/calculators/concrete/slab\",\"sec-ch-ua\":\"\\\"Not:A-Brand\\\";v=\\\"99\\\", \\\"HeadlessChrome\\\";v=\\\"145\\\", \\\"Chromium\\\";v=\\\"145\\\"\",\"sec-ch-ua-mobile\":\"?0\",\"sec-ch-ua-platform\":\"\\\"Linux\\\"\",\"sec-fetch-dest\":\"empty\",\"sec-fetch-mode\":\"cors\",\"sec-fetch-site\":\"same-origin\",\"user-agent\":\"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36\",\"x-forwarded-for\":\"::1\",\"x-forwarded-host\":\"localhost:3000\",\"x-forwarded-port\":\"3000\",\"x-forwarded-proto\":\"http\",\"x-nextjs-html-request-id\":\"lEegv_gaaOIvDXqQ4x-97\",\"x-nextjs-request-id\":\"d05454da\"}",
+        "clerkUrl": "http://localhost:3000/calculators/concrete/slab",
+        "cookies": "{\"__clerk_db_jwt_FviHJlWg\":\"dvb_3BMxbCb8lnDa61YAeJdBQ992m6Q\",\"__clerk_db_jwt\":\"dvb_3BMxbCb8lnDa61YAeJdBQ992m6Q\",\"__clerk_keys_a172cedcae47474b\":\"{\\\"claimUrl\\\":\\\"https://dashboard.clerk.com/apps/claim?framework=nextjs&token=tnmk1yt62q98wayh46v4ou4e98idqphrvaixrzzj\\\",\\\"publishableKey\\\":\\\"pk_test_aW50ZXJuYWwtZ29iYmxlci05NC5jbGVyay5hY2NvdW50cy5kZXYk\\\",\\\"secretKey\\\":\\\"sk_test_tnGIvGdW1LdTfie9hTC6OG0lOHIWOn7A9FNgmaQ2uw\\\"}\",\"__client_uat_FviHJlWg\":\"0\",\"__client_uat\":\"0\"}"
+      },
+      "originalFrontendApi": "internal-gobbler-94.clerk.accounts.dev",
+      "publishableKey": "pk_test_aW50ZXJuYWwtZ29iYmxlci05NC5jbGVyay5hY2NvdW50cy5kZXYk",
+      "instanceType": "development",
+      "frontendApi": "internal-gobbler-94.clerk.accounts.dev",
+      "host": "localhost:3000",
+      "forwardedHost": "localhost:3000",
+      "forwardedProto": "http",
+      "referrer": "http://localhost:3000/calculators/concrete/slab",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36",
+      "secFetchDest": "empty",
+      "accept": "*/*",
+      "clientUat": 0,
+      "devBrowserToken": "dvb_3BMxbCb8lnDa61YAeJdBQ992m6Q",
+      "handshakeRedirectLoopCounter": 0,
+      "secretKey": "sk_test",
+      "signInUrl": "",
+      "signUpUrl": "",
+      "debug": true,
+      "proxyUrl": "",
+      "isSatellite": false,
+      "domain": "",
+      "acceptsToken": "any",
+      "machineSecretKey": "",
+      "jwtKey": "",
+      "apiUrl": "https://api.clerk.com",
+      "apiVersion": "v1",
+      "audience": "",
+      "apiClient": {
+        "__experimental_accountlessApplications": {},
+        "actorTokens": {},
+        "agentTasks": {},
+        "allowlistIdentifiers": {},
+        "apiKeys": {},
+        "betaFeatures": {},
+        "blocklistIdentifiers": {},
+        "billing": {},
+        "clients": {},
+        "domains": {},
+        "emailAddresses": {},
+        "enterpriseConnections": {},
+        "idPOAuthAccessToken": {},
+        "instance": {},
+        "invitations": {},
+        "jwks": {},
+        "jwtTemplates": {},
+        "machines": {},
+        "m2m": {},
+        "oauthApplications": {},
+        "organizations": {},
+        "phoneNumbers": {},
+        "proxyChecks": {},
+        "redirectUrls": {},
+        "sessions": {},
+        "signInTokens": {},
+        "signUps": {},
+        "testingTokens": {},
+        "users": {},
+        "waitlistEntries": {},
+        "webhooks": {},
+        "samlConnections": {}
+      },
+      "clerkUrl": "http://localhost:3000/calculators/concrete/slab",
+      "status": "signed-out",
+      "reason": "session-token-and-uat-missing",
+      "message": ""
+    }
+  }
+[clerk debug end: clerkMiddleware] (@clerk/nextjs=7.0.6,next=16.2.1,timestamp=1774312809)
+ GET /calculators/concrete/slab 200 in 99ms (next.js: 5ms, proxy.ts: 23ms, application-code: 71ms)
+[browser] Uncaught Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HTTPAccessFallbackErrorBoundary pathname="/calculato..." notFound={<SegmentViewNode>} forbidden={undefined} ...>
+      <RedirectBoundary>
+        <RedirectErrorBoundary router={{...}}>
+          <InnerLayoutRouter url="/calculato..." tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} ...>
+            <LoadingBoundaryProvider loading={[...]}>
+              <SegmentViewNode type="layout" pagePath="src/calcul...">
+                <SegmentTrieNode>
+                <script>
+                <script>
+                <script>
+                <CalculatorsLayout>
+                  <div className="light publ...">
+                    <script>
+                    <Header>
+                      <header ref={{current:null}} className="site-heade...">
+                        <div className="mx-auto fl...">
+                          <LinkComponent>
+                          <nav>
+                          <div className="flex min-w...">
+                            <LinkComponent>
++                           <button
++                             type="button"
++                             onClick={function Header.useCallback[openSignIn]}
++                             className="btn-tactile flex min-h-7 items-center rounded-lg bg-[--color-blue-brand] px-3..."
++                           >
+-                           <span
+-                             className="hidden rounded-full border border-slate-300 bg-white px-2 py-0.5 text-[10px] ..."
+-                             aria-live="polite"
+-                           >
+                            ...
+                    ...
+          ...
+
+    at <unknown> (https://react.dev/link/hydration-mismatch)
+    at button (<anonymous>)
+    at Header (src/components/layout/Header.tsx:182:13)
+    at CalculatorsLayout (src/app/calculators/layout.tsx:22:7)
+  180 |           {/* ——— AUTH AREA ——— */}
+  181 |           {!isSignedIn && (
+> 182 |             <button
+      |             ^
+  183 |               type="button"
+  184 |               onClick={openSignIn}
+  185 |               className="btn-tactile flex min-h-7 items-center rounded-lg bg-[--color-blu...
+[browser] Clerk: Structural CSS detected that may break on updates.
+
+Found:
+  - CSS ".cl-internal-go4bxw:has(button:focus-visible)"
+  - CSS "button:hover .cl-internal-gxb76v"
+  - CSS ".cl-internal-o2kwkh ul"
+  - CSS ".cl-internal-o2kwkh p"
+  - CSS ".cl-internal-o2kwkh li"
+  (+3 more)
+
+These selectors depend on the internal DOM structure of Clerk's components, which may change when Clerk deploys component updates.
+To prevent breaking changes, install @clerk/ui and pass it to ClerkProvider:
+
+  import { ui } from '@clerk/ui'
+  <ClerkProvider ui={ui}>
+
+Learn more: https://clerk.com/docs/reference/components/versioning
+(code=structural_css_pin_clerk_ui) (https://internal-gobbler-94.clerk.accounts.dev/npm/@clerk/ui@1/dist/ui.browser.js:15:683)
