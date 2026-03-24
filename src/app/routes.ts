@@ -63,6 +63,7 @@ export const accountNavigation = [
   { href: routes.pricebook, label: "Price Book" },
   { href: routes.settingsBusinessProfile, label: "Business Profile" },
   { href: routes.commandCenter, label: "Command Center" },
+  { href: routes.crm, label: "CRM & Clients" },
 ] as const;
 
 export const legalNavigation = [

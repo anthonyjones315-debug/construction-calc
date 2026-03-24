@@ -235,7 +235,7 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
           }}
           aria-labelledby={labelId}
           aria-label={`${label} fractional inches`}
-          className="glass-input flex-1 appearance-none rounded-none border-0 border-l border-[--color-border] bg-transparent px-2 text-center text-sm tabular-nums tracking-tight text-field-input shadow-none"
+          className="glass-input w-16 min-w-0 shrink-0 appearance-none rounded-none border-0 border-l border-[--color-border] bg-transparent px-1.5 text-center text-xs tabular-nums tracking-tight text-field-input shadow-none"
         >
           {FRACTION_OPTIONS.map((opt, i) => (
             <option key={i} value={i}>
@@ -243,8 +243,8 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
             </option>
           ))}
         </select>
-        <div className="flex items-center border-l border-[--color-border] bg-[--color-surface-alt] px-2 text-[11px] font-semibold uppercase tabular-nums tracking-tight text-copy-secondary">
-          frac
+        <div className="flex shrink-0 items-center border-l border-[--color-border] bg-[--color-surface-alt] px-2 text-[11px] font-semibold uppercase tabular-nums tracking-tight text-copy-secondary">
+          &quot;
         </div>
       </div>
     </label>

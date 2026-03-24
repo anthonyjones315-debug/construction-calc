@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo } from "react";
 import { HardHat } from "lucide-react";
 import { routes } from "@routes";
-import { useSession } from "@/lib/auth/client";
+import { useAuth } from "@clerk/nextjs";
 import * as Sentry from "@sentry/nextjs";
 import { ManualErrorReportButton } from "@/components/support/ManualErrorReportButton";
 import { BUSINESS_EMAIL } from "@/lib/business-identity";
@@ -86,7 +86,9 @@ const errorMessages: Record<string, AuthErrorContentModel> = {
 
 function AuthErrorContent() {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { userId, isLoaded } = useAuth();
+  const session = userId ? { user: { id: userId } } : null;
+  const status = isLoaded ? (userId ? "authenticated" : "unauthenticated") : "loading";
   const searchParams = useSearchParams();
   const rawErrorCode = searchParams.get("error") ?? "Default";
   const errorCode = normalizeAuthErrorCode(rawErrorCode);

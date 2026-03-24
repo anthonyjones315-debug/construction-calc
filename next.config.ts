@@ -157,22 +157,12 @@ const nextConfig: NextConfig = {
     ].join("; ");
 
     const securityHeaders = [
-      // ── Signals canonical protocol to Cloudflare and reverse proxies ─
-      // Next.js and auth cookies read this to ensure cookies are flagged Secure.
-      { key: "X-Forwarded-Proto", value: "https" },
       // ── Clickjacking protection ─────────────────────────────────
       { key: "X-Frame-Options", value: "DENY" },
       // ── MIME-type sniffing protection ───────────────────────────
       { key: "X-Content-Type-Options", value: "nosniff" },
       // ── Referrer stripped on HTTPS→HTTP downgrades; origin-only cross-origin ─
       { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-      // ── HSTS — Cloudflare enforces TLS at edge; this header tells
-      //    browsers to also refuse plain-HTTP connections directly.
-      //    max-age=2yr + includeSubDomains + preload for HSTS preload list.
-      {
-        key: "Strict-Transport-Security",
-        value: "max-age=63072000; includeSubDomains; preload",
-      },
       // ── Cross-origin isolation / opener policy (improves security & some perf APIs) ─
       {
         key: "Cross-Origin-Opener-Policy",
@@ -192,6 +182,17 @@ const nextConfig: NextConfig = {
           "RSC, Next-Router-Prefetch, Next-Router-State-Tree, Next-Router-Segment-Prefetch, next-router-segment-prefetch, Next-Url, next-url, Content-Type, Authorization",
       },
     ];
+
+    if (process.env.NODE_ENV === "production") {
+      securityHeaders.push({
+        key: "Strict-Transport-Security",
+        value: "max-age=63072000; includeSubDomains; preload",
+      });
+      securityHeaders.push({
+        key: "X-Forwarded-Proto",
+        value: "https",
+      });
+    }
 
     return [
       {

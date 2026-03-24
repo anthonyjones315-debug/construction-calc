@@ -1,10 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
-import { getClerkPublishableKey } from "@/lib/clerk/publishable-key";
-import {
-  getClerkFallbackRedirectFromEnv,
-  getClerkRouteFromEnv,
-} from "@/lib/clerk/routing";
 import { Oswald, Inter, JetBrains_Mono } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
@@ -88,14 +83,6 @@ const jetBrainsMono = JetBrains_Mono({
 
 const brandedSiteTitle = `${BUSINESS_NAME} — Construction Estimating & Cost Calculators`;
 
-const clerkPublishableKey = getClerkPublishableKey();
-const clerkSignInUrl = getClerkRouteFromEnv("sign-in");
-const clerkSignUpUrl = getClerkRouteFromEnv("sign-up");
-const clerkSignInFallbackRedirectUrl =
-  getClerkFallbackRedirectFromEnv("sign-in");
-const clerkSignUpFallbackRedirectUrl =
-  getClerkFallbackRedirectFromEnv("sign-up");
-
 export const metadata: Metadata = {
   metadataBase: new URL(BUSINESS_SITE_URL),
   title: brandedSiteTitle,
@@ -149,20 +136,31 @@ export default function RootLayout({
   const verifiedReviewSchema = getVerifiedReviewSchema();
 
   return (
-    <html lang="en" className="command-theme light" data-scroll-behavior="smooth" suppressHydrationWarning>
-      <head>
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        {SHOULD_LINK_MANIFEST ? (
-          <link rel="manifest" href="/app.webmanifest" />
-        ) : null}
-        {supabaseOrigin ? (
-          <>
-            <link rel="preconnect" href={supabaseOrigin} crossOrigin="" />
-            <link rel="dns-prefetch" href={supabaseOrigin} />
-          </>
-        ) : null}
-        <link rel="preconnect" href={resendOrigin} crossOrigin="" />
-        <link rel="dns-prefetch" href={resendOrigin} />
+    <ClerkProvider
+      appearance={{
+        variables: {
+          colorPrimary: "#2563eb",
+        },
+        elements: {
+          card: "rounded-2xl border border-[--color-border] shadow-xl",
+          formButtonPrimary: "rounded-xl font-bold uppercase tracking-[0.08em]",
+        }
+      }}
+    >
+      <html lang="en" className="command-theme light" data-scroll-behavior="smooth" suppressHydrationWarning>
+        <head>
+          <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+          {SHOULD_LINK_MANIFEST ? (
+            <link rel="manifest" href="/app.webmanifest" />
+          ) : null}
+          {supabaseOrigin ? (
+            <>
+              <link rel="preconnect" href={supabaseOrigin} crossOrigin="" />
+              <link rel="dns-prefetch" href={supabaseOrigin} />
+            </>
+          ) : null}
+          <link rel="preconnect" href={resendOrigin} crossOrigin="" />
+          <link rel="dns-prefetch" href={resendOrigin} />
         {ADSENSE_CLIENT_ID ? (
           <script
             async
@@ -211,33 +209,8 @@ export default function RootLayout({
         className={`command-theme ${inter.variable} ${oswald.variable} ${jetBrainsMono.variable} min-h-dvh flex flex-col`}
       >
         <a href="#main-content" className="skip-link" tabIndex={0}>
-          Skip to main content
-        </a>
-        {/* ClerkProvider reads request auth (cookies/headers); Next.js 16 requires Suspense */}
-        <Suspense fallback={null}>
-          <ClerkProvider
-            signInUrl={clerkSignInUrl}
-            signUpUrl={clerkSignUpUrl}
-            signInFallbackRedirectUrl={clerkSignInFallbackRedirectUrl}
-            signUpFallbackRedirectUrl={clerkSignUpFallbackRedirectUrl}
-            appearance={{
-              variables: {
-                colorPrimary: "#2563eb",
-                colorText: "#111827",
-                colorTextSecondary: "#64748b",
-              },
-              layout: {
-                logoImageUrl: "/images/app-logo-transparent.png",
-              },
-              elements: {
-                card: "rounded-2xl border border-[--color-border] shadow-xl",
-                formButtonPrimary: "rounded-xl font-bold uppercase tracking-[0.08em]",
-              }
-            }}
-            {...(clerkPublishableKey
-              ? { publishableKey: clerkPublishableKey }
-              : {})}
-          >
+            Skip to main content
+          </a>
             <Suspense fallback={null}>
               <CSPostHogProvider>
                 <Suspense fallback={null}>
@@ -271,9 +244,8 @@ export default function RootLayout({
             <Suspense fallback={null}>
               <CrispChat />
             </Suspense>
-          </ClerkProvider>
-        </Suspense>
-      </body>
-    </html>
-  );
-}
+          </body>
+        </html>
+      </ClerkProvider>
+    );
+  }

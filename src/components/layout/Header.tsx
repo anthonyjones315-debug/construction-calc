@@ -178,7 +178,7 @@ export function Header() {
           )}
 
           {/* ——— AUTH AREA ——— */}
-          {!isSignedIn && (
+          {isLoaded && !isSignedIn && (
             <button
               type="button"
               onClick={openSignIn}
@@ -241,13 +241,13 @@ export function Header() {
           className="flex flex-col gap-1 border-t-2 border-[--color-blue-brand] bg-white px-4 py-2 shadow-lg md:hidden"
           aria-label="Mobile navigation"
         >
-          {isSignedIn && businessName && (
+          {isLoaded && isSignedIn && businessName && (
             <div className="border-b border-slate-100 px-4 py-2 mb-1">
               <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">Signed in</p>
               <p className="text-sm font-semibold text-slate-800 truncate">{businessName}</p>
             </div>
           )}
-          {isSignedIn && (
+          {isLoaded && isSignedIn && (
             <Link
               href={routes.commandCenter}
               prefetch={false}
@@ -290,7 +290,7 @@ export function Header() {
             />
             Estimates ({estimateCount})
           </Link>
-          {!isSignedIn && (
+          {isLoaded && !isSignedIn && (
             <div className="mt-2 flex flex-col gap-2 border-t border-slate-100 px-2 pt-3">
               <Link
                 href={routes.auth.signIn}

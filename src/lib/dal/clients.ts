@@ -83,7 +83,7 @@ export async function createClient(payload: {
 }): Promise<ClientDTO> {
   const session = await auth();
   const userId = session?.user?.id;
-  const businessId = session?.user?.business_id;
+  const businessId: string | null = null; // resolved via RLS or trigger — not available on session
 
   if (!userId) {
     throw new UnauthorizedError();

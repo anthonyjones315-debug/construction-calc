@@ -4,7 +4,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import type { UserMaterial } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
-import { useSession } from "@/lib/auth/client";
+import { useAuth } from "@clerk/nextjs";
 import Image from "next/image";
 import {
   Plus,
@@ -51,7 +51,9 @@ const emptyRow = {
 };
 
 function PriceBookContent() {
-  const { data: session, status } = useSession();
+  const { userId, isLoaded } = useAuth();
+  const session = userId ? { user: { id: userId } } : null;
+  const status = isLoaded ? (userId ? "authenticated" : "unauthenticated") : "loading";
   const [materials, setMaterials] = useState<UserMaterial[] | null>(null);
   const [editId, setEditId] = useState<string | null>(null);
   const [editRow, setEditRow] = useState({ ...emptyRow });

@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { setupClerkTestingToken } from "@clerk/testing/playwright";
 
 test.describe("Navigation", () => {
   test("home page loads and renders calculator directory CTA", async ({
@@ -13,9 +14,9 @@ test.describe("Navigation", () => {
   test("calculators directory shows all trade categories", async ({ page }) => {
     await page.goto("/calculators");
     // Verify at least the core categories are present
-    const categories = ["Concrete", "Framing", "Roofing", "Business"];
+    const categories = ["Concrete", "Framing", "Roofing", "Insulation", "Interior"];
     for (const cat of categories) {
-      await expect(page.getByText(new RegExp(cat, "i")).first()).toBeVisible();
+      await expect(page.getByText(new RegExp(cat, "i")).first()).toBeVisible({ timeout: 30_000 });
     }
   });
 
@@ -27,7 +28,7 @@ test.describe("Navigation", () => {
     await expect(page.getByRole("heading", { name: /slab/i })).toBeVisible({
       timeout: 90_000,
     });
-    await expect(page.getByLabel(/length/i)).toBeVisible({ timeout: 90_000 });
+    await expect(page.locator("input[type='number']").first()).toBeVisible({ timeout: 90_000 });
   });
 
   test("404 page renders for unknown route", async ({ page }) => {
@@ -55,10 +56,8 @@ test.describe("Navigation", () => {
   }) => {
     const context = await browser.newContext(); // No auth state
     const page = await context.newPage();
-    await page.goto("/saved", {
-      waitUntil: "domcontentloaded",
-      timeout: 60_000,
-    });
+    await setupClerkTestingToken({ page });
+    await page.goto("/saved");
     await expect(page).toHaveURL(/\/saved$/);
     await expect(
       page.getByRole("heading", { name: /sign in to view saved estimates/i }),

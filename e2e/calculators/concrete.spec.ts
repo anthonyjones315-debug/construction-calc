@@ -1,10 +1,10 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 
 import { setupClerkTestingToken } from "@clerk/testing/playwright";
 
 test.describe("Concrete Calculators", () => {
   // Dismiss cookie consent banner before interacting with inputs
-  const dismissCookies = async (page: Parameters<typeof test>[0]["page"]) => {
+  const dismissCookies = async (page: Page) => {
     const acceptBtn = page.getByRole("button", { name: /accept/i });
     try {
       await acceptBtn.waitFor({ state: "visible", timeout: 3000 });
@@ -16,11 +16,13 @@ test.describe("Concrete Calculators", () => {
   };
 
   const fillNumbers = async (
-    page: Parameters<typeof test>[0]["page"],
+    page: Page,
     values: string[],
   ) => {
     await dismissCookies(page);
-    const inputs = page.locator("input[type='number']");
+    const inputs = page.locator("input[type='number']").filter({ visible: true });
+    // Wait for the first input to be attached and visible before counting
+    await inputs.first().waitFor({ state: "visible", timeout: 10000 }).catch(() => {});
     const count = await inputs.count();
     if (count === 0)
       test.skip(true, "No numeric calculator inputs found on page");
@@ -30,9 +32,9 @@ test.describe("Concrete Calculators", () => {
   };
 
   const expectMaterialOrder = async (
-    page: Parameters<typeof test>[0]["page"],
+    page: Page,
   ) => {
-    const orderSection = page.locator('div').filter({ hasText: /Order/i }).filter({ hasText: /[\d.]+/ }).last();
+    const orderSection = page.locator('.result-counter').first();
     await expect(orderSection).toBeVisible();
     return orderSection;
   };
@@ -51,29 +53,40 @@ test.describe("Concrete Calculators", () => {
     }) => {
       await page.goto("/calculators/concrete/slab");
       await fillNumbers(page, ["20", "24", "4"]);
-      const resultText = page.locator('div').filter({ hasText: /Order/i }).filter({ hasText: /[\d.]+/ }).last();
+      const resultText = page.locator('.result-counter').first();
       await expect(resultText).toBeVisible();
       const parseOrder = (text: string | null) =>
         parseFloat(text?.match(/[\d.]+/)?.[0] ?? "0");
 
       const wasteSlider = page.locator("input[type='range']").first();
+      await wasteSlider.waitFor({ state: "visible", timeout: 5000 }).catch(() => {});
       if (await wasteSlider.isVisible()) {
-        await wasteSlider.evaluate((node: HTMLInputElement) => {
-          node.value = "0";
-          node.dispatchEvent(new Event("input", { bubbles: true }));
-          node.dispatchEvent(new Event("change", { bubbles: true }));
-        });
+        const setSliderValue = async (val: string) => {
+          await wasteSlider.evaluate((node: HTMLInputElement, value) => {
+            const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+              window.HTMLInputElement.prototype,
+              "value"
+            )?.set;
+            nativeInputValueSetter?.call(node, value);
+            node.dispatchEvent(new Event("input", { bubbles: true }));
+            node.dispatchEvent(new Event("change", { bubbles: true }));
+          }, val);
+        };
+
+        const initialText = await resultText.textContent();
+        await setSliderValue("0");
+        await expect
+          .poll(async () => (await resultText.textContent()) ?? "")
+          .not.toEqual(initialText ?? "");
         const zeroWasteText = await resultText.textContent();
-        await wasteSlider.evaluate((node: HTMLInputElement) => {
-          node.value = "20";
-          node.dispatchEvent(new Event("input", { bubbles: true }));
-          node.dispatchEvent(new Event("change", { bubbles: true }));
-        });
+        
+        await setSliderValue("20");
+        
         await expect
           .poll(async () => (await resultText.textContent()) ?? "")
           .not.toEqual(zeroWasteText ?? "");
         const higherWasteText = await resultText.textContent();
-        expect(parseOrder(higherWasteText)).toBeGreaterThanOrEqual(
+        expect(parseOrder(higherWasteText)).toBeGreaterThan(
           parseOrder(zeroWasteText),
         );
       }

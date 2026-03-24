@@ -9,7 +9,8 @@ import {
   type ChangeEvent,
 } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import posthog from "posthog-js";
 import {
   ArrowLeft,
   Calculator,
@@ -95,14 +96,14 @@ function WeatherWidget({ lat, lng }: { lat: number | null; lng: number | null })
   useEffect(() => {
     if (lat === null || lng === null) return;
     let cancel = false;
-    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current_weather=true&temperature_unit=fahrenheit&windspeed_unit=mph`)
+    fetch(`/api/weather?lat=${lat}&lng=${lng}`)
       .then(res => res.json())
       .then(data => {
-        if (!cancel && data.current_weather) {
+        if (!cancel && data.temperature != null) {
           setWeather({ 
-            temp: data.current_weather.temperature, 
-            wind: data.current_weather.windspeed,
-            isDay: data.current_weather.is_day === 1 
+            temp: data.temperature, 
+            wind: data.windspeed ?? 0,
+            isDay: data.isDay ?? true,
           });
         }
       }).catch(() => {});
@@ -146,6 +147,7 @@ interface EstimateDetailsCardProps {
   estimateDate: string;
   controlNumber: string;
   estimateNotes: string;
+  fromCrm?: boolean;
   onChange: (field: string, value: string) => void;
 }
 
@@ -158,6 +160,7 @@ function EstimateDetailsCard({
   estimateDate,
   controlNumber,
   estimateNotes,
+  fromCrm,
   onChange,
 }: EstimateDetailsCardProps) {
   const [lat, setLat] = useState<number | null>(null);
@@ -231,7 +234,7 @@ function EstimateDetailsCard({
               placeholder="John Smith"
               className="flex-1 h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[--color-blue-brand]/45 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[--color-blue-brand]/20"
             />
-            {crmClients.length > 0 && (
+            {!fromCrm && crmClients.length > 0 && (
               <select
                 title="Fill from CRM"
                 className="h-11 w-20 sm:w-28 rounded-xl border border-slate-200 bg-slate-50 px-2 text-xs font-semibold text-slate-700 outline-none transition focus:border-[--color-blue-brand]/45 focus:ring-2 focus:ring-[--color-blue-brand]/20"
@@ -1523,6 +1526,7 @@ function ActionBar({
 
 export default function NewEstimateClient({ onOpenCalculators }: { onOpenCalculators?: () => void }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const {
     state,
     dispatch,
@@ -1555,6 +1559,48 @@ export default function NewEstimateClient({ onOpenCalculators }: { onOpenCalcula
       .catch(() => {})
       .finally(() => setLoadingMaterials(false));
   }, []);
+
+  // Auto-fill client fields from CRM if clientId query param is present
+  const fromCrm = Boolean(searchParams.get("clientId"));
+  useEffect(() => {
+    const clientId = searchParams.get("clientId");
+    if (!clientId) return;
+    fetch(`/api/clients/${clientId}`)
+      .then((r) => r.json())
+      .then((client) => {
+        if (client && !client.error) {
+          if (client.name) dispatch({ type: "SET_FIELD", field: "clientName", value: client.name });
+          if (client.email) dispatch({ type: "SET_FIELD", field: "clientEmail", value: client.email });
+          if (client.address) dispatch({ type: "SET_FIELD", field: "jobSiteAddress", value: client.address });
+        }
+      })
+      .catch(() => {});
+  }, [searchParams, dispatch]);
+
+  /** Sync client info to CRM after finalizing (match-or-create) */
+  async function syncClientToCrm() {
+    const name = state.clientName?.trim();
+    if (!name) return;
+    try {
+      const res = await fetch("/api/clients/sync", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          email: state.clientEmail?.trim() || undefined,
+          address: state.jobSiteAddress?.trim() || undefined,
+        }),
+      });
+      const data = await res.json();
+      posthog.capture("crm_client_synced", {
+        matched: data.matched ?? false,
+        hasDuplicates: (data.duplicates?.length ?? 0) > 0,
+        fromCrm,
+      });
+    } catch {
+      // Non-critical — don't block the user if sync fails
+    }
+  }
 
   // Dirty state warning on unload
   useEffect(() => {
@@ -1664,6 +1710,7 @@ export default function NewEstimateClient({ onOpenCalculators }: { onOpenCalcula
     try {
       const result = await finalize(contractorSig);
       if (result?.id) {
+        await syncClientToCrm();
         router.push(`/command-center/estimates/${result.id}`);
       }
     } finally {
@@ -1675,8 +1722,9 @@ export default function NewEstimateClient({ onOpenCalculators }: { onOpenCalcula
     setShowSignModal(false);
     setSending(true);
     finalize()
-      .then((result) => {
+      .then(async (result) => {
         if (result?.id) {
+          await syncClientToCrm();
           router.push(`/command-center/estimates/${result.id}`);
         }
       })
@@ -1755,6 +1803,7 @@ export default function NewEstimateClient({ onOpenCalculators }: { onOpenCalcula
         estimateDate={state.estimateDate}
         controlNumber={state.controlNumber}
         estimateNotes={state.estimateNotes}
+        fromCrm={fromCrm}
         onChange={handleFieldChange}
       />
 

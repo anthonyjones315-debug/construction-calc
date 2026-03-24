@@ -1,7 +1,7 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 
 test.describe("Business Management Calculators", () => {
-  const dismissCookies = async (page: Parameters<typeof test>[0]["page"]) => {
+  const dismissCookies = async (page: Page) => {
     const acceptBtn = page.getByRole("button", { name: /accept/i });
     try {
       await acceptBtn.waitFor({ state: "visible", timeout: 3000 });
@@ -13,11 +13,12 @@ test.describe("Business Management Calculators", () => {
   };
 
   const fillNumbers = async (
-    page: Parameters<typeof test>[0]["page"],
+    page: Page,
     values: string[],
   ) => {
     await dismissCookies(page);
-    const inputs = page.locator("input[type='number']");
+    const inputs = page.locator("input[type='number']").filter({ visible: true });
+    await inputs.first().waitFor({ state: "visible", timeout: 5000 }).catch(() => {});
     const count = await inputs.count();
     if (count === 0)
       test.skip(true, "No numeric calculator inputs found on page");
@@ -26,9 +27,8 @@ test.describe("Business Management Calculators", () => {
     }
   };
 
-  // Business calcs show monetary results (e.g. "$12,345.67"), not "Order N unit"
-  const resultLocator = (page: Parameters<typeof test>[0]["page"]) =>
-    page.getByText(/\$[\d,]+\.\d{2}/).first();
+  const resultLocator = (page: Page) =>
+    page.locator('.result-counter').first();
 
   test.describe("Profit Margin", () => {
     test("correctly calculates margin from cost and overhead inputs", async ({

@@ -60,11 +60,13 @@ export async function GET() {
       .maybeSingle();
 
     if (error) {
-      // Gracefully handle environments where the column has not been migrated yet.
+      // Gracefully handle environments where the table/column has not been migrated yet.
       if (
         error.code === "42703" ||
+        error.code === "42P01" ||
         error.message?.toLowerCase().includes("pro_mode_enabled") ||
-        error.message?.toLowerCase().includes("two_factor_enabled")
+        error.message?.toLowerCase().includes("two_factor_enabled") ||
+        error.message?.toLowerCase().includes("could not find the table")
       ) {
         Sentry.captureMessage("user preference column missing; returning null preference", {
           level: "info",
@@ -143,8 +145,10 @@ export async function PUT(request: NextRequest) {
     if (error) {
       if (
         error.code === "42703" ||
+        error.code === "42P01" ||
         error.message?.toLowerCase().includes("pro_mode_enabled") ||
-        error.message?.toLowerCase().includes("two_factor_enabled")
+        error.message?.toLowerCase().includes("two_factor_enabled") ||
+        error.message?.toLowerCase().includes("could not find the table")
       ) {
         Sentry.captureMessage("user preference column missing; update skipped", {
           level: "info",

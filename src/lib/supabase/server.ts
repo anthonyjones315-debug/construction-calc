@@ -20,6 +20,6 @@ function getSupabaseEnv() {
 // Safe to use in: API routes, Server Components, server actions.
 export function createServerClient() {
   const { url, serviceRoleKey } = getSupabaseEnv();
-
+  console.log("createServerClient URL initialized as:", `'${url}'`);
   return createClient(url, serviceRoleKey, { auth: { persistSession: false } });
 }

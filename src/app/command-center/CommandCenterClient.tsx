@@ -27,6 +27,7 @@ import {
   Thermometer,
   Trash2,
   Triangle,
+  UserPlus,
   Users,
   X,
 } from "lucide-react";
@@ -589,8 +590,19 @@ export default function CommandCenterClient({
     let baseItems = toolNavItems;
 
     if (toolCategory !== "all") {
+      // Map filter-button categories to actual tradePages category values
+      const categoryMap: Record<ToolCategory, string[]> = {
+        all: [],
+        concrete: ["concrete"],
+        structure: ["framing", "interior"],
+        envelope: ["roofing", "insulation"],
+        systems: ["mechanical"],
+        business: ["business", "management"],
+        workspace: ["finish", "landscape", "outdoor"],
+      };
+      const matchCategories = categoryMap[toolCategory] ?? [];
       baseItems = Object.values(tradePages)
-        .filter((p) => p.category === toolCategory && p.type === "calculator")
+        .filter((p) => matchCategories.includes(p.category) && p.type === "calculator")
         .map((p) => ({
           label: p.title,
           slug: p.key,
@@ -829,6 +841,14 @@ export default function CommandCenterClient({
           <Calculator className="h-3.5 w-3.5" aria-hidden />
           New Estimate
         </button>
+        <Link
+          href={routes.crm}
+          prefetch={false}
+          className="action-bar-btn"
+        >
+          <Users className="h-3.5 w-3.5" aria-hidden />
+          CRM / Clients
+        </Link>
         <button
           type="button"
           onClick={() => setActiveWorkspace("pages")}
@@ -1298,54 +1318,63 @@ export default function CommandCenterClient({
       <div className="grid gap-3 sm:grid-cols-2">
         <article className="flex min-h-0 flex-col gap-3 overflow-y-auto rounded-2xl border border-[--color-border] bg-white px-5 py-5 shadow-sm">
           <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-blue-brand]">Your Team</p>
-          <h2 className="text-xl font-black uppercase tracking-tight text-[--color-ink]">{planName} · {seatsUsed}/{seatLimit} seats</h2>
-          <div className="mt-3 grid grid-cols-2 gap-3">
-            <div className="rounded-2xl border border-[--color-border] bg-[--color-surface-alt] px-4 py-3">
-              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[--color-ink-dim]">Remaining</p>
-              <p className="mt-1 text-2xl font-black text-[--color-ink]">{seatsAvailable}</p>
-            </div>
-            <div className="rounded-2xl border border-[--color-border] bg-[--color-blue-brand]/5 px-4 py-3">
-              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[--color-blue-dark]">Utilization</p>
-              <p className="mt-1 text-2xl font-black text-[--color-blue-brand]">{utilizationPercent}%</p>
-            </div>
-          </div>
+          <h2 className="text-xl font-black uppercase tracking-tight text-[--color-ink]">{members.length} Active Member{members.length !== 1 ? "s" : ""}</h2>
         </article>
 
         <article className="public-panel-strong px-4 py-4">
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-blue-brand]">Invite New Member</p>
-          <p className="mt-2 text-[10px] uppercase tracking-[0.18em] text-[--color-ink-dim]">Join Code</p>
-          {/* Compact monospace code pill + inline copy */}
-          <div className="mt-1.5 flex items-center gap-2">
-            <code className="flex-1 rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2 font-mono text-2xl font-black tracking-[0.1em] text-[--color-blue-brand]">
-              {activeJoinCode}
-            </code>
-            <button
-              type="button"
-              onClick={copyJoinCode}
-              className="action-bar-btn action-bar-btn-primary shrink-0"
-              aria-label="Copy join code"
-            >
-              <Copy className="h-3.5 w-3.5" aria-hidden />
-              Copy
-            </button>
-          </div>
-          {canManageCrew && (
-            <button
-              type="button"
-              onClick={refreshInviteCode}
-              disabled={isRefreshingInvite || !joinCodeRotatable}
-              title={
-                !joinCodeRotatable
-                  ? "Rotation requires the join_code migration to be applied."
-                  : "Rotate invite code — old codes become invalid immediately"
-              }
-              className="mt-2 inline-flex h-8 items-center gap-1.5 rounded-lg border border-[--color-border] px-3 text-xs font-semibold text-[--color-ink-dim] transition hover:border-[--color-blue-brand]/60 hover:text-[--color-blue-brand] disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <RefreshCw className="h-3 w-3" aria-hidden />
-              {isRefreshingInvite ? "Refreshing…" : "Rotate Code"}
-            </button>
-          )}
-          <p className="mt-2 text-xs text-[--color-ink-dim]">Share with your crew. Old codes invalidate on rotate.</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-blue-brand]">Add Team Members</p>
+          <p className="mt-2 text-xs leading-relaxed text-[--color-ink-mid]">
+            Invite a new user to your team. They&apos;ll create an account and automatically join your workspace.
+          </p>
+
+          {/* Primary CTA — Add User */}
+          <Link
+            href={"/sign-up" as Route}
+            className="mt-3 inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-[--color-blue-brand] px-4 text-sm font-bold uppercase tracking-[0.12em] text-white transition hover:bg-[--color-blue-dark] active:scale-[0.98]"
+          >
+            <UserPlus className="h-4 w-4" aria-hidden />
+            Add User
+          </Link>
+
+          {/* Secondary — Collapsible join code */}
+          <details className="mt-3 rounded-xl border border-[--color-border] bg-[--color-surface-alt]">
+            <summary className="cursor-pointer px-3 py-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[--color-ink-dim] hover:text-[--color-blue-brand]">
+              Or share a join code
+            </summary>
+            <div className="border-t border-[--color-border] px-3 py-3">
+              <div className="flex items-center gap-2">
+                <code className="flex-1 rounded-lg border border-[--color-border] bg-white px-3 py-2 font-mono text-lg font-black tracking-[0.1em] text-[--color-blue-brand]">
+                  {activeJoinCode}
+                </code>
+                <button
+                  type="button"
+                  onClick={copyJoinCode}
+                  className="action-bar-btn action-bar-btn-primary shrink-0"
+                  aria-label="Copy join code"
+                >
+                  <Copy className="h-3.5 w-3.5" aria-hidden />
+                  Copy
+                </button>
+              </div>
+              {canManageCrew && (
+                <button
+                  type="button"
+                  onClick={refreshInviteCode}
+                  disabled={isRefreshingInvite || !joinCodeRotatable}
+                  title={
+                    !joinCodeRotatable
+                      ? "Rotation requires the join_code migration to be applied."
+                      : "Rotate invite code — old codes become invalid immediately"
+                  }
+                  className="mt-2 inline-flex h-8 items-center gap-1.5 rounded-lg border border-[--color-border] px-3 text-xs font-semibold text-[--color-ink-dim] transition hover:border-[--color-blue-brand]/60 hover:text-[--color-blue-brand] disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <RefreshCw className="h-3 w-3" aria-hidden />
+                  {isRefreshingInvite ? "Refreshing…" : "Rotate Code"}
+                </button>
+              )}
+              <p className="mt-2 text-[10px] text-[--color-ink-dim]">Members can join using this code at sign-up. Old codes invalidate on rotate.</p>
+            </div>
+          </details>
         </article>
       </div>
 

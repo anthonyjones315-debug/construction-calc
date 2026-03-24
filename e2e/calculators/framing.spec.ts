@@ -1,7 +1,7 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 
 test.describe("Framing Calculators", () => {
-  const dismissCookies = async (page: Parameters<typeof test>[0]["page"]) => {
+  const dismissCookies = async (page: Page) => {
     const acceptBtn = page.getByRole("button", { name: /accept/i });
     try {
       await acceptBtn.waitFor({ state: "visible", timeout: 3000 });
@@ -13,11 +13,12 @@ test.describe("Framing Calculators", () => {
   };
 
   const fillNumbers = async (
-    page: Parameters<typeof test>[0]["page"],
+    page: Page,
     values: string[],
   ) => {
     await dismissCookies(page);
-    const inputs = page.locator("input[type='number']");
+    const inputs = page.locator("input[type='number']").filter({ visible: true });
+    await inputs.first().waitFor({ state: "visible", timeout: 5000 }).catch(() => {});
     const count = await inputs.count();
     if (count === 0)
       test.skip(true, "No numeric calculator inputs found on page");
@@ -26,8 +27,8 @@ test.describe("Framing Calculators", () => {
     }
   };
 
-  const materialOrder = (page: Parameters<typeof test>[0]["page"]) =>
-    page.locator('div').filter({ hasText: /Order/i }).filter({ hasText: /[\d.]+/ }).last();
+  const materialOrder = (page: Page) =>
+    page.locator('.result-counter').first();
 
   test.describe("Wall Studs", () => {
     test("calculates 16 OC studs for a standard 20ft wall", async ({
@@ -53,7 +54,8 @@ test.describe("Framing Calculators", () => {
           await linealMode.click();
         }
         // Set wall length
-        await page.locator("input[type='number']").first().fill("40");
+        const visibleInputs = page.locator("input[type='number']").filter({ visible: true });
+        await visibleInputs.first().fill("40");
         // Set OC spacing using whichever UI is present (button toggle or numeric input)
         const ocBtn = page.getByRole("button", {
           name: new RegExp(`^${ocButtonLabel}\\"?\\s*OC$`, "i"),
@@ -61,7 +63,7 @@ test.describe("Framing Calculators", () => {
         if (await ocBtn.isVisible({ timeout: 1200 }).catch(() => false)) {
           await ocBtn.click();
         } else {
-          const inputs = page.locator("input[type='number']");
+          const inputs = page.locator("input[type='number']").filter({ visible: true });
           const count = await inputs.count();
           if (count > 1) {
             await inputs.nth(1).fill(ocButtonLabel);

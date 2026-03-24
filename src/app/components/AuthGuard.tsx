@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession } from "@/lib/auth/client";
+import { useAuth } from "@clerk/nextjs";
 import { AuthSplash } from "@/app/components/AuthSplash";
 import { usePathname } from "next/navigation";
 import { protectedRoutes } from "@routes";
@@ -11,7 +11,8 @@ const EXTRA_PROTECTED_PAGES = ["/crm", "/estimate"];
  * Wraps protected parts of the app. If the user is not signed in and visits a protected route, show the splash.
  */
 export function AuthGuard({ children }: { children: React.ReactNode }) {
-  const { status } = useSession();
+  const { isLoaded, userId } = useAuth();
+  const status = isLoaded ? (userId ? "authenticated" : "unauthenticated") : "loading";
   const pathname = usePathname() || "";
 
   // Check if current path requires auth

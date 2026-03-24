@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import Autocomplete from "react-google-autocomplete";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useSession } from "@/lib/auth/client";
+import { useAuth, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import {
   FinancialDashboard,
@@ -177,7 +177,22 @@ export function SavedContent({
   initialEstimates,
   isAuthenticated,
 }: SavedContentProps) {
-  const { data: session, status } = useSession();
+  const { userId, isLoaded } = useAuth();
+  const { user: clerkUser } = useUser();
+  const session = userId
+    ? {
+        user: {
+          id: userId,
+          email: clerkUser?.emailAddresses?.[0]?.emailAddress ?? null,
+          name:
+            [clerkUser?.firstName, clerkUser?.lastName]
+              .filter(Boolean)
+              .join(" ")
+              .trim() || null,
+        },
+      }
+    : null;
+  const status = isLoaded ? (userId ? "authenticated" : "unauthenticated") : "loading";
   const contractorProfile = useContractorProfile();
   const effectiveServerFinancialData = isAuthenticated
     ? serverFinancialData

@@ -1,0 +1,292 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - alertdialog "Cookie Consent Prompt" [ref=e2]:
+    - generic [ref=e3]:
+      - link "Powered by Termly" [ref=e5] [cursor=pointer]:
+        - /url: https://termly.io/products/cookie-consent-manager/
+        - img "Powered by Termly" [ref=e6]
+      - generic [ref=e7]:
+        - generic [ref=e8]:
+          - text: We use essential cookies to make our site work. With your consent, we may also use non-essential cookies to improve user experience and analyze website traffic. By clicking “Accept,” you agree to our website's cookie use as described in our
+          - button "Cookie Policy" [ref=e9] [cursor=pointer]
+          - text: . You can change your cookie settings at any time by clicking “
+          - button "Preferences" [ref=e10] [cursor=pointer]
+          - text: .”
+        - generic [ref=e11]:
+          - button "Preferences" [ref=e12] [cursor=pointer]
+          - button "Decline" [ref=e13] [cursor=pointer]
+          - button "Accept" [ref=e14] [cursor=pointer]
+  - link "Skip to main content" [ref=e15] [cursor=pointer]:
+    - /url: "#main-content"
+  - alert [ref=e16]
+  - generic [ref=e17]:
+    - banner [ref=e18]:
+      - generic [ref=e19]:
+        - link "Pro Construction Calc" [ref=e20] [cursor=pointer]:
+          - /url: /
+          - img "Pro Construction Calc" [ref=e21]
+          - generic [ref=e22]: Pro Construction Calc
+        - navigation "Main navigation" [ref=e23]:
+          - generic [ref=e24]: Calculators
+          - link "Field Notes" [ref=e25] [cursor=pointer]:
+            - /url: /field-notes
+          - link "FAQ" [ref=e26] [cursor=pointer]:
+            - /url: /faq
+          - link "About" [ref=e27] [cursor=pointer]:
+            - /url: /about
+        - generic [ref=e28]:
+          - link "Estimate queue 0 items" [ref=e29] [cursor=pointer]:
+            - /url: /cart
+            - img [ref=e30]
+            - generic [ref=e33]: Estimates
+          - button "Sign In" [ref=e34] [cursor=pointer]
+    - generic [ref=e35]:
+      - main [ref=e36]:
+        - generic [ref=e38]:
+          - generic [ref=e39]:
+            - img [ref=e40]
+            - generic [ref=e45]: Pro Construction Calc
+          - heading "Commercial-Grade Space Math" [level=1] [ref=e46]
+          - paragraph [ref=e47]: Field-tested calculators that give you real numbers you can use on the job or in a quote. Built for estimators, crew leads, and contractors who need fast, accurate math.
+          - generic [ref=e49]:
+            - img [ref=e50]
+            - searchbox "Search construction calculators by trade, task, or name" [ref=e53]
+          - paragraph [ref=e54]: 58 professional calculators · 6 trade modules
+        - generic [ref=e56]:
+          - generic [ref=e57]: "Recent:"
+          - link "Professional Concrete Slab Calculator - 3000 PSI Optimized" [ref=e58] [cursor=pointer]:
+            - /url: /calculators/concrete/slab
+          - link "Wall Studs Calculator" [ref=e59] [cursor=pointer]:
+            - /url: /calculators/framing/wall-studs
+          - link "Shingle Bundles Calculator for Roofing Squares" [ref=e60] [cursor=pointer]:
+            - /url: /calculators/roofing/shingle-bundles
+          - link "Profit Margin Calculator" [ref=e61] [cursor=pointer]:
+            - /url: /calculators/business/profit-margin
+          - link "Labor Rate Calculator" [ref=e62] [cursor=pointer]:
+            - /url: /calculators/business/labor-rate
+          - link "Basic BTU Estimator for Temporary Site Heat" [ref=e63] [cursor=pointer]:
+            - /url: /calculators/mechanical/btu-estimator
+        - generic [ref=e65]:
+          - generic [ref=e66]:
+            - generic [ref=e67]:
+              - img [ref=e69]
+              - generic [ref=e71]:
+                - heading "Concrete & Masonry" [level=2] [ref=e72]
+                - paragraph [ref=e73]: 3 calcs
+            - paragraph [ref=e74]: Field-ready concrete and masonry planning tools for slabs, footings, and block count takeoffs with production-friendly assumptions.
+            - generic [ref=e75]:
+              - generic [ref=e76]: Slab-on-Grade Calculator
+              - generic [ref=e77]: Footing Material Estimator
+              - generic [ref=e78]: Block-Wall Calculator
+            - link "View all" [ref=e80] [cursor=pointer]:
+              - /url: /calculators/concrete
+              - text: View all
+              - img [ref=e81]
+          - generic [ref=e83]:
+            - generic [ref=e84]:
+              - img [ref=e86]
+              - generic [ref=e90]:
+                - heading "Framing & Lumber" [level=2] [ref=e91]
+                - paragraph [ref=e92]: 7 calcs
+            - paragraph [ref=e93]: Stud, rafter, and header planning tools designed for fast field estimates and repeatable framing takeoffs.
+            - generic [ref=e94]:
+              - generic [ref=e95]: Wall Studs Calculator
+              - generic [ref=e96]: Floor Joists Calculator
+              - generic [ref=e97]: Roof Rafters Calculator
+            - link "View all" [ref=e99] [cursor=pointer]:
+              - /url: /calculators/framing
+              - text: View all
+              - img [ref=e100]
+          - generic [ref=e102]:
+            - generic [ref=e103]:
+              - img [ref=e105]
+              - generic [ref=e107]:
+                - heading "Roofing & Siding" [level=2] [ref=e108]
+                - paragraph [ref=e109]: 6 calcs
+            - paragraph [ref=e110]: Roof pitch, shingle, and siding calculators optimized for accurate square counts and weather-ready material orders.
+            - generic [ref=e111]:
+              - generic [ref=e112]: Shingle Bundles Calculator
+              - generic [ref=e113]: Shingles Calculator
+              - generic [ref=e114]: Pitch & Slope Calculator
+            - link "View all" [ref=e116] [cursor=pointer]:
+              - /url: /calculators/roofing
+              - text: View all
+              - img [ref=e117]
+          - generic [ref=e119]:
+            - generic [ref=e120]:
+              - img [ref=e122]
+              - generic [ref=e124]:
+                - heading "Mechanical & Site" [level=2] [ref=e125]
+                - paragraph [ref=e126]: 2 calcs
+            - paragraph [ref=e127]: GC-focused site essentials for temporary heat BTU checks, ventilation square-foot planning, and drywall sheet count takeoffs.
+            - generic [ref=e128]:
+              - generic [ref=e129]: Basic BTU Estimator
+              - generic [ref=e130]: Ventilation Calculator
+            - link "View all" [ref=e132] [cursor=pointer]:
+              - /url: /calculators/mechanical
+              - text: View all
+              - img [ref=e133]
+          - generic [ref=e135]:
+            - generic [ref=e136]:
+              - img [ref=e138]
+              - generic [ref=e140]:
+                - heading "Finish Carpentry" [level=2] [ref=e141]
+                - paragraph [ref=e142]: 4 calcs
+            - paragraph [ref=e143]: Trim, flooring, and stair layout calculators that support cleaner finish takeoffs and reduced material overrun.
+            - generic [ref=e144]:
+              - generic [ref=e145]: Trim & Baseboard Calculator
+              - generic [ref=e146]: Flooring Waste Calculator
+              - generic [ref=e147]: Stair Stringer Calculator
+            - link "View all" [ref=e149] [cursor=pointer]:
+              - /url: /calculators/finish
+              - text: View all
+              - img [ref=e150]
+          - generic [ref=e152]:
+            - generic [ref=e153]:
+              - img [ref=e155]
+              - generic [ref=e157]:
+                - heading "Business & Estimating" [level=2] [ref=e158]
+                - paragraph [ref=e159]: 4 calcs
+            - paragraph [ref=e160]: Business-focused calculators for margin, labor rates, lead math, and tax-aware estimating decisions.
+            - generic [ref=e161]:
+              - generic [ref=e162]: Profit Margin Calculator
+              - generic [ref=e163]: Labor Rate Calculator
+              - generic [ref=e164]: Lead Estimator
+            - link "View all" [ref=e166] [cursor=pointer]:
+              - /url: /calculators/business
+              - text: View all
+              - img [ref=e167]
+          - generic [ref=e169]:
+            - generic [ref=e170]:
+              - img [ref=e172]
+              - generic [ref=e175]:
+                - heading "Lawn & Landscape" [level=2] [ref=e176]
+                - paragraph [ref=e177]: 4 calcs
+            - paragraph [ref=e178]: Mulch, topsoil, gravel, and sod estimators for spring landscaping projects with bulk-order-friendly outputs.
+            - generic [ref=e179]:
+              - generic [ref=e180]: Mulch Calculator
+              - generic [ref=e181]: Topsoil Calculator
+              - generic [ref=e182]: Sod & Seed Calculator
+            - link "View all" [ref=e184] [cursor=pointer]:
+              - /url: /calculators/landscape
+              - text: View all
+              - img [ref=e185]
+          - generic [ref=e187]:
+            - generic [ref=e188]:
+              - img [ref=e190]
+              - generic [ref=e194]:
+                - heading "Fences, Driveways & Patios" [level=2] [ref=e195]
+                - paragraph [ref=e196]: 3 calcs
+            - paragraph [ref=e197]: Fence, paver patio, and driveway calculators for spring outdoor projects with material lists ready for the supplier.
+            - generic [ref=e198]:
+              - generic [ref=e199]: Fence Calculator
+              - generic [ref=e200]: Paver Patio Calculator
+              - generic [ref=e201]: Asphalt Driveway Calculator
+            - link "View all" [ref=e203] [cursor=pointer]:
+              - /url: /calculators/outdoor
+              - text: View all
+              - img [ref=e204]
+        - generic [ref=e206]:
+          - paragraph [ref=e207]: Recommended Field Tools
+          - generic [ref=e208]:
+            - link "Professional Concrete Slab Calculator - 3000 PSI Optimized concrete Estimate slab concrete volume, order quantity, and waste allowance for 3000 PSI pours with field-ready assumptions. Open Calculator" [ref=e209] [cursor=pointer]:
+              - /url: /calculators/concrete/slab
+              - generic [ref=e210]:
+                - paragraph [ref=e211]: Professional Concrete Slab Calculator - 3000 PSI Optimized
+                - generic [ref=e212]: concrete
+              - paragraph [ref=e213]: Estimate slab concrete volume, order quantity, and waste allowance for 3000 PSI pours with field-ready assumptions.
+              - generic [ref=e214]:
+                - text: Open Calculator
+                - img [ref=e215]
+            - link "Wall Studs Calculator framing Calculate wall stud quantities with support for standard and staggered layouts, using precise integer math for accurate material counts. Open Calculator" [ref=e217] [cursor=pointer]:
+              - /url: /calculators/framing/wall-studs
+              - generic [ref=e218]:
+                - paragraph [ref=e219]: Wall Studs Calculator
+                - generic [ref=e220]: framing
+              - paragraph [ref=e221]: Calculate wall stud quantities with support for standard and staggered layouts, using precise integer math for accurate material counts.
+              - generic [ref=e222]:
+                - text: Open Calculator
+                - img [ref=e223]
+            - link "Shingle Bundles Calculator for Roofing Squares roofing Estimate roofing shingle bundles from roof area and waste assumptions for faster ordering. Open Calculator" [ref=e225] [cursor=pointer]:
+              - /url: /calculators/roofing/shingle-bundles
+              - generic [ref=e226]:
+                - paragraph [ref=e227]: Shingle Bundles Calculator for Roofing Squares
+                - generic [ref=e228]: roofing
+              - paragraph [ref=e229]: Estimate roofing shingle bundles from roof area and waste assumptions for faster ordering.
+              - generic [ref=e230]:
+                - text: Open Calculator
+                - img [ref=e231]
+            - link "Profit Margin Calculator business Model target profit margin from cost and price assumptions for stronger bid decisions. Open Calculator" [ref=e233] [cursor=pointer]:
+              - /url: /calculators/business/profit-margin
+              - generic [ref=e234]:
+                - paragraph [ref=e235]: Profit Margin Calculator
+                - generic [ref=e236]: business
+              - paragraph [ref=e237]: Model target profit margin from cost and price assumptions for stronger bid decisions.
+              - generic [ref=e238]:
+                - text: Open Calculator
+                - img [ref=e239]
+            - link "Labor Rate Calculator business Estimate burdened labor rates to capture true crew cost in your estimate math. Open Calculator" [ref=e241] [cursor=pointer]:
+              - /url: /calculators/business/labor-rate
+              - generic [ref=e242]:
+                - paragraph [ref=e243]: Labor Rate Calculator
+                - generic [ref=e244]: business
+              - paragraph [ref=e245]: Estimate burdened labor rates to capture true crew cost in your estimate math.
+              - generic [ref=e246]:
+                - text: Open Calculator
+                - img [ref=e247]
+            - link "Basic BTU Estimator for Temporary Site Heat mechanical Quick BTU estimator for temporary site heat—helps contractors size heaters for trailers, site offices, or temporary enclosures. Open Calculator" [ref=e249] [cursor=pointer]:
+              - /url: /calculators/mechanical/btu-estimator
+              - generic [ref=e250]:
+                - paragraph [ref=e251]: Basic BTU Estimator for Temporary Site Heat
+                - generic [ref=e252]: mechanical
+              - paragraph [ref=e253]: Quick BTU estimator for temporary site heat—helps contractors size heaters for trailers, site offices, or temporary enclosures.
+              - generic [ref=e254]:
+                - text: Open Calculator
+                - img [ref=e255]
+      - dialog "New how-to guides are live" [ref=e258]:
+        - generic [ref=e259]:
+          - button "Close" [ref=e260] [cursor=pointer]:
+            - img [ref=e261]
+          - generic [ref=e264]:
+            - img [ref=e266]
+            - generic [ref=e269]:
+              - paragraph [ref=e270]: Start Here
+              - heading "New how-to guides are live" [level=2] [ref=e271]
+          - paragraph [ref=e272]: Learn the exact workflows behind tax checks, estimate handoff, PDF exports, analytics verification, and field version control.
+          - generic [ref=e273]:
+            - generic [ref=e274]:
+              - img [ref=e275]
+              - generic [ref=e278]: Cents-perfect audit checks
+            - generic [ref=e279]:
+              - img [ref=e280]
+              - generic [ref=e283]: Estimate-to-invoice PDF workflow
+            - generic [ref=e284]:
+              - img [ref=e285]
+              - generic [ref=e287]: PostHog ingest verification steps
+            - generic [ref=e288]:
+              - img [ref=e289]
+              - generic [ref=e291]: Latest-version device refresh routine
+          - generic [ref=e292]:
+            - link "Open How-To Guide" [ref=e293] [cursor=pointer]:
+              - /url: /guide
+            - button "Skip and open calculators" [ref=e294] [cursor=pointer]
+            - link "Browse Field Notes →" [ref=e295] [cursor=pointer]:
+              - /url: /field-notes
+    - contentinfo [ref=e296]:
+      - generic [ref=e297]:
+        - generic [ref=e298]:
+          - img [ref=e299]
+          - generic [ref=e304]: Pro Construction Calc
+          - generic [ref=e305]: © 2026
+        - generic [ref=e306]:
+          - link "Privacy" [ref=e307] [cursor=pointer]:
+            - /url: /privacy
+          - link "Terms" [ref=e308] [cursor=pointer]:
+            - /url: /terms
+          - link "Contact" [ref=e309] [cursor=pointer]:
+            - /url: mailto:contact@proconstructioncalc.com
+          - link "Cookie Preferences" [ref=e311] [cursor=pointer]:
+            - /url: "#"
+```

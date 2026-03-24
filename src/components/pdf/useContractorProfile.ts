@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession } from "@/lib/auth/client";
+import { useAuth } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 
 interface ContractorProfile {
@@ -20,12 +20,13 @@ const EMPTY_PROFILE: ContractorProfile = {
 };
 
 export function useContractorProfile() {
-  const { data: session, status } = useSession();
+  const { userId, isLoaded } = useAuth();
+  const status = isLoaded ? (userId ? "authenticated" : "unauthenticated") : "loading";
   const [profile, setProfile] = useState<ContractorProfile>(EMPTY_PROFILE);
 
   useEffect(() => {
     if (status === "loading") return;
-    if (!session?.user?.id) return;
+    if (!userId) return;
 
     let cancelled = false;
 
@@ -52,8 +53,8 @@ export function useContractorProfile() {
     return () => {
       cancelled = true;
     };
-  }, [session, status]);
+  }, [userId, status]);
 
-  if (!session?.user?.id) return EMPTY_PROFILE;
+  if (!userId) return EMPTY_PROFILE;
   return profile;
 }

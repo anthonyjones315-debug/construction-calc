@@ -1,20 +1,15 @@
-export type AuthSessionUser = {
-  id: string;
-  clerkUserId?: string | null;
-  email?: string | null;
-  name?: string | null;
-  image?: string | null;
-  business_id?: string | null;
-  role?: string;
-};
-
-export type AuthSession = {
-  user: AuthSessionUser;
+/**
+ * Session type — compatibility layer bridging the old NextAuth shape
+ * with Clerk v7. Used by `business.ts`, `ensurePublicUser.ts`, and
+ * other server-side modules that expect `session.user.*`.
+ */
+export type Session = {
+  user?: {
+    id: string;
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  } | null;
 } | null;
 
-export type Session = AuthSession;
-
-export type SessionStatus =
-  | "loading"
-  | "authenticated"
-  | "unauthenticated";
+export type AuthSession = Session;

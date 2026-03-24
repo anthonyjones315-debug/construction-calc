@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { auth } from "@/lib/auth/config";
 import { AmazonAdBanner } from "@/components/layout/AmazonAdBanner";
 import {
   ArrowRight,
@@ -37,7 +38,10 @@ export const metadata = getPageMetadata({
   path: "/",
 });
 
-export default function HomePage() {
+export default async function HomePage() {
+  const session = await auth();
+  const isLoggedIn = !!session?.user?.id;
+
   const workflowHighlights = [
     {
       icon: Clock3,
@@ -139,35 +143,30 @@ export default function HomePage() {
                 you need to quote jobs quickly.
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
-                {/* Primary CTA — full emphasis */}
-                <Link
-                  href={`${routes.commandCenter}?mode=draft`}
-                  prefetch={false}
-                  className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-blue-brand px-4 py-2.5 text-xs font-black text-white transition-all duration-200 hover:bg-[--color-blue-dark] active:scale-[0.98]"
-                >
-                  Start New Estimate{" "}
-                  <ArrowRight className="h-4 w-4" aria-hidden />
-                </Link>
-                {/* Secondary CTAs — ghost/outline, compact */}
+                {/* Primary CTA */}
+                {isLoggedIn ? (
+                  <Link
+                    href={routes.commandCenter}
+                    prefetch={false}
+                    className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-blue-brand px-4 py-2.5 text-xs font-black text-white transition-all duration-200 hover:bg-[--color-blue-dark] active:scale-[0.98]"
+                  >
+                    Go to Command Center <ArrowRight className="h-4 w-4" aria-hidden />
+                  </Link>
+                ) : (
+                  <Link
+                    href={routes.auth.signIn}
+                    prefetch={false}
+                    className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-blue-brand px-4 py-2.5 text-xs font-black text-white transition-all duration-200 hover:bg-[--color-blue-dark] active:scale-[0.98]"
+                  >
+                    Log In / Sign Up <ArrowRight className="h-4 w-4" aria-hidden />
+                  </Link>
+                )}
+                {/* Secondary CTA */}
                 <Link
                   href={routes.calculators}
                   className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 px-3 py-2.5 text-xs font-semibold text-slate-700 transition-all duration-200 hover:border-[--color-blue-rim] hover:text-[--color-blue-dark] active:scale-[0.98]"
                 >
-                  Calculators
-                </Link>
-                <Link
-                  href={routes.saved}
-                  prefetch={false}
-                  className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 px-3 py-2.5 text-xs font-semibold text-slate-700 transition-all duration-200 hover:border-[--color-blue-rim] hover:text-[--color-blue-dark] active:scale-[0.98]"
-                >
-                  Saved
-                </Link>
-                <Link
-                  href={routes.pricebook}
-                  prefetch={false}
-                  className="btn-tactile inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 px-3 py-2.5 text-xs font-semibold text-slate-700 transition-all duration-200 hover:border-[--color-blue-rim] hover:text-[--color-blue-dark] active:scale-[0.98]"
-                >
-                  Price Book
+                  Continue to Free Calculators
                 </Link>
               </div>
 

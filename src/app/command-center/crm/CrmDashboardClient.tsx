@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Users, Search, Plus, Phone, Mail, MapPin, MoreHorizontal, ArrowRight } from "lucide-react";
+import { Users, Search, Plus, Phone, Mail, MapPin, MoreHorizontal, ArrowRight, ArrowLeft } from "lucide-react";
 import type { ClientDTO } from "@/lib/dal/clients";
 import { ClientFormModal } from "./ClientFormModal";
 import type { Route } from "next";
+import { routes } from "@routes";
 
 export function CrmDashboardClient({ initialClients }: { initialClients: ClientDTO[] }) {
   const [clients, setClients] = useState<ClientDTO[]>(initialClients);
@@ -40,6 +41,12 @@ export function CrmDashboardClient({ initialClients }: { initialClients: ClientD
     <div className="flex h-full flex-col gap-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
+          <Link
+            href={routes.commandCenter}
+            className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-[--color-ink-dim] transition hover:text-[--color-blue-brand] mb-3"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" /> Back to Command Center
+          </Link>
           <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[--color-blue-brand]">
             Command Center
           </p>

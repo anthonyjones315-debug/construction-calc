@@ -1,7 +1,7 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 
 test.describe("Roofing Calculators", () => {
-  const dismissCookies = async (page: Parameters<typeof test>[0]["page"]) => {
+  const dismissCookies = async (page: Page) => {
     const acceptBtn = page.getByRole("button", { name: /accept/i });
     try {
       await acceptBtn.waitFor({ state: "visible", timeout: 3000 });
@@ -13,11 +13,12 @@ test.describe("Roofing Calculators", () => {
   };
 
   const fillNumbers = async (
-    page: Parameters<typeof test>[0]["page"],
+    page: Page,
     values: string[],
   ) => {
     await dismissCookies(page);
-    const inputs = page.locator("input[type='number']");
+    const inputs = page.locator("input[type='number']").filter({ visible: true });
+    await inputs.first().waitFor({ state: "visible", timeout: 5000 }).catch(() => {});
     const count = await inputs.count();
     if (count === 0)
       test.skip(true, "No numeric calculator inputs found on page");
@@ -40,37 +41,45 @@ test.describe("Roofing Calculators", () => {
       await page.goto("/calculators/roofing/shingles");
       await fillNumbers(page, ["20", "15", "12"]);
 
-      const resultText = page.locator('div').filter({ hasText: /Order/i }).filter({ hasText: /[\d.]+/ }).last();
-      await expect(resultText).toBeVisible();
-      const baseText = await resultText.textContent();
+      const materialOrder = (page: Page) =>
+        page.locator('.result-counter').first();
+
+      const parseOrder = (text: string | null) =>
+        parseFloat(text?.match(/[\d.]+/)?.[0] ?? "0");
+
+      await expect(materialOrder(page)).toBeVisible();
+      const baseText = await materialOrder(page).textContent();
 
       // Adjust waste slider — move from default (10%) to 0%
-      const wasteSlider = page.locator("input[type='range']").first();
+      const wasteSlider = page.locator("input[type='range']").last();
       if (await wasteSlider.isVisible()) {
-        await wasteSlider.evaluate((node: HTMLInputElement) => {
-          node.value = "0";
-          node.dispatchEvent(new Event("input", { bubbles: true }));
-          node.dispatchEvent(new Event("change", { bubbles: true }));
-        });
-        const zeroWasteText = await resultText.textContent();
-        // Then set to max waste (slider max is 30)
-        await wasteSlider.evaluate((node: HTMLInputElement) => {
-          node.value = "30";
-          node.dispatchEvent(new Event("input", { bubbles: true }));
-          node.dispatchEvent(new Event("change", { bubbles: true }));
-        });
+        const setSliderValue = async (val: string) => {
+          await wasteSlider.evaluate((node: HTMLInputElement, value) => {
+            const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+              window.HTMLInputElement.prototype,
+              "value"
+            )?.set;
+            nativeInputValueSetter?.call(node, value);
+            node.dispatchEvent(new Event("input", { bubbles: true }));
+            node.dispatchEvent(new Event("change", { bubbles: true }));
+          }, val);
+        };
+
+        const initialText = await materialOrder(page).textContent();
+        await setSliderValue("0");
         await expect
-          .poll(async () => (await resultText.textContent()) ?? "")
+          .poll(async () => (await materialOrder(page).textContent()) ?? "")
+          .not.toEqual(initialText ?? "");
+        const zeroWasteText = await materialOrder(page).textContent();
+
+        await setSliderValue("20");
+        await expect
+          .poll(async () => (await materialOrder(page).textContent()) ?? "")
           .not.toEqual(zeroWasteText ?? "");
-        const highWasteText = await resultText.textContent();
-        // Result with 30% waste should be >= result with 0% waste
-        const zeroCount = parseFloat(
-          zeroWasteText?.match(/[\d.]+/)?.[0] ?? "0",
+        const higherWasteText = await materialOrder(page).textContent();
+        expect(parseOrder(higherWasteText)).toBeGreaterThan(
+          parseOrder(zeroWasteText),
         );
-        const highCount = parseFloat(
-          highWasteText?.match(/[\d.]+/)?.[0] ?? "0",
-        );
-        expect(highCount).toBeGreaterThanOrEqual(zeroCount);
       } else {
         // If no slider, just verify we have a result
         expect(baseText).toMatch(/Order\s*[\d.]+/i);

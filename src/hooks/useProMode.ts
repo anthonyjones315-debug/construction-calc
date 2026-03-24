@@ -1,17 +1,18 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useSession } from "@/lib/auth/client";
+import { useAuth } from "@clerk/nextjs";
 
 const PRO_MODE_STORAGE_KEY = "constructionCalc.proMode";
 const PRO_MODE_EVENT = "construction-calc:pro-mode-changed";
 
 export function useProMode() {
-  const { data: session, status } = useSession();
+  const { userId, isLoaded } = useAuth();
+  const status = isLoaded ? (userId ? "authenticated" : "unauthenticated") : "loading";
   const [mounted, setMounted] = useState(false);
   const [proMode, setProModeState] = useState(false);
-  const isAuthenticated = Boolean(session?.user);
-  const authKey = session?.user?.id ?? session?.user?.email ?? "";
+  const isAuthenticated = Boolean(userId);
+  const authKey = userId ?? "";
 
   useEffect(() => {
     if (typeof window === "undefined") return;

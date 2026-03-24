@@ -1,8 +1,16 @@
 import type { Route } from "next";
 import { routes } from "@routes";
-import { safeAppRedirectPath } from "@/lib/auth/safe-redirect";
 
 export type ClerkAuthMode = "sign-in" | "sign-up";
+
+export function safeAppRedirectPath(
+  candidate: string | null | undefined,
+  fallback: string
+): string {
+  if (!candidate || typeof candidate !== "string") return fallback;
+  if (candidate.startsWith("/") && !candidate.startsWith("//")) return candidate;
+  return fallback;
+}
 
 function getEnvValue(...keys: string[]): string | undefined {
   for (const key of keys) {

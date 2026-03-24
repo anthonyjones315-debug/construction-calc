@@ -27,7 +27,7 @@
     "test:e2e:smoke:ci": "playwright test --project=no-auth --grep @smoke --workers=1 --reporter=list",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:debug": "playwright test --debug",
-        "discover-features": "ts-node scripts/discover-features.ts",
+    "discover-features": "ts-node scripts/discover-features.ts",
     "generate-tests": "node scripts/generate-tests.js",
     "supabase:health": "ts-node scripts/check-supabase.ts",
     "supabase:check": "supabase db remote:run supabase_master_check.sql"
@@ -37,6 +37,7 @@
   "license": "ISC",
   "dependencies": {
     "@clerk/nextjs": "^7.0.6",
+    "@clerk/ui": "^1.2.3",
     "@next/third-parties": "^16.2.1",
     "@react-pdf/renderer": "^4.3.2",
     "@sentry/nextjs": "^10.43.0",
@@ -69,13 +70,15 @@
   "devDependencies": {
     "@clerk/testing": "^2.0.6",
     "@playwright/test": "^1.58.2",
+    "@types/pdf-parse": "^1.1.5",
+    "@zerostep/playwright": "^0.1.5",
     "babel-plugin-react-compiler": "^1.0.0",
     "drizzle-kit": "^0.31.6",
     "eslint": "^9.39.4",
     "eslint-config-next": "^16.2.1",
+    "pdf-parse": "^1.1.4",
     "puppeteer": "^24.7.1",
     "supabase": "^2.83.0",
-    "vitest": "^1.6.0",
     "ts-node": "^10.9.2"
   }
 }

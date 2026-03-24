@@ -108,7 +108,6 @@ export function ClerkAuthPage({
 
   useEffect(() => {
     if (isLoaded) {
-      setTimedOut(false);
       return;
     }
 

@@ -1,13 +1,15 @@
 "use client";
 
 import { useClerk, useUser } from "@clerk/nextjs";
-import { useSession, useSignOut } from "@/lib/auth/client";
+import { useAuth } from "@clerk/nextjs";
 import { Loader2, LockKeyhole, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 export function PasswordSettings() {
-  const { data: session } = useSession();
-  const signOut = useSignOut();
+  const { userId, isLoaded } = useAuth();
+  const session = !!userId;
+  const status = isLoaded ? (userId ? "authenticated" : "unauthenticated") : "loading";
+  const { signOut } = useClerk();
   const { user } = useUser();
   const { openUserProfile } = useClerk();
   const [deleting, setDeleting] = useState(false);
@@ -103,7 +105,7 @@ export function PasswordSettings() {
                 );
               }
               setDeleteSuccess("Account deleted. Signing you out…");
-              await signOut({ callbackUrl: "/" });
+              await signOut({ redirectUrl: "/" });
             } catch (error) {
               setDeleteError(
                 error instanceof Error ? error.message : "Failed to delete account",

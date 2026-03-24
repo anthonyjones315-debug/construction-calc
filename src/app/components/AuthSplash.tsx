@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useSession } from "@/lib/auth/client";
+import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { routes } from "@routes";
@@ -12,7 +12,8 @@ import { useClerkAuthFlow } from "@/components/auth/useClerkAuthFlow";
  * It encourages them to sign up before accessing any calculator or estimate functionality.
  */
 export function AuthSplash() {
-  const { status } = useSession();
+  const { isLoaded, userId } = useAuth();
+  const status = isLoaded ? (userId ? "authenticated" : "unauthenticated") : "loading";
   const router = useRouter();
   const { openSignIn, openSignUp } = useClerkAuthFlow();
 

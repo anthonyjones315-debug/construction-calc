@@ -1,0 +1,234 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - alertdialog "Cookie Consent Prompt" [ref=e2]:
+    - generic [ref=e3]:
+      - link "Powered by Termly" [ref=e5] [cursor=pointer]:
+        - /url: https://termly.io/products/cookie-consent-manager/
+        - img "Powered by Termly" [ref=e6]
+      - generic [ref=e7]:
+        - generic [ref=e8]:
+          - text: We use essential cookies to make our site work. With your consent, we may also use non-essential cookies to improve user experience and analyze website traffic. By clicking “Accept,” you agree to our website's cookie use as described in our
+          - button "Cookie Policy" [ref=e9] [cursor=pointer]
+          - text: . You can change your cookie settings at any time by clicking “
+          - button "Preferences" [ref=e10] [cursor=pointer]
+          - text: .”
+        - generic [ref=e11]:
+          - button "Preferences" [ref=e12] [cursor=pointer]
+          - button "Decline" [ref=e13] [cursor=pointer]
+          - button "Accept" [ref=e14] [cursor=pointer]
+  - link "Skip to main content" [ref=e15] [cursor=pointer]:
+    - /url: "#main-content"
+  - alert [ref=e16]
+  - generic [ref=e17]:
+    - banner [ref=e18]:
+      - generic [ref=e19]:
+        - link "Pro Construction Calc" [ref=e20] [cursor=pointer]:
+          - /url: /
+          - img "Pro Construction Calc" [ref=e21]
+          - generic [ref=e22]: Pro Construction Calc
+        - navigation "Main navigation" [ref=e23]:
+          - link "Calculators" [ref=e24] [cursor=pointer]:
+            - /url: /calculators
+          - link "Field Notes" [ref=e25] [cursor=pointer]:
+            - /url: /field-notes
+          - link "FAQ" [ref=e26] [cursor=pointer]:
+            - /url: /faq
+          - link "About" [ref=e27] [cursor=pointer]:
+            - /url: /about
+        - generic [ref=e28]:
+          - link "Estimate queue 0 items" [ref=e29] [cursor=pointer]:
+            - /url: /cart
+            - img [ref=e30]
+            - generic [ref=e33]: Estimates
+          - button "Sign In" [ref=e34] [cursor=pointer]
+    - main [ref=e35]:
+      - generic [ref=e37]:
+        - generic [ref=e38]:
+          - generic [ref=e39]:
+            - generic [ref=e40]: Simple estimating workflow
+            - generic [ref=e41]: Built for contractors
+          - heading "Pro Construction Calc Fast, easy-to-use calculators for everyday field estimates." [level=1] [ref=e42]:
+            - text: Pro Construction Calc
+            - generic [ref=e43]: Fast, easy-to-use calculators for everyday field estimates.
+          - paragraph [ref=e44]: Run your quantities, apply your pricing, and move straight into client-ready estimates. No bloated dashboard flow—just the tools you need to quote jobs quickly.
+          - generic [ref=e45]:
+            - link "Log In / Sign Up" [ref=e46] [cursor=pointer]:
+              - /url: /sign-in
+              - text: Log In / Sign Up
+              - img [ref=e47]
+            - link "Continue to Free Calculators" [ref=e49] [cursor=pointer]:
+              - /url: /calculators
+          - generic [ref=e50]:
+            - generic [ref=e51]:
+              - generic [ref=e52]:
+                - img [ref=e53]
+                - paragraph [ref=e58]: Trade Specific
+              - paragraph [ref=e59]: Concrete, framing, roofing, insulation, flooring, and more.
+            - generic [ref=e60]:
+              - generic [ref=e61]:
+                - img [ref=e62]
+                - paragraph [ref=e65]: Client Ready
+              - paragraph [ref=e66]: Turn your scope and numbers into clear, sendable estimate outputs.
+            - generic [ref=e67]:
+              - generic [ref=e68]:
+                - img [ref=e69]
+                - paragraph [ref=e72]: Consistent Pricing
+              - paragraph [ref=e73]: Use saved pricing and estimate history so every quote stays aligned.
+          - generic [ref=e74]:
+            - paragraph [ref=e75]: Pro tips
+            - generic [ref=e76]:
+              - generic [ref=e77]:
+                - paragraph [ref=e78]: Start with quantities
+                - paragraph [ref=e79]: Run measurements first, then add pricing—this keeps revisions simple when scope changes.
+              - generic [ref=e80]:
+                - paragraph [ref=e81]: Save templates
+                - paragraph [ref=e82]: Store your common jobs and duplicate them instead of rebuilding every estimate.
+              - generic [ref=e83]:
+                - paragraph [ref=e84]: Use client-ready notes
+                - paragraph [ref=e85]: Add short scope notes while calculating so exports are ready to send immediately.
+          - generic [ref=e86]:
+            - generic [ref=e87]:
+              - generic [ref=e88]:
+                - img [ref=e89]
+                - paragraph [ref=e92]: Quote in minutes
+              - paragraph [ref=e93]: Start with calculators, save the result, and move to a client-ready estimate without extra steps.
+            - generic [ref=e94]:
+              - generic [ref=e95]:
+                - img [ref=e96]
+                - paragraph [ref=e99]: Cleaner handoff
+              - paragraph [ref=e100]: Keep line items, notes, and totals organized so your team and clients see the same numbers.
+            - generic [ref=e101]:
+              - generic [ref=e102]:
+                - img [ref=e103]
+                - paragraph [ref=e105]: Built for crews
+              - paragraph [ref=e106]: Focus on concrete, framing, roofing, and interior jobs with tools made for field speed.
+          - generic [ref=e107]:
+            - img "Timber framing skeleton at sunset" [ref=e109]
+            - img "Concrete foundation pour" [ref=e111]
+            - img "Construction blueprints" [ref=e113]
+        - generic [ref=e114]:
+          - generic [ref=e115]:
+            - paragraph [ref=e116]: Quick access
+            - generic [ref=e117]:
+              - link "Open Calculators Jump right into trade-specific calculators and start a takeoff fast." [ref=e118] [cursor=pointer]:
+                - /url: /calculators
+                - paragraph [ref=e119]: Open Calculators
+                - paragraph [ref=e120]: Jump right into trade-specific calculators and start a takeoff fast.
+              - link "Saved Estimates Pick up where you left off without rebuilding estimates from scratch." [ref=e121] [cursor=pointer]:
+                - /url: /saved
+                - paragraph [ref=e122]: Saved Estimates
+                - paragraph [ref=e123]: Pick up where you left off without rebuilding estimates from scratch.
+              - link "Price Book Standardize labor and material pricing so every quote stays consistent." [ref=e124] [cursor=pointer]:
+                - /url: /pricebook
+                - paragraph [ref=e125]: Price Book
+                - paragraph [ref=e126]: Standardize labor and material pricing so every quote stays consistent.
+              - link "Field Notes Use practical pro tips and install guidance while you build each estimate." [ref=e127] [cursor=pointer]:
+                - /url: /field-notes
+                - paragraph [ref=e128]: Field Notes
+                - paragraph [ref=e129]: Use practical pro tips and install guidance while you build each estimate.
+          - generic [ref=e130]:
+            - paragraph [ref=e131]: Pick a calculator
+            - generic [ref=e132]:
+              - link "Concrete" [ref=e133] [cursor=pointer]:
+                - /url: /calculators/concrete
+                - paragraph [ref=e134]: Concrete
+                - img [ref=e135]
+              - link "Framing" [ref=e137] [cursor=pointer]:
+                - /url: /calculators/framing
+                - paragraph [ref=e138]: Framing
+                - img [ref=e139]
+              - link "Roofing" [ref=e141] [cursor=pointer]:
+                - /url: /calculators/roofing
+                - paragraph [ref=e142]: Roofing
+                - img [ref=e143]
+              - link "Drywall" [ref=e145] [cursor=pointer]:
+                - /url: /calculators/insulation/drywall
+                - paragraph [ref=e146]: Drywall
+                - img [ref=e147]
+              - link "Insulation" [ref=e149] [cursor=pointer]:
+                - /url: /calculators/insulation
+                - paragraph [ref=e150]: Insulation
+                - img [ref=e151]
+              - link "Flooring" [ref=e153] [cursor=pointer]:
+                - /url: /calculators/finish/flooring
+                - paragraph [ref=e154]: Flooring
+                - img [ref=e155]
+          - generic [ref=e157]:
+            - paragraph [ref=e158]: Need help?
+            - generic [ref=e159]:
+              - link "Operator Guide See the fastest workflow from calculator run to final estimate." [ref=e160] [cursor=pointer]:
+                - /url: /guide
+                - paragraph [ref=e161]: Operator Guide
+                - paragraph [ref=e162]: See the fastest workflow from calculator run to final estimate.
+              - link "FAQ Get quick answers to common quoting and workflow questions." [ref=e163] [cursor=pointer]:
+                - /url: /faq
+                - paragraph [ref=e164]: FAQ
+                - paragraph [ref=e165]: Get quick answers to common quoting and workflow questions.
+              - link "Contact Reach out when you need help tuning your estimating setup." [ref=e166] [cursor=pointer]:
+                - /url: /contact
+                - paragraph [ref=e167]: Contact
+                - paragraph [ref=e168]: Reach out when you need help tuning your estimating setup.
+          - generic [ref=e169]:
+            - generic [ref=e170]:
+              - img [ref=e171]
+              - paragraph [ref=e175]: Shop Contractor Gear
+            - generic [ref=e176]:
+              - link "Laser Measures Instant room & span dims" [ref=e177] [cursor=pointer]:
+                - /url: https://www.amazon.com/s?tag=proconstruct-20&ref=pcc_nav&k=laser%2Bdistance%2Bmeasurer%2Bcontractor%2B400ft&i=tools
+                - generic [ref=e178]:
+                  - paragraph [ref=e179]: Laser Measures
+                  - paragraph [ref=e180]: Instant room & span dims
+                - img [ref=e181]
+              - link "Framing Squares Layout, rafters & stair stringers" [ref=e185] [cursor=pointer]:
+                - /url: https://www.amazon.com/s?tag=proconstruct-20&ref=pcc_nav&k=framing%2Bspeed%2Bsquare%2Brafter%2Blayout&i=tools
+                - generic [ref=e186]:
+                  - paragraph [ref=e187]: Framing Squares
+                  - paragraph [ref=e188]: Layout, rafters & stair stringers
+                - img [ref=e189]
+              - link "Concrete Mixers Portable electric & drum mixers" [ref=e193] [cursor=pointer]:
+                - /url: https://www.amazon.com/s?tag=proconstruct-20&ref=pcc_nav&k=portable%2Bconcrete%2Bmixer%2Belectric&i=tools
+                - generic [ref=e194]:
+                  - paragraph [ref=e195]: Concrete Mixers
+                  - paragraph [ref=e196]: Portable electric & drum mixers
+                - img [ref=e197]
+              - link "Roofing Nailers Pneumatic coil nailers" [ref=e201] [cursor=pointer]:
+                - /url: https://www.amazon.com/s?tag=proconstruct-20&ref=pcc_nav&k=roofing%2Bcoil%2Bnailer%2Bpneumatic&i=tools
+                - generic [ref=e202]:
+                  - paragraph [ref=e203]: Roofing Nailers
+                  - paragraph [ref=e204]: Pneumatic coil nailers
+                - img [ref=e205]
+              - link "Chalk Lines Snap lines for layout & framing" [ref=e209] [cursor=pointer]:
+                - /url: https://www.amazon.com/s?tag=proconstruct-20&ref=pcc_nav&k=chalk%2Bline%2Breel%2Bcontractor&i=tools
+                - generic [ref=e210]:
+                  - paragraph [ref=e211]: Chalk Lines
+                  - paragraph [ref=e212]: Snap lines for layout & framing
+                - img [ref=e213]
+              - link "Utility Knives Heavy-duty retractable blades" [ref=e217] [cursor=pointer]:
+                - /url: https://www.amazon.com/s?tag=proconstruct-20&ref=pcc_nav&k=heavy%2Bduty%2Butility%2Bknife%2Bcontractor&i=tools
+                - generic [ref=e218]:
+                  - paragraph [ref=e219]: Utility Knives
+                  - paragraph [ref=e220]: Heavy-duty retractable blades
+                - img [ref=e221]
+            - link "Browse All Tools on Amazon" [ref=e225] [cursor=pointer]:
+              - /url: https://www.amazon.com/s?tag=proconstruct-20&ref=pcc_browse&k=contractor%2Btools
+              - text: Browse All Tools on Amazon
+              - img [ref=e226]
+            - paragraph [ref=e230]: Amazon Associate — we earn from qualifying purchases. Sponsored
+    - contentinfo [ref=e232]:
+      - generic [ref=e233]:
+        - generic [ref=e234]:
+          - img [ref=e235]
+          - generic [ref=e240]: Pro Construction Calc
+          - generic [ref=e241]: © 2026
+        - generic [ref=e242]:
+          - link "Privacy" [ref=e243] [cursor=pointer]:
+            - /url: /privacy
+          - link "Terms" [ref=e244] [cursor=pointer]:
+            - /url: /terms
+          - link "Contact" [ref=e245] [cursor=pointer]:
+            - /url: mailto:contact@proconstructioncalc.com
+          - link "Cookie Preferences" [ref=e247] [cursor=pointer]:
+            - /url: "#"
+```

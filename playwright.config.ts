@@ -18,6 +18,8 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: [["html"], ["list"]],
   use: {
+    timeout: 60000,
+    navigationTimeout: 30000,
     baseURL: "http://localhost:3000",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
@@ -83,10 +85,10 @@ export default defineConfig({
       testMatch: /.*\.noauth\.spec\.ts/,
     },
   ],
-  webServer: {
-    command: "npm run start",
+  /* webServer: {
+    command: "npm run dev",
     url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
-  },
+  }, */
 });

@@ -51,10 +51,7 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
   );
   const clientName = payload.client_name ?? "";
   const jobAddress = payload.job_site_address ?? "";
-  const materialList =
-    Array.isArray(payload.material_list) && payload.material_list.length
-      ? payload.material_list
-      : [];
+
   const quoteNote =
     typeof payload.quote_note === "string" && payload.quote_note.trim()
       ? payload.quote_note.trim()
@@ -126,22 +123,7 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
     | { signatureDataUrl?: string; signedAt?: string; signerName?: string }
     | undefined;
 
-  const materialsSection = materialList.length > 0
-    ? `
-      <div style="margin-top: 24px;">
-        <p style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin: 0 0 10px 0;">Material Breakdown</p>
-        <table style="width: 100%; border-collapse: collapse;">
-          ${materialList
-            .map(
-              (line: string) => `
-            <tr>
-              <td style="padding: 6px 0; border-bottom: 1px solid #f3f4f6; font-size: 12px; color: #374151;">${line}</td>
-            </tr>`,
-            )
-            .join("")}
-        </table>
-      </div>`
-    : "";
+
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -257,7 +239,7 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
         </div>
       </div>
 
-      ${materialsSection}
+
 
       <!-- Signature -->
       ${
@@ -312,15 +294,7 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
             : ""
         }
 
-        <!-- Field Notes -->
-        <section class="glass-panel px-5 py-4">
-          <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/80">
-            Field Notes
-          </p>
-          <p class="mt-1 text-xs text-white/70">
-            Use this estimate as a planning tool. Always verify on-site dimensions, substrate conditions, and tax status (ST-124) before ordering or invoicing.
-          </p>
-        </section>
+
 
         <!-- Footer -->
         <footer class="pt-4 text-center text-[8pt] text-slate-500">

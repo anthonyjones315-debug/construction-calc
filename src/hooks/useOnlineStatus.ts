@@ -1,32 +1,28 @@
-import { useState, useEffect } from "react";
+import { useSyncExternalStore } from "react";
+
+function subscribe(callback: () => void) {
+  if (typeof window === "undefined") return () => {};
+  window.addEventListener("online", callback);
+  window.addEventListener("offline", callback);
+  return () => {
+    window.removeEventListener("online", callback);
+    window.removeEventListener("offline", callback);
+  };
+}
+
+function getSnapshot() {
+  if (typeof navigator === "undefined") return true;
+  return navigator.onLine;
+}
+
+function getServerSnapshot() {
+  return true;
+}
 
 /**
  * Returns true when the browser has network connectivity, false when offline.
  * Updates when the window fires "online" or "offline" events.
  */
 export function useOnlineStatus(): boolean {
-  const [online, setOnline] = useState(
-    typeof navigator !== "undefined" ? navigator.onLine : true,
-  );
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    function handleOnline() {
-      setOnline(true);
-    }
-
-    function handleOffline() {
-      setOnline(false);
-    }
-
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
-    return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
-    };
-  }, []);
-
-  return online;
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }

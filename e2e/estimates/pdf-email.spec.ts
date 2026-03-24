@@ -39,10 +39,9 @@ test.describe("Email Estimate Flow", () => {
     await dismissCookies(page);
 
     // Fill in dimension inputs
-    const inputs = page.locator("input[type='number']");
-    await inputs.nth(0).fill("20");
-    await inputs.nth(1).fill("24");
-    await inputs.nth(2).fill("4");
+    await page.getByLabel("Linear Feet (LF) feet").fill("20");
+    await page.getByLabel("Slab Width (ft) feet").fill("24");
+    await page.getByLabel("Slab Depth (Inches)").fill("4");
 
     // Wait for the result quote to generate
     const resultText = page.locator('div').filter({ hasText: /Order/i }).filter({ hasText: /[\d.]+/ }).last();

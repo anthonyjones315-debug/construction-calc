@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { useSession } from "@/lib/auth/client";
+import { useAuth, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import type { SafeEstimateDTO } from "@/lib/dal/estimates";
 import { normalizeEstimateStatus, type EstimateStatus } from "@/lib/estimates/status";
@@ -273,7 +273,22 @@ type Props = {
 
 export function EstimateDetail({ estimate }: Props) {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { userId, isLoaded } = useAuth();
+  const { user: clerkUser } = useUser();
+  const session = userId
+    ? {
+        user: {
+          id: userId,
+          email: clerkUser?.emailAddresses?.[0]?.emailAddress ?? null,
+          name:
+            [clerkUser?.firstName, clerkUser?.lastName]
+              .filter(Boolean)
+              .join(" ")
+              .trim() || null,
+        },
+      }
+    : null;
+  const status = isLoaded ? (userId ? "authenticated" : "unauthenticated") : "loading";
   const contractor = useContractorProfile();
   const estimateControlNumber = getEstimateControlNumber(estimate);
 

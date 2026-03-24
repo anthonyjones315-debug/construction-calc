@@ -6,7 +6,7 @@ import Image from "next/image";
 import type { Route } from "next";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { LucideIcon } from "lucide-react";
-import { useSession } from "@/lib/auth/client";
+import { useAuth, useUser } from "@clerk/nextjs";
 import * as Sentry from "@sentry/nextjs";
 import posthog from "posthog-js";
 import Autocomplete from "react-google-autocomplete";
@@ -835,7 +835,22 @@ function getHeroImageForKey(key: string): string {
 
 export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   const calculatorShellRef = useRef<HTMLElement>(null);
-  const { data: session } = useSession();
+  const { userId, isLoaded } = useAuth();
+  const { user: clerkUser } = useUser();
+  const session = userId
+    ? {
+        user: {
+          id: userId,
+          email: clerkUser?.emailAddresses?.[0]?.emailAddress ?? null,
+          name:
+            [clerkUser?.firstName, clerkUser?.lastName]
+              .filter(Boolean)
+              .join(" ")
+              .trim() || null,
+        },
+      }
+    : null;
+  const status = isLoaded ? (userId ? "authenticated" : "unauthenticated") : "loading";
   const contractorProfile = useContractorProfile();
   const { proMode, mounted } = useProMode();
   const effectiveProMode = mounted && proMode;
@@ -884,14 +899,14 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   const [openModuleGroup, setOpenModuleGroup] = useState<string | null>(null);
   const [crmModalOpen, setCrmModalOpen] = useState(false);
   // For feet/inches input support
-  const [baseMeasurement, setBaseMeasurement] = useState(10);
-  const [baseFeet, setBaseFeet] = useState(10);
+  const [baseMeasurement, setBaseMeasurement] = useState(0);
+  const [baseFeet, setBaseFeet] = useState(0);
   const [baseInches, setBaseInches] = useState(0);
-  const [widthSpan, setWidthSpan] = useState(10);
-  const [widthFeet, setWidthFeet] = useState(10);
+  const [widthSpan, setWidthSpan] = useState(0);
+  const [widthFeet, setWidthFeet] = useState(0);
   const [widthInches, setWidthInches] = useState(0);
-  const [depthThickness, setDepthThickness] = useState(4);
-  const [wasteFactor, setWasteFactor] = useState(10);
+  const [depthThickness, setDepthThickness] = useState(0);
+  const [wasteFactor, setWasteFactor] = useState(0);
   const [saveState, setSaveState] = useState<
     "idle" | "saving" | "saved" | "corrected" | "downloaded"
   >("idle");
@@ -911,18 +926,18 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   const [staggeredStudWall, setStaggeredStudWall] = useState(false);
   const [roofingInputMode, setRoofingInputMode] =
     useState<RoofingInputMode>("dimensions");
-  const [roofSquaresInput, setRoofSquaresInput] = useState(20);
-  const [roofOverhangInches, setRoofOverhangInches] = useState(12);
+  const [roofSquaresInput, setRoofSquaresInput] = useState(0);
+  const [roofOverhangInches, setRoofOverhangInches] = useState(0);
   const [roofPitchPreset, setRoofPitchPreset] =
     useState<RoofingPitchPreset>("6");
   const [roofPitchRiseCustom, setRoofPitchRiseCustom] = useState(6);
-  const [totalSquareFeetInput, setTotalSquareFeetInput] = useState(100);
-  const [totalCubicYardsInput, setTotalCubicYardsInput] = useState(1);
-  const [totalCubicFeetInput, setTotalCubicFeetInput] = useState(27);
-  const [totalStudsInput, setTotalStudsInput] = useState(16);
+  const [totalSquareFeetInput, setTotalSquareFeetInput] = useState(0);
+  const [totalCubicYardsInput, setTotalCubicYardsInput] = useState(0);
+  const [totalCubicFeetInput, setTotalCubicFeetInput] = useState(0);
+  const [totalStudsInput, setTotalStudsInput] = useState(0);
   const [trimInputMode, setTrimInputMode] =
     useState<TrimInputMode>("dimensions");
-  const [totalLinealFeetInput, setTotalLinealFeetInput] = useState(100);
+  const [totalLinealFeetInput, setTotalLinealFeetInput] = useState(0);
   const [openingDeductionSqFt, setOpeningDeductionSqFt] = useState(0);
   const [flooringBoxMode, setFlooringBoxMode] =
     useState<FlooringBoxMode>("custom");
@@ -3521,7 +3536,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                     (e.target as HTMLImageElement).src = '/images/trades/default.png';
                   }}
                 />
-                <div className="absolute inset-0 bg-slate-900/80 mix-blend-multiply" />
+                <div className="absolute inset-0 bg-gradient-to-br from-slate-900/95 via-slate-900/90 to-slate-800/85" />
               </div>
 
               <div className="relative z-10 max-w-3xl">
@@ -3531,11 +3546,11 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                 </div>
 
                 {!closeModal ? (
-                  <h1 className="mt-2 text-2xl font-black leading-tight text-white md:text-3xl drop-shadow-md">
+                  <h1 className="mt-2 text-2xl font-black leading-tight text-white md:text-3xl" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.7), 0 1px 3px rgba(0,0,0,0.5)' }}>
                     {displayTitle(page.title)}
                   </h1>
                 ) : null}
-                <p className="mt-2 text-sm leading-relaxed text-slate-200 sm:text-base lg:line-clamp-2 drop-shadow-sm">
+                <p className="mt-2 text-sm leading-relaxed text-slate-100 sm:text-base lg:line-clamp-2" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.6)' }}>
                   {page.description}
                 </p>
 
@@ -3933,6 +3948,18 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                                 maxFeet={10000}
                                 minInches={0}
                                 helpText={getInlineSubLabel(labels.second)}
+                              />
+                              <ProInput
+                                label={labels.third}
+                                subLabel={getInlineSubLabel(labels.third)}
+                                type="number"
+                                min={0}
+                                max={96}
+                                value={String(depthThickness)}
+                                onChange={(next) =>
+                                  parseAndSet(next, setDepthThickness, 0, 96)
+                                }
+                                unitSuffix="in"
                               />
                             </>
                           ) : isRoofingShinglesCalculator ? (

@@ -52,6 +52,15 @@ export async function GET() {
     const { data, error } = await getMaterialLedger(tenantColumn, tenantId);
 
     if (error) {
+      // Gracefully handle local dev environments missing the user_materials table
+      const errMsg = error?.message?.toLowerCase?.() ?? "";
+      if (
+        error?.code === "42P01" ||
+        errMsg.includes("could not find the table") ||
+        errMsg.includes("user_materials")
+      ) {
+        return NextResponse.json({ data: [] });
+      }
       Sentry.captureException(error);
       return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }

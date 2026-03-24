@@ -6,7 +6,7 @@ import Image from "next/image";
 import type { Route } from "next";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { LucideIcon } from "lucide-react";
-import { useSession } from "@/lib/auth/client";
+import { useAuth, useUser } from "@clerk/nextjs";
 import * as Sentry from "@sentry/nextjs";
 import posthog from "posthog-js";
 import Autocomplete from "react-google-autocomplete";
@@ -835,7 +835,22 @@ function getHeroImageForKey(key: string): string {
 
 export function CommandCenterCalculator({ page, closeModal }: CalculatorPageProps) {
   const calculatorShellRef = useRef<HTMLElement>(null);
-  const { data: session } = useSession();
+  const { userId, isLoaded } = useAuth();
+  const { user: clerkUser } = useUser();
+  const session = userId
+    ? {
+        user: {
+          id: userId,
+          email: clerkUser?.emailAddresses?.[0]?.emailAddress ?? null,
+          name:
+            [clerkUser?.firstName, clerkUser?.lastName]
+              .filter(Boolean)
+              .join(" ")
+              .trim() || null,
+        },
+      }
+    : null;
+  const status = isLoaded ? (userId ? "authenticated" : "unauthenticated") : "loading";
   const contractorProfile = useContractorProfile();
   const { proMode, mounted } = useProMode();
   const effectiveProMode = mounted && proMode;
@@ -884,13 +899,13 @@ export function CommandCenterCalculator({ page, closeModal }: CalculatorPageProp
   const [openModuleGroup, setOpenModuleGroup] = useState<string | null>(null);
   const [crmModalOpen, setCrmModalOpen] = useState(false);
   // For feet/inches input support
-  const [baseMeasurement, setBaseMeasurement] = useState(10);
-  const [baseFeet, setBaseFeet] = useState(10);
+  const [baseMeasurement, setBaseMeasurement] = useState(0);
+  const [baseFeet, setBaseFeet] = useState(0);
   const [baseInches, setBaseInches] = useState(0);
-  const [widthSpan, setWidthSpan] = useState(10);
-  const [widthFeet, setWidthFeet] = useState(10);
+  const [widthSpan, setWidthSpan] = useState(0);
+  const [widthFeet, setWidthFeet] = useState(0);
   const [widthInches, setWidthInches] = useState(0);
-  const [depthThickness, setDepthThickness] = useState(4);
+  const [depthThickness, setDepthThickness] = useState(0);
   const [wasteFactor, setWasteFactor] = useState(10);
   const [saveState, setSaveState] = useState<
     "idle" | "saving" | "saved" | "corrected" | "downloaded"
@@ -911,18 +926,18 @@ export function CommandCenterCalculator({ page, closeModal }: CalculatorPageProp
   const [staggeredStudWall, setStaggeredStudWall] = useState(false);
   const [roofingInputMode, setRoofingInputMode] =
     useState<RoofingInputMode>("dimensions");
-  const [roofSquaresInput, setRoofSquaresInput] = useState(20);
+  const [roofSquaresInput, setRoofSquaresInput] = useState(0);
   const [roofOverhangInches, setRoofOverhangInches] = useState(12);
   const [roofPitchPreset, setRoofPitchPreset] =
     useState<RoofingPitchPreset>("6");
   const [roofPitchRiseCustom, setRoofPitchRiseCustom] = useState(6);
-  const [totalSquareFeetInput, setTotalSquareFeetInput] = useState(100);
-  const [totalCubicYardsInput, setTotalCubicYardsInput] = useState(1);
-  const [totalCubicFeetInput, setTotalCubicFeetInput] = useState(27);
-  const [totalStudsInput, setTotalStudsInput] = useState(16);
+  const [totalSquareFeetInput, setTotalSquareFeetInput] = useState(0);
+  const [totalCubicYardsInput, setTotalCubicYardsInput] = useState(0);
+  const [totalCubicFeetInput, setTotalCubicFeetInput] = useState(0);
+  const [totalStudsInput, setTotalStudsInput] = useState(0);
   const [trimInputMode, setTrimInputMode] =
     useState<TrimInputMode>("dimensions");
-  const [totalLinealFeetInput, setTotalLinealFeetInput] = useState(100);
+  const [totalLinealFeetInput, setTotalLinealFeetInput] = useState(0);
   const [openingDeductionSqFt, setOpeningDeductionSqFt] = useState(0);
   const [flooringBoxMode, setFlooringBoxMode] =
     useState<FlooringBoxMode>("custom");
@@ -3191,6 +3206,12 @@ export function CommandCenterCalculator({ page, closeModal }: CalculatorPageProp
       quantity: 1,
       createdAt: new Date().toISOString(),
     });
+    posthog.capture("estimate_item_added_from_calculator", {
+      calculator: page.key,
+      category: page.category,
+      primaryLabel: calculatorResults.primary.label,
+      primaryValue: calculatorResults.primary.value,
+    });
     setFinalizeSuccess("Estimate added to estimate queue.");
     setFinalizeError(null);
   }
@@ -3521,7 +3542,7 @@ export function CommandCenterCalculator({ page, closeModal }: CalculatorPageProp
                     (e.target as HTMLImageElement).src = '/images/trades/default.png';
                   }}
                 />
-                <div className="absolute inset-0 bg-slate-900/80 mix-blend-multiply" />
+                <div className="absolute inset-0 bg-gradient-to-br from-slate-900/95 via-slate-900/90 to-slate-800/85" />
               </div>
 
               <div className="relative z-10 max-w-3xl">
@@ -3531,76 +3552,23 @@ export function CommandCenterCalculator({ page, closeModal }: CalculatorPageProp
                 </div>
 
                 {!closeModal ? (
-                  <h1 className="mt-2 text-2xl font-black leading-tight text-white md:text-3xl drop-shadow-md">
+                  <h1 className="mt-2 text-2xl font-black leading-tight text-white md:text-3xl" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.7), 0 1px 3px rgba(0,0,0,0.5)' }}>
                     {displayTitle(page.title)}
                   </h1>
                 ) : null}
-                <p className="mt-2 text-sm leading-relaxed text-slate-200 sm:text-base lg:line-clamp-2 drop-shadow-sm">
+                <p className="mt-2 text-sm leading-relaxed text-slate-100 sm:text-base lg:line-clamp-2" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.6)' }}>
                   {page.description}
                 </p>
 
                 <div className="mt-3 flex flex-wrap items-center gap-2">
                   <button
                     type="button"
-                    onClick={openFinalizeModal}
+                    onClick={handleAddToCart}
                     className="glass-button-primary inline-flex h-9 min-h-9 items-center gap-2 rounded-xl px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white transition-all duration-200 hover:text-white active:scale-[0.98]"
                   >
-                    <PenSquare className="h-3.5 w-3.5" aria-hidden />
-                    Finalize &amp; Send
+                    <ClipboardList className="h-3.5 w-3.5" aria-hidden />
+                    Add to Estimate
                   </button>
-                  <button
-                    type="button"
-                    onClick={openEmailEstimateModal}
-                    className="glass-button-primary inline-flex h-9 min-h-9 items-center gap-2 rounded-xl px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white transition-all duration-200 hover:text-white active:scale-[0.98]"
-                  >
-                    <Mail className="h-3.5 w-3.5" aria-hidden />
-                    Email Estimate
-                  </button>
-                  {session ? (
-  <button
-    type="button"
-    onClick={handleSaveEstimate}
-    disabled={saveState !== "idle" || !session}
-    className={`glass-button inline-flex h-9 min-h-9 items-center gap-2 rounded-xl px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-[--color-ink] transition-all duration-200 hover:text-[--color-ink] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 ${saveState !== "idle" ? "scale-95" : ""} ${saveState === "corrected" ? "verified-lock-pulse border-primary text-primary" : ""}`}
-    title={!session ? "Sign in to save estimates" : undefined}
-  >
-    {saveState === "saving" ? (
-      <>
-        <Save className="h-3.5 w-3.5" aria-hidden />
-        Saving
-      </>
-    ) : saveState === "saved" ? (
-      <>
-        <Check className="h-3.5 w-3.5 text-emerald-400" aria-hidden />
-        Saved
-      </>
-    ) : saveState === "corrected" ? (
-      <>
-        <Check className="h-3.5 w-3.5 text-primary" aria-hidden />
-        Verified &amp; Locked
-      </>
-    ) : saveState === "downloaded" ? (
-      <>
-        <Check className="h-3.5 w-3.5 text-emerald-400" aria-hidden />
-        Downloaded
-      </>
-    ) : (
-      <>
-        <Save className="h-3.5 w-3.5" aria-hidden />
-        Save Estimate
-      </>
-    )}
-  </button>
-) : (
-  <button
-    type="button"
-    disabled={true}
-    className="glass-button inline-flex h-9 min-h-9 items-center gap-2 rounded-xl px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-[--color-ink] disabled:cursor-not-allowed disabled:opacity-50"
-    title="Sign in to save estimates"
-  >
-    Save Estimate
-  </button>
-)}
                 </div>
 
                 {primaryMaterialOrder ? (

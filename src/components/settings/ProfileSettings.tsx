@@ -2,7 +2,7 @@
 
 import type { BusinessProfile } from "@/lib/supabase/client";
 import { useEffect, useRef, useState } from "react";
-import { useSession } from "@/lib/auth/client";
+import { useAuth, useUser } from "@clerk/nextjs";
 import {
   Building2,
   Phone,
@@ -29,7 +29,22 @@ async function parseJsonSafe(
 }
 
 export function ProfileSettings() {
-  const { data: session, status } = useSession();
+  const { userId, isLoaded } = useAuth();
+  const { user: clerkUser } = useUser();
+  const session = userId
+    ? {
+        user: {
+          id: userId,
+          email: clerkUser?.emailAddresses?.[0]?.emailAddress ?? null,
+          name:
+            [clerkUser?.firstName, clerkUser?.lastName]
+              .filter(Boolean)
+              .join(" ")
+              .trim() || null,
+        },
+      }
+    : null;
+  const status = isLoaded ? (userId ? "authenticated" : "unauthenticated") : "loading";
   const accountEmail = session?.user?.email ?? "";
   const [isOwner, setIsOwner] = useState(false);
   const [membershipRole, setMembershipRole] = useState<string>("member");
