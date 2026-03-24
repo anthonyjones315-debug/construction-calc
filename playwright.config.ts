@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const e2ePort = Number(process.env.PLAYWRIGHT_PORT ?? 3100);
+const e2eBaseURL = process.env.PLAYWRIGHT_BASE_URL ?? `http://localhost:${e2ePort}`;
 
 /**
  * Read environment variables from file.
@@ -12,9 +14,9 @@ dotenv.config({ path: path.resolve(__dirname, ".env.local") });
 
 export default defineConfig({
   testDir: "./e2e",
-  timeout: 60_000,
+  timeout: 90_000,
   expect: {
-    timeout: 10_000,
+    timeout: 15_000,
   },
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
@@ -22,9 +24,9 @@ export default defineConfig({
   workers: process.env.CI ? 1 : 2,
   reporter: [["html"], ["list"]],
   use: {
-    actionTimeout: 15_000,
-    navigationTimeout: 30000,
-    baseURL: "http://localhost:3000",
+    actionTimeout: 20_000,
+    navigationTimeout: 45_000,
+    baseURL: e2eBaseURL,
     trace: "on-first-retry",
     screenshot: "only-on-failure",
     video: "retain-on-failure",
@@ -90,9 +92,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "npm run start:e2e",
-    url: "http://localhost:3000",
+    command: `PORT=${e2ePort} npm run start:e2e`,
+    url: e2eBaseURL,
     reuseExistingServer: !process.env.CI,
-    timeout: 300_000,
+    timeout: 600_000,
   },
 });

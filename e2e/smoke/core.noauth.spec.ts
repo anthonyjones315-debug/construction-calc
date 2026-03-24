@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { expectGuestAuthPrompt } from "../lib/app";
 
 test.describe("@smoke core public UI", () => {
   test("@smoke home renders and links to calculators", async ({ page }) => {
@@ -61,12 +62,7 @@ test.describe("@smoke auth guards", () => {
     ]) {
       await page.goto(path);
       await expect(page).toHaveURL(new RegExp(`${path}$`));
-      await expect(
-        page.getByRole("heading", {
-          name: /welcome to pro construction calc/i,
-        }),
-      ).toBeVisible();
-      await expect(page.getByText(/sign up & get started/i)).toBeVisible();
+      await expectGuestAuthPrompt(page);
     }
   });
 });

@@ -1,11 +1,17 @@
 import { test, expect } from "@playwright/test";
+import { calculatorResultsSection } from "./lib/app";
 
 test.describe("Visual Regression — Key Screens", () => {
 
   test("calculator directory matches baseline", async ({ page }) => {
     await page.goto("/calculators", { waitUntil: "domcontentloaded" });
     await expect(
-      page.getByRole("heading", { name: /calculators/i }).first(),
+      page.getByRole("heading", { name: /commercial-grade space math/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("searchbox", {
+        name: /search construction calculators/i,
+      }),
     ).toBeVisible();
     await expect(page).toHaveScreenshot("calculators-directory.png", {
       fullPage: false,
@@ -39,9 +45,7 @@ test.describe("Visual Regression — Key Screens", () => {
     await page.goto("/calculators/concrete/slab", {
       waitUntil: "domcontentloaded",
     });
-    await expect(
-      page.locator("[aria-label='Calculator results']").first(),
-    ).toBeVisible();
+    await expect(calculatorResultsSection(page)).toBeVisible();
     await expect(page).toHaveScreenshot("mobile-slab-calc.png", {
       maxDiffPixelRatio: 0.03,
     });

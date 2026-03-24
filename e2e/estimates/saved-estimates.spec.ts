@@ -27,7 +27,7 @@ test.describe("Saved Estimates", () => {
       await firstEstimate.click();
       // Should navigate to estimate detail
       await expect(page).toHaveURL(/saved\/|estimate\//);
-      await expect(page.getByTestId("cart-item")).toHaveCount({ minimum: 1 });
+      await expect(page.getByTestId("cart-item").first()).toBeVisible();
     }
   });
 
@@ -45,7 +45,7 @@ test.describe("Saved Estimates", () => {
         await confirmBtn.click();
       }
 
-      await expect(estimates).toHaveCount(count - 1);
+      await expect.poll(async () => estimates.count()).toBe(count - 1);
     }
   });
 

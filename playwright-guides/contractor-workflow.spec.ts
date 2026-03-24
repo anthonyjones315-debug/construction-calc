@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { captureGuideScreenshot, openGuideStep } from "./helpers";
+import { expectCalculatorShell } from "../e2e/lib/app";
 
 test.describe("Guide capture — authenticated contractor workflows", () => {
   test("save estimate and open command center workflow", async ({
@@ -9,7 +10,7 @@ test.describe("Guide capture — authenticated contractor workflows", () => {
     await page.getByLabel(/Run Length|Length/i).first().fill("20");
     await page.getByLabel(/Slab Width|Width/i).first().fill("24");
     await page.getByLabel(/Slab Thickness|Thickness/i).first().fill("4");
-    await expect(page.locator(".result-counter").first()).toBeVisible();
+    await expectCalculatorShell(page);
     await captureGuideScreenshot(page, testInfo, "calculator-ready-to-save");
 
     const saveEstimateButton = page.getByRole("button", {

@@ -8,9 +8,10 @@ test.describe("Public route coverage", () => {
       page,
     }) => {
       await gotoReady(page, pageCheck.route);
-      await expect(
-        page.getByRole("heading", { name: pageCheck.heading }).first(),
-      ).toBeVisible();
+      if ("url" in pageCheck && pageCheck.url) {
+        await expect(page).toHaveURL(pageCheck.url);
+      }
+      await expect(page).toHaveTitle(pageCheck.title);
       await expectNoAppCrash(page);
     });
   }

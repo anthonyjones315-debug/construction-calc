@@ -36,16 +36,14 @@ const nextConfig: NextConfig = {
         source: "/ingest/:path*",
         destination: "https://us.i.posthog.com/:path*",
       },
+      {
+        source: "/__clerk/:path*",
+        destination: "https://cdn.clerk.com/:path*",
+      },
     ];
   },
   async redirects() {
     return [
-      { source: "/blog", destination: "/field-notes", permanent: true },
-      {
-        source: "/blog/:path*",
-        destination: "/field-notes/:path*",
-        permanent: true,
-      },
       { source: "/register", destination: "/sign-up", permanent: true },
       { source: "/forgot-password", destination: "/sign-in", permanent: true },
     ];
@@ -81,6 +79,7 @@ const nextConfig: NextConfig = {
       "https://*.clerk.accounts.dev",
       "https://clerk.accounts.dev",
       "https://*.clerk.com",
+      "https://clerk.com",
       "https://challenges.cloudflare.com",
       "https://*.proconstructioncalc.com",
     ].join(" ");

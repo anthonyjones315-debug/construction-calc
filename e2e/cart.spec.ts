@@ -51,9 +51,7 @@ test.describe("Estimate Cart", () => {
     // Click Save Estimate to add to local cart
     const saveBtn = page.getByRole("button", { name: /Save Estimate/i });
     await saveBtn.click();
-
-    // Look for a success indicator
-    await page.waitForTimeout(500);
+    await expect(saveBtn).toContainText(/saved|verified|downloaded/i);
     // Cart page should now show the saved item
     await page.goto("/cart");
     const body = await page.textContent("body");
@@ -64,8 +62,9 @@ test.describe("Estimate Cart", () => {
     // Add an item via Save Estimate
     await page.goto("/calculators/concrete/slab");
     await page.getByText(/Total Yards/i).waitFor({ state: "visible" });
-    await page.getByRole("button", { name: /Save Estimate/i }).click();
-    await page.waitForTimeout(500);
+    const saveBtn = page.getByRole("button", { name: /Save Estimate/i });
+    await saveBtn.click();
+    await expect(saveBtn).toContainText(/saved|verified|downloaded/i);
 
     // Navigate to cart and reload
     await page.goto("/cart");

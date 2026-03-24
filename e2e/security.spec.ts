@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { expectGuestAuthPrompt } from "./lib/app";
 
 test.describe("Security", () => {
   test("unauthenticated user cannot access /saved", async ({ browser }) => {
@@ -6,7 +7,7 @@ test.describe("Security", () => {
     const page = await context.newPage();
     await page.goto("/saved");
     await expect(page).toHaveURL(/\/saved/);
-    await expect(page.getByRole("heading", { name: /welcome to pro construction calc/i })).toBeVisible();
+    await expectGuestAuthPrompt(page);
     await context.close();
   });
 
@@ -15,7 +16,7 @@ test.describe("Security", () => {
     const page = await context.newPage();
     await page.goto("/settings");
     await expect(page).toHaveURL(/\/settings/);
-    await expect(page.getByRole("heading", { name: /welcome to pro construction calc/i })).toBeVisible();
+    await expectGuestAuthPrompt(page);
     await context.close();
   });
 
@@ -26,7 +27,7 @@ test.describe("Security", () => {
     const page = await context.newPage();
     await page.goto("/command-center");
     await expect(page).toHaveURL(/\/command-center/);
-    await expect(page.getByRole("heading", { name: /welcome to pro construction calc/i })).toBeVisible();
+    await expectGuestAuthPrompt(page);
     await context.close();
   });
 
@@ -35,7 +36,7 @@ test.describe("Security", () => {
     const page = await context.newPage();
     await page.goto("/pricebook");
     await expect(page).toHaveURL(/\/pricebook/);
-    await expect(page.getByRole("heading", { name: /welcome to pro construction calc/i })).toBeVisible();
+    await expectGuestAuthPrompt(page);
     await context.close();
   });
 
@@ -57,11 +58,9 @@ test.describe("Security", () => {
       input.dispatchEvent(new Event("input", { bubbles: true }));
     });
 
-    // Auto-calculates — no button needed
-    await page.waitForTimeout(500);
-
-    const xssInjected = await page.evaluate(() => (window as any).__xss);
-    expect(xssInjected).toBeFalsy();
+    await expect
+      .poll(async () => page.evaluate(() => Boolean((window as any).__xss)))
+      .toBe(false);
   });
 
   test("estimate data from one user is not visible to another user's session", async ({

@@ -105,7 +105,12 @@ test.describe("Performance — Core Web Vitals", () => {
 
     await page.goto("/calculators", { waitUntil: "domcontentloaded" });
     await expect(
-      page.getByRole("heading", { name: /calculators/i }).first(),
+      page.getByRole("heading", { name: /commercial-grade space math/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("searchbox", {
+        name: /search construction calculators/i,
+      }),
     ).toBeVisible();
     expect(hydrationErrors).toHaveLength(0);
   });

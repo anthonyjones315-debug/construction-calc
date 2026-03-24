@@ -35,8 +35,7 @@ setup("authenticate", async ({ page, context }) => {
   // Inject testing token to bypass bot protection
   await setupClerkTestingToken({ page });
 
-  // Go to root to ensure the application loads and Clerk is injected into window
-  await page.goto("/");
+  await page.goto("/sign-in", { waitUntil: "domcontentloaded" });
 
   // Playwright best practice: interact with cookie consent banner before evaluating logic
   const acceptCookiesBtn = page.getByRole('button', { name: 'Accept', exact: true });
@@ -47,67 +46,20 @@ setup("authenticate", async ({ page, context }) => {
     // Banner might not appear
   }
 
-  // Wait for some basic element to ensure React/Clerk starts mounting
-  await page.waitForLoadState('domcontentloaded');
+  await page.locator("input[name='identifier']").fill(email);
+  await page.locator("input[name='password']").fill(password);
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
 
-  const data = {
-    loginPayload: {
-      strategy: 'password',
-      identifier: email,
-      password: password,
-    }
-  };
-
-  const result = await page.evaluate(async (data) => {
-    // wait function as promise
-    const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-    const wdw = window as Window & typeof globalThis & { Clerk: any };
-
-    const clerkIsReady = (windowObj: any) => {
-      // In newer Clerk versions it might be `.loaded` or `.isReady()`
-      return windowObj.Clerk && (windowObj.Clerk.loaded || typeof windowObj.Clerk.isReady === 'function');
-    };
-
-    // wait for clerk
-    let attempts = 0;
-    while (!clerkIsReady(wdw) && attempts < 100) {
-      await wait(100);
-      attempts++;
-    }
-
-    if (!clerkIsReady(wdw)) {
-      return { success: false, reason: "Clerk not loaded after 100 attempts" };
-    }
-
-    // if the session is still valid
-    if (wdw.Clerk.session?.expireAt && wdw.Clerk.session.expireAt > new Date()) {
-      return { success: true };
-    }
-
-    // if someone else is logged in, sign out
-    if (wdw.Clerk.user) {
-      await wdw.Clerk.signOut();
-    }
-
-    // otherwise signin
-    try {
-      const res = await wdw.Clerk.client?.signIn.create(data.loginPayload);
-      if (!res) {
-        return { success: false, reason: "signIn.create returned null/undefined" };
-      }
-      
-      // set the session as active
-      await wdw.Clerk.setActive({
-        session: res.createdSessionId,
-      });
-      return { success: true };
-    } catch (e: any) {
-      return { success: false, reason: "Error in signIn.create or setActive", errorDetail: e?.errors?.[0]?.message || e?.message || String(e) };
-    }
-  }, data);
-
-  if (!result.success) {
-    throw new Error(`Failed to sign in via evaluate bypass script: ${result.reason} | Detail: ${result.errorDetail || ''}`);
+  const organizationSetupHeading = page.getByRole("heading", {
+    name: /setup your organization/i,
+  });
+  if (await organizationSetupHeading.isVisible().catch(() => false)) {
+    const organizationName = page.getByRole("textbox", { name: "Name" });
+    const organizationSlug = page.getByRole("textbox", { name: "Slug" });
+    const uniqueSuffix = Date.now().toString();
+    await organizationName.fill(`Playwright Test Org ${uniqueSuffix}`);
+    await organizationSlug.fill(`playwright-${uniqueSuffix}`);
+    await page.getByRole("button", { name: "Continue", exact: true }).click();
   }
 
   const pageContext = await page.context();
@@ -117,6 +69,10 @@ setup("authenticate", async ({ page, context }) => {
       return cookies.some((cookie) => cookie.name === "__session");
     })
     .toBe(true);
+
+  await expect(page).not.toHaveURL(/\/sign-in(\/tasks\/choose-organization)?/, {
+    timeout: 60_000,
+  });
 
   // store the cookies in the state.json
   await pageContext.storageState({ path: authFile });

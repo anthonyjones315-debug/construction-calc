@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
+import { primaryResultValue } from "../lib/app";
 
 test.describe("Business Management Calculators", () => {
   const dismissCookies = async (page: Page) => {
@@ -28,7 +29,7 @@ test.describe("Business Management Calculators", () => {
   };
 
   const resultLocator = (page: Page) =>
-    page.locator('.result-counter').first();
+    primaryResultValue(page);
 
   test.describe("Profit Margin", () => {
     test("correctly calculates margin from cost and overhead inputs", async ({

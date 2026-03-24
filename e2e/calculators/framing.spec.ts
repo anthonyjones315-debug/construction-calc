@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
+import { primaryResultValue } from "../lib/app";
 
 test.describe("Framing Calculators", () => {
   const dismissCookies = async (page: Page) => {
@@ -28,7 +29,7 @@ test.describe("Framing Calculators", () => {
   };
 
   const materialOrder = (page: Page) =>
-    page.locator('.result-counter').first();
+    primaryResultValue(page);
 
   test.describe("Wall Studs", () => {
     test("calculates 16 OC studs for a standard 20ft wall", async ({

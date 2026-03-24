@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import path from "path";
+import { calculatorResultsSection } from "./lib/app";
 
 test.describe("Accessibility — WCAG 2.1 AA", () => {
 
@@ -97,7 +98,7 @@ test.describe("Accessibility — WCAG 2.1 AA", () => {
   test("color contrast passes for result text", async ({ page }) => {
     await page.goto("/calculators/concrete/slab");
     // Auto-calculates with defaults — result already visible
-    const resultArea = page.locator('[aria-label="Calculator results"]');
+    const resultArea = calculatorResultsSection(page);
     await expect(resultArea).toBeVisible();
 
     // Check computed color vs background

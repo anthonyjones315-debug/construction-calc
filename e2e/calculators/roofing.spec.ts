@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
+import { primaryResultValue } from "../lib/app";
 
 test.describe("Roofing Calculators", () => {
   const dismissCookies = async (page: Page) => {
@@ -42,7 +43,7 @@ test.describe("Roofing Calculators", () => {
       await fillNumbers(page, ["20", "15", "12"]);
 
       const materialOrder = (page: Page) =>
-        page.locator('.result-counter').first();
+        primaryResultValue(page);
 
       const parseOrder = (text: string | null) =>
         parseFloat(text?.match(/[\d.]+/)?.[0] ?? "0");

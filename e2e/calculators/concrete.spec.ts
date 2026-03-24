@@ -1,6 +1,7 @@
 import { test, expect, type Page } from "@playwright/test";
 
 import { setupClerkTestingToken } from "@clerk/testing/playwright";
+import { primaryResultValue } from "../lib/app";
 
 test.describe("Concrete Calculators", () => {
   // Dismiss cookie consent banner before interacting with inputs
@@ -34,7 +35,7 @@ test.describe("Concrete Calculators", () => {
   const expectMaterialOrder = async (
     page: Page,
   ) => {
-    const orderSection = page.locator('.result-counter').first();
+    const orderSection = primaryResultValue(page);
     await expect(orderSection).toBeVisible();
     return orderSection;
   };
@@ -53,7 +54,7 @@ test.describe("Concrete Calculators", () => {
     }) => {
       await page.goto("/calculators/concrete/slab");
       await fillNumbers(page, ["20", "24", "4"]);
-      const resultText = page.locator('.result-counter').first();
+      const resultText = primaryResultValue(page);
       await expect(resultText).toBeVisible();
       const parseOrder = (text: string | null) =>
         parseFloat(text?.match(/[\d.]+/)?.[0] ?? "0");
