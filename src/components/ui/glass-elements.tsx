@@ -31,6 +31,25 @@ function getAnimatedNumberMeta(value: string) {
   };
 }
 
+const formatterCache = new Map<number, Intl.NumberFormat>();
+
+/**
+ * ⚡ Bolt: Cache Intl.NumberFormat instances to avoid expensive re-allocation
+ * during high-frequency animation ticks (60fps+).
+ */
+function getFormatter(decimals: number) {
+  if (!formatterCache.has(decimals)) {
+    formatterCache.set(
+      decimals,
+      new Intl.NumberFormat("en-US", {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+      }),
+    );
+  }
+  return formatterCache.get(decimals)!;
+}
+
 function useAnimatedDisplayValue(value: string, duration = 320) {
   const [displayValue, setDisplayValue] = React.useState(value);
   const previousValueRef = React.useRef(value);
@@ -62,10 +81,10 @@ function useAnimatedDisplayValue(value: string, duration = 320) {
       const progress = Math.min((now - start) / duration, 1);
       const eased = easeOutCubic(progress);
       const current = from + (to - from) * eased;
-      const formatted = current.toLocaleString("en-US", {
-        minimumFractionDigits: decimals,
-        maximumFractionDigits: decimals,
-      });
+
+      // ⚡ Bolt: Use cached formatter instead of expensive .toLocaleString()
+      const formatter = getFormatter(decimals);
+      const formatted = formatter.format(current);
 
       setDisplayValue(`${formatted}${nextMeta.suffix}`);
 
