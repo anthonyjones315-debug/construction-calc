@@ -1,6 +1,11 @@
 import { expect, test } from "@playwright/test";
 import { expectGuestAuthPrompt } from "../lib/app";
 
+test.beforeEach(async ({ context }) => {
+  // Ensure unauthenticated tests have no session bleed from global setup or previous tests
+  await context.clearCookies();
+});
+
 test.describe("@smoke core public UI", () => {
   test("@smoke home renders and links to calculators", async ({ page }) => {
     await page.goto("/");

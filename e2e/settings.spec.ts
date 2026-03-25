@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-
+import { safeLogout } from "./utils/authHelpers";
 test.describe("Settings", () => {
 
   test("settings page loads for authenticated user", async ({ page }) => {
@@ -49,18 +49,13 @@ test.describe("Settings", () => {
     }
   });
 
-  test("sign out button ends session", async ({ page, context }) => {
+  test("sign out button ends session", async ({ page }) => {
     await page.goto("/settings");
-    const signOutBtn = page.getByRole("button", { name: /sign out|log out/i });
+    await safeLogout(page);
 
-    if (await signOutBtn.isVisible()) {
-      await signOutBtn.click();
-      await expect(page).toHaveURL(/\/sign-in|\/$/);
-
-      // Confirm session is gone — protected route should redirect
-      await page.goto("/saved");
-      await expect(page).toHaveURL(/\/sign-in/);
-    }
+    // Confirm session is gone — protected route should redirect
+    await page.goto("/saved");
+    await expect(page).toHaveURL(/\/sign-in/);
   });
 
 });
