@@ -82,6 +82,9 @@ const nextConfig: NextConfig = {
       "https://app.termly.io",
       // Crisp chat widget script
       "https://client.crisp.chat",
+      // AudioEye accessibility
+      "https://*.audioeye-services.com",
+      "https://*.audioeye.com",
       // Clerk (auth UI + bot challenge)
       "https://*.clerk.accounts.dev",
       "https://clerk.accounts.dev",
@@ -130,6 +133,9 @@ const nextConfig: NextConfig = {
       "https://client.crisp.chat",
       "wss://client.relay.crisp.chat",
       "wss://client.crisp.chat",
+      // AudioEye API
+      "https://*.audioeye.com",
+      "https://*.audioeye-services.com",
       // Clerk API + telemetry (keyless uses *.clerk.accounts.dev)
       "https://*.clerk.accounts.dev",
       "https://clerk.accounts.dev",

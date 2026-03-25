@@ -26,6 +26,7 @@
     "test:e2e": "playwright test",
     "test:e2e:coverage": "playwright test e2e/public-route-coverage.noauth.spec.ts e2e/calculator-route-coverage.noauth.spec.ts e2e/protected-route-smoke.spec.ts",
     "test:e2e:smoke": "playwright test --project=no-auth --grep @smoke",
+    "test:e2e:fast": "playwright test --project=chromium --grep @smoke --workers=1",
     "test:e2e:smoke:ci": "playwright test --project=no-auth --grep @smoke --workers=1 --reporter=list",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:debug": "playwright test --debug",

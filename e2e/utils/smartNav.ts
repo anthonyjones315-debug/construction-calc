@@ -4,8 +4,9 @@ import type { Page, Locator } from "@playwright/test";
  * Smart Navigation & Exception Handling Utilities
  *
  * These utilities make E2E tests resilient against:
- * - Network latency and slow Next.js SSR renders
+ * - Network latency and slow Next.js SSR renders on 8GB MacBook
  * - Unexpected UI modals, toasts, and overlays blocking interactions
+ * - Third-party widgets: AudioEye, Crisp, Termly, Sentry
  * - Flaky click-interception from loading spinners
  */
 
@@ -21,7 +22,7 @@ export async function safeNavigate(
   url: string,
   options?: { timeout?: number },
 ) {
-  const timeout = options?.timeout ?? 45_000;
+  const timeout = options?.timeout ?? 60_000;
 
   try {
     await page.goto(url, { waitUntil: "domcontentloaded", timeout });
@@ -37,6 +38,9 @@ export async function safeNavigate(
       await page.goto(url, { waitUntil: "domcontentloaded", timeout });
     }
   }
+
+  // Always dismiss any blocking UI after navigation
+  await handleUnexpectedModals(page);
 }
 
 /* ── Unexpected Modal / Toast Dismissal ───────────────────────── */
@@ -53,6 +57,17 @@ const DISMISS_SELECTORS = [
   { locator: 'button:has-text("Accept all")', label: "Accept all button" },
   // Sentry feedback widget
   { locator: "#sentry-feedback button", label: "Sentry feedback" },
+  // AudioEye accessibility widget
+  { locator: "#audioeye_launcher", label: "AudioEye launcher" },
+  { locator: '[class*="audioeye"]', label: "AudioEye widget" },
+  { locator: '[id*="audioeye"] button', label: "AudioEye button" },
+  // Crisp chat widget
+  { locator: '[class*="crisp-client"] [data-action="close"]', label: "Crisp close" },
+  { locator: ".crisp-client .crisp-kqurc", label: "Crisp bubble" },
+  { locator: '#crisp-chatbox [aria-label="Close"]', label: "Crisp chatbox close" },
+  // PWA install banner
+  { locator: 'button:has-text("Maybe Later")', label: "PWA dismiss" },
+  { locator: '[data-testid="pwa-dismiss"]', label: "PWA dismiss button" },
 ] as const;
 
 /**
@@ -66,7 +81,7 @@ export async function handleUnexpectedModals(page: Page) {
       const el = page.locator(sel).first();
       if (await el.isVisible({ timeout: 500 })) {
         console.warn(`[smartNav] Dismissing unexpected UI: ${label}`);
-        await el.click({ timeout: 2_000 });
+        await el.click({ timeout: 2_000, force: true }).catch(() => {});
         // Small pause for dismiss animation
         await page.waitForTimeout(300);
       }
@@ -74,6 +89,30 @@ export async function handleUnexpectedModals(page: Page) {
       // Element not found or not interactable — ignore
     }
   }
+
+  // Also block third-party scripts from injecting overlays
+  await blockThirdPartyOverlays(page);
+}
+
+/**
+ * Proactively hide known third-party overlays via CSS injection.
+ * This prevents widgets from ever obscuring click targets.
+ */
+async function blockThirdPartyOverlays(page: Page) {
+  await page
+    .addStyleTag({
+      content: `
+      /* AudioEye */
+      #audioeye_launcher,
+      [class*="audioeye"],
+      #ae_launcher { display: none !important; }
+      /* Crisp */
+      .crisp-client { display: none !important; }
+      /* Sentry */
+      #sentry-feedback { display: none !important; }
+    `,
+    })
+    .catch(() => {});
 }
 
 /* ── Safe Click with Fallback ─────────────────────────────────── */
@@ -88,7 +127,7 @@ export async function safeClick(
   locator: Locator,
   options?: { timeout?: number },
 ) {
-  const timeout = options?.timeout ?? 10_000;
+  const timeout = options?.timeout ?? 15_000;
 
   try {
     await locator.click({ timeout });
@@ -105,7 +144,7 @@ export async function safeClick(
 
     // Wait for in-flight requests to settle
     await page
-      .waitForLoadState("networkidle", { timeout: 10_000 })
+      .waitForLoadState("networkidle", { timeout: 15_000 })
       .catch(() => {});
 
     // Clear any blocking UI
@@ -126,6 +165,6 @@ export async function waitForHydration(page: Page) {
   // Wait for any next.js hydration indicator — <body> or __next container
   await page.waitForFunction(
     () => document.querySelector("#__next") !== null || document.readyState === "complete",
-    { timeout: 30_000 },
+    { timeout: 45_000 },
   );
 }

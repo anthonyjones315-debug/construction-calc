@@ -10,8 +10,8 @@ export async function dismissCookieConsent(page: Page): Promise<void> {
 
   for (const candidate of candidates) {
     try {
-      if (await candidate.isVisible({ timeout: 500 })) {
-        await candidate.click({ timeout: 1000 });
+      if (await candidate.isVisible({ timeout: 2000 })) {
+        await candidate.click({ timeout: 3000 });
         break;
       }
     } catch {
