@@ -49,6 +49,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const user = session.user;
+
   let rawBody: unknown;
 
   try {
@@ -69,7 +71,8 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const db = createServerClient();
+    return await Sentry.startSpan({ name: "Finalize Estimate & Documenso Server Dispatch" }, async () => {
+      const db = createServerClient();
     const businessContext = await getBusinessContextForSession(db, session);
     const tenantId = getTenantScopeId(businessContext);
     const tenantColumn = getTenantScopeColumn(businessContext);
@@ -100,9 +103,9 @@ export async function POST(request: NextRequest) {
     let shareCodeSupported = true;
 
     const ownerMeta = {
-      user_id: session.user.id,
-      user_email: session.user.email ?? null,
-      user_name: session.user.name ?? null,
+      user_id: user.id,
+      user_email: user.email ?? null,
+      user_name: user.name ?? null,
     };
 
     const clientEmailForInvite = getClientEmail(payload.inputs);
@@ -284,7 +287,7 @@ export async function POST(request: NextRequest) {
         shareCode = signingMeta.shareCode;
 
         const insertPayload: Record<string, unknown> = {
-          user_id: session.user.id,
+          user_id: user.id,
           name: generatedName,
           calculator_id: payload.calculator_id,
           inputs: buildSavedInputs(shareCodeSupported),
@@ -369,15 +372,15 @@ export async function POST(request: NextRequest) {
         jobName: payload.metadata.jobName ?? payload.name,
         signUrl,
         contractorName:
-          contractorProfile?.business_name ?? session.user.name ?? null,
+          contractorProfile?.business_name ?? user.name ?? null,
         replyTo:
-          contractorProfile?.business_email ?? session.user.email ?? null,
+          contractorProfile?.business_email ?? user.email ?? null,
       });
     }
 
     const posthog = getPostHogClient();
     posthog.capture({
-      distinctId: session.user.id,
+      distinctId: user.id,
       event: "estimate_finalized",
       properties: {
         estimate_id: savedId,
@@ -410,6 +413,7 @@ export async function POST(request: NextRequest) {
             ? payload.inputs.selected_county
             : null,
       }).verification_status,
+    });
     });
   } catch (error) {
     if (isUnauthorizedError(error)) {

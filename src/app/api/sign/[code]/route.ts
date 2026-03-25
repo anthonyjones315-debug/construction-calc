@@ -139,7 +139,7 @@ export async function POST(
     const db = createServerClient();
     const { data: currentRow, error: currentError } = await db
       .from("saved_estimates")
-      .select("id, user_id, business_id, inputs")
+      .select("id, user_id, business_id, inputs, name, client_id")
       .eq("share_code", normalizedCode)
       .single();
 
@@ -166,6 +166,8 @@ export async function POST(
         ? parsed.data.signerEmail.trim()
         : null;
 
+    const userAgent = request.headers.get("user-agent") ?? "Unknown";
+
     const nextInputs = {
       ...inputs,
       signing: {
@@ -176,6 +178,8 @@ export async function POST(
         signerName: parsed.data.signerName,
         signerEmail: signerEmailResolved,
         signatureDataUrl: parsed.data.signatureDataUrl,
+        signerIp: ip,
+        signerUserAgent: userAgent,
       },
     };
 
@@ -189,6 +193,44 @@ export async function POST(
 
     if (updateError) {
       throw new Error(updateError.message);
+    }
+
+    if (currentRow.client_id) {
+      const { data: clientData } = await db
+        .from("clients")
+        .select("notes, name")
+        .eq("id", currentRow.client_id)
+        .single();
+
+      let currentNotes: Record<string, unknown>[] = [];
+      if (clientData?.notes) {
+        try {
+          const parsed =
+            typeof clientData.notes === "string"
+              ? JSON.parse(clientData.notes)
+              : clientData.notes;
+          if (Array.isArray(parsed)) currentNotes = parsed;
+          else if (typeof clientData.notes === "string" && clientData.notes.trim()) {
+            currentNotes = [
+              { id: "legacy", text: clientData.notes, createdAt: new Date().toISOString() },
+            ];
+          }
+        } catch {}
+      }
+
+      const auditText = `System Note: Estimate "${currentRow.name || "Document"}" was electronically signed.\nSigner Name: ${parsed.data.signerName}\nSigner IP: ${ip}\nDevice: ${userAgent}`;
+      const newNote = {
+        id: crypto.randomUUID(),
+        text: auditText,
+        createdAt: signedAt,
+      };
+      
+      currentNotes.unshift(newNote);
+
+      await db
+        .from("clients")
+        .update({ notes: JSON.stringify(currentNotes) })
+        .eq("id", currentRow.client_id);
     }
 
     const tenantId = currentRow.business_id ?? currentRow.user_id;

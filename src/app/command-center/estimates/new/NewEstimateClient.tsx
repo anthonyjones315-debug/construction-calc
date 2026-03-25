@@ -31,17 +31,14 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { useEstimateForm } from "@/lib/estimates/useEstimateForm";
-import {
-  EstimateSignaturePad,
-  type EstimateSignaturePadRef,
-} from "@/components/estimates/SignaturePad";
 import { routes } from "@routes";
 import type {
   EstimateLineItem,
   PriceBookMaterial,
+  DiscountType,
 } from "@/lib/estimates/new-estimate-types";
-import type { EstimateCartItem } from "@/types";
-import Autocomplete from "react-google-autocomplete";
+import { EstimateCartItem } from "@/types";
+import { AddressAutocomplete } from "@/components/ui/AddressAutocomplete";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -299,20 +296,15 @@ function EstimateDetailsCard({
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
           <div className="flex-1 space-y-3">
             <div className="relative">
-              <Autocomplete
+              <AddressAutocomplete
                 apiKey={mapsKey}
-                onPlaceSelected={(place) => {
-                  if (place.formatted_address) {
-                    onChange("jobSiteAddress", place.formatted_address);
-                  } else if (place.name) {
-                    onChange("jobSiteAddress", place.name);
-                  }
-                  if (place.geometry?.location) {
-                    setLat(place.geometry.location.lat());
-                    setLng(place.geometry.location.lng());
+                onAddressSelect={(addr, lat, lng) => {
+                  onChange("jobSiteAddress", addr);
+                  if (lat !== undefined && lng !== undefined) {
+                    setLat(lat);
+                    setLng(lng);
                   }
                 }}
-                options={{ types: ["address"] }}
                 defaultValue={jobSiteAddress}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange("jobSiteAddress", e.target.value)}
                 placeholder="Start typing an address..."
@@ -1174,6 +1166,11 @@ function LineItemsCard({
                                 unitPrice: parseFloat(e.target.value) || 0,
                               })
                             }
+                            onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
+                              const v = parseFloat(e.target.value) || 0;
+                              onUpdate(item.id, { unitPrice: Math.round(v * 100) / 100 });
+                              e.target.value = v.toFixed(2);
+                            }}
                             className="w-24 rounded-lg border border-transparent bg-transparent pl-4 pr-1.5 py-1 text-right text-sm text-slate-900 focus:border-[--color-blue-rim] focus:bg-white focus:outline-none"
                           />
                         </div>
@@ -1288,6 +1285,11 @@ function LineItemsCard({
                             unitPrice: parseFloat(e.target.value) || 0,
                           })
                         }
+                        onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
+                          const v = parseFloat(e.target.value) || 0;
+                          onUpdate(item.id, { unitPrice: Math.round(v * 100) / 100 });
+                          e.target.value = v.toFixed(2);
+                        }}
                         className="h-9 w-full rounded-lg border border-slate-200 bg-white pl-5 pr-2.5 text-sm text-slate-900 focus:border-[--color-blue-rim] focus:outline-none"
                       />
                     </div>
@@ -1331,23 +1333,36 @@ function LineItemsCard({
 
 interface TotalsCardProps {
   subtotalCents: number;
+  discountCents: number;
+  discountedSubtotalCents: number;
   taxCents: number;
   totalCents: number;
   taxRatePercent: number;
   taxCounty: string;
+  discountType: DiscountType;
+  discountValue: number;
   onTaxChange: (county: string, rate: number) => void;
+  onDiscountChange: (type: DiscountType, value: number) => void;
 }
 
 function TotalsCard({
   subtotalCents,
+  discountCents,
+  discountedSubtotalCents,
   taxCents,
   totalCents,
   taxRatePercent,
   taxCounty,
+  discountType,
+  discountValue,
   onTaxChange,
+  onDiscountChange,
 }: TotalsCardProps) {
   const [customRate, setCustomRate] = useState(
     String(taxRatePercent > 0 && taxCounty === "custom" ? taxRatePercent : ""),
+  );
+  const [discountInput, setDiscountInput] = useState(
+    discountValue > 0 ? String(discountValue) : "",
   );
 
   const selectedPreset =
@@ -1368,42 +1383,98 @@ function TotalsCard({
     onTaxChange("custom", parseFloat(e.target.value) || 0);
   }
 
+  function handleDiscountInputChange(e: ChangeEvent<HTMLInputElement>) {
+    setDiscountInput(e.target.value);
+    onDiscountChange(discountType, parseFloat(e.target.value) || 0);
+  }
+
+  function handleDiscountTypeChange(e: ChangeEvent<HTMLSelectElement>) {
+    const newType = e.target.value as DiscountType;
+    onDiscountChange(newType, parseFloat(discountInput) || 0);
+  }
+
   return (
     <article className="rounded-2xl border border-slate-300 bg-white px-4 py-4 shadow-sm sm:px-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        {/* Tax selector */}
-        <div className="flex items-center gap-2">
-          <div>
-            <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
-              Tax
-            </label>
-            <select
-              value={taxCounty || ""}
-              onChange={handlePresetChange}
-              className="h-9 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 focus:border-[--color-blue-brand]/45 focus:bg-white focus:outline-none"
-            >
-              {TAX_COUNTIES.map((t) => (
-                <option key={t.county} value={t.county}>
-                  {t.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          {taxCounty === "custom" && (
-            <div className="mt-5 flex items-center gap-1.5">
-              <input
-                type="number"
-                value={customRate}
-                onChange={handleCustomRateChange}
-                placeholder="0.00"
-                min="0"
-                max="25"
-                step="0.01"
-                className="h-9 w-20 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 focus:border-[--color-blue-brand]/45 focus:outline-none"
-              />
-              <span className="text-sm text-slate-500">%</span>
+        {/* Tax & Discount selectors */}
+        <div className="space-y-3">
+          {/* Tax selector */}
+          <div className="flex items-center gap-2">
+            <div>
+              <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
+                Tax
+              </label>
+              <select
+                value={taxCounty || ""}
+                onChange={handlePresetChange}
+                className="h-9 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 focus:border-[--color-blue-brand]/45 focus:bg-white focus:outline-none"
+              >
+                {TAX_COUNTIES.map((t) => (
+                  <option key={t.county} value={t.county}>
+                    {t.label}
+                  </option>
+                ))}
+              </select>
             </div>
-          )}
+            {taxCounty === "custom" && (
+              <div className="mt-5 flex items-center gap-1.5">
+                <input
+                  type="number"
+                  value={customRate}
+                  onChange={handleCustomRateChange}
+                  placeholder="0.00"
+                  min="0"
+                  max="25"
+                  step="0.01"
+                  className="h-9 w-20 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 focus:border-[--color-blue-brand]/45 focus:outline-none"
+                />
+                <span className="text-sm text-slate-500">%</span>
+              </div>
+            )}
+          </div>
+
+          {/* Discount selector */}
+          <div className="flex items-center gap-2">
+            <div>
+              <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
+                Discount
+              </label>
+              <div className="flex items-center gap-1.5">
+                <select
+                  value={discountType}
+                  onChange={handleDiscountTypeChange}
+                  className="h-9 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 focus:border-[--color-blue-brand]/45 focus:bg-white focus:outline-none"
+                >
+                  <option value="percent">Percentage (%)</option>
+                  <option value="flat">Flat Amount ($)</option>
+                </select>
+                <div className="relative">
+                  {discountType === "flat" && (
+                    <span className="pointer-events-none absolute inset-y-0 left-2.5 flex items-center text-xs text-slate-400">
+                      $
+                    </span>
+                  )}
+                  <input
+                    type="number"
+                    value={discountInput}
+                    onChange={handleDiscountInputChange}
+                    placeholder="0"
+                    min="0"
+                    max={discountType === "percent" ? 100 : undefined}
+                    step={discountType === "percent" ? "1" : "0.01"}
+                    className={`h-9 w-24 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-900 focus:border-[--color-blue-brand]/45 focus:outline-none ${
+                      discountType === "flat" ? "pl-5 pr-3" : "px-3"
+                    }`}
+                  />
+                  {discountType === "percent" && (
+                    <span className="pointer-events-none absolute inset-y-0 right-2.5 flex items-center text-xs text-slate-400">
+                      %
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Totals breakdown */}
@@ -1414,14 +1485,24 @@ function TotalsCard({
               {formatCents(subtotalCents)}
             </span>
           </div>
+          {discountCents > 0 && (
+            <div className="flex items-center justify-between gap-12 sm:justify-end">
+              <span className="text-xs text-emerald-600">
+                Discount{discountType === "percent" ? ` (${discountValue}%)` : ""}
+              </span>
+              <span className="font-mono text-sm font-semibold text-emerald-600">
+                −{formatCents(discountCents)}
+              </span>
+            </div>
+          )}
           {taxCents > 0 && (
             <div className="flex items-center justify-between gap-12 sm:justify-end">
               <span className="text-xs text-slate-500">
-                Tax (
-                {selectedPreset?.county === "custom"
+                Tax{" "}
+                {discountCents > 0 ? "(on discounted subtotal) " : ""}
+                ({selectedPreset?.county === "custom"
                   ? `${taxRatePercent}%`
-                  : selectedPreset?.label}
-                )
+                  : selectedPreset?.label})
               </span>
               <span className="font-mono text-sm text-slate-700">
                 {formatCents(taxCents)}
@@ -1547,8 +1628,6 @@ export default function NewEstimateClient({ onOpenCalculators }: { onOpenCalcula
   const [materials, setMaterials] = useState<PriceBookMaterial[]>([]);
   const [loadingMaterials, setLoadingMaterials] = useState(false);
   const [sending, setSending] = useState(false);
-  const [showSignModal, setShowSignModal] = useState(false);
-  const sigPadRef = useRef<EstimateSignaturePadRef>(null);
 
   // Fetch price book materials on mount
   useEffect(() => {
@@ -1677,6 +1756,13 @@ export default function NewEstimateClient({ onOpenCalculators }: { onOpenCalcula
     [dispatch],
   );
 
+  const handleDiscountChange = useCallback(
+    (type: DiscountType, value: number) => {
+      dispatch({ type: "SET_DISCOUNT", discountType: type, value });
+    },
+    [dispatch],
+  );
+
   async function handleSaveDraft() {
     await saveDraft();
   }
@@ -1694,21 +1780,9 @@ export default function NewEstimateClient({ onOpenCalculators }: { onOpenCalcula
       setError("Add at least one line item before sending.");
       return;
     }
-    // Show contractor signing modal before sending
-    setShowSignModal(true);
-  }
-
-  async function handleSignAndSend() {
-    const pad = sigPadRef.current;
-    if (!pad || pad.isEmpty()) {
-      setError("Please sign before sending the estimate to the client.");
-      return;
-    }
-    const contractorSig = pad.getDataUrl();
-    setShowSignModal(false);
     setSending(true);
     try {
-      const result = await finalize(contractorSig);
+      const result = await finalize();
       if (result?.id) {
         await syncClientToCrm();
         router.push(`/command-center/estimates/${result.id}`);
@@ -1716,19 +1790,6 @@ export default function NewEstimateClient({ onOpenCalculators }: { onOpenCalcula
     } finally {
       setSending(false);
     }
-  }
-
-  function handleSkipSignature() {
-    setShowSignModal(false);
-    setSending(true);
-    finalize()
-      .then(async (result) => {
-        if (result?.id) {
-          await syncClientToCrm();
-          router.push(`/command-center/estimates/${result.id}`);
-        }
-      })
-      .finally(() => setSending(false));
   }
 
   function handleDiscard() {
@@ -1829,11 +1890,16 @@ export default function NewEstimateClient({ onOpenCalculators }: { onOpenCalcula
       {/* Totals */}
       <TotalsCard
         subtotalCents={totals.subtotalCents}
+        discountCents={totals.discountCents}
+        discountedSubtotalCents={totals.discountedSubtotalCents}
         taxCents={totals.taxCents}
         totalCents={totals.totalCents}
         taxRatePercent={state.taxRatePercent}
         taxCounty={state.taxCounty}
+        discountType={state.discountType}
+        discountValue={state.discountValue}
         onTaxChange={handleTaxChange}
+        onDiscountChange={handleDiscountChange}
       />
 
       {/* Terms & Customization */}
@@ -1886,54 +1952,7 @@ export default function NewEstimateClient({ onOpenCalculators }: { onOpenCalcula
         hasClientEmail={hasClientEmail}
       />
 
-      {/* Contractor Signature Modal */}
-      {showSignModal ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4">
-          <div className="relative w-full max-w-sm rounded-2xl border border-slate-300 bg-white p-5 shadow-2xl">
-            <div className="mb-4 flex items-start justify-between gap-2">
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-brand">
-                  Contractor Signature
-                </p>
-                <p className="mt-0.5 text-sm text-slate-700">
-                  Sign before sending to the client.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowSignModal(false)}
-                className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
 
-            <EstimateSignaturePad
-              ref={sigPadRef}
-              label="Your signature"
-              height="h-40"
-            />
-
-            <div className="mt-4 flex flex-col gap-2">
-              <button
-                type="button"
-                onClick={handleSignAndSend}
-                className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-blue-brand text-xs font-black uppercase tracking-[0.1em] text-white transition hover:bg-[--color-blue-dark]"
-              >
-                <Send className="h-4 w-4" />
-                Sign & Send to Client
-              </button>
-              <button
-                type="button"
-                onClick={handleSkipSignature}
-                className="inline-flex h-9 w-full items-center justify-center rounded-xl border border-slate-300 bg-white text-xs font-semibold text-slate-600 transition hover:border-[--color-blue-rim] hover:text-[--color-blue-dark]"
-              >
-                Skip Signature & Send
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
     </div>
   );
 }

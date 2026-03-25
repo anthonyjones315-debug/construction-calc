@@ -135,8 +135,8 @@ export async function POST(req: NextRequest) {
     const sendRl = checkMemoryRateLimit(
       "email-send-estimate",
       session.user.id,
-      45,
-      3600_000,
+      10, // 10 document sends
+      60_000, // per minute
     );
     if (!sendRl.ok) {
       return NextResponse.json(

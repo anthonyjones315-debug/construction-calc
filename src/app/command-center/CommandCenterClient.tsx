@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { Route } from "next";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Modal } from "@/components/Modal";
 import NewEstimateClient from "@/app/command-center/estimates/new/NewEstimateClient";
 import type { LucideIcon } from "lucide-react";
@@ -39,6 +39,33 @@ import { CommandCenterCalculator } from "./CommandCenterCalculator";
 import { getTradePageByPath, tradePages } from "@/app/calculators/_lib/trade-pages";
 import { useProMode } from "@/hooks/useProMode";
 import { useStore } from "@/lib/store";
+import { KanbanBoard, type KanbanProject } from "@/components/dashboard/KanbanBoard";
+import { DispatchCalendar, type CalendarEvent } from "@/components/dashboard/DispatchCalendar";
+import { Calendar as CalendarIcon, Columns3 } from "lucide-react";
+
+/* ── Kanban ↔ Estimate status mapping ────────────────────────── */
+
+/** Map Kanban column IDs → estimate DB status values */
+const KANBAN_TO_ESTIMATE_STATUS: Record<string, string> = {
+  lead: "Draft",
+  quoted: "Sent",
+  scheduled: "PENDING",
+  in_progress: "PENDING",
+  completed: "Approved",
+};
+
+/** Map estimate DB status → Kanban column ID */
+function estimateStatusToKanbanColumn(status: string | null): string {
+  switch (status) {
+    case "Draft":    return "lead";
+    case "Sent":     return "quoted";
+    case "PENDING":  return "scheduled";
+    case "SIGNED":   return "completed";
+    case "Approved": return "completed";
+    case "Lost":     return "lead";
+    default:         return "lead";
+  }
+}
 
 type TeamMember = {
   membershipId: string;
@@ -660,6 +687,87 @@ export default function CommandCenterClient({
   const recentEstimatePreview = recentEstimates.slice(0, 4);
   const memberPreview = members.slice(0, 6);
 
+  /* ── Kanban data ────────────────────────────────────────────── */
+  const kanbanProjects: KanbanProject[] = useMemo(
+    () =>
+      recentEstimates.map((est) => ({
+        id: est.id,
+        name: est.name,
+        status: estimateStatusToKanbanColumn(est.status),
+        customerName: est.clientName,
+        pipelineValue: null,
+        startDate: new Date(est.updatedAt).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        }),
+      })),
+    [recentEstimates],
+  );
+
+  const handleProjectStatusChange = useCallback(
+    async (projectId: string, newKanbanStatus: string) => {
+      const estimateStatus = KANBAN_TO_ESTIMATE_STATUS[newKanbanStatus];
+      if (!estimateStatus) return;
+
+      try {
+        const res = await fetch(`/api/estimates/${projectId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: estimateStatus }),
+        });
+        if (!res.ok) {
+          const payload = await res.json().catch(() => ({}));
+          setError(payload?.error ?? "Failed to update project status.");
+        }
+      } catch {
+        setError("Failed to update project status.");
+      }
+    },
+    [],
+  );
+
+  /* ── Calendar data ──────────────────────────────────────────── */
+  const calendarTeamMembers = useMemo(
+    () => members.map((m) => ({ id: m.userId, name: m.name })),
+    [members],
+  );
+
+  const calendarEvents: CalendarEvent[] = useMemo(() => {
+    const now = new Date();
+    return recentEstimates.map((est, i) => {
+      const base = new Date(est.updatedAt);
+      // Spread events across the current week for visibility
+      const dayOffset = i % 7;
+      const start = new Date(now);
+      start.setDate(start.getDate() + dayOffset);
+      start.setHours(8 + (i % 4) * 2, 0, 0, 0);
+      const end = new Date(start);
+      end.setHours(start.getHours() + 2);
+
+      // Map estimate status → calendar event category
+      let category = "internal";
+      if (est.status === "Draft") category = "quote";
+      else if (est.status === "Sent" || est.status === "PENDING")
+        category = "service";
+      else if (est.status === "Approved" || est.status === "SIGNED")
+        category = "install";
+
+      return {
+        id: est.id,
+        title: est.name,
+        start,
+        end,
+        category,
+        assignedUserId: members[0]?.userId ?? null,
+        assignedUserName: members[0]?.name ?? null,
+        customerName: est.clientName,
+        serviceAddress: null,
+        customerPhone: null,
+        customerId: null,
+      };
+    });
+  }, [recentEstimates, members]);
+
   useEffect(() => {
     if (!toolFromQuerySlug) return;
     if (handledDeepLink === toolFromQuerySlug) return;
@@ -900,8 +1008,8 @@ export default function CommandCenterClient({
           <span className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-ink-dim]">Drafts Active</span>
         </div>
         <div className="flex min-h-[80px] flex-col justify-center rounded-2xl border border-[--color-border] bg-white px-5 py-2 shadow-sm">
-          <span className="text-3xl font-black text-[--color-ink]">{utilizationPercent}%</span>
-          <span className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-ink-dim]">Crew Seats</span>
+          <span className="text-3xl font-black text-[--color-ink]">{members.length}</span>
+          <span className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-ink-dim]">Team Members</span>
         </div>
       </div>
 
@@ -1006,6 +1114,30 @@ export default function CommandCenterClient({
           )}
         </article>
       </div>
+
+      {/* ── Kanban Board ──────────────────────────────────────── */}
+      <article className="rounded-2xl border border-[--color-border] bg-white px-5 py-5 shadow-sm">
+        <div className="flex items-center gap-2 mb-4">
+          <Columns3 className="h-4 w-4 text-[--color-blue-brand]" aria-hidden />
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[--color-blue-brand]">Project Pipeline</p>
+        </div>
+        <KanbanBoard
+          projects={kanbanProjects}
+          onStatusChange={handleProjectStatusChange}
+        />
+      </article>
+
+      {/* ── Dispatch Calendar ─────────────────────────────────── */}
+      <article className="rounded-2xl border border-[--color-border] bg-white px-5 py-5 shadow-sm">
+        <div className="flex items-center gap-2 mb-4">
+          <CalendarIcon className="h-4 w-4 text-[--color-blue-brand]" aria-hidden />
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[--color-blue-brand]">Schedule</p>
+        </div>
+        <DispatchCalendar
+          events={calendarEvents}
+          teamMembers={calendarTeamMembers}
+        />
+      </article>
     </div>
   );
 
@@ -1327,14 +1459,15 @@ export default function CommandCenterClient({
             Invite a new user to your team. They&apos;ll create an account and automatically join your workspace.
           </p>
 
-          {/* Primary CTA — Add User */}
-          <Link
-            href={"/sign-up" as Route}
+          {/* Primary CTA — Add User (Coming Soon) */}
+          <button
+            type="button"
+            onClick={() => setSuccess("🚧 Add User is coming soon! Use join codes for now.")}
             className="mt-3 inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-[--color-blue-brand] px-4 text-sm font-bold uppercase tracking-[0.12em] text-white transition hover:bg-[--color-blue-dark] active:scale-[0.98]"
           >
             <UserPlus className="h-4 w-4" aria-hidden />
             Add User
-          </Link>
+          </button>
 
           {/* Secondary — Collapsible join code */}
           <details className="mt-3 rounded-xl border border-[--color-border] bg-[--color-surface-alt]">

@@ -34,8 +34,8 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
   return (
     <div className="min-h-dvh flex flex-col bg-[#f6f4ef] text-slate-900">
       <Header />
-      <main className="flex-1 overflow-hidden">
-        <div className="h-full overflow-hidden px-4 py-8 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <main className="flex-1 overflow-y-auto">
+        <div className="min-h-full overflow-y-auto px-4 py-8 sm:px-6 lg:px-8 max-w-7xl mx-auto">
           <ClientDetailClient client={client} estimates={estimates || []} />
         </div>
       </main>

@@ -42,6 +42,17 @@ const nextConfig: NextConfig = {
     return [
       { source: "/register", destination: "/sign-up", permanent: true },
       { source: "/forgot-password", destination: "/sign-in", permanent: true },
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'www.proconstructioncalc.com',
+          },
+        ],
+        destination: 'https://proconstructioncalc.com/:path*',
+        permanent: true,
+      },
     ];
   },
   async headers() {
@@ -95,6 +106,7 @@ const nextConfig: NextConfig = {
       "https://ep1.adtrafficquality.google",
       "https://*.google.com",
       "https://maps.googleapis.com",
+      "https://maps.gstatic.com",
       // Google Identity / OAuth + APIs used during login
       "https://accounts.google.com",
       "https://oauth2.googleapis.com",
@@ -193,6 +205,14 @@ const nextConfig: NextConfig = {
       {
         source: "/:path*",
         headers: securityHeaders,
+      },
+      {
+        source: "/__clerk/:path*",
+        headers: [
+          { key: "Access-Control-Allow-Origin", value: "https://proconstructioncalc.com" },
+          { key: "Access-Control-Allow-Methods", value: "GET, OPTIONS, PATCH, DELETE, POST, PUT" },
+          { key: "Access-Control-Allow-Headers", value: "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version" },
+        ],
       },
     ];
   },

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cacheTag, revalidateTag } from "next/cache";
+import { revalidateTag } from "next/cache";
 import * as Sentry from "@sentry/nextjs";
 import { auth } from "@/lib/auth/config";
 import { createServerClient } from "@/lib/supabase/server";
@@ -9,35 +9,6 @@ import {
   getTenantScopeColumn,
   getTenantScopeId,
 } from "@/lib/supabase/business";
-import {
-  throwForStaleCacheOnTimeout,
-  withSupabaseRevalidationTimeout,
-} from "@/lib/supabase/stale-cache";
-
-async function getMaterialLedger(
-  tenantColumn: "business_id" | "user_id",
-  tenantId: string,
-) {
-  "use cache";
-  cacheTag("products");
-
-  const db = createServerClient();
-  const result = await withSupabaseRevalidationTimeout(
-    db
-      .from("user_materials")
-      .select("*")
-      .eq(tenantColumn, tenantId)
-      .order("category")
-      .order("material_name"),
-    "materials ledger query",
-  );
-
-  if (result.error) {
-    throwForStaleCacheOnTimeout(result.error, "materials ledger query");
-  }
-
-  return result;
-}
 
 export async function GET() {
   try {
@@ -49,7 +20,12 @@ export async function GET() {
     const businessContext = await getBusinessContextForSession(db, session);
     const tenantColumn = getTenantScopeColumn(businessContext);
     const tenantId = getTenantScopeId(businessContext);
-    const { data, error } = await getMaterialLedger(tenantColumn, tenantId);
+    const { data, error } = await db
+      .from("user_materials")
+      .select("*")
+      .eq(tenantColumn, tenantId)
+      .order("category")
+      .order("material_name");
 
     if (error) {
       // Gracefully handle local dev environments missing the user_materials table

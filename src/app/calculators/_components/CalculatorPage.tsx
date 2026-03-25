@@ -9,7 +9,7 @@ import type { LucideIcon } from "lucide-react";
 import { useAuth, useUser } from "@clerk/nextjs";
 import * as Sentry from "@sentry/nextjs";
 import posthog from "posthog-js";
-import Autocomplete from "react-google-autocomplete";
+import { PlaceAutocomplete } from "@/components/ui/PlaceAutocomplete";
 import { RoofingGlyph } from "./TradeGlyphs";
 import {
   getCalculatorAuditRef,
@@ -5123,16 +5123,11 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                 <label className="text-sm text-copy-secondary">
                   Job Site Address
                   <div className="relative mt-1">
-                    <Autocomplete
+                    <PlaceAutocomplete
                       apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
-                      onPlaceSelected={(place) => {
-                        if (place.formatted_address) {
-                          setEstimateJobAddress(place.formatted_address);
-                        } else if (place.name) {
-                          setEstimateJobAddress(place.name);
-                        }
+                      onPlaceSelect={(address) => {
+                        setEstimateJobAddress(address);
                       }}
-                      options={{ types: ["address"] }}
                       defaultValue={estimateJobAddress}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEstimateJobAddress(e.target.value)}
                       className="glass-input h-11 w-full rounded-xl pl-3 pr-10 outline-none"

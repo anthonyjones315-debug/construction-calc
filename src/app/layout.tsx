@@ -244,6 +244,13 @@ export default function RootLayout({
             <Suspense fallback={null}>
               <CrispChat />
             </Suspense>
+            {/* AudioEye Accessibility */}
+            <script
+              type="text/javascript"
+              dangerouslySetInnerHTML={{
+                __html: `!function(){var b=function(){window.__AudioEyeSiteHash = "0c89ffba98671369df31fd7ebf18503c"; var a=document.createElement("script");a.src="https://wsv3cdn.audioeye-services.com/aem.js?h=0c89ffba98671369df31fd7ebf18503c";a.type="text/javascript";a.crossOrigin="anonymous";a.setAttribute("async","");document.getElementsByTagName("body")[0].appendChild(a)};"complete"!==document.readyState?window.addEventListener?window.addEventListener("load",b):window.attachEvent&&window.attachEvent("onload",b):b()}();`,
+              }}
+            />
           </body>
         </html>
       </ClerkProvider>

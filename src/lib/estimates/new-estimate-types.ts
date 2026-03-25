@@ -37,6 +37,8 @@ export interface EstimateLineItem {
  * Full estimate form state — everything needed to render the page
  * and serialize to any API endpoint.
  */
+export type DiscountType = "percent" | "flat";
+
 export interface EstimateFormState {
   /** Estimate metadata */
   estimateName: string;
@@ -56,6 +58,11 @@ export interface EstimateFormState {
   taxRatePercent: number;
   taxCounty: string;
 
+  /** Discount — applied before tax */
+  discountType: DiscountType;
+  /** For "percent": e.g. 10 means 10%. For "flat": e.g. 250 means $250. */
+  discountValue: number;
+
   /** Freeform notes for entire estimate */
   estimateNotes: string;
 
@@ -71,6 +78,10 @@ export interface EstimateFormState {
  */
 export interface EstimateTotals {
   subtotalCents: number;
+  /** Discount amount in cents (always positive) */
+  discountCents: number;
+  /** Subtotal after discount, before tax */
+  discountedSubtotalCents: number;
   taxCents: number;
   totalCents: number;
 }
@@ -88,6 +99,7 @@ export type EstimateFormAction =
   | { type: "REMOVE_LINE_ITEM"; id: string }
   | { type: "REORDER_LINE_ITEMS"; fromIndex: number; toIndex: number }
   | { type: "SET_TAX"; county: string; ratePercent: number }
+  | { type: "SET_DISCOUNT"; discountType: DiscountType; value: number }
   | { type: "RESET" };
 
 // ─── Price Book ───────────────────────────────────────────────────────────────

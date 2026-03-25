@@ -11,7 +11,7 @@ import {
   ExternalLink,
   MapPin,
 } from "lucide-react";
-import Autocomplete from "react-google-autocomplete";
+import { PlaceAutocomplete } from "@/components/ui/PlaceAutocomplete";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuth, useUser } from "@clerk/nextjs";
 import Link from "next/link";
@@ -1476,16 +1476,11 @@ export function SavedContent({
             <label className="flex flex-col gap-1 text-sm text-[--color-ink-mid]">
               Job Site Address
               <div className="relative">
-                <Autocomplete
+                <PlaceAutocomplete
                   apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
-                  onPlaceSelected={(place) => {
-                    if (place.formatted_address) {
-                      setBuilderJobSiteAddress(place.formatted_address);
-                    } else if (place.name) {
-                      setBuilderJobSiteAddress(place.name);
-                    }
+                  onPlaceSelect={(address) => {
+                    setBuilderJobSiteAddress(address);
                   }}
-                  options={{ types: ["address"] }}
                   defaultValue={builderJobSiteAddress}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBuilderJobSiteAddress(e.target.value)}
                   className="w-full rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 pr-10 py-2 text-sm text-[--color-ink]"

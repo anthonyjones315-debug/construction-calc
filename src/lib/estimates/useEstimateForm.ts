@@ -47,6 +47,8 @@ export function getDefaultFormState(): EstimateFormState {
     lineItems: [],
     taxRatePercent: 0,
     taxCounty: "",
+    discountType: "percent",
+    discountValue: 0,
     estimateNotes: "",
     terms: "",
   };
@@ -99,6 +101,13 @@ function estimateFormReducer(
         taxRatePercent: action.ratePercent,
       };
 
+    case "SET_DISCOUNT":
+      return {
+        ...state,
+        discountType: action.discountType,
+        discountValue: Math.max(0, action.value),
+      };
+
     case "RESET":
       return getDefaultFormState();
 
@@ -132,6 +141,10 @@ function serializeForSave(state: EstimateFormState, totals: EstimateTotals) {
       tax_county: state.taxCounty || null,
       custom_basis_points: Math.round(state.taxRatePercent * 100),
       subtotal_cents: totals.subtotalCents,
+      discount_type: state.discountType,
+      discount_value: state.discountValue,
+      discount_cents: totals.discountCents,
+      discounted_subtotal_cents: totals.discountedSubtotalCents,
       tax_cents: totals.taxCents,
       total_cents: totals.totalCents,
       line_items: state.lineItems,
@@ -172,6 +185,10 @@ function serializeForFinalize(
       selected_county: state.taxCounty || null,
       custom_basis_points: Math.round(state.taxRatePercent * 100),
       subtotal_cents: totals.subtotalCents,
+      discount_type: state.discountType,
+      discount_value: state.discountValue,
+      discount_cents: totals.discountCents,
+      discounted_subtotal_cents: totals.discountedSubtotalCents,
       tax_cents: totals.taxCents,
       total_cents: totals.totalCents,
       line_items: state.lineItems,
@@ -233,9 +250,30 @@ export function useEstimateForm(
       (sum, item) => sum + Math.round(item.quantity * item.unitPrice * 100),
       0,
     );
-    const taxCents = Math.round(subtotalCents * (state.taxRatePercent / 100));
-    return { subtotalCents, taxCents, totalCents: subtotalCents + taxCents };
-  }, [state.lineItems, state.taxRatePercent]);
+
+    // Compute discount in cents
+    let discountCents: number;
+    if (state.discountType === "percent") {
+      discountCents = Math.round(subtotalCents * (state.discountValue / 100));
+    } else {
+      // Flat discount in dollars → convert to cents
+      discountCents = Math.round(state.discountValue * 100);
+    }
+    // Clamp: discount cannot exceed subtotal
+    discountCents = Math.min(discountCents, subtotalCents);
+
+    const discountedSubtotalCents = subtotalCents - discountCents;
+    const taxCents = Math.round(
+      discountedSubtotalCents * (state.taxRatePercent / 100),
+    );
+    return {
+      subtotalCents,
+      discountCents,
+      discountedSubtotalCents,
+      taxCents,
+      totalCents: discountedSubtotalCents + taxCents,
+    };
+  }, [state.lineItems, state.taxRatePercent, state.discountType, state.discountValue]);
 
   const isDirty = useMemo(
     () =>

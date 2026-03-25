@@ -90,6 +90,18 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"] },
       testMatch: /.*\.noauth\.spec\.ts/,
     },
+    // Video capture — cinematic onboarding recording
+    {
+      name: "video-capture",
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { width: 1920, height: 1080 },
+        video: "on",
+        storageState: "e2e/.auth/user.json",
+      },
+      testMatch: /.*video-capture.*\.spec\.ts/,
+      dependencies: ["setup"],
+    },
   ],
   webServer: {
     command: `PORT=${e2ePort} npm run start:e2e`,

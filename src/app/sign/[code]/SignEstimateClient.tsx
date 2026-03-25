@@ -1,13 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import SignatureCanvas from "react-signature-canvas";
-import { CheckCircle2, Mail, PencilLine, Phone, RefreshCw } from "lucide-react";
-import { useMemo, useRef, useState } from "react";
-
-function normalizeSignerEmail(value: string) {
-  return value.trim().toLowerCase();
-}
+import { CheckCircle2, Mail, PencilLine, Phone } from "lucide-react";
+import { useMemo } from "react";
 
 type PublicEstimate = {
   id: string;
@@ -32,6 +27,8 @@ type PublicEstimate = {
     signerEmail?: string;
     signatureDataUrl?: string;
     inviteRecipientEmail?: string;
+    signerIp?: string;
+    signerUserAgent?: string;
   };
   contractor: {
     name: string | null;
@@ -66,92 +63,18 @@ function toSmsHref(phone: string) {
 }
 
 export function SignEstimateClient({ estimate }: Props) {
-  const signatureRef = useRef<SignatureCanvas | null>(null);
-  const lockedInviteEmail = useMemo(() => {
-    const raw = estimate.signing.inviteRecipientEmail;
-    if (typeof raw !== "string" || !raw.includes("@")) return null;
-    return normalizeSignerEmail(raw);
-  }, [estimate.signing.inviteRecipientEmail]);
-
-  const [signerName, setSignerName] = useState(estimate.signing.signerName ?? "");
-  const [signerEmail, setSignerEmail] = useState(
-    lockedInviteEmail ??
-      (estimate.signing.signerEmail
-        ? normalizeSignerEmail(estimate.signing.signerEmail)
-        : ""),
-  );
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [signedAt, setSignedAt] = useState<string | null>(
-    estimate.signing.signedAt ?? null,
-  );
-  const [signatureDataUrl, setSignatureDataUrl] = useState<string | null>(
-    estimate.signing.signatureDataUrl ?? null,
-  );
-
+  const signedAt = estimate.signing.signedAt ?? null;
+  
   const isSigned =
     estimate.status === "SIGNED" ||
     estimate.status === "Approved" ||
     Boolean(signedAt);
+    
   const primaryResult = estimate.results[0] ?? null;
   const summaryRows = useMemo(() => estimate.results.slice(0, 6), [estimate.results]);
   const contractorName = estimate.contractor.name || "Contractor";
   const canCall = Boolean(estimate.contractor.phone);
   const canMessage = Boolean(estimate.contractor.phone || estimate.contractor.email);
-
-  function clearSignature() {
-    signatureRef.current?.clear();
-    setSignatureDataUrl(null);
-    setError(null);
-  }
-
-  async function handleApprove() {
-    setError(null);
-
-    if (!signerName.trim()) {
-      setError("Enter your name before signing.");
-      return;
-    }
-
-    const pad = signatureRef.current;
-    if (!pad || pad.isEmpty()) {
-      setError("Add a signature before approving.");
-      return;
-    }
-
-    const trimmedCanvas = pad.getTrimmedCanvas();
-    trimmedCanvas.getContext("2d", { willReadFrequently: true });
-    const nextSignature = trimmedCanvas.toDataURL("image/png");
-    setSubmitting(true);
-
-    try {
-      const response = await fetch(`/api/sign/${estimate.shareCode}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          signerName: signerName.trim(),
-          signerEmail: lockedInviteEmail ?? signerEmail.trim(),
-          signatureDataUrl: nextSignature,
-        }),
-      });
-      const payload = await response.json().catch(() => ({}));
-
-      if (!response.ok) {
-        throw new Error(payload?.error ?? "Unable to sign estimate.");
-      }
-
-      setSignatureDataUrl(nextSignature);
-      setSignedAt(payload.signedAt ?? new Date().toISOString());
-    } catch (approvalError) {
-      setError(
-        approvalError instanceof Error
-          ? approvalError.message
-          : "Unable to sign estimate.",
-      );
-    } finally {
-      setSubmitting(false);
-    }
-  }
 
   return (
     <main className="min-h-screen bg-[#f6f4ef] px-3 py-6 sm:px-4">
@@ -166,13 +89,13 @@ export function SignEstimateClient({ estimate }: Props) {
                 className="h-10 w-10 rounded-lg border border-slate-200 bg-white object-contain p-1"
               />
             ) : (
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-brand text-sm font-extrabold text-white">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[--color-blue-brand] text-sm font-extrabold text-white">
                 {contractorName.charAt(0).toUpperCase()}
               </div>
             )}
             <div>
               <p className="text-sm font-bold text-slate-900">{contractorName}</p>
-              <p className="text-xs text-slate-500">Estimate for review & signature</p>
+              <p className="text-xs text-slate-500">Estimate Details</p>
             </div>
           </div>
           <span
@@ -182,7 +105,7 @@ export function SignEstimateClient({ estimate }: Props) {
                 : "border-[--color-blue-rim] bg-[--color-blue-soft] text-[--color-blue-dark]"
             }`}
           >
-            {isSigned ? "Signed" : "Pending"}
+            {isSigned ? "Signed" : "Pending Signature"}
           </span>
         </div>
 
@@ -192,7 +115,7 @@ export function SignEstimateClient({ estimate }: Props) {
           <div className="border-b border-slate-100 px-5 py-4">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-brand">
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-blue-brand]">
                   Estimate
                 </p>
                 <h1 className="mt-1 text-xl font-black text-slate-900">
@@ -261,10 +184,10 @@ export function SignEstimateClient({ estimate }: Props) {
             {/* Primary Total */}
             {primaryResult && (
               <div className="mt-4 rounded-xl border border-[--color-blue-soft] bg-[--color-blue-soft] px-4 py-3">
-                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-brand">
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[--color-blue-brand]">
                   Total
                 </p>
-                <p className="mt-0.5 text-2xl font-black text-blue-brand">
+                <p className="mt-0.5 text-2xl font-black text-[--color-blue-brand]">
                   {typeof primaryResult.value === "number"
                     ? formatCurrency(primaryResult.value)
                     : formatValue(primaryResult.value, primaryResult.unit)}
@@ -283,7 +206,7 @@ export function SignEstimateClient({ estimate }: Props) {
                 {canCall && (
                   <a
                     href={`tel:${estimate.contractor.phone}`}
-                    className="inline-flex h-9 items-center gap-2 rounded-lg bg-blue-brand px-3 text-xs font-bold text-white transition hover:bg-[--color-blue-dark]"
+                    className="inline-flex h-9 items-center gap-2 rounded-lg bg-[--color-blue-brand] px-3 text-xs font-bold text-white transition hover:bg-[--color-blue-dark]"
                   >
                     <Phone className="h-3.5 w-3.5" aria-hidden />
                     Call
@@ -296,7 +219,7 @@ export function SignEstimateClient({ estimate }: Props) {
                         ? toSmsHref(estimate.contractor.phone)
                         : `mailto:${estimate.contractor.email}`
                     }
-                    className="inline-flex h-9 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 transition hover:border-[--color-blue-brand] hover:text-blue-brand"
+                    className="inline-flex h-9 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 transition hover:border-[--color-blue-brand] hover:text-[--color-blue-brand]"
                   >
                     {estimate.contractor.phone ? (
                       <Phone className="h-3.5 w-3.5" aria-hidden />
@@ -311,136 +234,42 @@ export function SignEstimateClient({ estimate }: Props) {
           )}
         </article>
 
-        {/* Signature Section */}
+        {/* Signature Status */}
         <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-center gap-2 mb-4">
-            <PencilLine className="h-4 w-4 text-blue-brand" aria-hidden />
+            <PencilLine className="h-4 w-4 text-[--color-blue-brand]" aria-hidden />
             <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-700">
-              Customer Signature
+              Document Status
             </p>
           </div>
 
           {isSigned ? (
-            <div className="space-y-3">
-              <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
-                <div className="flex items-center gap-2 text-emerald-700">
-                  <CheckCircle2 className="h-4 w-4" aria-hidden />
-                  <span className="text-sm font-semibold">Estimate approved & signed</span>
-                </div>
-                <p className="mt-2 text-sm text-emerald-600">
-                  Signed by {signerName || estimate.signing.signerName || "Client"}
-                </p>
-                <p className="mt-1 text-xs text-emerald-500">
-                  {signedAt
-                    ? new Date(signedAt).toLocaleString("en-US")
-                    : "Signature recorded"}
-                </p>
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+              <div className="flex items-center gap-2 text-emerald-700">
+                <CheckCircle2 className="h-4 w-4" aria-hidden />
+                <span className="text-sm font-semibold">Estimate approved & signed</span>
               </div>
-
-              {signatureDataUrl && (
-                <div className="rounded-xl border border-slate-200 bg-white p-3">
-                  <img
-                    src={signatureDataUrl}
-                    alt="Signed estimate"
-                    className="h-24 w-full object-contain"
-                  />
-                </div>
-              )}
+              <p className="mt-2 text-sm text-emerald-600">
+                Signed by {estimate.signing.signerName || "Client"}
+              </p>
+              <p className="mt-1 text-xs text-emerald-500">
+                {signedAt
+                  ? new Date(signedAt).toLocaleString("en-US")
+                  : "Signature recorded"}
+              </p>
             </div>
           ) : (
-            <>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <label className="text-sm text-slate-700">
-                  Your Name <span className="text-red-500">*</span>
-                  <input
-                    value={signerName}
-                    onChange={(event) => setSignerName(event.target.value)}
-                    className="mt-1 h-10 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-slate-900 outline-none transition focus:border-[--color-blue-brand] focus:ring-2 focus:ring-[--color-blue-brand]/20"
-                    placeholder="Enter your full name"
-                  />
-                </label>
-                <label className="text-sm text-slate-700">
-                  {lockedInviteEmail ? (
-                    <>
-                      Email <span className="text-red-500">*</span>
-                      <span className="ml-1 font-normal text-slate-400">
-                        (from your invite)
-                      </span>
-                    </>
-                  ) : (
-                    "Email (optional)"
-                  )}
-                  <input
-                    id="signer-email"
-                    data-testid="signer-email"
-                    value={signerEmail}
-                    onChange={(event) => {
-                      if (lockedInviteEmail) return;
-                      setSignerEmail(event.target.value);
-                    }}
-                    readOnly={Boolean(lockedInviteEmail)}
-                    aria-readonly={lockedInviteEmail ? true : undefined}
-                    className={`mt-1 h-10 w-full rounded-xl border border-slate-200 px-3 text-slate-900 outline-none transition focus:border-[--color-blue-brand] focus:ring-2 focus:ring-[--color-blue-brand]/20 ${
-                      lockedInviteEmail
-                        ? "cursor-not-allowed bg-slate-100 text-slate-600"
-                        : "bg-slate-50"
-                    }`}
-                    placeholder="name@example.com"
-                    type="email"
-                    autoComplete="email"
-                  />
-                </label>
-              </div>
-
-              <div className="mt-4">
-                <p className="mb-2 text-xs text-slate-500">
-                  Draw your signature below
-                </p>
-                <div className="overflow-hidden rounded-xl border-2 border-dashed border-slate-200 bg-white">
-                  <SignatureCanvas
-                    ref={(value) => {
-                      signatureRef.current = value;
-                    }}
-                    penColor="#111827"
-                    canvasProps={{
-                      className: "h-44 w-full touch-none",
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div className="mt-3 flex gap-2">
-                <button
-                  type="button"
-                  onClick={clearSignature}
-                  className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-600 transition hover:border-red-200 hover:text-red-600"
-                >
-                  <RefreshCw className="h-3.5 w-3.5" aria-hidden />
-                  Clear
-                </button>
-                <button
-                  type="button"
-                  onClick={handleApprove}
-                  disabled={submitting}
-                  className="inline-flex h-10 flex-[2] items-center justify-center rounded-xl bg-blue-brand px-4 text-sm font-bold text-white transition hover:bg-[--color-blue-dark] disabled:opacity-60"
-                >
-                  {submitting ? "Signing..." : "Approve & Sign"}
-                </button>
-              </div>
-            </>
-          )}
-
-          {error && (
-            <p className="mt-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-              {error}
-            </p>
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-center">
+              <p className="text-sm font-medium text-slate-700">This document has been sent for secure e-signature.</p>
+              <p className="mt-1 text-xs text-slate-500">Please check your inbox at <span className="font-semibold text-slate-600">{estimate.signing.inviteRecipientEmail || "your email address"}</span> for the secure link to sign and finalize this estimate.</p>
+            </div>
           )}
         </article>
 
         <p className="px-1 text-center text-xs text-slate-400">
           Need a fresh link? Contact the estimator who sent this request.
           <span className="mx-1">|</span>
-          <Link href="/" className="text-blue-brand hover:underline">
+          <Link href="/" className="text-[--color-blue-brand] hover:underline">
             Pro Construction Calc
           </Link>
         </p>

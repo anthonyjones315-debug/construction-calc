@@ -104,6 +104,14 @@ export function Header() {
           <span className="sm:hidden">ProCalc</span>
         </Link>
 
+        {/* Tenant brand badge – desktop only */}
+        {isSignedIn && businessName && (
+          <span className="hidden md:inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-600 truncate max-w-[200px]">
+            <Building2 className="h-3 w-3 shrink-0 text-[--color-blue-brand]" aria-hidden />
+            {businessName}
+          </span>
+        )}
+
         {/* Desktop nav */}
         <nav
           className="site-header-nav hidden items-center gap-2 text-sm md:flex"

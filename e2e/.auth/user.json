@@ -2,17 +2,17 @@
   "cookies": [
     {
       "name": "__cf_bm",
-      "value": "3686kCijHctLs3jCEaxvc14_y3pNwGpQuD07Ze9yQSI-1774375575-1.0.1.1-B1PsKGvuxeg0AKlTHDR2Dsn0qkp.PDGh5tghEnKsOCYNLunrM_YkQK6q_hT6ottV6840uVKPLiDhlHX_tTK_Ei5B7E8MntOwhLy4su5zaM0",
+      "value": "o8elIWr0DEK31ZwLa_IIN7TBnPhIt96_1fVDv9GluGI-1774411281-1.0.1.1-LI2Ra_mdQ3y1XaTVuuKK0pyBW4IWw3JBPw0rXpdBIK1KedZSTMmGzql5P38Pybh24zNXXdl8GPvLXlQ6.hMWZ.heqn8XxjeVpT4gYc2Q8VE",
       "domain": ".rapid-mole-12.clerk.accounts.dev",
       "path": "/",
-      "expires": 1774377375.013124,
+      "expires": 1774413081.970413,
       "httpOnly": true,
       "secure": true,
       "sameSite": "None"
     },
     {
       "name": "_cfuvid",
-      "value": "AkLVCQpQJVM9ZzVQThF6TrwqlR7bfCJjmA4MMTxX1eU-1774375575008-0.0.1.1-604800000",
+      "value": "wRWYznva9kKO7CeRyRNP06mUHix51LZf3wnmbtQCrn4-1774411281961-0.0.1.1-604800000",
       "domain": ".rapid-mole-12.clerk.accounts.dev",
       "path": "/",
       "expires": -1,
@@ -22,7 +22,7 @@
     },
     {
       "name": "_cfuvid",
-      "value": "wI.pUJ0DfJBjReN1lm8DqTGqNTC6lExPMDfEDLG6_T0-1774375576970-0.0.1.1-604800000",
+      "value": "CBxb7LqAPkcnoEMksMBFWXVthx4ceKzsOb_bzFhNugA-1774411287031-0.0.1.1-604800000",
       "domain": ".app.termly.io",
       "path": "/",
       "expires": -1,
@@ -32,10 +32,10 @@
     },
     {
       "name": "csrf_token",
-      "value": "6d993c41-07e4-42fe-9ef0-18f59547e5ad",
+      "value": "cf7120e6-7d41-42a7-9076-b9a96812decd",
       "domain": "localhost",
       "path": "/",
-      "expires": 1776967577,
+      "expires": 1777003287,
       "httpOnly": false,
       "secure": true,
       "sameSite": "Lax",
@@ -43,71 +43,91 @@
       "_crHasCrossSiteAncestor": false
     },
     {
-      "name": "test_cookie",
-      "value": "CheckForPermission",
-      "domain": ".doubleclick.net",
-      "path": "/",
-      "expires": 1774376477.663364,
-      "httpOnly": true,
-      "secure": true,
-      "sameSite": "None"
-    },
-    {
       "name": "__clerk_db_jwt_NyJnr4gD",
-      "value": "dvb_3BP0p8nVo66GNhKPkAUbQLiFdVp",
+      "value": "dvb_3BQBCg4RNYGlgjEom08O1c7DvZ7",
       "domain": "localhost",
       "path": "/",
-      "expires": 1805911583,
+      "expires": 1805947296,
       "httpOnly": false,
       "secure": false,
       "sameSite": "Lax"
     },
     {
       "name": "__clerk_db_jwt",
-      "value": "dvb_3BP0p8nVo66GNhKPkAUbQLiFdVp",
+      "value": "dvb_3BQBCg4RNYGlgjEom08O1c7DvZ7",
       "domain": "localhost",
       "path": "/",
-      "expires": 1805911583,
+      "expires": 1805947296,
       "httpOnly": false,
       "secure": false,
       "sameSite": "Lax"
     },
     {
-      "name": "__session",
-      "value": "eyJhbGciOiJSUzI1NiIsImNhdCI6ImNsX0I3ZDRQRDExMUFBQSIsImtpZCI6Imluc18zQkVoVVJjVHJlcUp0Qkd1M3AzY1BjVFlUdnMiLCJ0eXAiOiJKV1QifQ.eyJhenAiOiJodHRwOi8vbG9jYWxob3N0OjMxMDAiLCJleHAiOjE3NzQzNzU2NDMsImZ2YSI6WzAsLTFdLCJpYXQiOjE3NzQzNzU1ODMsImlzcyI6Imh0dHBzOi8vcmFwaWQtbW9sZS0xMi5jbGVyay5hY2NvdW50cy5kZXYiLCJuYmYiOjE3NzQzNzU1NzMsInBsYSI6InU6ZnJlZV91c2VyIiwic2lkIjoic2Vzc18zQlAwcERmYW5RRVU5U2pISzhCaGQwSW9TbXoiLCJzdHMiOiJwZW5kaW5nIiwic3ViIjoidXNlcl8zQk9DWDY3OGNGMjhtTGRveWZkbkJaUGwxN1QiLCJ2IjoyfQ.sLuc8rwBG48Oh5TT5uAcp3I7_i3KWmIhJBS_eDuv1dKuzyrkiJ23-kvEcU2U5jj0Uuj-P7G1Q2UUVh_Z_SUxa9Nt__rq4QEjtgWWVu9BtvSH5XFnuCp4qIBH8Wo5VfFog6kZkawVkREcbEdUkNgdT9ba719ux9JlXUQzNy3Jqdy4sB_IlojRXZ6tKNSiQgvFXNhIeQTPpVQ_E3Yila7jlKLEUaFhf4moexoZeRUxsC5CigqpWtRsO_uQT6bWXcs8g7oPAb2dBS4Q1bABWIHSFpdS84S0HHja0hPDTDDY8l_5muQYCS8jGOuNsKTfBL5W5OHxo9sqanXnnS1qPIswdA",
+      "name": "__cf_bm",
+      "value": "QQTE9HHeFsJko9A4HmS8fmyjVusWktpn23eqDgpd2rQ-1774411293-1.0.1.1-OY08n4TwCL91d3503VWJtGW0oPsBcPOcEs.BxhucV87yNmmKCmbQu8WwGGQN2zKhnFfKDwn54.tTf4d8sCgh6u6yMJwvtHepIUR8LE.rufE",
+      "domain": ".img.clerk.com",
+      "path": "/",
+      "expires": 1774413093.543747,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "IDE",
+      "value": "AHWqTUlKNz51fumLbrs6dKvZFcXBrNb0v8CxCbNOjcWRwLCL61jaoOIPkRdT2GDZSUc",
+      "domain": ".doubleclick.net",
+      "path": "/",
+      "expires": 1808971296.720735,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "clerk_active_context",
+      "value": "sess_3BQBDjJ7rVNCI1ivp9IIcUNEfNy:org_3BPuXGBdoIOmsSbpo9jLURftY9f",
       "domain": "localhost",
       "path": "/",
-      "expires": 1805911583,
+      "expires": -1,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__session",
+      "value": "eyJhbGciOiJSUzI1NiIsImNhdCI6ImNsX0I3ZDRQRDExMUFBQSIsImtpZCI6Imluc18zQkVoVVJjVHJlcUp0Qkd1M3AzY1BjVFlUdnMiLCJ0eXAiOiJKV1QifQ.eyJhenAiOiJodHRwOi8vbG9jYWxob3N0OjMxMDAiLCJleHAiOjE3NzQ0MTEzNTYsImZ2YSI6WzAsLTFdLCJpYXQiOjE3NzQ0MTEyOTYsImlzcyI6Imh0dHBzOi8vcmFwaWQtbW9sZS0xMi5jbGVyay5hY2NvdW50cy5kZXYiLCJuYmYiOjE3NzQ0MTEyODYsIm8iOnsiaWQiOiJvcmdfM0JQdVhHQmRvSU9tc1NicG85akxVUmZ0WTlmIiwicm9sIjoiYWRtaW4iLCJzbGciOiJwcm8tMTc3NDQwMzA1MTIyNjgwMzEzOSJ9LCJwbGEiOiJvOmZyZWVfb3JnIiwic2lkIjoic2Vzc18zQlFCRGpKN3JWTkNJMWl2cDlJSWNVTkVmTnkiLCJzdHMiOiJhY3RpdmUiLCJzdWIiOiJ1c2VyXzNCT0NYNjc4Y0YyOG1MZG95ZmRuQlpQbDE3VCIsInYiOjJ9.d7MKnT2FQ8KZOGmzgzW6GbDjv511bdT9HdhfnATq8n0Qc52A4R2-uNTTZSk1qDP_VisfBdkwJ49xChxY7U87qfqQqykuEQzuvjbJ8d94pglDb55xaIoONSiuz2brHntYk8ld9FueHNNTEu_GFZJCLFmd5KIToSgMtnqQsB_qWWqKrd0Hzyp0HHMfoK16D_F-P5PFmYSp6VUs-SFdTk5wHt1faWSQ1KuzpD1aqNidqCR8xcvbcAnpMabL1w4YfnmN7qNZQjJCho16P3WwWgOI-C7PGpXmGbXs-D1vX3WdoKkNDWr6-75bfPQjanqJA7nBUJcPNAajsS8fDvI1jMKNVw",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1805947296,
       "httpOnly": false,
       "secure": false,
       "sameSite": "Lax"
     },
     {
       "name": "__session_NyJnr4gD",
-      "value": "eyJhbGciOiJSUzI1NiIsImNhdCI6ImNsX0I3ZDRQRDExMUFBQSIsImtpZCI6Imluc18zQkVoVVJjVHJlcUp0Qkd1M3AzY1BjVFlUdnMiLCJ0eXAiOiJKV1QifQ.eyJhenAiOiJodHRwOi8vbG9jYWxob3N0OjMxMDAiLCJleHAiOjE3NzQzNzU2NDMsImZ2YSI6WzAsLTFdLCJpYXQiOjE3NzQzNzU1ODMsImlzcyI6Imh0dHBzOi8vcmFwaWQtbW9sZS0xMi5jbGVyay5hY2NvdW50cy5kZXYiLCJuYmYiOjE3NzQzNzU1NzMsInBsYSI6InU6ZnJlZV91c2VyIiwic2lkIjoic2Vzc18zQlAwcERmYW5RRVU5U2pISzhCaGQwSW9TbXoiLCJzdHMiOiJwZW5kaW5nIiwic3ViIjoidXNlcl8zQk9DWDY3OGNGMjhtTGRveWZkbkJaUGwxN1QiLCJ2IjoyfQ.sLuc8rwBG48Oh5TT5uAcp3I7_i3KWmIhJBS_eDuv1dKuzyrkiJ23-kvEcU2U5jj0Uuj-P7G1Q2UUVh_Z_SUxa9Nt__rq4QEjtgWWVu9BtvSH5XFnuCp4qIBH8Wo5VfFog6kZkawVkREcbEdUkNgdT9ba719ux9JlXUQzNy3Jqdy4sB_IlojRXZ6tKNSiQgvFXNhIeQTPpVQ_E3Yila7jlKLEUaFhf4moexoZeRUxsC5CigqpWtRsO_uQT6bWXcs8g7oPAb2dBS4Q1bABWIHSFpdS84S0HHja0hPDTDDY8l_5muQYCS8jGOuNsKTfBL5W5OHxo9sqanXnnS1qPIswdA",
+      "value": "eyJhbGciOiJSUzI1NiIsImNhdCI6ImNsX0I3ZDRQRDExMUFBQSIsImtpZCI6Imluc18zQkVoVVJjVHJlcUp0Qkd1M3AzY1BjVFlUdnMiLCJ0eXAiOiJKV1QifQ.eyJhenAiOiJodHRwOi8vbG9jYWxob3N0OjMxMDAiLCJleHAiOjE3NzQ0MTEzNTYsImZ2YSI6WzAsLTFdLCJpYXQiOjE3NzQ0MTEyOTYsImlzcyI6Imh0dHBzOi8vcmFwaWQtbW9sZS0xMi5jbGVyay5hY2NvdW50cy5kZXYiLCJuYmYiOjE3NzQ0MTEyODYsIm8iOnsiaWQiOiJvcmdfM0JQdVhHQmRvSU9tc1NicG85akxVUmZ0WTlmIiwicm9sIjoiYWRtaW4iLCJzbGciOiJwcm8tMTc3NDQwMzA1MTIyNjgwMzEzOSJ9LCJwbGEiOiJvOmZyZWVfb3JnIiwic2lkIjoic2Vzc18zQlFCRGpKN3JWTkNJMWl2cDlJSWNVTkVmTnkiLCJzdHMiOiJhY3RpdmUiLCJzdWIiOiJ1c2VyXzNCT0NYNjc4Y0YyOG1MZG95ZmRuQlpQbDE3VCIsInYiOjJ9.d7MKnT2FQ8KZOGmzgzW6GbDjv511bdT9HdhfnATq8n0Qc52A4R2-uNTTZSk1qDP_VisfBdkwJ49xChxY7U87qfqQqykuEQzuvjbJ8d94pglDb55xaIoONSiuz2brHntYk8ld9FueHNNTEu_GFZJCLFmd5KIToSgMtnqQsB_qWWqKrd0Hzyp0HHMfoK16D_F-P5PFmYSp6VUs-SFdTk5wHt1faWSQ1KuzpD1aqNidqCR8xcvbcAnpMabL1w4YfnmN7qNZQjJCho16P3WwWgOI-C7PGpXmGbXs-D1vX3WdoKkNDWr6-75bfPQjanqJA7nBUJcPNAajsS8fDvI1jMKNVw",
       "domain": "localhost",
       "path": "/",
-      "expires": 1805911583,
+      "expires": 1805947296,
       "httpOnly": false,
       "secure": false,
       "sameSite": "Lax"
     },
     {
       "name": "__client_uat_NyJnr4gD",
-      "value": "1774375579",
+      "value": "1774411295",
       "domain": "localhost",
       "path": "/",
-      "expires": 1805911583,
+      "expires": 1805947296,
       "httpOnly": false,
       "secure": false,
       "sameSite": "Strict"
     },
     {
       "name": "__client_uat",
-      "value": "1774375579",
+      "value": "1774411295",
       "domain": "localhost",
       "path": "/",
-      "expires": 1805911583,
+      "expires": 1805947296,
       "httpOnly": false,
       "secure": false,
       "sameSite": "Strict"
@@ -119,11 +139,11 @@
       "localStorage": [
         {
           "name": "__clerk_environment",
-          "value": "{\"value\":{\"object\":\"environment\",\"auth_config\":{\"claimed_at\":1774062045279,\"id\":\"\",\"object\":\"auth_config\",\"reverification\":true,\"single_session_mode\":true,\"session_minter\":false},\"display_config\":{\"object\":\"display_config\",\"after_create_organization_url\":\"http://localhost:3100\",\"after_join_waitlist_url\":\"http://localhost:3100\",\"after_leave_organization_url\":\"http://localhost:3100\",\"after_sign_in_url\":\"http://localhost:3100\",\"after_sign_out_all_url\":\"https://rapid-mole-12.accounts.dev/sign-in\",\"after_sign_out_one_url\":\"https://rapid-mole-12.accounts.dev/sign-in/choose\",\"after_sign_up_url\":\"http://localhost:3100\",\"after_switch_session_url\":\"http://localhost:3100\",\"application_name\":\"Pro Construction Calc\",\"branded\":true,\"captcha_heartbeat\":false,\"captcha_oauth_bypass\":[],\"captcha_provider\":\"turnstile\",\"captcha_public_key_invisible\":\"0x4AAAAAAAFV93qQdS0ycilX\",\"captcha_public_key\":\"0x4AAAAAAAWXJGBD7bONzLBd\",\"captcha_widget_type\":\"smart\",\"clerk_js_version\":\"5\",\"create_organization_url\":\"https://rapid-mole-12.accounts.dev/create-organization\",\"favicon_image_url\":\"\",\"home_url\":\"http://localhost:3100\",\"id\":\"display_config_3BEhUQAqdaqIQPl7TkJEWg6aZXr\",\"instance_environment_type\":\"development\",\"logo_image_url\":\"\",\"organization_profile_url\":\"https://rapid-mole-12.accounts.dev/organization\",\"preferred_sign_in_strategy\":\"password\",\"privacy_policy_url\":\"\",\"show_devmode_warning\":true,\"sign_in_url\":\"https://rapid-mole-12.accounts.dev/sign-in\",\"sign_up_url\":\"https://rapid-mole-12.accounts.dev/sign-up\",\"support_email\":\"owner@proconstructioncalc.com\",\"terms_url\":\"\",\"theme\":{\"buttons\":{\"font_color\":\"#ffffff\",\"font_family\":\"\\\"Source Sans Pro\\\", sans-serif\",\"font_weight\":\"600\"},\"general\":{\"color\":\"#6c47ff\",\"padding\":\"1em\",\"box_shadow\":\"0 2px 8px rgba(0, 0, 0, 0.2)\",\"font_color\":\"#151515\",\"font_family\":\"\\\"Source Sans Pro\\\", sans-serif\",\"border_radius\":\"0.5em\",\"background_color\":\"#ffffff\",\"label_font_weight\":\"600\"},\"accounts\":{\"background_color\":\"#ffffff\"}},\"user_profile_url\":\"https://rapid-mole-12.accounts.dev/user\",\"waitlist_url\":\"https://rapid-mole-12.accounts.dev/waitlist\"},\"id\":\"\",\"maintenance_mode\":false,\"client_debug_mode\":false,\"partitioned_cookies\":false,\"organization_settings\":{\"actions\":{\"admin_delete\":true},\"domains\":{\"enabled\":false,\"enrollment_modes\":[],\"default_role\":\"org:member\"},\"enabled\":true,\"max_allowed_memberships\":5},\"user_settings\":{\"actions\":{\"delete_self\":true,\"create_organization\":true,\"create_organizations_limit\":null},\"attributes\":{\"email_address\":{\"enabled\":true,\"required\":true,\"used_for_first_factor\":true,\"first_factors\":[\"email_code\"],\"used_for_second_factor\":false,\"second_factors\":[],\"verifications\":[\"email_code\"],\"verify_at_sign_up\":true,\"immutable\":false,\"name\":\"email_address\"},\"phone_number\":{\"enabled\":false,\"required\":false,\"used_for_first_factor\":false,\"first_factors\":[],\"used_for_second_factor\":false,\"second_factors\":[],\"verifications\":[],\"verify_at_sign_up\":false,\"immutable\":false,\"name\":\"phone_number\"},\"username\":{\"enabled\":true,\"required\":true,\"used_for_first_factor\":true,\"first_factors\":[],\"used_for_second_factor\":false,\"second_factors\":[],\"verifications\":[],\"verify_at_sign_up\":false,\"immutable\":true,\"name\":\"username\"},\"web3_wallet\":{\"enabled\":false,\"required\":false,\"used_for_first_factor\":false,\"first_factors\":[],\"used_for_second_factor\":false,\"second_factors\":[],\"verifications\":[],\"verify_at_sign_up\":false,\"immutable\":false,\"name\":\"web3_wallet\"},\"first_name\":{\"enabled\":true,\"required\":true,\"used_for_first_factor\":false,\"first_factors\":[],\"used_for_second_factor\":false,\"second_factors\":[],\"verifications\":[],\"verify_at_sign_up\":false,\"immutable\":false,\"name\":\"first_name\"},\"last_name\":{\"enabled\":true,\"required\":true,\"used_for_first_factor\":false,\"first_factors\":[],\"used_for_second_factor\":false,\"second_factors\":[],\"verifications\":[],\"verify_at_sign_up\":false,\"immutable\":false,\"name\":\"last_name\"},\"password\":{\"enabled\":true,\"required\":true,\"used_for_first_factor\":false,\"first_factors\":[],\"used_for_second_factor\":false,\"second_factors\":[],\"verifications\":[],\"verify_at_sign_up\":false,\"immutable\":false,\"name\":\"password\"},\"authenticator_app\":{\"enabled\":false,\"required\":false,\"used_for_first_factor\":false,\"first_factors\":[],\"used_for_second_factor\":false,\"second_factors\":[],\"verifications\":[],\"verify_at_sign_up\":false,\"immutable\":false,\"name\":\"authenticator_app\"},\"ticket\":{\"enabled\":true,\"required\":false,\"used_for_first_factor\":false,\"first_factors\":[],\"used_for_second_factor\":false,\"second_factors\":[],\"verifications\":[],\"verify_at_sign_up\":false,\"immutable\":false,\"name\":\"ticket\"},\"backup_code\":{\"enabled\":false,\"required\":false,\"used_for_first_factor\":false,\"first_factors\":[],\"used_for_second_factor\":false,\"second_factors\":[],\"verifications\":[],\"verify_at_sign_up\":false,\"immutable\":false,\"name\":\"backup_code\"},\"passkey\":{\"enabled\":false,\"required\":false,\"used_for_first_factor\":false,\"first_factors\":[],\"used_for_second_factor\":false,\"second_factors\":[],\"verifications\":[],\"verify_at_sign_up\":false,\"immutable\":false,\"name\":\"passkey\"}},\"passkey_settings\":{\"allow_autofill\":true,\"show_sign_in_button\":true},\"password_settings\":{\"disable_hibp\":true,\"min_length\":8,\"max_length\":72,\"require_special_char\":false,\"require_numbers\":false,\"require_uppercase\":false,\"require_lowercase\":false,\"show_zxcvbn\":false,\"min_zxcvbn_strength\":0,\"enforce_hibp_on_sign_in\":true,\"allowed_special_characters\":\"!\\\"#$%&'()*+,-./:;<=>?@[]^_`{|}~\"},\"sign_in\":{\"second_factor\":{\"required\":false}},\"sign_up\":{\"captcha_enabled\":true,\"captcha_widget_type\":\"smart\",\"custom_action_required\":false,\"progressive\":true,\"mode\":\"public\",\"legal_consent_enabled\":false,\"mfa\":{\"required\":false}},\"social\":{\"oauth_google\":{\"enabled\":true,\"required\":false,\"authenticatable\":true,\"block_email_subaddresses\":true,\"strategy\":\"oauth_google\",\"not_selectable\":false,\"deprecated\":false,\"name\":\"Google\",\"logo_url\":\"https://img.clerk.com/static/google.png\"}}},\"commerce_settings\":{\"billing\":{\"stripe_publishable_key\":\"pk_test_51RCql19lSID4XqgvVgE5G29Venvohe7wYddntzuLSooTjSStaiFPtPfs3GcdekNwrq3qdyIR6fELqckpKeD0YUat00bFn04tID\",\"organization\":{\"enabled\":true,\"has_paid_plans\":false},\"user\":{\"enabled\":true,\"has_paid_plans\":false}}},\"api_keys_settings\":{\"user_api_keys_enabled\":false,\"orgs_api_keys_enabled\":false},\"protect_config\":{\"object\":\"protect_config\",\"id\":\"\"}},\"exp\":1774461978469}"
+          "value": "{\"value\":{\"object\":\"environment\",\"auth_config\":{\"claimed_at\":1774062045279,\"id\":\"\",\"object\":\"auth_config\",\"reverification\":true,\"single_session_mode\":true,\"session_minter\":false},\"display_config\":{\"object\":\"display_config\",\"after_create_organization_url\":\"http://localhost:3100\",\"after_join_waitlist_url\":\"http://localhost:3100\",\"after_leave_organization_url\":\"http://localhost:3100\",\"after_sign_in_url\":\"http://localhost:3100\",\"after_sign_out_all_url\":\"https://rapid-mole-12.accounts.dev/sign-in\",\"after_sign_out_one_url\":\"https://rapid-mole-12.accounts.dev/sign-in/choose\",\"after_sign_up_url\":\"http://localhost:3100\",\"after_switch_session_url\":\"http://localhost:3100\",\"application_name\":\"Pro Construction Calc\",\"branded\":true,\"captcha_heartbeat\":false,\"captcha_oauth_bypass\":[],\"captcha_provider\":\"turnstile\",\"captcha_public_key_invisible\":\"0x4AAAAAAAFV93qQdS0ycilX\",\"captcha_public_key\":\"0x4AAAAAAAWXJGBD7bONzLBd\",\"captcha_widget_type\":\"smart\",\"clerk_js_version\":\"5\",\"create_organization_url\":\"https://rapid-mole-12.accounts.dev/create-organization\",\"favicon_image_url\":\"\",\"home_url\":\"http://localhost:3100\",\"id\":\"display_config_3BEhUQAqdaqIQPl7TkJEWg6aZXr\",\"instance_environment_type\":\"development\",\"logo_image_url\":\"\",\"organization_profile_url\":\"https://rapid-mole-12.accounts.dev/organization\",\"preferred_sign_in_strategy\":\"password\",\"privacy_policy_url\":\"\",\"show_devmode_warning\":true,\"sign_in_url\":\"https://rapid-mole-12.accounts.dev/sign-in\",\"sign_up_url\":\"https://rapid-mole-12.accounts.dev/sign-up\",\"support_email\":\"owner@proconstructioncalc.com\",\"terms_url\":\"\",\"theme\":{\"buttons\":{\"font_color\":\"#ffffff\",\"font_family\":\"\\\"Source Sans Pro\\\", sans-serif\",\"font_weight\":\"600\"},\"general\":{\"color\":\"#6c47ff\",\"padding\":\"1em\",\"box_shadow\":\"0 2px 8px rgba(0, 0, 0, 0.2)\",\"font_color\":\"#151515\",\"font_family\":\"\\\"Source Sans Pro\\\", sans-serif\",\"border_radius\":\"0.5em\",\"background_color\":\"#ffffff\",\"label_font_weight\":\"600\"},\"accounts\":{\"background_color\":\"#ffffff\"}},\"user_profile_url\":\"https://rapid-mole-12.accounts.dev/user\",\"waitlist_url\":\"https://rapid-mole-12.accounts.dev/waitlist\"},\"id\":\"\",\"maintenance_mode\":false,\"client_debug_mode\":false,\"partitioned_cookies\":false,\"organization_settings\":{\"actions\":{\"admin_delete\":true},\"domains\":{\"enabled\":false,\"enrollment_modes\":[],\"default_role\":\"org:member\"},\"enabled\":true,\"max_allowed_memberships\":5},\"user_settings\":{\"actions\":{\"delete_self\":true,\"create_organization\":true,\"create_organizations_limit\":null},\"attributes\":{\"email_address\":{\"enabled\":true,\"required\":true,\"used_for_first_factor\":true,\"first_factors\":[\"email_code\"],\"used_for_second_factor\":false,\"second_factors\":[],\"verifications\":[\"email_code\"],\"verify_at_sign_up\":true,\"immutable\":false,\"name\":\"email_address\"},\"phone_number\":{\"enabled\":false,\"required\":false,\"used_for_first_factor\":false,\"first_factors\":[],\"used_for_second_factor\":false,\"second_factors\":[],\"verifications\":[],\"verify_at_sign_up\":false,\"immutable\":false,\"name\":\"phone_number\"},\"username\":{\"enabled\":true,\"required\":true,\"used_for_first_factor\":true,\"first_factors\":[],\"used_for_second_factor\":false,\"second_factors\":[],\"verifications\":[],\"verify_at_sign_up\":false,\"immutable\":true,\"name\":\"username\"},\"web3_wallet\":{\"enabled\":false,\"required\":false,\"used_for_first_factor\":false,\"first_factors\":[],\"used_for_second_factor\":false,\"second_factors\":[],\"verifications\":[],\"verify_at_sign_up\":false,\"immutable\":false,\"name\":\"web3_wallet\"},\"first_name\":{\"enabled\":true,\"required\":true,\"used_for_first_factor\":false,\"first_factors\":[],\"used_for_second_factor\":false,\"second_factors\":[],\"verifications\":[],\"verify_at_sign_up\":false,\"immutable\":false,\"name\":\"first_name\"},\"last_name\":{\"enabled\":true,\"required\":true,\"used_for_first_factor\":false,\"first_factors\":[],\"used_for_second_factor\":false,\"second_factors\":[],\"verifications\":[],\"verify_at_sign_up\":false,\"immutable\":false,\"name\":\"last_name\"},\"password\":{\"enabled\":true,\"required\":true,\"used_for_first_factor\":false,\"first_factors\":[],\"used_for_second_factor\":false,\"second_factors\":[],\"verifications\":[],\"verify_at_sign_up\":false,\"immutable\":false,\"name\":\"password\"},\"authenticator_app\":{\"enabled\":false,\"required\":false,\"used_for_first_factor\":false,\"first_factors\":[],\"used_for_second_factor\":false,\"second_factors\":[],\"verifications\":[],\"verify_at_sign_up\":false,\"immutable\":false,\"name\":\"authenticator_app\"},\"ticket\":{\"enabled\":true,\"required\":false,\"used_for_first_factor\":false,\"first_factors\":[],\"used_for_second_factor\":false,\"second_factors\":[],\"verifications\":[],\"verify_at_sign_up\":false,\"immutable\":false,\"name\":\"ticket\"},\"backup_code\":{\"enabled\":false,\"required\":false,\"used_for_first_factor\":false,\"first_factors\":[],\"used_for_second_factor\":false,\"second_factors\":[],\"verifications\":[],\"verify_at_sign_up\":false,\"immutable\":false,\"name\":\"backup_code\"},\"passkey\":{\"enabled\":false,\"required\":false,\"used_for_first_factor\":false,\"first_factors\":[],\"used_for_second_factor\":false,\"second_factors\":[],\"verifications\":[],\"verify_at_sign_up\":false,\"immutable\":false,\"name\":\"passkey\"}},\"passkey_settings\":{\"allow_autofill\":true,\"show_sign_in_button\":true},\"password_settings\":{\"disable_hibp\":true,\"min_length\":8,\"max_length\":72,\"require_special_char\":false,\"require_numbers\":false,\"require_uppercase\":false,\"require_lowercase\":false,\"show_zxcvbn\":false,\"min_zxcvbn_strength\":0,\"enforce_hibp_on_sign_in\":true,\"allowed_special_characters\":\"!\\\"#$%&'()*+,-./:;<=>?@[]^_`{|}~\"},\"sign_in\":{\"second_factor\":{\"required\":false}},\"sign_up\":{\"captcha_enabled\":true,\"captcha_widget_type\":\"smart\",\"custom_action_required\":false,\"progressive\":true,\"mode\":\"public\",\"legal_consent_enabled\":false,\"mfa\":{\"required\":false}},\"social\":{\"oauth_google\":{\"enabled\":true,\"required\":false,\"authenticatable\":true,\"block_email_subaddresses\":true,\"strategy\":\"oauth_google\",\"not_selectable\":false,\"deprecated\":false,\"name\":\"Google\",\"logo_url\":\"https://img.clerk.com/static/google.png\"}}},\"commerce_settings\":{\"billing\":{\"stripe_publishable_key\":\"pk_test_51RCql19lSID4XqgvVgE5G29Venvohe7wYddntzuLSooTjSStaiFPtPfs3GcdekNwrq3qdyIR6fELqckpKeD0YUat00bFn04tID\",\"organization\":{\"enabled\":true,\"has_paid_plans\":false},\"user\":{\"enabled\":true,\"has_paid_plans\":false}}},\"api_keys_settings\":{\"user_api_keys_enabled\":false,\"orgs_api_keys_enabled\":false},\"protect_config\":{\"object\":\"protect_config\",\"id\":\"\"}},\"exp\":1774497696932}"
         },
         {
           "name": "TERMLY_API_CACHE",
-          "value": "{\"TERMLY_STATISTIC\":{\"createdAt\":1774375577195,\"value\":\"__tltpl_294204b1-a0a3-4f09-925a-30dfd75d3914\"},\"__tltpl_294204b1-a0a3-4f09-925a-30dfd75d3914\":{\"createdAt\":1774375577195,\"value\":{\"514c70ee-1253-40b8-8f6d-92fa49ce8204\":{\"notify\":true,\"version\":1,\"showBanner\":true},\"e3153de0-5239-4ace-b068-517a7ae778ad\":{\"notify\":true,\"version\":1,\"showBanner\":true}}},\"__tltpl_4519295\":{\"createdAt\":1774375578295,\"value\":{\"514c70ee-1253-40b8-8f6d-92fa49ce8204\":{\"notify\":true,\"version\":1,\"showBanner\":false},\"e3153de0-5239-4ace-b068-517a7ae778ad\":{\"notify\":true,\"version\":1,\"showBanner\":false}}},\"__tluid\":{\"createdAt\":1774375578790,\"value\":\"f52f1c79-557b-4661-901a-b1c32458cbba\"},\"TERMLY_COOKIE_CONSENT\":{\"createdAt\":1774375578790,\"value\":{\"performance\":true,\"analytics\":true,\"advertising\":true,\"social_networking\":true,\"unclassified\":true,\"essential\":true,\"ac_string\":null,\"document_version_id\":47910432,\"event_type\":\"banner\",\"gpc\":false,\"id\":1774375578735,\"tc_string\":null,\"template_version_id\":47910432,\"visitor\":{\"uuid\":\"f52f1c79-557b-4661-901a-b1c32458cbba\"},\"visitor_id\":\"f52f1c79-557b-4661-901a-b1c32458cbba\"}}}"
+          "value": "{\"TERMLY_STATISTIC\":{\"createdAt\":1774411287188,\"value\":\"__tltpl_294204b1-a0a3-4f09-925a-30dfd75d3914\"},\"__tltpl_294204b1-a0a3-4f09-925a-30dfd75d3914\":{\"createdAt\":1774411296575,\"value\":{\"514c70ee-1253-40b8-8f6d-92fa49ce8204\":{\"notify\":true,\"version\":1,\"showBanner\":true},\"e3153de0-5239-4ace-b068-517a7ae778ad\":{\"notify\":true,\"version\":1,\"showBanner\":true}}},\"__tltpl_4519295\":{\"createdAt\":1774411292810,\"value\":{\"514c70ee-1253-40b8-8f6d-92fa49ce8204\":{\"notify\":true,\"version\":1,\"showBanner\":false},\"e3153de0-5239-4ace-b068-517a7ae778ad\":{\"notify\":true,\"version\":1,\"showBanner\":false}}},\"__tluid\":{\"createdAt\":1774411293369,\"value\":\"6d089d4e-2b49-477f-8f91-d122634bbca6\"},\"TERMLY_COOKIE_CONSENT\":{\"createdAt\":1774411293369,\"value\":{\"performance\":true,\"analytics\":true,\"advertising\":true,\"social_networking\":true,\"unclassified\":true,\"essential\":true,\"ac_string\":null,\"document_version_id\":47910432,\"event_type\":\"banner\",\"gpc\":false,\"id\":1774411293314,\"tc_string\":null,\"template_version_id\":47910432,\"visitor\":{\"uuid\":\"6d089d4e-2b49-477f-8f91-d122634bbca6\"},\"visitor_id\":\"6d089d4e-2b49-477f-8f91-d122634bbca6\"}}}"
         }
       ]
     },
@@ -132,7 +152,7 @@
       "localStorage": [
         {
           "name": "rc::h",
-          "value": "1774375578796"
+          "value": "1774411296958"
         }
       ]
     }

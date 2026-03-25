@@ -305,7 +305,7 @@ export function ClientDetailClient({ client, estimates }: { client: ClientDTO; e
   const [activeTab, setActiveTab] = useState<DetailTab>("estimates");
 
   return (
-    <div className="flex h-full flex-col gap-6">
+    <div className="flex min-h-full flex-col gap-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>

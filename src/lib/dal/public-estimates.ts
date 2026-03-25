@@ -55,6 +55,8 @@ type SigningInputShape = {
   signatureDataUrl?: string;
   /** Normalized email the sign link was emailed to; locks the sign form when set. */
   inviteRecipientEmail?: string;
+  signerIp?: string;
+  signerUserAgent?: string;
 };
 
 export type PublicEstimateForSigning = {

@@ -81,8 +81,8 @@ export async function POST(request: NextRequest) {
     const pdfRl = checkMemoryRateLimit(
       "generate-pdf",
       session.user.id,
-      35,
-      3600_000,
+      10, // 10 documents
+      60_000, // per minute
     );
     if (!pdfRl.ok) {
       return NextResponse.json(
