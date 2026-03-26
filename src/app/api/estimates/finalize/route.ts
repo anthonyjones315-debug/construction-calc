@@ -18,6 +18,8 @@ import {
   getSavedEstimatesTag,
 } from "@/lib/cache-tags";
 import {
+  FinalizeEstimateInput,
+  SigningMeta,
   buildSigningMeta,
   finalizeEstimateSchema,
   generateEstimateShareCode,
@@ -41,6 +43,69 @@ function getClientEmail(input: Record<string, unknown> | undefined) {
   return typeof candidate === "string" && candidate.includes("@")
     ? candidate.trim()
     : null;
+}
+
+function buildSavedInputs({
+  includeShareCode,
+  payload,
+  signingMeta,
+  ownerMeta,
+  clientEmailForInvite,
+}: {
+  includeShareCode: boolean;
+  payload: FinalizeEstimateInput;
+  signingMeta: SigningMeta;
+  ownerMeta: {
+    user_id: string;
+    user_email: string | null;
+    user_name: string | null;
+  };
+  clientEmailForInvite: string | null;
+}) {
+  const contractorSig = payload.signature?.signatureDataUrl
+    ? {
+        contractorSignatureDataUrl: payload.signature.signatureDataUrl,
+        contractorSignedAt:
+          payload.signature.signedAt ?? new Date().toISOString(),
+      }
+    : {};
+
+  if (includeShareCode) {
+    const inviteRecipientEmail = clientEmailForInvite
+      ? clientEmailForInvite.trim().toLowerCase()
+      : null;
+    const base = withFinalizeInputs(
+      payload.inputs,
+      payload,
+      signingMeta,
+      ownerMeta,
+    );
+    return {
+      ...base,
+      signing: {
+        ...(typeof base.signing === "object" && base.signing !== null
+          ? (base.signing as Record<string, unknown>)
+          : {}),
+        ...contractorSig,
+        ...(inviteRecipientEmail
+          ? { inviteRecipientEmail }
+          : {}),
+      },
+    };
+  }
+
+  return {
+    ...(payload.inputs ?? {}),
+    owner: ownerMeta,
+    finalize: {
+      title: payload.metadata.title,
+      calculatorLabel: payload.metadata.calculatorLabel,
+      generatedAt: payload.metadata.generatedAt,
+      jobName: payload.metadata.jobName ?? payload.name,
+      materialList: payload.material_list,
+    },
+    signing: contractorSig,
+  };
 }
 
 export async function POST(request: NextRequest) {
@@ -110,52 +175,7 @@ export async function POST(request: NextRequest) {
 
     const clientEmailForInvite = getClientEmail(payload.inputs);
 
-    function buildSavedInputs(includeShareCode: boolean) {
-      const contractorSig = payload.signature?.signatureDataUrl
-        ? {
-            contractorSignatureDataUrl: payload.signature.signatureDataUrl,
-            contractorSignedAt:
-              payload.signature.signedAt ?? new Date().toISOString(),
-          }
-        : {};
 
-      if (includeShareCode) {
-        const inviteRecipientEmail = clientEmailForInvite
-          ? clientEmailForInvite.trim().toLowerCase()
-          : null;
-        const base = withFinalizeInputs(
-          payload.inputs,
-          payload,
-          signingMeta,
-          ownerMeta,
-        );
-        return {
-          ...base,
-          signing: {
-            ...(typeof base.signing === "object" && base.signing !== null
-              ? (base.signing as Record<string, unknown>)
-              : {}),
-            ...contractorSig,
-            ...(inviteRecipientEmail
-              ? { inviteRecipientEmail }
-              : {}),
-          },
-        };
-      }
-
-      return {
-        ...(payload.inputs ?? {}),
-        owner: ownerMeta,
-        finalize: {
-          title: payload.metadata.title,
-          calculatorLabel: payload.metadata.calculatorLabel,
-          generatedAt: payload.metadata.generatedAt,
-          jobName: payload.metadata.jobName ?? payload.name,
-          materialList: payload.material_list,
-        },
-        signing: contractorSig,
-      };
-    }
 
     if (payload.saved_estimate_id) {
       const estimateId = payload.saved_estimate_id;
@@ -206,7 +226,13 @@ export async function POST(request: NextRequest) {
 
       for (let attempt = 0; attempt < 5; attempt += 1) {
         shareCode = signingMeta.shareCode;
-        const inputs = buildSavedInputs(shareCodeSupported);
+        const inputs = buildSavedInputs({
+          includeShareCode: shareCodeSupported,
+          payload,
+          signingMeta,
+          ownerMeta,
+          clientEmailForInvite,
+        });
         const verified = verifyEstimate({
           inputs: inputs as Record<string, unknown>,
           total_cost:
@@ -290,7 +316,13 @@ export async function POST(request: NextRequest) {
           user_id: user.id,
           name: generatedName,
           calculator_id: payload.calculator_id,
-          inputs: buildSavedInputs(shareCodeSupported),
+          inputs: buildSavedInputs({
+          includeShareCode: shareCodeSupported,
+          payload,
+          signingMeta,
+          ownerMeta,
+          clientEmailForInvite,
+        }),
           results: payload.results,
           budget_items: null,
           client_name: payload.client_name ?? null,
