@@ -2,6 +2,8 @@ import "server-only";
 
 import { Resend } from "resend";
 
+import { escapeHtml } from "@/utils/html";
+
 const FROM_EMAIL = "Pro Construction Calc <owner@proconstructioncalc.com>";
 
 function getResend() {
@@ -10,13 +12,6 @@ function getResend() {
   return new Resend(key);
 }
 
-function escapeHtml(value: string) {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
 
 export async function sendEstimateSignatureEmail(input: {
   to: string;
