@@ -334,6 +334,15 @@ export function ProResult({
   finalizeIcon,
   containerClassName = "glass-container-elevated",
 }: ProResultProps) {
+  const [copied, setCopied] = React.useState(false);
+
+  const handleCopy = React.useCallback(() => {
+    if (!onCopyOrder) return;
+    onCopyOrder();
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }, [onCopyOrder]);
+
   return (
     <section
       className={`${containerClassName} relative flex min-h-[180px] flex-col gap-2 p-3`}
@@ -403,10 +412,15 @@ export function ProResult({
             {onCopyOrder ? (
               <GlassButton
                 type="button"
-                onClick={onCopyOrder}
-                className="min-h-7 rounded-lg border-[--color-border] px-2 py-1 text-xs font-bold uppercase tracking-widest text-copy-secondary hover:border-primary/40"
+                onClick={handleCopy}
+                className={cx(
+                  "min-h-7 rounded-lg border-[--color-border] px-2 py-1 text-xs font-bold uppercase tracking-widest transition-colors",
+                  copied
+                    ? "border-primary text-primary"
+                    : "text-copy-secondary hover:border-primary/40",
+                )}
               >
-                Copy
+                {copied ? "Copied!" : "Copy"}
               </GlassButton>
             ) : null}
           </div>
