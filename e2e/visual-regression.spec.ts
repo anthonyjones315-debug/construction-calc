@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./lib/test-fixtures";
 import { calculatorResultsSection } from "./lib/app";
 
 test.describe("Visual Regression — Key Screens", () => {
@@ -21,11 +21,11 @@ test.describe("Visual Regression — Key Screens", () => {
 
   test("slab calculator with result matches baseline", async ({ page }) => {
     await page.goto("/calculators/concrete/slab");
-    await page.getByLabel(/Run Length/i).fill("20");
+    await page.getByLabel(/Run Length|Linear Feet/i).fill("20");
     await page.getByLabel(/Slab Width/i).fill("24");
-    await page.getByLabel(/Slab Thickness/i).fill("4");
+    await page.getByLabel(/Slab Thickness|Slab Depth/i).fill("4");
     // Auto-calculates — wait for result
-    await page.getByText(/Total Yards/i).waitFor({ state: "visible" });
+    await page.getByText(/Total Cubic Yards|Material Order|Cubic Yards/i).first().waitFor({ state: "visible" });
 
     await expect(page).toHaveScreenshot("slab-calc-with-result.png", {
       maxDiffPixelRatio: 0.02,

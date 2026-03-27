@@ -1,5 +1,10 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./lib/test-fixtures";
 import path from "path";
+import { fileURLToPath } from "url";
+import { readFileSync } from "fs";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const axeSource = readFileSync(path.resolve(__dirname, "lib/axe.min.js"), "utf8");
 import { calculatorResultsSection } from "./lib/app";
 
 test.describe("Accessibility — WCAG 2.1 AA", () => {
@@ -16,10 +21,8 @@ test.describe("Accessibility — WCAG 2.1 AA", () => {
     test(`${route} — no critical ARIA violations`, async ({ page }) => {
       await page.goto(route, { waitUntil: "domcontentloaded" });
       await expect(page.locator("main, body").first()).toBeVisible();
-      // Inject axe-core for audit
-      await page.addScriptTag({
-        path: path.resolve(__dirname, "lib/axe.min.js"),
-      });
+      // Inject axe-core via evaluate to bypass CSP
+      await page.evaluate(axeSource);
 
       const violations = await page.evaluate(async () => {
         // @ts-ignore

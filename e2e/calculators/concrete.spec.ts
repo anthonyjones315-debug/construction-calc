@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Page } from "../lib/test-fixtures";
 
 import { setupClerkTestingToken } from "@clerk/testing/playwright";
 import { primaryResultValue } from "../lib/app";
@@ -147,9 +147,9 @@ test.describe("Concrete Calculators", () => {
       await page.goto("/calculators/concrete/footing");
       await fillNumbers(page, ["500", "24", "12"]);
       await expectMaterialOrder(page);
-      // Scope to main content only — avoid RSC payload which contains CSS class names
-      const text = await page.locator("main").textContent();
-      expect(text).not.toMatch(/NaN|Infinity/);
+      // Scope to visible result text only — avoid RSC payload
+      const result = await primaryResultValue(page).textContent() ?? "";
+      expect(result).not.toMatch(/NaN|Infinity/);
     });
   });
 

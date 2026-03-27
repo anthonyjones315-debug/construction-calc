@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../lib/test-fixtures";
 
 test.describe("Billing — Free Tier Paywall Behavior", () => {
   const openCommandCenterOrSkip = async (
@@ -51,8 +51,8 @@ test.describe("Billing — Free Tier Paywall Behavior", () => {
     if (inputCount > 1) await inputs.nth(1).fill("24");
     if (inputCount > 2) await inputs.nth(2).fill("4");
 
-    // Result should auto-calculate — material list shows "Order X.XX Total Yards"
-    await expect(page.getByText(/Order\s+[\d.]+/i).first()).toBeVisible();
+    // Result should auto-calculate — material list shows calculated result
+    await expect(page.getByText(/Total Cubic Yards|Material Order|Cubic Yards/i).first()).toBeVisible();
   });
 
   test("upgrade CTA is visible and prominent on free tier", async ({

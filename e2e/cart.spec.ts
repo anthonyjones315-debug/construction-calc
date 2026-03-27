@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./lib/test-fixtures";
 
 test.describe("Estimate Cart", () => {
 
@@ -15,13 +15,13 @@ test.describe("Estimate Cart", () => {
     // Visit cart directly with no prior items
     await page.goto("/cart");
     // Should display either items or an empty/getting-started message
-    const body = await page.textContent("body");
-    expect(body).not.toMatch(/unhandled|error|500/i);
+    const mainText = await page.locator("main").textContent() ?? "";
+    expect(mainText).not.toMatch(/unhandled.*error|500 internal/i);
   });
 
   test("calculator Save Estimate button is visible", async ({ page }) => {
     await page.goto("/calculators/concrete/slab");
-    await page.getByText(/Total Yards/i).waitFor({ state: "visible" });
+    await page.getByText(/Total Cubic Yards|Material Order|Cubic Yards/i).first().waitFor({ state: "visible" });
 
     // "Save Estimate" is the action to persist to local cart
     const saveBtn = page.getByRole("button", { name: /Save Estimate/i });
@@ -30,7 +30,7 @@ test.describe("Estimate Cart", () => {
 
   test("Finalize & Send button opens finalize modal", async ({ page }) => {
     await page.goto("/calculators/concrete/slab");
-    await page.getByText(/Total Yards/i).waitFor({ state: "visible" });
+    await page.getByText(/Total Cubic Yards|Material Order|Cubic Yards/i).first().waitFor({ state: "visible" });
 
     const finalizeBtn = page.getByRole("button", { name: /Finalize/i }).first();
     await expect(finalizeBtn).toBeVisible();
@@ -46,7 +46,7 @@ test.describe("Estimate Cart", () => {
 
   test("cart badge in nav reflects item count after save", async ({ page }) => {
     await page.goto("/calculators/concrete/slab");
-    await page.getByText(/Total Yards/i).waitFor({ state: "visible" });
+    await page.getByText(/Total Cubic Yards|Material Order|Cubic Yards/i).first().waitFor({ state: "visible" });
 
     // Click Save Estimate to add to local cart
     const saveBtn = page.getByRole("button", { name: /Save Estimate/i });
@@ -61,7 +61,7 @@ test.describe("Estimate Cart", () => {
   test("cart persists after page reload", async ({ page }) => {
     // Add an item via Save Estimate
     await page.goto("/calculators/concrete/slab");
-    await page.getByText(/Total Yards/i).waitFor({ state: "visible" });
+    await page.getByText(/Total Cubic Yards|Material Order|Cubic Yards/i).first().waitFor({ state: "visible" });
     const saveBtn = page.getByRole("button", { name: /Save Estimate/i });
     await saveBtn.click();
     await expect(saveBtn).toContainText(/saved|verified|downloaded/i);

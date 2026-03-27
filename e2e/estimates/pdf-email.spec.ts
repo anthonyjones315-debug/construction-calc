@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Page } from "../lib/test-fixtures";
 
 // Use an authenticated session so the "Email Estimate" button renders if it requires auth
 // (Though we can also mock session or test against public if it's available)

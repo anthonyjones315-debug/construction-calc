@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./lib/test-fixtures";
 import { expectGuestAuthPrompt } from "./lib/app";
 
 test.describe("Security", () => {
@@ -6,8 +6,13 @@ test.describe("Security", () => {
     const context = await browser.newContext();
     const page = await context.newPage();
     await page.goto("/saved");
-    await expect(page).toHaveURL(/\/saved/);
-    await expectGuestAuthPrompt(page);
+    // Clerk either redirects to /sign-in or shows auth prompt — both are valid
+    const url = page.url();
+    if (/\/sign-in/.test(url)) {
+      expect(url).toMatch(/\/sign-in/);
+    } else {
+      await expectGuestAuthPrompt(page);
+    }
     await context.close();
   });
 
@@ -15,8 +20,12 @@ test.describe("Security", () => {
     const context = await browser.newContext();
     const page = await context.newPage();
     await page.goto("/settings");
-    await expect(page).toHaveURL(/\/settings/);
-    await expectGuestAuthPrompt(page);
+    const url = page.url();
+    if (/\/sign-in/.test(url)) {
+      expect(url).toMatch(/\/sign-in/);
+    } else {
+      await expectGuestAuthPrompt(page);
+    }
     await context.close();
   });
 
@@ -35,8 +44,12 @@ test.describe("Security", () => {
     const context = await browser.newContext();
     const page = await context.newPage();
     await page.goto("/pricebook");
-    await expect(page).toHaveURL(/\/pricebook/);
-    await expectGuestAuthPrompt(page);
+    const url = page.url();
+    if (/\/sign-in/.test(url)) {
+      expect(url).toMatch(/\/sign-in/);
+    } else {
+      await expectGuestAuthPrompt(page);
+    }
     await context.close();
   });
 

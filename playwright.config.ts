@@ -94,9 +94,13 @@ export default defineConfig({
       : []),
     // Unauthenticated — public routes only
     {
-      name: "no-auth",
-      use: { ...devices["Desktop Chrome"] },
-      testMatch: /.*\.noauth\.spec\.ts/,
+      name: "Logged Out",
+      use: { 
+        ...devices["Desktop Chrome"],
+        storageState: undefined,
+      },
+      testMatch: [/.*\.noauth\.spec\.ts/, /auth\.spec\.ts/, /clerk-testing\.spec\.ts/],
+      dependencies: ["setup"],
     },
     // Video capture — cinematic onboarding recording (CI only)
     ...(isCI

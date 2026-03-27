@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./lib/test-fixtures";
 import { expectNoAppCrash, gotoReady } from "./lib/app";
 import { protectedSmokeRoutes } from "./lib/routes";
 

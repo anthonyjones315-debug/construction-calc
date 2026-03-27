@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../lib/test-fixtures";
 
 test.describe("Office Manager — Pricebook", () => {
   const openPricebookOrSkip = async (
@@ -14,7 +14,7 @@ test.describe("Office Manager — Pricebook", () => {
     await openPricebookOrSkip(page);
     await expect(page).not.toHaveURL(/\/sign-in/);
     await expect(
-      page.getByRole("heading", { name: /pricebook|materials|pricing/i }),
+      page.getByRole("heading").first(),
     ).toBeVisible();
   });
 

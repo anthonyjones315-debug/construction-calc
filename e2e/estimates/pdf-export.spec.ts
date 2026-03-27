@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../lib/test-fixtures";
 import fs from "fs";
 import path from "path";
 import pdfParse from "pdf-parse";
@@ -7,7 +7,7 @@ test.describe("PDF Export", () => {
 
   test("PDF download from Finalize modal initiates without error", async ({ page }) => {
     await page.goto("/calculators/concrete/slab");
-    await page.getByText(/Total Yards/i).waitFor({ state: "visible" });
+    await page.getByText(/Total Cubic Yards|Material Order|Cubic Yards/i).first().waitFor({ state: "visible" });
 
     // Open finalize modal
     const finalizeBtn = page.getByRole("button", { name: /Finalize/i }).first();
@@ -25,7 +25,7 @@ test.describe("PDF Export", () => {
 
   test("PDF button shows loading state while generating", async ({ page }) => {
     await page.goto("/calculators/concrete/slab");
-    await page.getByText(/Total Yards/i).waitFor({ state: "visible" });
+    await page.getByText(/Total Cubic Yards|Material Order|Cubic Yards/i).first().waitFor({ state: "visible" });
 
     const finalizeBtn = page.getByRole("button", { name: /Finalize/i }).first();
     await finalizeBtn.click();
@@ -42,7 +42,7 @@ test.describe("PDF Export", () => {
 
   test("PDF generation doesn't lock the page indefinitely", async ({ page }) => {
     await page.goto("/calculators/concrete/slab");
-    await page.getByText(/Total Yards/i).waitFor({ state: "visible" });
+    await page.getByText(/Total Cubic Yards|Material Order|Cubic Yards/i).first().waitFor({ state: "visible" });
 
     const finalizeBtn = page.getByRole("button", { name: /Finalize/i }).first();
     await finalizeBtn.click();
@@ -57,7 +57,7 @@ test.describe("PDF Export", () => {
 
   test("PDF filename is meaningful, not generic", async ({ page }) => {
     await page.goto("/calculators/concrete/slab");
-    await page.getByText(/Total Yards/i).waitFor({ state: "visible" });
+    await page.getByText(/Total Cubic Yards|Material Order|Cubic Yards/i).first().waitFor({ state: "visible" });
 
     const finalizeBtn = page.getByRole("button", { name: /Finalize/i }).first();
     await finalizeBtn.click();

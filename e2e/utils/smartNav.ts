@@ -110,6 +110,12 @@ async function blockThirdPartyOverlays(page: Page) {
       .crisp-client { display: none !important; }
       /* Sentry */
       #sentry-feedback { display: none !important; }
+      /* Termly cookie consent */
+      [id*="termly"],
+      [class*="termly"],
+      [data-termly],
+      #termly-consent-banner,
+      div[role="alertdialog"][aria-label*="Cookie"] { display: none !important; }
     `,
     })
     .catch(() => {});

@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Page } from "../lib/test-fixtures";
 import { primaryResultValue } from "../lib/app";
 
 test.describe("Framing Calculators", () => {

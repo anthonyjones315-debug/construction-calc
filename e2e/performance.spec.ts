@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./lib/test-fixtures";
 
 test.describe("Performance — Core Web Vitals", () => {
   test.describe.configure({ mode: "serial" });
@@ -35,7 +35,7 @@ test.describe("Performance — Core Web Vitals", () => {
     });
     // Calculators auto-calculate with default values — result should already be visible
     await page
-      .getByText(/Order\s+[\d.]+\s+Total Yards/i)
+      .getByText(/Total Cubic Yards|Material Order|Cubic Yards/i)
       .first()
       .waitFor({ state: "visible" });
     const elapsed = Date.now() - start;
@@ -54,7 +54,7 @@ test.describe("Performance — Core Web Vitals", () => {
     const before = (await resultLocator.textContent()) ?? "";
 
     // Change an input and measure how fast the result updates
-    const lengthInput = page.getByLabel(/Run Length/i);
+    const lengthInput = page.getByLabel(/Run Length|Linear Feet/i);
     const start = Date.now();
     await lengthInput.fill("40");
     await expect
@@ -73,14 +73,14 @@ test.describe("Performance — Core Web Vitals", () => {
 
     await page.goto("/calculators/concrete/slab");
     await page
-      .getByText(/Order\s+[\d.]+\s+Total Yards/i)
+      .getByText(/Total Cubic Yards|Material Order|Cubic Yards/i)
       .first()
       .waitFor({ state: "visible" });
 
     // Change inputs to trigger recalculation
-    await page.getByLabel(/Run Length/i).fill("20");
+    await page.getByLabel(/Run Length|Linear Feet/i).fill("20");
     await page.getByLabel(/Slab Width/i).fill("24");
-    await page.getByLabel(/Slab Thickness/i).fill("4");
+    await page.getByLabel(/Slab Thickness|Slab Depth/i).fill("4");
 
     // Filter out known third-party noise
     const appErrors = errors.filter(
