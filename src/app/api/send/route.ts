@@ -11,6 +11,7 @@ import {
 } from "@/lib/supabase/business";
 import { multiplyDollars, normalizeDollars } from "@/utils/money";
 import { checkMemoryRateLimit } from "@/lib/rate-limit/memory";
+import { escapeHtml } from "@/utils/html";
 
 const FROM_EMAIL = "Pro Construction Calc <owner@proconstructioncalc.com>";
 
@@ -115,14 +116,6 @@ function buildEstimateEmailHtml(estimate: z.infer<typeof estimatePayloadSchema>)
   <p style="margin-top:22px;font-size:12px;color:#94a3b8;line-height:1.5">Sent from Pro Construction Calc. Verify quantities and prices before ordering or starting work.</p>
   </div>
 </body></html>`;
-}
-
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
 }
 
 export async function POST(req: NextRequest) {
