@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import { Check, Copy } from "lucide-react";
 
 function cx(...parts: Array<string | false | null | undefined>) {
   return parts.filter(Boolean).join(" ");
@@ -334,6 +335,20 @@ export function ProResult({
   finalizeIcon,
   containerClassName = "glass-container-elevated",
 }: ProResultProps) {
+  const [isCopied, setIsCopied] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!isCopied) return;
+    const timeout = setTimeout(() => setIsCopied(false), 2000);
+    return () => clearTimeout(timeout);
+  }, [isCopied]);
+
+  const handleCopy = () => {
+    if (!onCopyOrder) return;
+    onCopyOrder();
+    setIsCopied(true);
+  };
+
   return (
     <section
       className={`${containerClassName} relative flex min-h-[180px] flex-col gap-2 p-3`}
@@ -403,10 +418,25 @@ export function ProResult({
             {onCopyOrder ? (
               <GlassButton
                 type="button"
-                onClick={onCopyOrder}
-                className="min-h-7 rounded-lg border-[--color-border] px-2 py-1 text-xs font-bold uppercase tracking-widest text-copy-secondary hover:border-primary/40"
+                onClick={handleCopy}
+                className={cx(
+                  "inline-flex items-center gap-1.5 min-h-7 rounded-lg border-[--color-border] px-2 py-1 text-xs font-bold uppercase tracking-widest transition-all duration-200",
+                  isCopied
+                    ? "border-emerald-500/50 bg-emerald-50 text-emerald-600"
+                    : "text-copy-secondary hover:border-primary/40",
+                )}
               >
-                Copy
+                {isCopied ? (
+                  <>
+                    <Check className="h-3 w-3" aria-hidden="true" />
+                    <span>Copied</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-3 w-3" aria-hidden="true" />
+                    <span>Copy</span>
+                  </>
+                )}
               </GlassButton>
             ) : null}
           </div>
