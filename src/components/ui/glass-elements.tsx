@@ -31,6 +31,20 @@ function getAnimatedNumberMeta(value: string) {
   };
 }
 
+const NUMBER_FORMATTER_CACHE = new Map<number, Intl.NumberFormat>();
+
+function getCachedNumberFormatter(decimals: number) {
+  let formatter = NUMBER_FORMATTER_CACHE.get(decimals);
+  if (!formatter) {
+    formatter = new Intl.NumberFormat("en-US", {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    });
+    NUMBER_FORMATTER_CACHE.set(decimals, formatter);
+  }
+  return formatter;
+}
+
 function useAnimatedDisplayValue(value: string, duration = 320) {
   const [displayValue, setDisplayValue] = React.useState(value);
   const previousValueRef = React.useRef(value);
@@ -62,10 +76,8 @@ function useAnimatedDisplayValue(value: string, duration = 320) {
       const progress = Math.min((now - start) / duration, 1);
       const eased = easeOutCubic(progress);
       const current = from + (to - from) * eased;
-      const formatted = current.toLocaleString("en-US", {
-        minimumFractionDigits: decimals,
-        maximumFractionDigits: decimals,
-      });
+      const formatter = getCachedNumberFormatter(decimals);
+      const formatted = formatter.format(current);
 
       setDisplayValue(`${formatted}${nextMeta.suffix}`);
 
