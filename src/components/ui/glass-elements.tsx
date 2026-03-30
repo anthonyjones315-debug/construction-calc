@@ -271,6 +271,7 @@ export function ProInput({
           type={type}
           value={value}
           onChange={(event) => onChange(event.target.value)}
+          onFocus={(e) => e.target.select()}
           min={min}
           max={max}
           step={step}
