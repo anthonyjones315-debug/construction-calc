@@ -8,22 +8,32 @@ export async function POST(req: NextRequest) {
     try {
       const rawBody = await req.text();
       const secret = process.env.WEBHOOK_SECRET || process.env.DOCUMENSO_WEBHOOK_SECRET;
-      
-      if (secret) {
-        // Support common webhook signature header names
-        const signature = req.headers.get("x-documenso-signature") || req.headers.get("webhook-signature");
-        if (!signature) {
-             return NextResponse.json({ error: "Missing signature header" }, { status: 401 });
-        }
-        
-        const expectedSignature = crypto
-          .createHmac("sha256", secret)
-          .update(rawBody)
-          .digest("hex");
-          
-        if (signature !== expectedSignature) {
-           return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
-        }
+
+      if (!secret) {
+        Sentry.captureMessage("Documenso webhook secret missing. Webhook processing aborted.");
+        return NextResponse.json({ error: "Webhook secret not configured" }, { status: 401 });
+      }
+
+      // Support common webhook signature header names
+      const signature = req.headers.get("x-documenso-signature") || req.headers.get("webhook-signature");
+      if (!signature) {
+        return NextResponse.json({ error: "Missing signature header" }, { status: 401 });
+      }
+
+      const expectedSignature = crypto
+        .createHmac("sha256", secret)
+        .update(rawBody)
+        .digest("hex");
+
+      // Use timingSafeEqual to prevent timing attacks
+      const signatureBuffer = Buffer.from(signature);
+      const expectedSignatureBuffer = Buffer.from(expectedSignature);
+
+      if (
+        signatureBuffer.length !== expectedSignatureBuffer.length ||
+        !crypto.timingSafeEqual(signatureBuffer, expectedSignatureBuffer)
+      ) {
+        return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
       }
 
       const payload = JSON.parse(rawBody);
