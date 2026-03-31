@@ -11,6 +11,20 @@ function easeOutCubic(progress: number) {
   return 1 - (1 - progress) ** 3;
 }
 
+const formatterCache = new Map<number, Intl.NumberFormat>();
+
+function getFormatter(decimals: number) {
+  let f = formatterCache.get(decimals);
+  if (!f) {
+    f = new Intl.NumberFormat("en-US", {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    });
+    formatterCache.set(decimals, f);
+  }
+  return f;
+}
+
 function getAnimatedNumberMeta(value: string) {
   const trimmed = value.trim();
   const match = trimmed.match(/^(-?[\d,.]+)(.*)$/);
@@ -62,10 +76,7 @@ function useAnimatedDisplayValue(value: string, duration = 320) {
       const progress = Math.min((now - start) / duration, 1);
       const eased = easeOutCubic(progress);
       const current = from + (to - from) * eased;
-      const formatted = current.toLocaleString("en-US", {
-        minimumFractionDigits: decimals,
-        maximumFractionDigits: decimals,
-      });
+      const formatted = getFormatter(decimals).format(current);
 
       setDisplayValue(`${formatted}${nextMeta.suffix}`);
 

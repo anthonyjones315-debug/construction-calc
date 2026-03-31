@@ -25,13 +25,15 @@ function safeNumber(value: string | number): string {
   return value;
 }
 
+const currencyFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
 function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(Math.round(value * 100) / 100);
+  return currencyFormatter.format(Math.round(value * 100) / 100);
 }
 
 export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
@@ -122,8 +124,6 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
   const signature = payload.signature as
     | { signatureDataUrl?: string; signedAt?: string; signerName?: string }
     | undefined;
-
-
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -294,8 +294,6 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
             : ""
         }
 
-
-
         <!-- Footer -->
         <footer class="pt-4 text-center text-[8pt] text-slate-500">
           <p>Powered by Pro Construction Calc</p>
@@ -306,7 +304,6 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
           </p>
         </footer>
       <span style="display:none;color:#ea580c;"></span>
-      </main>
     </div>
     <script>document.fonts.ready.then(() => { window.__fontsReady = true; });</script>
   </body>
