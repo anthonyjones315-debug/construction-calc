@@ -85,7 +85,9 @@ export function PlaceAutocomplete({
   const [ready, setReady] = useState(false);
   const [fallbackValue, setFallbackValue] = useState(defaultValue);
   const onPlaceSelectRef = useRef(onPlaceSelect);
-  onPlaceSelectRef.current = onPlaceSelect;
+  useEffect(() => {
+    onPlaceSelectRef.current = onPlaceSelect;
+  }, [onPlaceSelect]);
 
   const initElement = useCallback(async () => {
     if (!apiKey || !containerRef.current) return;
