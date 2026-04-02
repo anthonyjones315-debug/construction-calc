@@ -1,6 +1,7 @@
 import "server-only";
 
 import { Resend } from "resend";
+import { escapeHtml } from "@/utils/html";
 
 const FROM_EMAIL = "Pro Construction Calc <owner@proconstructioncalc.com>";
 
@@ -8,14 +9,6 @@ function getResend() {
   const key = process.env.RESEND_API_KEY;
   if (!key) return null;
   return new Resend(key);
-}
-
-function escapeHtml(value: string) {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
 }
 
 export async function sendEstimateSignatureEmail(input: {
@@ -54,12 +47,12 @@ export async function sendEstimateSignatureEmail(input: {
             <span style="color:#71717A;font-size:13px;text-transform:uppercase;letter-spacing:0.05em;font-weight:600;">Estimate</span><br />
             <strong style="color:#09090B;font-size:16px;display:inline-block;margin-top:4px;">${escapeHtml(input.estimateName)}</strong>
           </div>
-          <a href="${input.signUrl}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;font-weight:600;font-size:14px;padding:14px 28px;border-radius:8px;box-shadow:0 4px 12px rgba(37,99,235,0.15);">
+          <a href="${escapeHtml(input.signUrl)}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;font-weight:600;font-size:14px;padding:14px 28px;border-radius:8px;box-shadow:0 4px 12px rgba(37,99,235,0.15);">
             Review and sign
           </a>
           <p style="margin:24px 0 0;font-size:13px;color:#71717A;line-height:1.65;">
             If the button doesn’t work, open this link in your browser:<br />
-            <a href="${input.signUrl}" style="color:#2563eb;font-weight:500;text-decoration:none;word-break:break-all;">${input.signUrl}</a>
+            <a href="${escapeHtml(input.signUrl)}" style="color:#2563eb;font-weight:500;text-decoration:none;word-break:break-all;">${escapeHtml(input.signUrl)}</a>
           </p>
           ${
             input.contractorName
