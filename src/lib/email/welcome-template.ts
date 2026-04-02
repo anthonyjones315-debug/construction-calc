@@ -1,4 +1,5 @@
 import { designTokens } from "@/lib/design-tokens";
+import { escapeHtml } from "@/utils/html";
 
 export type WelcomeEmailTemplateInput = {
   fullName: string;
@@ -7,15 +8,6 @@ export type WelcomeEmailTemplateInput = {
   calculatorsUrl: string;
   guideUrl: string;
 };
-
-function escapeHtml(value: string) {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
 
 function getDisplayName(fullName: string) {
   const trimmed = fullName.trim();
@@ -68,7 +60,7 @@ export function buildWelcomeEmailHtml(input: WelcomeEmailTemplateInput) {
               Built for crews, estimators, and owners who need fast field numbers and cleaner follow-through.
             </p>
 
-            <a href="${input.commandCenterUrl}" style="display:inline-block;padding:13px 22px;border-radius:12px;background:${brand.orange};color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;letter-spacing:-0.01em;">
+            <a href="${escapeHtml(input.commandCenterUrl)}" style="display:inline-block;padding:13px 22px;border-radius:12px;background:${brand.orange};color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;letter-spacing:-0.01em;">
               Open Command Center
             </a>
 
@@ -97,11 +89,11 @@ export function buildWelcomeEmailHtml(input: WelcomeEmailTemplateInput) {
                 Quick links
               </p>
               <p style="margin:0;font-size:14px;line-height:1.75;color:${ui.textMuted};">
-                <a href="${input.signInUrl}" style="color:${brand.orangeDark};font-weight:600;text-decoration:none;">Sign in</a>
+                <a href="${escapeHtml(input.signInUrl)}" style="color:${brand.orangeDark};font-weight:600;text-decoration:none;">Sign in</a>
                 <span style="color:#cbd5e1;margin:0 8px;">·</span>
-                <a href="${input.calculatorsUrl}" style="color:${brand.orangeDark};font-weight:600;text-decoration:none;">Calculators</a>
+                <a href="${escapeHtml(input.calculatorsUrl)}" style="color:${brand.orangeDark};font-weight:600;text-decoration:none;">Calculators</a>
                 <span style="color:#cbd5e1;margin:0 8px;">·</span>
-                <a href="${input.guideUrl}" style="color:${brand.orangeDark};font-weight:600;text-decoration:none;">User guide</a>
+                <a href="${escapeHtml(input.guideUrl)}" style="color:${brand.orangeDark};font-weight:600;text-decoration:none;">User guide</a>
               </p>
             </div>
 
