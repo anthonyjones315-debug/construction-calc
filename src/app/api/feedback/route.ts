@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import { Resend } from "resend";
+import { escapeHtmlWithBr } from "@/utils/html";
 import { z } from "zod";
 import { getClientIp } from "@/lib/http/client-ip";
 import { checkMemoryRateLimit } from "@/lib/rate-limit/memory";
@@ -32,14 +33,6 @@ function getResend() {
   return new Resend(key);
 }
 
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/\n/g, "<br>");
-}
 
 function normalizeString(value?: string): string | undefined {
   const normalized = value?.trim();
@@ -114,25 +107,33 @@ export async function POST(req: NextRequest) {
     const isErrorReport = reportType === "error";
 
     const contextRows = [
-      sourceValue ? `<p><strong>Source:</strong> ${escapeHtml(sourceValue)}</p>` : "",
-      pageUrlValue ? `<p><strong>Page:</strong> ${escapeHtml(pageUrlValue)}</p>` : "",
+      sourceValue
+        ? `<p><strong>Source:</strong> ${escapeHtmlWithBr(sourceValue)}</p>`
+        : "",
+      pageUrlValue
+        ? `<p><strong>Page:</strong> ${escapeHtmlWithBr(pageUrlValue)}</p>`
+        : "",
       browserTimeValue
-        ? `<p><strong>Browser Time:</strong> ${escapeHtml(browserTimeValue)}</p>`
+        ? `<p><strong>Browser Time:</strong> ${escapeHtmlWithBr(browserTimeValue)}</p>`
         : "",
       eventIdValue
-        ? `<p><strong>Sentry Event ID:</strong> ${escapeHtml(eventIdValue)}</p>`
+        ? `<p><strong>Sentry Event ID:</strong> ${escapeHtmlWithBr(eventIdValue)}</p>`
         : "",
-      digestValue ? `<p><strong>Error Digest:</strong> ${escapeHtml(digestValue)}</p>` : "",
+      digestValue
+        ? `<p><strong>Error Digest:</strong> ${escapeHtmlWithBr(digestValue)}</p>`
+        : "",
       userFacingTitleValue
-        ? `<p><strong>User-Facing Title:</strong> ${escapeHtml(userFacingTitleValue)}</p>`
+        ? `<p><strong>User-Facing Title:</strong> ${escapeHtmlWithBr(userFacingTitleValue)}</p>`
         : "",
       userFacingMessageValue
-        ? `<p><strong>User-Facing Summary:</strong> ${escapeHtml(userFacingMessageValue)}</p>`
+        ? `<p><strong>User-Facing Summary:</strong> ${escapeHtmlWithBr(userFacingMessageValue)}</p>`
         : "",
       technicalMessageValue
-        ? `<p><strong>Technical Error:</strong> ${escapeHtml(technicalMessageValue)}</p>`
+        ? `<p><strong>Technical Error:</strong> ${escapeHtmlWithBr(technicalMessageValue)}</p>`
         : "",
-      userAgentValue ? `<p><strong>User Agent:</strong> ${escapeHtml(userAgentValue)}</p>` : "",
+      userAgentValue
+        ? `<p><strong>User Agent:</strong> ${escapeHtmlWithBr(userAgentValue)}</p>`
+        : "",
     ]
       .filter(Boolean)
       .join("");
@@ -141,11 +142,11 @@ export async function POST(req: NextRequest) {
   <div style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #e2e0db;border-radius:16px;padding:24px 26px;box-shadow:0 4px 24px rgba(15,23,42,0.06)">
   <p style="margin:0 0 12px;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#2563eb">Pro Construction Calc · Inbox</p>
   <p><strong>Report type:</strong> ${isErrorReport ? "Manual error report" : "General feedback"}</p>
-  <p><strong>From:</strong> ${escapeHtml(email)}${name ? ` (${escapeHtml(name)})` : ""}</p>
-  <p><strong>Subject:</strong> ${escapeHtml(subjectLine)}</p>
+  <p><strong>From:</strong> ${escapeHtmlWithBr(email)}${name ? ` (${escapeHtmlWithBr(name)})` : ""}</p>
+  <p><strong>Subject:</strong> ${escapeHtmlWithBr(subjectLine)}</p>
   ${contextRows}
   <hr style="border:none;border-top:1px solid #e2e0db;margin:18px 0">
-  <div style="font-size:14px;line-height:1.6">${escapeHtml(message)}</div>
+  <div style="font-size:14px;line-height:1.6">${escapeHtmlWithBr(message)}</div>
   <p style="margin-top:22px;font-size:12px;color:#94a3b8;line-height:1.5">Sent via the site contact / feedback form.</p>
   </div>
 </body></html>`;

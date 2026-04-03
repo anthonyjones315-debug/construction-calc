@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import { Resend } from "resend";
+import { escapeHtml } from "@/utils/html";
 import { z } from "zod";
 import { auth } from "@/lib/auth/config";
 import { createServerClient } from "@/lib/supabase/server";
@@ -117,13 +118,6 @@ function buildEstimateEmailHtml(estimate: z.infer<typeof estimatePayloadSchema>)
 </body></html>`;
 }
 
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
 
 export async function POST(req: NextRequest) {
   try {
