@@ -39,6 +39,7 @@ import { CommandCenterCalculator } from "./CommandCenterCalculator";
 import { getTradePageByPath, tradePages } from "@/app/calculators/_lib/trade-pages";
 import { useProMode } from "@/hooks/useProMode";
 import { useStore } from "@/lib/store";
+import { getDateTimeFormatter } from "@/utils/formatters";
 import { KanbanBoard, type KanbanProject } from "@/components/dashboard/KanbanBoard";
 import { DispatchCalendar, type CalendarEvent } from "@/components/dashboard/DispatchCalendar";
 import { Calendar as CalendarIcon, Columns3 } from "lucide-react";
@@ -673,7 +674,8 @@ export default function CommandCenterClient({
     recentEstimates.length - signedEstimateCount - sentEstimateCount,
     0,
   );
-  const todayLabel = new Intl.DateTimeFormat("en-US", {
+  // Optimized: Using cached Intl.DateTimeFormat for static render labels
+  const todayLabel = getDateTimeFormatter("en-US", {
     weekday: "long",
     month: "short",
     day: "numeric",
