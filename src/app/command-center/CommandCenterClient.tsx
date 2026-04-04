@@ -39,6 +39,7 @@ import { CommandCenterCalculator } from "./CommandCenterCalculator";
 import { getTradePageByPath, tradePages } from "@/app/calculators/_lib/trade-pages";
 import { useProMode } from "@/hooks/useProMode";
 import { useStore } from "@/lib/store";
+import { getNumberFormatter, getDateTimeFormatter } from "@/utils/formatters";
 import { KanbanBoard, type KanbanProject } from "@/components/dashboard/KanbanBoard";
 import { DispatchCalendar, type CalendarEvent } from "@/components/dashboard/DispatchCalendar";
 import { Calendar as CalendarIcon, Columns3 } from "lucide-react";
@@ -328,11 +329,11 @@ function roleBadgeClasses(role: string): string {
 }
 
 function formatJoinedAt(value: string) {
-  return new Date(value).toLocaleDateString("en-US", {
+  return getDateTimeFormatter("en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
-  });
+  }).format(new Date(value));
 }
 
 function initialsForName(name: string): string {
@@ -392,7 +393,7 @@ function categorizeTool(item: NavItem): ToolCategory {
 
 function formatCartValue(value: string | number | undefined) {
   if (typeof value === "number") {
-    return value.toLocaleString("en-US");
+    return getNumberFormatter("en-US").format(value);
   }
 
   return value ?? "Ready";
@@ -673,16 +674,16 @@ export default function CommandCenterClient({
     recentEstimates.length - signedEstimateCount - sentEstimateCount,
     0,
   );
-  const todayLabel = new Intl.DateTimeFormat("en-US", {
+  const todayLabel = getDateTimeFormatter("en-US", {
     weekday: "long",
     month: "short",
     day: "numeric",
   }).format(new Date());
   const lastEstimateLabel = recentEstimates[0]
-    ? new Date(recentEstimates[0].updatedAt).toLocaleDateString("en-US", {
+    ? getDateTimeFormatter("en-US", {
         month: "short",
         day: "numeric",
-      })
+      }).format(new Date(recentEstimates[0].updatedAt))
     : "No estimate activity yet";
   const recentEstimatePreview = recentEstimates.slice(0, 4);
   const memberPreview = members.slice(0, 6);
@@ -696,10 +697,10 @@ export default function CommandCenterClient({
         status: estimateStatusToKanbanColumn(est.status),
         customerName: est.clientName,
         pipelineValue: null,
-        startDate: new Date(est.updatedAt).toLocaleDateString("en-US", {
+        startDate: getDateTimeFormatter("en-US", {
           month: "short",
           day: "numeric",
-        }),
+        }).format(new Date(est.updatedAt)),
       })),
     [recentEstimates],
   );
@@ -1402,10 +1403,10 @@ export default function CommandCenterClient({
                   <div className="mt-4 flex items-center justify-between">
                     <p className="text-xs text-[--color-ink-dim]">
                       Updated{" "}
-                      {new Date(estimate.updatedAt).toLocaleDateString("en-US", {
+                      {getDateTimeFormatter("en-US", {
                         month: "short",
                         day: "numeric",
-                      })}
+                      }).format(new Date(estimate.updatedAt))}
                     </p>
                     <div className="flex items-center gap-2">
                        <button

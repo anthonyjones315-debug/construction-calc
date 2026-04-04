@@ -11,6 +11,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { routes } from "@routes";
+import { getNumberFormatter, getDateTimeFormatter } from "@/utils/formatters";
 
 interface EstimateDetailProps {
   canDelete?: boolean;
@@ -59,7 +60,7 @@ function statusClass(status: string | null) {
 }
 
 function formatDollars(n: number) {
-  return new Intl.NumberFormat("en-US", {
+  return getNumberFormatter("en-US", {
     style: "currency",
     currency: "USD",
   }).format(n);
@@ -200,11 +201,11 @@ export function EstimateDetailClient({
             )}
             <p className="mt-1 text-xs text-slate-400">
               Created{" "}
-              {new Date(estimate.createdAt).toLocaleDateString("en-US", {
+              {getDateTimeFormatter("en-US", {
                 year: "numeric",
                 month: "short",
                 day: "numeric",
-              })}
+              }).format(new Date(estimate.createdAt))}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -378,8 +379,8 @@ export function EstimateDetailClient({
                 {estimate.contractorSignedAt && (
                   <p className="text-[10px] text-slate-500">
                     Signed{" "}
-                    {new Date(estimate.contractorSignedAt).toLocaleString(
-                      "en-US",
+                    {getDateTimeFormatter("en-US").format(
+                      new Date(estimate.contractorSignedAt),
                     )}
                   </p>
                 )}
@@ -412,7 +413,9 @@ export function EstimateDetailClient({
                   <p className="flex items-center gap-1 text-[10px] text-emerald-700">
                     <CheckCircle2 className="h-3 w-3" />
                     Signed{" "}
-                    {new Date(estimate.clientSignedAt).toLocaleString("en-US")}
+                    {getDateTimeFormatter("en-US").format(
+                      new Date(estimate.clientSignedAt),
+                    )}
                   </p>
                 )}
               </div>
