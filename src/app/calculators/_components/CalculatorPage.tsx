@@ -910,6 +910,13 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   const [saveState, setSaveState] = useState<
     "idle" | "saving" | "saved" | "corrected" | "downloaded"
   >("idle");
+  const [signUrlCopied, setSignUrlCopied] = useState(false);
+
+  useEffect(() => {
+    if (!signUrlCopied) return;
+    const timer = setTimeout(() => setSignUrlCopied(false), 2000);
+    return () => clearTimeout(timer);
+  }, [signUrlCopied]);
   const [areaInputMode, setAreaInputMode] =
     useState<AreaInputMode>("dimensions");
   const [volumeInputMode, setVolumeInputMode] =
@@ -3268,6 +3275,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     try {
       triggerHaptic([10]);
       await navigator.clipboard.writeText(createdSignUrl);
+      setSignUrlCopied(true);
       setFinalizeSuccess("Sign link copied.");
     } catch (error) {
       setFinalizeError(
@@ -5220,9 +5228,17 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                     <button
                       type="button"
                       onClick={handleCopySignUrl}
+                      aria-label={signUrlCopied ? "Signature link copied" : "Copy signature link"}
                       className="glass-button inline-flex min-h-10 flex-1 items-center justify-center rounded-xl border border-blue-base/40 px-3 text-sm font-semibold text-[--color-blue-brand]"
                     >
-                      Copy Link
+                      {signUrlCopied ? (
+                        <span className="flex items-center gap-2">
+                          <Check className="h-4 w-4" />
+                          COPIED
+                        </span>
+                      ) : (
+                        "Copy Link"
+                      )}
                     </button>
                     <a
                       href={createdSignUrl}
