@@ -37,10 +37,11 @@ import {
   normalizeDollars,
   sumDollars,
 } from "@/utils/money";
+import { getNumberFormatter, getDateTimeFormatter } from "@/utils/formatters";
 
 const LIVE_REFRESH_MS = 15000;
 
-const USD_CURRENCY = new Intl.NumberFormat("en-US", {
+const USD_CURRENCY = getNumberFormatter("en-US", {
   style: "currency",
   currency: "USD",
   minimumFractionDigits: 2,
@@ -1783,11 +1784,11 @@ export function SavedContent({
                 <span className="font-semibold text-[--color-ink]">
                   Created:
                 </span>{" "}
-                {new Date(deleteTarget.created_at).toLocaleDateString("en-US", {
+                {getDateTimeFormatter("en-US", {
                   month: "short",
                   day: "numeric",
                   year: "numeric",
-                })}
+                }).format(new Date(deleteTarget.created_at))}
               </p>
             </div>
 
@@ -1846,11 +1847,11 @@ export function SavedContent({
                     </p>
                     <div className="flex items-center gap-3 mt-1 flex-wrap">
                       <span className="text-xs text-[--color-ink-dim]">
-                        {new Date(est.created_at).toLocaleDateString("en-US", {
+                        {getDateTimeFormatter("en-US", {
                           month: "short",
                           day: "numeric",
                           year: "numeric",
-                        })}
+                        }).format(new Date(est.created_at))}
                       </span>
                       {hero && (
                         <span className="inline-flex items-center rounded-full border border-[--color-blue-brand]/35 bg-[--color-blue-brand]/10 px-2 py-0.5 text-xs font-bold text-[--color-blue-brand]">
