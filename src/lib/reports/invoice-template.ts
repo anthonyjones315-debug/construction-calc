@@ -5,6 +5,7 @@
  */
 
 import type { EstimatePayload, EstimateResult } from "@/lib/estimates/types";
+import { getNumberFormatter } from "@/utils/formatters";
 
 type InvoiceTemplateInput = {
   payload: EstimatePayload;
@@ -26,7 +27,7 @@ function safeNumber(value: string | number): string {
 }
 
 function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("en-US", {
+  return getNumberFormatter("en-US", {
     style: "currency",
     currency: "USD",
     minimumFractionDigits: 2,
@@ -293,8 +294,6 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
              </section>`
             : ""
         }
-
-
 
         <!-- Footer -->
         <footer class="pt-4 text-center text-[8pt] text-slate-500">

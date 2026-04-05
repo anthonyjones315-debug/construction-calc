@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { CheckCircle2, Mail, PencilLine, Phone } from "lucide-react";
 import { useMemo } from "react";
+import { getNumberFormatter, getDateTimeFormatter } from "@/utils/formatters";
 
 type PublicEstimate = {
   id: string;
@@ -51,7 +52,7 @@ function formatValue(value: string | number, unit?: string) {
 }
 
 function formatCurrency(value: number) {
-  return new Intl.NumberFormat("en-US", {
+  return getNumberFormatter("en-US", {
     style: "currency",
     currency: "USD",
   }).format(Math.round(value * 100) / 100);
@@ -254,7 +255,7 @@ export function SignEstimateClient({ estimate }: Props) {
               </p>
               <p className="mt-1 text-xs text-emerald-500">
                 {signedAt
-                  ? new Date(signedAt).toLocaleString("en-US")
+                  ? getDateTimeFormatter("en-US").format(new Date(signedAt))
                   : "Signature recorded"}
               </p>
             </div>

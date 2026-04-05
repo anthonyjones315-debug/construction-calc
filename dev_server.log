@@ -1,0 +1,164 @@
+
+> proconstructioncalc@1.0.0 dev /app
+> next dev --turbopack
+
+▲ Next.js 16.2.2 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+✓ Ready in 561ms
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+- Cache Components enabled
+- Experiments (use with caution):
+  · clientTraceMetadata
+  · optimizePackageImports
+
+○ Compiling /calculators/framing/wall ...
+
+[35m
+[Clerk]:[0m You are running in keyless mode.
+You can [35mclaim your keys[0m by visiting https://dashboard.clerk.com/apps/claim?framework=nextjs&token=dco78hyfkuz68stj33029gdotk32cpq9rktop9he&return_url=http%3A%2F%2Flocalhost%3A3000%2F
+
+Error: Route "/calculators/framing/wall": Uncached data or `connection()` was accessed outside of `<Suspense>`. This delays the entire page from rendering, resulting in a slow user experience. Learn more: https://nextjs.org/docs/messages/blocking-route
+    at RootLayout (src/app/layout.tsx:139:5)
+  137 |
+  138 |   return (
+> 139 |     <ClerkProvider
+      |     ^
+  140 |       appearance={{
+  141 |         variables: {
+  142 |           colorPrimary: "#2563eb",
+ GET /calculators/framing/wall 200 in 22.2s (next.js: 16.8s, proxy.ts: 324ms, application-code: 5.1s)
+[browser] Error: Route "/calculators/framing/wall": Uncached data or `connection()` was accessed outside of `<Suspense>`. This delays the entire page from rendering, resulting in a slow user experience. Learn more: https://nextjs.org/docs/messages/blocking-route
+    at requestFn (node_modules/.pnpm/@clerk+backend@3.2.4_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/@clerk/backend/src/api/request.ts:180:29)
+    at AccountlessApplicationAPI.request (node_modules/.pnpm/@clerk+backend@3.2.4_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/@clerk/backend/src/api/request.ts:273:94)
+    at AccountlessApplicationAPI.createAccountlessApplication (node_modules/.pnpm/@clerk+backend@3.2.4_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/@clerk/backend/src/api/endpoints/AccountlessApplicationsAPI.ts:10:17)
+    at Object.createAccountlessApplication (node_modules/.pnpm/@clerk+nextjs@7.0.8_next@16.2.2_@babel+core@7.29.0_@opentelemetry+api@1.9.1_@playwright_60e2d28bcd6216bc9d3e632a2ddc486e/node_modules/@clerk/nextjs/src/server/keyless-node.ts:29:72)
+    at <anonymous> (node_modules/.pnpm/@clerk+nextjs@7.0.8_next@16.2.2_@babel+core@7.29.0_@opentelemetry+api@1.9.1_@playwright_60e2d28bcd6216bc9d3e632a2ddc486e/node_modules/@clerk/nextjs/src/app-router/server/keyless-provider.tsx:43:32)
+    at KeylessProvider (node_modules/.pnpm/@clerk+nextjs@7.0.8_next@16.2.2_@babel+core@7.29.0_@opentelemetry+api@1.9.1_@playwright_60e2d28bcd6216bc9d3e632a2ddc486e/node_modules/@clerk/nextjs/src/app-router/server/keyless-provider.tsx:42:25)
+    at ClerkProvider (node_modules/.pnpm/@clerk+nextjs@7.0.8_next@16.2.2_@babel+core@7.29.0_@opentelemetry+api@1.9.1_@playwright_60e2d28bcd6216bc9d3e632a2ddc486e/node_modules/@clerk/nextjs/src/app-router/server/ClerkProvider.tsx:56:7)
+    at RootLayout (src/app/layout.tsx:139:5)
+  178 |         };
+  179 |
+> 180 |         res = await runtime.fetch(finalUrl.href, {
+      |                             ^
+  181 |           method,
+  182 |           headers,
+  183 |           ...buildBody(),
+ GET /calculators/framing/wall 200 in 140ms (next.js: 5ms, proxy.ts: 29ms, application-code: 106ms)
+ POST /calculators/framing/wall 303 in 217ms (next.js: 6ms, proxy.ts: 19ms, application-code: 193ms)
+  └─ ƒ syncKeylessConfigAction({"apiKeysUrl":"https://dashboard.clerk.com/apps/app_3BuoFspbC9cDa4oR619XfKurV0r/instances/ins_3BuoFs3QsZosNOw6H7EpZkdSasW/api-keys","claimUrl":"https://dashboard.clerk.com/apps/claim?framework=nextjs&token=dco78hyfkuz68stj33029gdotk32cpq9rktop9he","...":"3 items not stringified"}) in 8ms node_modules/.pnpm/@clerk+nextjs@7.0.8_next@16.2.2_@babel+core@7.29.0_@opentelemetry+api@1.9.1_@playwright_60e2d28bcd6216bc9d3e632a2ddc486e/node_modules/@clerk/nextjs/dist/esm-router/keyless-actions.js
+[browser] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview (https://grand-sole-11.clerk.accounts.dev/npm/@clerk/clerk-js@6/dist/clerk.browser.js:12:3226)
+ GET /calculators/framing/wall 200 in 36ms (next.js: 5ms, proxy.ts: 15ms, application-code: 16ms)
+ GET /calculators/framing/wall 200 in 71ms (next.js: 5ms, proxy.ts: 21ms, application-code: 45ms)
+Error: Route "/calculators/framing/wall": Runtime data such as `cookies()`, `headers()`, `params`, or `searchParams` was accessed outside of `<Suspense>`. This delays the entire page from rendering, resulting in a slow user experience. Learn more: https://nextjs.org/docs/messages/blocking-route
+    at RootLayout (src/app/layout.tsx:139:5)
+  137 |
+  138 |   return (
+> 139 |     <ClerkProvider
+      |     ^
+  140 |       appearance={{
+  141 |         variables: {
+  142 |           colorPrimary: "#2563eb",
+ GET /calculators/framing/wall 200 in 641ms (next.js: 4ms, proxy.ts: 7ms, application-code: 630ms)
+[browser] Error: Route "/calculators/framing/wall": Runtime data such as `cookies()`, `headers()`, `params`, or `searchParams` was accessed outside of `<Suspense>`. This delays the entire page from rendering, resulting in a slow user experience. Learn more: https://nextjs.org/docs/messages/blocking-route
+    at KeylessProvider (node_modules/.pnpm/@clerk+nextjs@7.0.8_next@16.2.2_@babel+core@7.29.0_@opentelemetry+api@1.9.1_@playwright_60e2d28bcd6216bc9d3e632a2ddc486e/node_modules/@clerk/nextjs/src/app-router/server/keyless-provider.tsx:108:37)
+    at ClerkProvider (node_modules/.pnpm/@clerk+nextjs@7.0.8_next@16.2.2_@babel+core@7.29.0_@opentelemetry+api@1.9.1_@playwright_60e2d28bcd6216bc9d3e632a2ddc486e/node_modules/@clerk/nextjs/src/app-router/server/ClerkProvider.tsx:56:7)
+    at RootLayout (src/app/layout.tsx:139:5)
+  106 |   const KeylessCookieSync = await import('../client/keyless-cookie-sync.js').then(mod => ...
+  107 |
+> 108 |   const headerStore = await headers();
+      |                                     ^
+  109 |   /**
+  110 |    * Allow developer to return to local application after claiming
+  111 |    */
+ GET /calculators/framing/wall 200 in 116ms (next.js: 6ms, proxy.ts: 14ms, application-code: 97ms)
+ POST /calculators/framing/wall 303 in 179ms (next.js: 13ms, proxy.ts: 8ms, application-code: 158ms)
+  └─ ƒ syncKeylessConfigAction({"apiKeysUrl":"https://dashboard.clerk.com/apps/app_3BuoFspbC9cDa4oR619XfKurV0r/instances/ins_3BuoFs3QsZosNOw6H7EpZkdSasW/api-keys","claimUrl":"https://dashboard.clerk.com/apps/claim?framework=nextjs&token=dco78hyfkuz68stj33029gdotk32cpq9rktop9he","...":"3 items not stringified"}) in 5ms node_modules/.pnpm/@clerk+nextjs@7.0.8_next@16.2.2_@babel+core@7.29.0_@opentelemetry+api@1.9.1_@playwright_60e2d28bcd6216bc9d3e632a2ddc486e/node_modules/@clerk/nextjs/dist/esm-router/keyless-actions.js
+[browser] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview (https://grand-sole-11.clerk.accounts.dev/npm/@clerk/clerk-js@6/dist/clerk.browser.js:12:3226)
+ GET /calculators/framing/wall 200 in 31ms (next.js: 6ms, proxy.ts: 14ms, application-code: 12ms)
+ GET /calculators/framing/wall 200 in 68ms (next.js: 6ms, proxy.ts: 11ms, application-code: 51ms)
+Error: Route "/calculators/framing/wall": Runtime data such as `cookies()`, `headers()`, `params`, or `searchParams` was accessed outside of `<Suspense>`. This delays the entire page from rendering, resulting in a slow user experience. Learn more: https://nextjs.org/docs/messages/blocking-route
+    at RootLayout (src/app/layout.tsx:139:5)
+  137 |
+  138 |   return (
+> 139 |     <ClerkProvider
+      |     ^
+  140 |       appearance={{
+  141 |         variables: {
+  142 |           colorPrimary: "#2563eb",
+ GET /calculators/framing/wall 200 in 683ms (next.js: 5ms, proxy.ts: 7ms, application-code: 671ms)
+[browser] Error: Route "/calculators/framing/wall": Runtime data such as `cookies()`, `headers()`, `params`, or `searchParams` was accessed outside of `<Suspense>`. This delays the entire page from rendering, resulting in a slow user experience. Learn more: https://nextjs.org/docs/messages/blocking-route
+    at KeylessProvider (node_modules/.pnpm/@clerk+nextjs@7.0.8_next@16.2.2_@babel+core@7.29.0_@opentelemetry+api@1.9.1_@playwright_60e2d28bcd6216bc9d3e632a2ddc486e/node_modules/@clerk/nextjs/src/app-router/server/keyless-provider.tsx:108:37)
+    at ClerkProvider (node_modules/.pnpm/@clerk+nextjs@7.0.8_next@16.2.2_@babel+core@7.29.0_@opentelemetry+api@1.9.1_@playwright_60e2d28bcd6216bc9d3e632a2ddc486e/node_modules/@clerk/nextjs/src/app-router/server/ClerkProvider.tsx:56:7)
+    at RootLayout (src/app/layout.tsx:139:5)
+  106 |   const KeylessCookieSync = await import('../client/keyless-cookie-sync.js').then(mod => ...
+  107 |
+> 108 |   const headerStore = await headers();
+      |                                     ^
+  109 |   /**
+  110 |    * Allow developer to return to local application after claiming
+  111 |    */
+ GET /calculators/framing/wall 200 in 123ms (next.js: 6ms, proxy.ts: 13ms, application-code: 104ms)
+ POST /calculators/framing/wall 303 in 170ms (next.js: 4ms, proxy.ts: 6ms, application-code: 159ms)
+  └─ ƒ syncKeylessConfigAction({"apiKeysUrl":"https://dashboard.clerk.com/apps/app_3BuoFspbC9cDa4oR619XfKurV0r/instances/ins_3BuoFs3QsZosNOw6H7EpZkdSasW/api-keys","claimUrl":"https://dashboard.clerk.com/apps/claim?framework=nextjs&token=dco78hyfkuz68stj33029gdotk32cpq9rktop9he","...":"3 items not stringified"}) in 7ms node_modules/.pnpm/@clerk+nextjs@7.0.8_next@16.2.2_@babel+core@7.29.0_@opentelemetry+api@1.9.1_@playwright_60e2d28bcd6216bc9d3e632a2ddc486e/node_modules/@clerk/nextjs/dist/esm-router/keyless-actions.js
+ GET /calculators/framing/wall 200 in 25ms (next.js: 4ms, proxy.ts: 10ms, application-code: 11ms)
+[browser] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview (https://grand-sole-11.clerk.accounts.dev/npm/@clerk/clerk-js@6/dist/clerk.browser.js:12:3226)
+ GET /calculators/framing/wall 200 in 73ms (next.js: 6ms, proxy.ts: 18ms, application-code: 48ms)
+Error: Route "/calculators/framing/wall": Runtime data such as `cookies()`, `headers()`, `params`, or `searchParams` was accessed outside of `<Suspense>`. This delays the entire page from rendering, resulting in a slow user experience. Learn more: https://nextjs.org/docs/messages/blocking-route
+    at RootLayout (src/app/layout.tsx:139:5)
+  137 |
+  138 |   return (
+> 139 |     <ClerkProvider
+      |     ^
+  140 |       appearance={{
+  141 |         variables: {
+  142 |           colorPrimary: "#2563eb",
+ GET /calculators/framing/wall 200 in 666ms (next.js: 4ms, proxy.ts: 6ms, application-code: 656ms)
+[browser] Error: Route "/calculators/framing/wall": Runtime data such as `cookies()`, `headers()`, `params`, or `searchParams` was accessed outside of `<Suspense>`. This delays the entire page from rendering, resulting in a slow user experience. Learn more: https://nextjs.org/docs/messages/blocking-route
+    at KeylessProvider (node_modules/.pnpm/@clerk+nextjs@7.0.8_next@16.2.2_@babel+core@7.29.0_@opentelemetry+api@1.9.1_@playwright_60e2d28bcd6216bc9d3e632a2ddc486e/node_modules/@clerk/nextjs/src/app-router/server/keyless-provider.tsx:108:37)
+    at ClerkProvider (node_modules/.pnpm/@clerk+nextjs@7.0.8_next@16.2.2_@babel+core@7.29.0_@opentelemetry+api@1.9.1_@playwright_60e2d28bcd6216bc9d3e632a2ddc486e/node_modules/@clerk/nextjs/src/app-router/server/ClerkProvider.tsx:56:7)
+    at RootLayout (src/app/layout.tsx:139:5)
+  106 |   const KeylessCookieSync = await import('../client/keyless-cookie-sync.js').then(mod => ...
+  107 |
+> 108 |   const headerStore = await headers();
+      |                                     ^
+  109 |   /**
+  110 |    * Allow developer to return to local application after claiming
+  111 |    */
+ GET /calculators/framing/wall 200 in 122ms (next.js: 5ms, proxy.ts: 23ms, application-code: 95ms)
+ POST /calculators/framing/wall 303 in 175ms (next.js: 8ms, proxy.ts: 7ms, application-code: 160ms)
+  └─ ƒ syncKeylessConfigAction({"apiKeysUrl":"https://dashboard.clerk.com/apps/app_3BuoFspbC9cDa4oR619XfKurV0r/instances/ins_3BuoFs3QsZosNOw6H7EpZkdSasW/api-keys","claimUrl":"https://dashboard.clerk.com/apps/claim?framework=nextjs&token=dco78hyfkuz68stj33029gdotk32cpq9rktop9he","...":"3 items not stringified"}) in 6ms node_modules/.pnpm/@clerk+nextjs@7.0.8_next@16.2.2_@babel+core@7.29.0_@opentelemetry+api@1.9.1_@playwright_60e2d28bcd6216bc9d3e632a2ddc486e/node_modules/@clerk/nextjs/dist/esm-router/keyless-actions.js
+[browser] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview (https://grand-sole-11.clerk.accounts.dev/npm/@clerk/clerk-js@6/dist/clerk.browser.js:12:3226)
+ GET /calculators/framing/wall 200 in 28ms (next.js: 5ms, proxy.ts: 11ms, application-code: 12ms)
+ GET /calculators/framing/wall 200 in 52ms (next.js: 4ms, proxy.ts: 11ms, application-code: 36ms)
+Error: Route "/calculators/framing/wall": Runtime data such as `cookies()`, `headers()`, `params`, or `searchParams` was accessed outside of `<Suspense>`. This delays the entire page from rendering, resulting in a slow user experience. Learn more: https://nextjs.org/docs/messages/blocking-route
+    at RootLayout (src/app/layout.tsx:139:5)
+  137 |
+  138 |   return (
+> 139 |     <ClerkProvider
+      |     ^
+  140 |       appearance={{
+  141 |         variables: {
+  142 |           colorPrimary: "#2563eb",
+ GET /calculators/framing/wall 200 in 458ms (next.js: 4ms, proxy.ts: 14ms, application-code: 439ms)
+[browser] Error: Route "/calculators/framing/wall": Runtime data such as `cookies()`, `headers()`, `params`, or `searchParams` was accessed outside of `<Suspense>`. This delays the entire page from rendering, resulting in a slow user experience. Learn more: https://nextjs.org/docs/messages/blocking-route
+    at KeylessProvider (node_modules/.pnpm/@clerk+nextjs@7.0.8_next@16.2.2_@babel+core@7.29.0_@opentelemetry+api@1.9.1_@playwright_60e2d28bcd6216bc9d3e632a2ddc486e/node_modules/@clerk/nextjs/src/app-router/server/keyless-provider.tsx:108:37)
+    at ClerkProvider (node_modules/.pnpm/@clerk+nextjs@7.0.8_next@16.2.2_@babel+core@7.29.0_@opentelemetry+api@1.9.1_@playwright_60e2d28bcd6216bc9d3e632a2ddc486e/node_modules/@clerk/nextjs/src/app-router/server/ClerkProvider.tsx:56:7)
+    at RootLayout (src/app/layout.tsx:139:5)
+  106 |   const KeylessCookieSync = await import('../client/keyless-cookie-sync.js').then(mod => ...
+  107 |
+> 108 |   const headerStore = await headers();
+      |                                     ^
+  109 |   /**
+  110 |    * Allow developer to return to local application after claiming
+  111 |    */
+ GET /calculators/framing/wall 200 in 132ms (next.js: 5ms, proxy.ts: 15ms, application-code: 111ms)
+ POST /calculators/framing/wall 303 in 186ms (next.js: 4ms, proxy.ts: 8ms, application-code: 174ms)
+  └─ ƒ syncKeylessConfigAction({"apiKeysUrl":"https://dashboard.clerk.com/apps/app_3BuoFspbC9cDa4oR619XfKurV0r/instances/ins_3BuoFs3QsZosNOw6H7EpZkdSasW/api-keys","claimUrl":"https://dashboard.clerk.com/apps/claim?framework=nextjs&token=dco78hyfkuz68stj33029gdotk32cpq9rktop9he","...":"3 items not stringified"}) in 9ms node_modules/.pnpm/@clerk+nextjs@7.0.8_next@16.2.2_@babel+core@7.29.0_@opentelemetry+api@1.9.1_@playwright_60e2d28bcd6216bc9d3e632a2ddc486e/node_modules/@clerk/nextjs/dist/esm-router/keyless-actions.js
+[browser] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview (https://grand-sole-11.clerk.accounts.dev/npm/@clerk/clerk-js@6/dist/clerk.browser.js:12:3226)
+ GET /calculators/framing/wall 200 in 24ms (next.js: 4ms, proxy.ts: 11ms, application-code: 9ms)
+ GET /calculators/framing/wall 200 in 68ms (next.js: 4ms, proxy.ts: 12ms, application-code: 52ms)
