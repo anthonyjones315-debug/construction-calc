@@ -4,6 +4,7 @@ import { Resend } from "resend";
 import { z } from "zod";
 import { getClientIp } from "@/lib/http/client-ip";
 import { checkMemoryRateLimit } from "@/lib/rate-limit/memory";
+import { escapeHtml as baseEscapeHtml } from "@/utils/html";
 
 const SITE_ALERT_TO = "owner@proconstructioncalc.com";
 const FROM_EMAIL = "Pro Construction Calc <owner@proconstructioncalc.com>";
@@ -33,12 +34,7 @@ function getResend() {
 }
 
 function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/\n/g, "<br>");
+  return baseEscapeHtml(s).replace(/\n/g, "<br>");
 }
 
 function normalizeString(value?: string): string | undefined {
