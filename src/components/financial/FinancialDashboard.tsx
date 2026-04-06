@@ -2,6 +2,7 @@
 
 import { AlertTriangle, DollarSign, TrendingUp, Wallet } from "lucide-react";
 import { useMemo } from "react";
+import { getNumberFormatter } from "@/utils/formatters";
 import type { CalculationResult } from "@/types";
 import type { FinancialData } from "@/components/financial/FinancialDataFetcher";
 import {
@@ -19,7 +20,7 @@ import {
   toCents,
 } from "@/utils/money";
 
-const USD_CURRENCY = new Intl.NumberFormat("en-US", {
+const USD_CURRENCY = getNumberFormatter("en-US", {
   style: "currency",
   currency: "USD",
   minimumFractionDigits: 2,
