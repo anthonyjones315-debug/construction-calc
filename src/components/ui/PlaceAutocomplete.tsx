@@ -85,7 +85,10 @@ export function PlaceAutocomplete({
   const [ready, setReady] = useState(false);
   const [fallbackValue, setFallbackValue] = useState(defaultValue);
   const onPlaceSelectRef = useRef(onPlaceSelect);
-  onPlaceSelectRef.current = onPlaceSelect;
+
+  useEffect(() => {
+    onPlaceSelectRef.current = onPlaceSelect;
+  }, [onPlaceSelect]);
 
   const initElement = useCallback(async () => {
     if (!apiKey || !containerRef.current) return;
@@ -131,7 +134,7 @@ export function PlaceAutocomplete({
 
       containerRef.current.appendChild(el as unknown as Node);
       elementRef.current = el;
-      setReady(true);
+      void Promise.resolve().then(() => setReady(true));
     } catch (err) {
       console.warn("[PlaceAutocomplete] Failed to initialize:", err);
     }

@@ -68,6 +68,16 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
   const budgetItems: Record<string, unknown>[] = Array.isArray(rawLineItems) ? rawLineItems : [];
   const hasBudgetItems = budgetItems.length > 0;
 
+  // Material list section
+  const materialListItems = Array.isArray(payload.material_list)
+    ? payload.material_list
+        .map(
+          (item) => `
+    <li style="font-size: 13px; color: #374151; margin-bottom: 4px;">${item}</li>`,
+        )
+        .join("")
+    : "";
+
   const lineItemRows = hasBudgetItems
     ? budgetItems
         .map((item: Record<string, unknown>) => {
@@ -238,6 +248,19 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
           </div>
         </div>
       </div>
+
+      <!-- Material List Section -->
+      ${
+        materialListItems
+          ? `
+      <div style="margin-top: 28px;">
+        <p style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 8px;">Material List</p>
+        <ul style="padding-left: 20px; margin-top: 8px;">
+          ${materialListItems}
+        </ul>
+      </div>`
+          : ""
+      }
 
 
 
