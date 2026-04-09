@@ -4,6 +4,7 @@ import { Resend } from "resend";
 import { z } from "zod";
 import { getClientIp } from "@/lib/http/client-ip";
 import { checkMemoryRateLimit } from "@/lib/rate-limit/memory";
+import { escapeHtml } from "@/utils/html";
 
 const SITE_ALERT_TO = "owner@proconstructioncalc.com";
 const FROM_EMAIL = "Pro Construction Calc <owner@proconstructioncalc.com>";
@@ -30,15 +31,6 @@ function getResend() {
   const key = process.env.RESEND_API_KEY;
   if (!key) return null;
   return new Resend(key);
-}
-
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/\n/g, "<br>");
 }
 
 function normalizeString(value?: string): string | undefined {
@@ -114,15 +106,21 @@ export async function POST(req: NextRequest) {
     const isErrorReport = reportType === "error";
 
     const contextRows = [
-      sourceValue ? `<p><strong>Source:</strong> ${escapeHtml(sourceValue)}</p>` : "",
-      pageUrlValue ? `<p><strong>Page:</strong> ${escapeHtml(pageUrlValue)}</p>` : "",
+      sourceValue
+        ? `<p><strong>Source:</strong> ${escapeHtml(sourceValue)}</p>`
+        : "",
+      pageUrlValue
+        ? `<p><strong>Page:</strong> ${escapeHtml(pageUrlValue)}</p>`
+        : "",
       browserTimeValue
         ? `<p><strong>Browser Time:</strong> ${escapeHtml(browserTimeValue)}</p>`
         : "",
       eventIdValue
         ? `<p><strong>Sentry Event ID:</strong> ${escapeHtml(eventIdValue)}</p>`
         : "",
-      digestValue ? `<p><strong>Error Digest:</strong> ${escapeHtml(digestValue)}</p>` : "",
+      digestValue
+        ? `<p><strong>Error Digest:</strong> ${escapeHtml(digestValue)}</p>`
+        : "",
       userFacingTitleValue
         ? `<p><strong>User-Facing Title:</strong> ${escapeHtml(userFacingTitleValue)}</p>`
         : "",
@@ -132,7 +130,9 @@ export async function POST(req: NextRequest) {
       technicalMessageValue
         ? `<p><strong>Technical Error:</strong> ${escapeHtml(technicalMessageValue)}</p>`
         : "",
-      userAgentValue ? `<p><strong>User Agent:</strong> ${escapeHtml(userAgentValue)}</p>` : "",
+      userAgentValue
+        ? `<p><strong>User Agent:</strong> ${escapeHtml(userAgentValue)}</p>`
+        : "",
     ]
       .filter(Boolean)
       .join("");
@@ -145,7 +145,7 @@ export async function POST(req: NextRequest) {
   <p><strong>Subject:</strong> ${escapeHtml(subjectLine)}</p>
   ${contextRows}
   <hr style="border:none;border-top:1px solid #e2e0db;margin:18px 0">
-  <div style="font-size:14px;line-height:1.6">${escapeHtml(message)}</div>
+  <div style="font-size:14px;line-height:1.6">${escapeHtml(message).replace(/\n/g, "<br>")}</div>
   <p style="margin-top:22px;font-size:12px;color:#94a3b8;line-height:1.5">Sent via the site contact / feedback form.</p>
   </div>
 </body></html>`;
