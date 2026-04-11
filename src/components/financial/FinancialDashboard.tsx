@@ -18,8 +18,9 @@ import {
   sumCents,
   toCents,
 } from "@/utils/money";
+import { getNumberFormatter } from "@/utils/formatters";
 
-const USD_CURRENCY = new Intl.NumberFormat("en-US", {
+const USD_CURRENCY = getNumberFormatter("en-US", {
   style: "currency",
   currency: "USD",
   minimumFractionDigits: 2,
