@@ -5,6 +5,7 @@
  */
 
 import type { EstimatePayload, EstimateResult } from "@/lib/estimates/types";
+import { escapeHtml } from "@/utils/html";
 
 type InvoiceTemplateInput = {
   payload: EstimatePayload;
@@ -78,9 +79,9 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
           const total = qty * price;
           return `
           <tr>
-            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; color: #111827; font-size: 13px;">${desc}</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; color: #111827; font-size: 13px;">${escapeHtml(desc)}</td>
             <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: center; color: #374151; font-size: 13px;">${qty}</td>
-            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: center; color: #6b7280; font-size: 13px;">${unit}</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: center; color: #6b7280; font-size: 13px;">${escapeHtml(unit)}</td>
             <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: right; color: #374151; font-size: 13px;">${formatCurrency(price)}</td>
             <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: 600; color: #111827; font-size: 13px;">${formatCurrency(total)}</td>
           </tr>`;
@@ -90,9 +91,9 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
         .map(
           (row: EstimateResult) => `
           <tr>
-            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; color: #111827; font-size: 13px;">${row.label}</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; color: #111827; font-size: 13px;">${escapeHtml(row.label)}</td>
             <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: center; color: #374151; font-size: 13px;">1</td>
-            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: center; color: #6b7280; font-size: 13px;">${row.unit ?? ""}</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: center; color: #6b7280; font-size: 13px;">${escapeHtml(row.unit)}</td>
             <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: right; color: #374151; font-size: 13px;">${safeNumber(row.value)}</td>
             <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: 600; color: #111827; font-size: 13px;">${safeNumber(row.value)}</td>
           </tr>`,
@@ -130,7 +131,7 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>${safeContractorName} — Estimate</title>
+    <title>${escapeHtml(safeContractorName)} — Estimate</title>
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
@@ -168,14 +169,14 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
               : `<div style="width: 48px; height: 48px; border-radius: 8px; background: #2563eb; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 20px;">${safeContractorName.charAt(0).toUpperCase()}</div>`
           }
           <div>
-            <p style="font-size: 18px; font-weight: 700; color: #111827; line-height: 1.2; letter-spacing: -0.02em;">${safeContractorName}</p>
-            ${contactLine ? `<p style="font-size: 12px; color: #6b7280; margin-top: 2px;">${contactLine}</p>` : ""}
+            <p style="font-size: 18px; font-weight: 700; color: #111827; line-height: 1.2; letter-spacing: -0.02em;">${escapeHtml(safeContractorName)}</p>
+            ${contactLine ? `<p style="font-size: 12px; color: #6b7280; margin-top: 2px;">${escapeHtml(contactLine)}</p>` : ""}
           </div>
         </div>
         <div style="text-align: right;">
           <p style="font-size: 22px; font-weight: 800; color: #2563eb; letter-spacing: -0.02em;">ESTIMATE</p>
-          ${controlNumber ? `<p style="font-size: 11px; color: #6b7280; margin-top: 2px;">${controlNumber}</p>` : ""}
-          <p style="font-size: 11px; color: #6b7280; margin-top: 2px;">${generatedAt}</p>
+          ${controlNumber ? `<p style="font-size: 11px; color: #6b7280; margin-top: 2px;">${escapeHtml(String(controlNumber))}</p>` : ""}
+          <p style="font-size: 11px; color: #6b7280; margin-top: 2px;">${escapeHtml(generatedAt)}</p>
         </div>
       </div>
 
@@ -183,13 +184,13 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
       <div style="display: flex; gap: 24px; margin-top: 24px;">
         <div style="flex: 1; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px;">
           <p style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 6px;">Bill To</p>
-          <p style="font-size: 14px; font-weight: 700; color: #111827;">${clientName || "—"}</p>
-          ${jobAddress ? `<p style="font-size: 12px; color: #6b7280; margin-top: 4px;">${jobAddress}</p>` : ""}
+          <p style="font-size: 14px; font-weight: 700; color: #111827;">${escapeHtml(clientName) || "—"}</p>
+          ${jobAddress ? `<p style="font-size: 12px; color: #6b7280; margin-top: 4px;">${escapeHtml(jobAddress)}</p>` : ""}
         </div>
         <div style="flex: 1; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px;">
           <p style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 6px;">Project</p>
-          <p style="font-size: 14px; font-weight: 700; color: #111827;">${jobName}</p>
-          <p style="font-size: 12px; color: #6b7280; margin-top: 4px;">${calculatorLabel}</p>
+          <p style="font-size: 14px; font-weight: 700; color: #111827;">${escapeHtml(jobName)}</p>
+          <p style="font-size: 12px; color: #6b7280; margin-top: 4px;">${escapeHtml(calculatorLabel)}</p>
         </div>
       </div>
 
@@ -225,7 +226,7 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
               tax
                 ? `
             <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f3f4f6;">
-              <span style="font-size: 13px; color: #6b7280;">${taxLabel}</span>
+              <span style="font-size: 13px; color: #6b7280;">${escapeHtml(taxLabel)}</span>
               <span style="font-size: 13px; color: #374151;">${tax}</span>
             </div>`
                 : ""
@@ -289,7 +290,7 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
                <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/80">
                  Note
                </p>
-               <p class="mt-1 text-sm text-white/90 whitespace-pre-line">${quoteNote}</p>
+               <p class="mt-1 text-sm text-white/90 whitespace-pre-line">${escapeHtml(quoteNote).replace(/\n/g, "<br>")}</p>
              </section>`
             : ""
         }
@@ -305,7 +306,7 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
             <a href="https://proconstructioncalc.com/privacy" class="text-slate-500 hover:text-blue-400">Privacy</a>
           </p>
         </footer>
-      <span style="display:none;color:#ea580c;"></span>
+      <span style="display:none;color:#ea580c;">${escapeHtml(payload.material_list?.join(", ") ?? "")}</span>
       </main>
     </div>
     <script>document.fonts.ready.then(() => { window.__fontsReady = true; });</script>
