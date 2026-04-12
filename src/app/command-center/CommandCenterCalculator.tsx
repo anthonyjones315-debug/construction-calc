@@ -3136,7 +3136,6 @@ export function CommandCenterCalculator({ page, closeModal }: CalculatorPageProp
     triggerHaptic([10]);
     try {
       await navigator.clipboard.writeText(copyText);
-      setFinalizeSuccess("Material order copied.");
       setFinalizeError(null);
     } catch (error) {
       setFinalizeError(
