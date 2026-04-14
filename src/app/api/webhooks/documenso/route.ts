@@ -20,9 +20,15 @@ export async function POST(req: NextRequest) {
           .createHmac("sha256", secret)
           .update(rawBody)
           .digest("hex");
-          
-        if (signature !== expectedSignature) {
-           return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+
+        const signatureBuffer = Buffer.from(signature, "hex");
+        const expectedSignatureBuffer = Buffer.from(expectedSignature, "hex");
+
+        if (
+          signatureBuffer.length !== expectedSignatureBuffer.length ||
+          !crypto.timingSafeEqual(signatureBuffer, expectedSignatureBuffer)
+        ) {
+          return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
         }
       }
 
