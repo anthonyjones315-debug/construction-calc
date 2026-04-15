@@ -35,6 +35,7 @@ import { UserButton } from "@clerk/nextjs";
 import { useSearchParams } from "next/navigation";
 import * as Sentry from "@sentry/nextjs";
 import { routes } from "@routes";
+import { getDateTimeFormatter } from "@/utils/formatters";
 import { CommandCenterCalculator } from "./CommandCenterCalculator";
 import { getTradePageByPath, tradePages } from "@/app/calculators/_lib/trade-pages";
 import { useProMode } from "@/hooks/useProMode";
@@ -673,7 +674,7 @@ export default function CommandCenterClient({
     recentEstimates.length - signedEstimateCount - sentEstimateCount,
     0,
   );
-  const todayLabel = new Intl.DateTimeFormat("en-US", {
+  const todayLabel = getDateTimeFormatter("en-US", {
     weekday: "long",
     month: "short",
     day: "numeric",
