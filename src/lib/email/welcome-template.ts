@@ -1,4 +1,5 @@
 import { designTokens } from "@/lib/design-tokens";
+import { escapeHtml } from "@/utils/html";
 
 export type WelcomeEmailTemplateInput = {
   fullName: string;
@@ -7,15 +8,6 @@ export type WelcomeEmailTemplateInput = {
   calculatorsUrl: string;
   guideUrl: string;
 };
-
-function escapeHtml(value: string) {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
 
 function getDisplayName(fullName: string) {
   const trimmed = fullName.trim();
