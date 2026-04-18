@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import { getNumberFormatter } from "@/utils/formatters";
 
 function cx(...parts: Array<string | false | null | undefined>) {
   return parts.filter(Boolean).join(" ");
@@ -55,6 +56,13 @@ function useAnimatedDisplayValue(value: string, duration = 320) {
       return;
     }
 
+    // BOLT OPTIMIZATION: Retrieve the cached formatter ONCE per effect run,
+    // not once per animation frame (tick).
+    const formatter = getNumberFormatter("en-US", {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    });
+
     let frameId = 0;
     const start = performance.now();
 
@@ -62,10 +70,7 @@ function useAnimatedDisplayValue(value: string, duration = 320) {
       const progress = Math.min((now - start) / duration, 1);
       const eased = easeOutCubic(progress);
       const current = from + (to - from) * eased;
-      const formatted = current.toLocaleString("en-US", {
-        minimumFractionDigits: decimals,
-        maximumFractionDigits: decimals,
-      });
+      const formatted = formatter.format(current);
 
       setDisplayValue(`${formatted}${nextMeta.suffix}`);
 
