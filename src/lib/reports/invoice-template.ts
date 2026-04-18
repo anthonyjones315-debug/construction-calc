@@ -5,6 +5,7 @@
  */
 
 import type { EstimatePayload, EstimateResult } from "@/lib/estimates/types";
+import { escapeHtml } from "@/utils/html";
 
 type InvoiceTemplateInput = {
   payload: EstimatePayload;
@@ -38,8 +39,8 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
   const { payload, contractorName, contractorContact, contractorLogoUrl } =
     input;
 
-  const safeContractorName = contractorName || "Your Contractor";
-  const contactLine = contractorContact?.trim() || "";
+  const safeContractorName = escapeHtml(contractorName || "Your Contractor");
+  const contactLine = escapeHtml(contractorContact?.trim() || "");
   const jobName =
     typeof payload.metadata.jobName === "string" && payload.metadata.jobName
       ? payload.metadata.jobName
@@ -49,12 +50,12 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
     "en-US",
     { year: "numeric", month: "long", day: "numeric" },
   );
-  const clientName = payload.client_name ?? "";
-  const jobAddress = payload.job_site_address ?? "";
+  const clientName = escapeHtml(payload.client_name ?? "");
+  const jobAddress = escapeHtml(payload.job_site_address ?? "");
 
   const quoteNote =
     typeof payload.quote_note === "string" && payload.quote_note.trim()
-      ? payload.quote_note.trim()
+      ? escapeHtml(payload.quote_note.trim())
       : null;
 
   const dollars =
@@ -71,9 +72,9 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
   const lineItemRows = hasBudgetItems
     ? budgetItems
         .map((item: Record<string, unknown>) => {
-          const desc = String(item.name ?? item.description ?? "Item");
+          const desc = escapeHtml(String(item.name ?? item.description ?? "Item"));
           const qty = Number(item.quantity ?? 1);
-          const unit = String(item.unit ?? "ea");
+          const unit = escapeHtml(String(item.unit ?? "ea"));
           const price = Number(item.pricePerUnit ?? item.unitPrice ?? 0);
           const total = qty * price;
           return `
@@ -90,9 +91,9 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
         .map(
           (row: EstimateResult) => `
           <tr>
-            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; color: #111827; font-size: 13px;">${row.label}</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; color: #111827; font-size: 13px;">${escapeHtml(row.label)}</td>
             <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: center; color: #374151; font-size: 13px;">1</td>
-            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: center; color: #6b7280; font-size: 13px;">${row.unit ?? ""}</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: center; color: #6b7280; font-size: 13px;">${escapeHtml(row.unit ?? "")}</td>
             <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: right; color: #374151; font-size: 13px;">${safeNumber(row.value)}</td>
             <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: 600; color: #111827; font-size: 13px;">${safeNumber(row.value)}</td>
           </tr>`,
@@ -112,7 +113,7 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
   // Get tax label
   const selectedCounty = inputs?.selected_county ?? inputs?.tax_county;
   const taxLabel = selectedCounty
-    ? `Tax (${String(selectedCounty).charAt(0).toUpperCase() + String(selectedCounty).slice(1)} County)`
+    ? `Tax (${escapeHtml(String(selectedCounty).charAt(0).toUpperCase() + String(selectedCounty).slice(1))} County)`
     : "Tax";
 
   // Control number
@@ -130,7 +131,7 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>${safeContractorName} — Estimate</title>
+    <title>${safeContractorName} &mdash; Estimate</title>
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
@@ -188,8 +189,8 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
         </div>
         <div style="flex: 1; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px;">
           <p style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 6px;">Project</p>
-          <p style="font-size: 14px; font-weight: 700; color: #111827;">${jobName}</p>
-          <p style="font-size: 12px; color: #6b7280; margin-top: 4px;">${calculatorLabel}</p>
+          <p style="font-size: 14px; font-weight: 700; color: #111827;">${escapeHtml(jobName)}</p>
+          <p style="font-size: 12px; color: #6b7280; margin-top: 4px;">${escapeHtml(calculatorLabel)}</p>
         </div>
       </div>
 
@@ -289,7 +290,7 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
                <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/80">
                  Note
                </p>
-               <p class="mt-1 text-sm text-white/90 whitespace-pre-line">${quoteNote}</p>
+               <p class="mt-1 text-sm text-white/90 whitespace-pre-line">${quoteNote.replace(/\n/g, "<br>")}</p>
              </section>`
             : ""
         }
