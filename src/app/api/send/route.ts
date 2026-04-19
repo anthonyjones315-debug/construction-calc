@@ -3,6 +3,7 @@ import * as Sentry from "@sentry/nextjs";
 import { Resend } from "resend";
 import { z } from "zod";
 import { auth } from "@/lib/auth/config";
+import { escapeHtml } from "@/utils/html";
 import { createServerClient } from "@/lib/supabase/server";
 import {
   getBusinessContextForSession,
@@ -115,14 +116,6 @@ function buildEstimateEmailHtml(estimate: z.infer<typeof estimatePayloadSchema>)
   <p style="margin-top:22px;font-size:12px;color:#94a3b8;line-height:1.5">Sent from Pro Construction Calc. Verify quantities and prices before ordering or starting work.</p>
   </div>
 </body></html>`;
-}
-
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
 }
 
 export async function POST(req: NextRequest) {
