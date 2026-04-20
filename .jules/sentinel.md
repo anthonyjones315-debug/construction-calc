@@ -1,0 +1,4 @@
+## 2025-05-15 - Centralized HTML Escaping & Invoice XSS Fix
+**Vulnerability:** Multiple user-controlled fields (contractor name, client details, job info, line items) were injected directly into the HTML invoice template in `src/lib/reports/invoice-template.ts` without any escaping, leading to a high-risk XSS surface in generated PDFs. Additionally, HTML escaping logic was duplicated across several API routes and email templates.
+**Learning:** Manual, ad-hoc escaping in individual components or API routes is inconsistent and highly susceptible to developer oversight, especially as document templates grow in complexity.
+**Prevention:** Centralize security-critical logic like HTML escaping into a single, well-tested utility (`src/utils/html.ts`). Enforce its use across all document and email generation paths. All user-provided strings destined for HTML interpolation must be treated as untrusted and escaped by default.
