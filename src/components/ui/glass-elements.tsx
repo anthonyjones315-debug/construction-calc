@@ -334,6 +334,14 @@ export function ProResult({
   finalizeIcon,
   containerClassName = "glass-container-elevated",
 }: ProResultProps) {
+  const [copied, setCopied] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!copied) return;
+    const timer = setTimeout(() => setCopied(false), 2000);
+    return () => clearTimeout(timer);
+  }, [copied]);
+
   return (
     <section
       className={`${containerClassName} relative flex min-h-[180px] flex-col gap-2 p-3`}
@@ -403,10 +411,23 @@ export function ProResult({
             {onCopyOrder ? (
               <GlassButton
                 type="button"
-                onClick={onCopyOrder}
-                className="min-h-7 rounded-lg border-[--color-border] px-2 py-1 text-xs font-bold uppercase tracking-widest text-copy-secondary hover:border-primary/40"
+                onClick={() => {
+                  try {
+                    onCopyOrder();
+                    setCopied(true);
+                  } catch (e) {
+                    console.error("Failed to copy material list", e);
+                  }
+                }}
+                aria-label={copied ? "Copied to clipboard" : "Copy material list"}
+                className={cx(
+                  "min-h-7 rounded-lg border px-2 py-1 text-xs font-bold uppercase tracking-widest transition-colors",
+                  copied
+                    ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-600"
+                    : "border-[--color-border] text-copy-secondary hover:border-primary/40",
+                )}
               >
-                Copy
+                {copied ? "COPIED" : "Copy"}
               </GlassButton>
             ) : null}
           </div>
