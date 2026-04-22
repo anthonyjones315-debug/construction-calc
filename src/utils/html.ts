@@ -1,0 +1,12 @@
+/**
+ * Utility for escaping HTML special characters to prevent XSS.
+ */
+export function escapeHtml(unsafe: string | null | undefined): string {
+  if (unsafe == null) return "";
+  return String(unsafe)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
