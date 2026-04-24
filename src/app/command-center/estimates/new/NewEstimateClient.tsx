@@ -39,6 +39,7 @@ import type {
 } from "@/lib/estimates/new-estimate-types";
 import { EstimateCartItem } from "@/types";
 import { AddressAutocomplete } from "@/components/ui/AddressAutocomplete";
+import { getNumberFormatter } from "@/utils/formatters";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -72,14 +73,14 @@ type PanelTab = "calculator" | "pricebook" | "manual" | null;
 // ─── Utilities ────────────────────────────────────────────────────────────────
 
 function formatCents(cents: number): string {
-  return new Intl.NumberFormat("en-US", {
+  return getNumberFormatter("en-US", {
     style: "currency",
     currency: "USD",
   }).format(cents / 100);
 }
 
 function formatDollars(dollars: number): string {
-  return new Intl.NumberFormat("en-US", {
+  return getNumberFormatter("en-US", {
     style: "currency",
     currency: "USD",
   }).format(dollars);
