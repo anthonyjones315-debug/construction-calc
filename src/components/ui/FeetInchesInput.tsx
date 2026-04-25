@@ -42,23 +42,23 @@ export type FeetInchesInputProps = {
 );
 
 /** Standard construction fractions in sixteenths */
-const FRACTION_OPTIONS: { label: string; value: number }[] = [
-  { label: "–",     value: 0 },
-  { label: "1/16",  value: 1 / 16 },
-  { label: "1/8",   value: 1 / 8 },
-  { label: "3/16",  value: 3 / 16 },
-  { label: "1/4",   value: 1 / 4 },
-  { label: "5/16",  value: 5 / 16 },
-  { label: "3/8",   value: 3 / 8 },
-  { label: "7/16",  value: 7 / 16 },
-  { label: "1/2",   value: 1 / 2 },
-  { label: "9/16",  value: 9 / 16 },
-  { label: "5/8",   value: 5 / 8 },
-  { label: "11/16", value: 11 / 16 },
-  { label: "3/4",   value: 3 / 4 },
-  { label: "13/16", value: 13 / 16 },
-  { label: "7/8",   value: 7 / 8 },
-  { label: "15/16", value: 15 / 16 },
+const FRACTION_OPTIONS: { label: string; value: number; ariaLabel?: string }[] = [
+  { label: "–",     value: 0, ariaLabel: "0 inches" },
+  { label: "1/16",  value: 1 / 16, ariaLabel: "1/16 inch" },
+  { label: "1/8",   value: 1 / 8, ariaLabel: "1/8 inch" },
+  { label: "3/16",  value: 3 / 16, ariaLabel: "3/16 inch" },
+  { label: "1/4",   value: 1 / 4, ariaLabel: "1/4 inch" },
+  { label: "5/16",  value: 5 / 16, ariaLabel: "5/16 inch" },
+  { label: "3/8",   value: 3 / 8, ariaLabel: "3/8 inch" },
+  { label: "7/16",  value: 7 / 16, ariaLabel: "7/16 inch" },
+  { label: "1/2",   value: 1 / 2, ariaLabel: "1/2 inch" },
+  { label: "9/16",  value: 9 / 16, ariaLabel: "9/16 inch" },
+  { label: "5/8",   value: 5 / 8, ariaLabel: "5/8 inch" },
+  { label: "11/16", value: 11 / 16, ariaLabel: "11/16 inch" },
+  { label: "3/4",   value: 3 / 4, ariaLabel: "3/4 inch" },
+  { label: "13/16", value: 13 / 16, ariaLabel: "13/16 inch" },
+  { label: "7/8",   value: 7 / 8, ariaLabel: "7/8 inch" },
+  { label: "15/16", value: 15 / 16, ariaLabel: "15/16 inch" },
 ];
 
 /** Snap a decimal inch remainder to the nearest 1/16 fraction option index */
@@ -160,25 +160,24 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
   }
 
   return (
-    <label
-      className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary"
-      htmlFor={`${fieldId}-ft`}
-    >
-      <span className="flex items-center justify-between gap-2">
-        <span id={labelId} className="truncate">
-          {label}
+    <fieldset className="flex flex-col border-none p-0">
+      <legend className="w-full mb-1">
+        <span className="flex items-center justify-between gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary">
+          <span id={labelId} className="truncate">
+            {label}
+          </span>
+          {subLabel ? (
+            <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
+              {subLabel}
+            </span>
+          ) : null}
         </span>
-        {subLabel ? (
-          <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
-            {subLabel}
+        {helpText ? (
+          <span className="mt-1 block text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
+            {helpText}
           </span>
         ) : null}
-      </span>
-      {helpText ? (
-        <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
-          {helpText}
-        </span>
-      ) : null}
+      </legend>
       <div
         data-valid={isValid ? "true" : "false"}
         className="glass-input-shell relative flex min-h-[3.5rem] items-stretch overflow-hidden rounded-xl p-0"
@@ -238,7 +237,7 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
           className="glass-input w-16 min-w-0 shrink-0 appearance-none rounded-none border-0 border-l border-[--color-border] bg-transparent px-1.5 text-center text-xs tabular-nums tracking-tight text-field-input shadow-none"
         >
           {FRACTION_OPTIONS.map((opt, i) => (
-            <option key={i} value={i}>
+            <option key={i} value={i} aria-label={opt.ariaLabel}>
               {opt.label}
             </option>
           ))}
@@ -247,7 +246,7 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
           &quot;
         </div>
       </div>
-    </label>
+    </fieldset>
   );
 }
 
