@@ -12,6 +12,8 @@ export default defineConfig({
       "**/e2e/**",
       "**/.claude/**",
       "**/construction-calc/**",
+      "**/how-tos/**",
+      "**/playwright-guides/**",
     ],
     coverage: {
       reporter: ["text", "lcov"],
