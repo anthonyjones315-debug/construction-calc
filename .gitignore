@@ -21,3 +21,6 @@ e2e/.downloads/
 
 # clerk configuration (can include secrets)
 /.clerk/
+
+# Sensitive certificates
+documenso-pdf-seal.p12
