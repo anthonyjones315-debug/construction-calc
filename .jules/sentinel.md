@@ -1,0 +1,4 @@
+## 2025-05-15 - Exposed P12 Certificate and XSS in PDF Generation
+**Vulnerability:** A sensitive `.p12` certificate file (`documenso-pdf-seal.p12`) was committed to the repository. Additionally, user-controlled data was being interpolated into HTML templates for PDF generation without escaping, creating an XSS risk.
+**Learning:** Credentials and private keys can easily be committed if not explicitly excluded in `.gitignore` early in the project. PDF generation templates are often overlooked as XSS vectors, but they process user input and can be exploited if the output is ever previewed in a browser or used to manipulate the generator.
+**Prevention:** Always use a centralized `escapeHtml` utility for any user-controlled data intended for HTML output (PDFs, emails, etc.). Ensure that sensitive file extensions like `.p12`, `.pem`, and `.key` are added to the global `.gitignore` and perform regular audits for secrets in the codebase.
