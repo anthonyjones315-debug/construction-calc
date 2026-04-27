@@ -39,6 +39,7 @@ import type {
 } from "@/lib/estimates/new-estimate-types";
 import { EstimateCartItem } from "@/types";
 import { AddressAutocomplete } from "@/components/ui/AddressAutocomplete";
+import { getNumberFormatter } from "@/utils/formatters";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -59,6 +60,11 @@ const UNIT_OPTIONS = [
   "ft",
 ];
 
+const USD_FORMATTER = getNumberFormatter("en-US", {
+  style: "currency",
+  currency: "USD",
+});
+
 const TAX_COUNTIES = [
   { county: "", label: "No Tax (0%)", rate: 0 },
   { county: "oneida", label: "Oneida County (8.75%)", rate: 8.75 },
@@ -72,17 +78,11 @@ type PanelTab = "calculator" | "pricebook" | "manual" | null;
 // ─── Utilities ────────────────────────────────────────────────────────────────
 
 function formatCents(cents: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(cents / 100);
+  return USD_FORMATTER.format(cents / 100);
 }
 
 function formatDollars(dollars: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(dollars);
+  return USD_FORMATTER.format(dollars);
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
