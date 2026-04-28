@@ -5,6 +5,7 @@
  */
 
 import type { EstimatePayload, EstimateResult } from "@/lib/estimates/types";
+import { getNumberFormatter } from "@/utils/formatters";
 
 type InvoiceTemplateInput = {
   payload: EstimatePayload;
@@ -15,18 +16,17 @@ type InvoiceTemplateInput = {
 
 /** Safely format a number to 2 decimal places, avoiding floating point display errors */
 function safeNumber(value: string | number): string {
-  if (typeof value === "number") {
-    return (Math.round(value * 100) / 100).toFixed(2);
-  }
-  const parsed = parseFloat(value);
-  if (!isNaN(parsed)) {
-    return (Math.round(parsed * 100) / 100).toFixed(2);
-  }
-  return value;
+  const num = typeof value === "number" ? value : parseFloat(value);
+  if (isNaN(num)) return String(value);
+
+  return getNumberFormatter("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(Math.round(num * 100) / 100);
 }
 
 function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("en-US", {
+  return getNumberFormatter("en-US", {
     style: "currency",
     currency: "USD",
     minimumFractionDigits: 2,
@@ -108,6 +108,19 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
   const subtotal = hasBreakdown ? formatCurrency(subtotalCents / 100) : null;
   const tax = hasBreakdown && taxCents ? formatCurrency(taxCents / 100) : null;
   const total = hasBreakdown ? formatCurrency(totalCents / 100) : dollars;
+
+  // Build material list if available
+  const materialList = Array.isArray(payload.material_list) ? payload.material_list : [];
+  const materialListHtml =
+    materialList.length > 0
+      ? `
+      <div style="margin-top: 24px;">
+        <p style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 8px;">Material List</p>
+        <ul style="list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          ${materialList.map((item) => `<li style="font-size: 11px; color: #374151; padding: 4px 8px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 4px;">${item}</li>`).join("")}
+        </ul>
+      </div>`
+      : "";
 
   // Get tax label
   const selectedCounty = inputs?.selected_county ?? inputs?.tax_county;
@@ -240,6 +253,8 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
       </div>
 
 
+
+      ${materialListHtml}
 
       <!-- Signature -->
       ${

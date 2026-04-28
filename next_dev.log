@@ -1,0 +1,100 @@
+
+> proconstructioncalc@1.0.0 dev
+> next dev --turbopack
+
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+✓ Ready in 584ms
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+- Cache Components enabled
+- Experiments (use with caution):
+  · clientTraceMetadata
+  · optimizePackageImports
+
+○ Compiling /command-center/estimates/new ...
+
+[35m
+[Clerk]:[0m You are running in keyless mode.
+You can [35mclaim your keys[0m by visiting https://dashboard.clerk.com/apps/claim?framework=nextjs&token=rkrz3l8tyzkmfrz832dwwu2qgs2l9gd6c1p5ybic&return_url=http%3A%2F%2Flocalhost%3A3000%2F
+
+Error: Route "/command-center/estimates/new": Uncached data or `connection()` was accessed outside of `<Suspense>`. This delays the entire page from rendering, resulting in a slow user experience. Learn more: https://nextjs.org/docs/messages/blocking-route
+    at RootLayout (src/app/layout.tsx:139:5)
+  137 |
+  138 |   return (
+> 139 |     <ClerkProvider
+      |     ^
+  140 |       appearance={{
+  141 |         variables: {
+  142 |           colorPrimary: "#2563eb",
+ GET /command-center/estimates/new 200 in 16.1s (next.js: 13.5s, proxy.ts: 311ms, application-code: 2.3s)
+ GET /command-center/estimates/new 200 in 711ms (next.js: 232ms, proxy.ts: 56ms, application-code: 424ms)
+ POST /command-center/estimates/new 303 in 2.2s (next.js: 1289ms, proxy.ts: 48ms, application-code: 894ms)
+  └─ ƒ syncKeylessConfigAction({"apiKeysUrl":"https://dashboard.clerk.com/apps/app_3Cxnc11KhznfeV2ecVWkxvrDndv/instances/ins_3CxnbxgH6JzpteNR7WTmajwAdXf/api-keys","claimUrl":"https://dashboard.clerk.com/apps/claim?framework=nextjs&token=rkrz3l8tyzkmfrz832dwwu2qgs2l9gd6c1p5ybic","...":"3 items not stringified"}) in 33ms node_modules/@clerk/nextjs/dist/esm-router/keyless-actions.js
+ GET /command-center/estimates/new 200 in 228ms (next.js: 73ms, proxy.ts: 65ms, application-code: 90ms)
+[browser] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview (https://brief-walrus-27.clerk.accounts.dev/npm/@clerk/clerk-js@6/dist/clerk.browser.js:12:3216)
+ GET /command-center/estimates/new 200 in 164ms (next.js: 15ms, proxy.ts: 33ms, application-code: 116ms)
+[browser] Error: Route "/command-center/estimates/new": Uncached data or `connection()` was accessed outside of `<Suspense>`. This delays the entire page from rendering, resulting in a slow user experience. Learn more: https://nextjs.org/docs/messages/blocking-route
+    at RootLayout (src/app/layout.tsx:139:5)
+  137 |
+  138 |   return (
+> 139 |     <ClerkProvider
+      |     ^
+  140 |       appearance={{
+  141 |         variables: {
+  142 |           colorPrimary: "#2563eb",
+Error: Route "/command-center/estimates/new": Runtime data such as `cookies()`, `headers()`, `params`, or `searchParams` was accessed outside of `<Suspense>`. This delays the entire page from rendering, resulting in a slow user experience. Learn more: https://nextjs.org/docs/messages/blocking-route
+    at RootLayout (src/app/layout.tsx:139:5)
+  137 |
+  138 |   return (
+> 139 |     <ClerkProvider
+      |     ^
+  140 |       appearance={{
+  141 |         variables: {
+  142 |           colorPrimary: "#2563eb",
+ GET /command-center/estimates/new 200 in 433ms (next.js: 6ms, proxy.ts: 10ms, application-code: 416ms)
+[browser] Error: Route "/command-center/estimates/new": Runtime data such as `cookies()`, `headers()`, `params`, or `searchParams` was accessed outside of `<Suspense>`. This delays the entire page from rendering, resulting in a slow user experience. Learn more: https://nextjs.org/docs/messages/blocking-route
+    at RootLayout (src/app/layout.tsx:139:5)
+  137 |
+  138 |   return (
+> 139 |     <ClerkProvider
+      |     ^
+  140 |       appearance={{
+  141 |         variables: {
+  142 |           colorPrimary: "#2563eb",
+ GET /command-center/estimates/new 200 in 133ms (next.js: 7ms, proxy.ts: 12ms, application-code: 114ms)
+ POST /command-center/estimates/new 303 in 228ms (next.js: 10ms, proxy.ts: 20ms, application-code: 197ms)
+  └─ ƒ syncKeylessConfigAction({"apiKeysUrl":"https://dashboard.clerk.com/apps/app_3Cxnc11KhznfeV2ecVWkxvrDndv/instances/ins_3CxnbxgH6JzpteNR7WTmajwAdXf/api-keys","claimUrl":"https://dashboard.clerk.com/apps/claim?framework=nextjs&token=rkrz3l8tyzkmfrz832dwwu2qgs2l9gd6c1p5ybic","...":"3 items not stringified"}) in 7ms node_modules/@clerk/nextjs/dist/esm-router/keyless-actions.js
+[browser] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview (https://brief-walrus-27.clerk.accounts.dev/npm/@clerk/clerk-js@6/dist/clerk.browser.js:12:3216)
+ GET /command-center/estimates/new 200 in 34ms (next.js: 6ms, proxy.ts: 15ms, application-code: 13ms)
+ GET /command-center/estimates/new 200 in 61ms (next.js: 5ms, proxy.ts: 10ms, application-code: 46ms)
+Error: Route "/command-center/estimates/new": Runtime data such as `cookies()`, `headers()`, `params`, or `searchParams` was accessed outside of `<Suspense>`. This delays the entire page from rendering, resulting in a slow user experience. Learn more: https://nextjs.org/docs/messages/blocking-route
+    at RootLayout (src/app/layout.tsx:139:5)
+  137 |
+  138 |   return (
+> 139 |     <ClerkProvider
+      |     ^
+  140 |       appearance={{
+  141 |         variables: {
+  142 |           colorPrimary: "#2563eb",
+ GET /command-center/estimates/new 200 in 363ms (next.js: 18ms, proxy.ts: 7ms, application-code: 338ms)
+[browser] Error: Route "/command-center/estimates/new": Runtime data such as `cookies()`, `headers()`, `params`, or `searchParams` was accessed outside of `<Suspense>`. This delays the entire page from rendering, resulting in a slow user experience. Learn more: https://nextjs.org/docs/messages/blocking-route
+    at RootLayout (src/app/layout.tsx:139:5)
+  137 |
+  138 |   return (
+> 139 |     <ClerkProvider
+      |     ^
+  140 |       appearance={{
+  141 |         variables: {
+  142 |           colorPrimary: "#2563eb",
+ GET /command-center/estimates/new 200 in 133ms (next.js: 6ms, proxy.ts: 18ms, application-code: 108ms)
+ POST /command-center/estimates/new 303 in 186ms (next.js: 5ms, proxy.ts: 8ms, application-code: 174ms)
+  └─ ƒ syncKeylessConfigAction({"apiKeysUrl":"https://dashboard.clerk.com/apps/app_3Cxnc11KhznfeV2ecVWkxvrDndv/instances/ins_3CxnbxgH6JzpteNR7WTmajwAdXf/api-keys","claimUrl":"https://dashboard.clerk.com/apps/claim?framework=nextjs&token=rkrz3l8tyzkmfrz832dwwu2qgs2l9gd6c1p5ybic","...":"3 items not stringified"}) in 5ms node_modules/@clerk/nextjs/dist/esm-router/keyless-actions.js
+[browser] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview (https://brief-walrus-27.clerk.accounts.dev/npm/@clerk/clerk-js@6/dist/clerk.browser.js:12:3216)
+ GET /command-center/estimates/new 200 in 41ms (next.js: 7ms, proxy.ts: 13ms, application-code: 21ms)
+ GET /command-center/estimates/new 200 in 83ms (next.js: 5ms, proxy.ts: 20ms, application-code: 58ms)
+[?25h
