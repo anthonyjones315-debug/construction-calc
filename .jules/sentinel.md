@@ -1,0 +1,4 @@
+## 2026-04-29 - Secure-by-Default Webhook Validation
+**Vulnerability:** The Documenso webhook receiver failed open when environment variables (`WEBHOOK_SECRET` or `DOCUMENSO_WEBHOOK_SECRET`) were missing. This allowed unauthenticated attackers to trigger estimate status updates by sending arbitrary JSON payloads.
+**Learning:** Checking for the presence of a secret *before* entering validation logic can lead to a "fail-open" scenario if that check is used as a conditional for the entire validation block.
+**Prevention:** Always treat cryptographic secrets as mandatory for security-sensitive endpoints. Rejection should be the default state if configuration is missing (`if (!secret) return 500`). Additionally, use `crypto.timingSafeEqual` for all signature/token comparisons to prevent timing side-channel attacks.
