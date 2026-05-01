@@ -5,6 +5,7 @@
  */
 
 import type { EstimatePayload, EstimateResult } from "@/lib/estimates/types";
+import { getNumberFormatter } from "@/utils/formatters";
 
 type InvoiceTemplateInput = {
   payload: EstimatePayload;
@@ -26,7 +27,7 @@ function safeNumber(value: string | number): string {
 }
 
 function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("en-US", {
+  return getNumberFormatter("en-US", {
     style: "currency",
     currency: "USD",
     minimumFractionDigits: 2,
@@ -210,6 +211,15 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
           </tbody>
         </table>
       </div>
+
+      <!-- Materials -->
+      ${payload.material_list?.length ? `
+      <div style="margin-top: 24px;">
+        <p style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 8px;">Materials</p>
+        <ul style="list-style: none; font-size: 12px; color: #374151; padding: 0;">
+          ${payload.material_list.map((m) => `<li style="margin-bottom: 4px;">${m}</li>`).join("")}
+        </ul>
+      </div>` : ""}
 
       <!-- Totals -->
       <div style="margin-top: 4px; display: flex; justify-content: flex-end;">
