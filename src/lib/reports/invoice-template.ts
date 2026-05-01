@@ -6,6 +6,15 @@
 
 import type { EstimatePayload, EstimateResult } from "@/lib/estimates/types";
 
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 type InvoiceTemplateInput = {
   payload: EstimatePayload;
   contractorName: string;
@@ -123,7 +132,16 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
     | { signatureDataUrl?: string; signedAt?: string; signerName?: string }
     | undefined;
 
-
+  const materialListHtml =
+    payload.material_list && payload.material_list.length > 0
+      ? `
+      <div style="margin-top: 24px; padding: 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;">
+        <p style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 8px;">Materials</p>
+        <ul style="font-size: 11px; color: #6b7280; line-height: 1.6; padding-left: 18px;">
+          ${payload.material_list.map((m) => `<li>${escapeHtml(m)}</li>`).join("")}
+        </ul>
+      </div>`
+      : "";
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -273,6 +291,9 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
         </div>
       </div>`
       }
+
+      <!-- Materials -->
+      ${materialListHtml}
 
       <!-- Notes -->
       <div style="margin-top: 24px; padding: 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;">
