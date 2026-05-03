@@ -56,6 +56,7 @@ import {
   Wind,
   Wrench,
   X,
+  Loader2,
 } from "lucide-react";
 import type { EstimatePayload } from "@/components/ui/EmailEstimateModal";
 import { ManualErrorReportButton } from "@/components/support/ManualErrorReportButton";
@@ -3576,12 +3577,13 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
     type="button"
     onClick={handleSaveEstimate}
     disabled={saveState !== "idle" || !session}
+    aria-busy={saveState === "saving"}
     className={`glass-button inline-flex h-9 min-h-9 items-center gap-2 rounded-xl px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-[--color-ink] transition-all duration-200 hover:text-[--color-ink] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 ${saveState !== "idle" ? "scale-95" : ""} ${saveState === "corrected" ? "verified-lock-pulse border-primary text-primary" : ""}`}
     title={!session ? "Sign in to save estimates" : undefined}
   >
     {saveState === "saving" ? (
       <>
-        <Save className="h-3.5 w-3.5" aria-hidden />
+        <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
         Saving
       </>
     ) : saveState === "saved" ? (
@@ -4746,9 +4748,17 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                         type="button"
                         onClick={runAiOptimizer}
                         disabled={aiOptimizeBusy}
-                        className="rounded-xl border border-[--color-border] px-3 py-1.5 text-xs font-bold uppercase tracking-[0.12em] transition-all duration-200 hover:border-[--color-blue-brand] hover:text-[--color-blue-brand] active:scale-[0.98]"
+                        aria-busy={aiOptimizeBusy}
+                        className="rounded-xl border border-[--color-border] px-3 py-1.5 text-xs font-bold uppercase tracking-[0.12em] transition-all duration-200 hover:border-[--color-blue-brand] hover:text-[--color-blue-brand] active:scale-[0.98] inline-flex items-center gap-1.5"
                       >
-                        {aiOptimizeBusy ? "Optimizing…" : "Optimize"}
+                        {aiOptimizeBusy ? (
+                          <>
+                            <Loader2 className="h-3 w-3 animate-spin" aria-hidden />
+                            Optimizing…
+                          </>
+                        ) : (
+                          "Optimize"
+                        )}
                       </button>
                     </div>
                   </section>
@@ -5292,9 +5302,14 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                   type="button"
                   onClick={handleDownloadPdf}
                   disabled={finalizeBusy !== null}
+                  aria-busy={finalizeBusy === "pdf"}
                   className="glass-button inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold text-copy-primary transition hover:border-blue-base disabled:opacity-60"
                 >
-                  <FileDown className="h-4 w-4" aria-hidden />
+                  {finalizeBusy === "pdf" ? (
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                  ) : (
+                    <FileDown className="h-4 w-4" aria-hidden />
+                  )}
                   {finalizeBusy === "pdf" ? "Generating..." : "Download PDF"}
                 </button>
                 {session ? (
@@ -5324,9 +5339,14 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                     type="button"
                     onClick={handleSendForSignature}
                     disabled={finalizeBusy !== null}
+                    aria-busy={finalizeBusy === "sign"}
                     className="glass-button-primary rim-light-active inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-bold text-white transition hover:bg-blue-light disabled:opacity-60"
                   >
-                    <Mail className="h-4 w-4" aria-hidden />
+                    {finalizeBusy === "sign" ? (
+                      <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                    ) : (
+                      <Mail className="h-4 w-4" aria-hidden />
+                    )}
                     {finalizeBusy === "sign"
                       ? "Creating Link..."
                       : "Send to Client for Signature"}
