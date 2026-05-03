@@ -7,6 +7,13 @@
 import type { EstimatePayload, EstimateResult } from "@/lib/estimates/types";
 import { getNumberFormatter } from "@/utils/formatters";
 
+const CURRENCY_FORMATTER = getNumberFormatter({
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
 type InvoiceTemplateInput = {
   payload: EstimatePayload;
   contractorName: string;
@@ -27,12 +34,7 @@ function safeNumber(value: string | number): string {
 }
 
 function formatCurrency(value: number): string {
-  return getNumberFormatter({
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(Math.round(value * 100) / 100);
+  return CURRENCY_FORMATTER.format(Math.round(value * 100) / 100);
 }
 
 export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
