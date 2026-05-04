@@ -32,6 +32,7 @@ import {
   FileDown,
   FileSpreadsheet,
   HardHat,
+  Loader2,
   Hammer,
   Layers,
   Layers3,
@@ -955,6 +956,7 @@ export function CommandCenterCalculator({ page, closeModal }: CalculatorPageProp
   const [aiOptimizeContent, setAiOptimizeContent] = useState<string | null>(
     null,
   );
+  const [isFetchingLocation, setIsFetchingLocation] = useState(false);
   const [estimateName, setEstimateName] = useState(
     `${displayTitle(page.title)} Estimate`,
   );
@@ -4687,15 +4689,26 @@ export function CommandCenterCalculator({ page, closeModal }: CalculatorPageProp
                         type="button"
                         onClick={runAiOptimizer}
                         disabled={aiOptimizeBusy}
+                        aria-busy={aiOptimizeBusy}
                         className="rounded-xl border border-[--color-border] px-3 py-1.5 text-xs font-bold uppercase tracking-[0.12em] transition-all duration-200 hover:border-[--color-blue-brand] hover:text-[--color-blue-brand] active:scale-[0.98]"
                       >
-                        {aiOptimizeBusy ? "Optimizing…" : "Optimize"}
+                        {aiOptimizeBusy ? (
+                          <>
+                            <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                            Optimizing…
+                          </>
+                        ) : (
+                          "Optimize"
+                        )}
                       </button>
                     </div>
                   </section>
 
                   {aiOptimizeError || aiOptimizeContent ? (
-                    <section className="glass-panel mt-2 p-3 transition-colors">
+                    <section
+                      className="glass-panel mt-2 p-3 transition-colors"
+                      aria-live="polite"
+                    >
                       {aiOptimizeError ? (
                         <p className="text-sm text-red-200">
                           {aiOptimizeError}
@@ -5026,7 +5039,7 @@ export function CommandCenterCalculator({ page, closeModal }: CalculatorPageProp
                       : `${estimateClientName.trim().split(' ').pop() || 'Client'} - ${estimateJobName || 'Project'}`
                     }
                     readOnly
-                    className="glass-input mt-1 h-11 w-full rounded-xl px-3 outline-none opacity-80 cursor-not-allowed cursor-not-allowed text-copy-tertiary"
+                    className="glass-input mt-1 h-11 w-full rounded-xl px-3 outline-none opacity-80 cursor-not-allowed text-copy-tertiary"
                   />
                 </label>
                 <label className="text-sm text-copy-secondary">
@@ -5079,22 +5092,39 @@ export function CommandCenterCalculator({ page, closeModal }: CalculatorPageProp
                       onClick={(e) => {
                         e.preventDefault();
                         if ("geolocation" in navigator) {
-                          navigator.geolocation.getCurrentPosition(async (pos) => {
-                            const { latitude, longitude } = pos.coords;
-                            try {
-                              const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
-                              const data = await res.json();
-                              if (data && data.display_name) {
-                                setEstimateJobAddress(data.display_name);
+                          setIsFetchingLocation(true);
+                          navigator.geolocation.getCurrentPosition(
+                            async (pos) => {
+                              const { latitude, longitude } = pos.coords;
+                              try {
+                                const res = await fetch(
+                                  `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
+                                );
+                                const data = await res.json();
+                                if (data && data.display_name) {
+                                  setEstimateJobAddress(data.display_name);
+                                }
+                              } catch {
+                              } finally {
+                                setIsFetchingLocation(false);
                               }
-                            } catch {}
-                          })
+                            },
+                            () => {
+                              setIsFetchingLocation(false);
+                            },
+                          );
                         }
                       }}
-                      className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-[--color-ink-dim] hover:text-[--color-blue-brand] transition-colors"
+                      disabled={isFetchingLocation}
+                      aria-busy={isFetchingLocation}
+                      className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-[--color-ink-dim] transition-colors hover:text-[--color-blue-brand] disabled:opacity-50"
                       title="Use Current Location"
                     >
-                      <MapPin className="h-4 w-4" aria-hidden />
+                      {isFetchingLocation ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <MapPin className="h-4 w-4" aria-hidden />
+                      )}
                     </button>
                   </div>
                 </label>
