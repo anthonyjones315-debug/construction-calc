@@ -59,14 +59,17 @@ function useAnimatedDisplayValue(value: string, duration = 320) {
     let frameId = 0;
     const start = performance.now();
 
+    // Move formatter lookup outside of the high-frequency tick function
+    const formatter = getNumberFormatter({
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    });
+
     const tick = (now: number) => {
       const progress = Math.min((now - start) / duration, 1);
       const eased = easeOutCubic(progress);
       const current = from + (to - from) * eased;
-      const formatted = getNumberFormatter({
-        minimumFractionDigits: decimals,
-        maximumFractionDigits: decimals,
-      }).format(current);
+      const formatted = formatter.format(current);
 
       setDisplayValue(`${formatted}${nextMeta.suffix}`);
 

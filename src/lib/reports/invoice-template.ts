@@ -14,6 +14,13 @@ type InvoiceTemplateInput = {
   contractorLogoUrl: string | null;
 };
 
+const CURRENCY_FORMATTER = getNumberFormatter({
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
 /** Safely format a number to 2 decimal places, avoiding floating point display errors */
 function safeNumber(value: string | number): string {
   if (typeof value === "number") {
@@ -27,12 +34,7 @@ function safeNumber(value: string | number): string {
 }
 
 function formatCurrency(value: number): string {
-  return getNumberFormatter({
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(Math.round(value * 100) / 100);
+  return CURRENCY_FORMATTER.format(Math.round(value * 100) / 100);
 }
 
 export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
