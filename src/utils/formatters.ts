@@ -4,6 +4,14 @@ const numberFormatters = new Map<string, Intl.NumberFormat>();
 const dateTimeFormatters = new Map<string, Intl.DateTimeFormat>();
 
 /**
+ * Common currency formatter for USD to avoid Map lookups in high-frequency paths.
+ */
+export const CURRENCY_FORMATTER = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
+
+/**
  * Generates a deterministic cache key for a given locale and options object.
  */
 function getCacheKey(locale: string, options: FormatterOptions): string {
