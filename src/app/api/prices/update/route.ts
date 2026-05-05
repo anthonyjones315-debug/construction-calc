@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import { auth } from "@/lib/auth/config";
+import { checkMemoryRateLimit } from "@/lib/rate-limit/memory";
 import { createServerClient } from "@/lib/supabase/server";
 import {
   getBusinessContextForSession,
@@ -9,10 +10,12 @@ import {
 } from "@/lib/supabase/business";
 import { MARKET_PRICES_BASE } from "@/data";
 import type { MarketPrices } from "@/types";
+import type { AuthSession } from "@/lib/auth/session";
 
-async function getPricesForCurrentUser(): Promise<MarketPrices> {
+async function getPricesForCurrentUser(
+  session: AuthSession,
+): Promise<MarketPrices> {
   const prices: MarketPrices = { ...MARKET_PRICES_BASE };
-  const session = await auth();
 
   if (!session?.user?.id) {
     return prices;
@@ -48,7 +51,26 @@ async function getPricesForCurrentUser(): Promise<MarketPrices> {
 
 export async function POST() {
   try {
-    const prices = await getPricesForCurrentUser();
+    const session = await auth();
+    if (session?.user?.id) {
+      const rl = checkMemoryRateLimit(
+        "prices-update",
+        session.user.id,
+        20,
+        60_000,
+      );
+      if (!rl.ok) {
+        return NextResponse.json(
+          { error: "Too many price update requests. Please try again later." },
+          {
+            status: 429,
+            headers: { "Retry-After": String(rl.retryAfterSeconds) },
+          },
+        );
+      }
+    }
+
+    const prices = await getPricesForCurrentUser(session);
     return NextResponse.json({ prices });
   } catch (err) {
     Sentry.captureException(err);
