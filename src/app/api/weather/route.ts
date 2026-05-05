@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
+import { auth } from "@/lib/auth/config";
+import { checkMemoryRateLimit } from "@/lib/rate-limit/memory";
 
 async function geocodeZip(zip: string, googleKey: string) {
   const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(zip)},US&key=${googleKey}`;
@@ -20,6 +22,22 @@ function wmoToCondition(code: number) {
 
 export async function GET(req: Request) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const rl = checkMemoryRateLimit("weather-api", session.user.id, 10, 60_000);
+    if (!rl.ok) {
+      return NextResponse.json(
+        { error: "Too many weather requests. Please try again later." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(rl.retryAfterSeconds) },
+        },
+      );
+    }
+
     const { searchParams } = new URL(req.url);
     const latParam = searchParams.get("lat");
     const lngParam = searchParams.get("lng");
