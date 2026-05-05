@@ -26,6 +26,7 @@ import {
   Check,
   ChevronDown,
   CircleDollarSign,
+  Loader2,
   ClipboardList,
   DraftingCompass,
   Gauge,
@@ -964,6 +965,7 @@ export function CommandCenterCalculator({ page, closeModal }: CalculatorPageProp
   const [estimateJobAddress, setEstimateJobAddress] = useState("");
   const [estimateQuoteNote, setEstimateQuoteNote] = useState("");
   const [estimateInternalNote, setEstimateInternalNote] = useState("");
+  const [isLocating, setIsLocating] = useState(false);
 
   const haptic = useHaptic();
   const hapticTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -5078,23 +5080,42 @@ export function CommandCenterCalculator({ page, closeModal }: CalculatorPageProp
                       type="button"
                       onClick={(e) => {
                         e.preventDefault();
-                        if ("geolocation" in navigator) {
-                          navigator.geolocation.getCurrentPosition(async (pos) => {
+                        if (!("geolocation" in navigator)) return;
+                        setIsLocating(true);
+                        navigator.geolocation.getCurrentPosition(
+                          async (pos) => {
                             const { latitude, longitude } = pos.coords;
                             try {
-                              const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
+                              const res = await fetch(
+                                `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
+                              );
                               const data = await res.json();
                               if (data && data.display_name) {
                                 setEstimateJobAddress(data.display_name);
                               }
-                            } catch {}
-                          })
-                        }
+                            } catch (err) {
+                              console.error("Location error:", err);
+                            } finally {
+                              setIsLocating(false);
+                            }
+                          },
+                          (err) => {
+                            console.error("Geolocation error:", err);
+                            setIsLocating(false);
+                          },
+                        );
                       }}
-                      className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-[--color-ink-dim] hover:text-[--color-blue-brand] transition-colors"
+                      disabled={isLocating}
+                      aria-busy={isLocating}
+                      className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-[--color-ink-dim] transition-colors hover:text-[--color-blue-brand] disabled:opacity-50"
                       title="Use Current Location"
+                      aria-label="Use current location"
                     >
-                      <MapPin className="h-4 w-4" aria-hidden />
+                      {isLocating ? (
+                        <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                      ) : (
+                        <MapPin className="h-4 w-4" aria-hidden />
+                      )}
                     </button>
                   </div>
                 </label>
