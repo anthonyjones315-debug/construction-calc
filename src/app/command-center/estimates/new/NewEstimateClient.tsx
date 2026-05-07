@@ -31,7 +31,6 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { useEstimateForm } from "@/lib/estimates/useEstimateForm";
-import { getNumberFormatter } from "@/utils/formatters";
 import { routes } from "@routes";
 import type {
   EstimateLineItem,
@@ -72,18 +71,21 @@ type PanelTab = "calculator" | "pricebook" | "manual" | null;
 
 // ─── Utilities ────────────────────────────────────────────────────────────────
 
+/**
+ * Hoisted formatter to avoid Map lookup and key generation overhead
+ * in render loops and frequently called utility functions.
+ */
+const CURRENCY_FORMATTER = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
+
 function formatCents(cents: number): string {
-  return getNumberFormatter({
-    style: "currency",
-    currency: "USD",
-  }).format(cents / 100);
+  return CURRENCY_FORMATTER.format(cents / 100);
 }
 
 function formatDollars(dollars: number): string {
-  return getNumberFormatter({
-    style: "currency",
-    currency: "USD",
-  }).format(dollars);
+  return CURRENCY_FORMATTER.format(dollars);
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
