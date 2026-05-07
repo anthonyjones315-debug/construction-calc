@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import Image from "next/image";
 import type { Route } from "next";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useId } from "react";
 import type { LucideIcon } from "lucide-react";
 import { useAuth, useUser } from "@clerk/nextjs";
 import * as Sentry from "@sentry/nextjs";
@@ -835,6 +835,7 @@ function getHeroImageForKey(key: string): string {
 
 export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   const calculatorShellRef = useRef<HTMLElement>(null);
+  const addressId = useId();
   const { userId, isLoaded } = useAuth();
   const { user: clerkUser } = useUser();
   const session = userId
@@ -5120,10 +5121,11 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                     placeholder="Optional"
                   />
                 </label>
-                <label className="text-sm text-copy-secondary">
+                <label htmlFor={addressId} className="text-sm text-copy-secondary">
                   Job Site Address
                   <div className="relative mt-1">
                     <PlaceAutocomplete
+                      id={addressId}
                       apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
                       onPlaceSelect={(address) => {
                         setEstimateJobAddress(address);
@@ -5152,6 +5154,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                       }}
                       className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-[--color-ink-dim] hover:text-[--color-blue-brand] transition-colors"
                       title="Use Current Location"
+                      aria-label="Use current location"
                     >
                       <MapPin className="h-4 w-4" aria-hidden />
                     </button>

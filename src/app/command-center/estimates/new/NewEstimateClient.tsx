@@ -5,6 +5,7 @@ import {
   useEffect,
   useRef,
   useCallback,
+  useId,
   type FormEvent,
   type ChangeEvent,
 } from "react";
@@ -166,6 +167,7 @@ function EstimateDetailsCard({
   const [isFetchingLocation, setIsFetchingLocation] = useState(false);
   const mapsKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
   const [crmClients, setCrmClients] = useState<{id: string, name: string, email?: string, address?: string}[]>([]);
+  const addressId = useId();
 
   useEffect(() => {
     fetch("/api/clients").then(res => res.json()).then(data => {
@@ -290,14 +292,18 @@ function EstimateDetailsCard({
 
       {/* Job Site Address & Widgets */}
       <div className="mt-4 border-t border-slate-100 pt-4">
-        <label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
+        <label
+          htmlFor={addressId}
+          className="mb-2 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500"
+        >
           Project Location
         </label>
-        
+
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
           <div className="flex-1 space-y-3">
             <div className="relative">
               <AddressAutocomplete
+                id={addressId}
                 apiKey={mapsKey}
                 onAddressSelect={(addr, lat, lng) => {
                   onChange("jobSiteAddress", addr);
@@ -307,7 +313,9 @@ function EstimateDetailsCard({
                   }
                 }}
                 defaultValue={jobSiteAddress}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange("jobSiteAddress", e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  onChange("jobSiteAddress", e.target.value)
+                }
                 placeholder="Start typing an address..."
                 className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 pl-3 pr-10 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[--color-blue-brand]/45 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[--color-blue-brand]/20"
               />
@@ -320,36 +328,49 @@ function EstimateDetailsCard({
                     return;
                   }
                   setIsFetchingLocation(true);
-                  navigator.geolocation.getCurrentPosition(async (pos) => {
-                    const { latitude, longitude } = pos.coords;
-                    try {
-                      const res = await fetch(
-                        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${mapsKey}`
-                      );
-                      const data = await res.json();
-                      if (data.status === "OK" && data.results?.[0]) {
-                        const addr = data.results[0].formatted_address;
-                        onChange("jobSiteAddress", addr);
-                        setLat(latitude);
-                        setLng(longitude);
-                      } else {
-                        // setError("Unable to retrieve address from Google Geocoding."); // Removed setError call
+                  navigator.geolocation.getCurrentPosition(
+                    async (pos) => {
+                      const { latitude, longitude } = pos.coords;
+                      try {
+                        const res = await fetch(
+                          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${mapsKey}`,
+                        );
+                        const data = await res.json();
+                        if (data.status === "OK" && data.results?.[0]) {
+                          const addr = data.results[0].formatted_address;
+                          onChange("jobSiteAddress", addr);
+                          setLat(latitude);
+                          setLng(longitude);
+                        } else {
+                          // setError("Unable to retrieve address from Google Geocoding."); // Removed setError call
+                        }
+                      } catch {
+                        // setError("Failed to fetch location data from Google."); // Removed setError call
+                      } finally {
+                        setIsFetchingLocation(false);
                       }
-                    } catch {
-                      // setError("Failed to fetch location data from Google."); // Removed setError call
-                    } finally {
+                    },
+                    () => {
+                      // setError("Geolocation error."); // Removed setError call
                       setIsFetchingLocation(false);
-                    }
-                  }, () => {
-                    // setError("Geolocation error."); // Removed setError call
-                    setIsFetchingLocation(false);
-                  });
+                    },
+                  );
                 }}
                 disabled={isFetchingLocation}
                 className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-slate-400 hover:text-[--color-blue-brand] transition-colors"
                 title="Use Current Location"
+                aria-label={
+                  isFetchingLocation
+                    ? "Fetching current location..."
+                    : "Use current location"
+                }
+                aria-busy={isFetchingLocation}
               >
-                {isFetchingLocation ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <MapPin className="h-4 w-4" aria-hidden />}
+                {isFetchingLocation ? (
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                ) : (
+                  <MapPin className="h-4 w-4" aria-hidden />
+                )}
               </button>
             </div>
             {lat && lng && <WeatherWidget lat={lat} lng={lng} />}
