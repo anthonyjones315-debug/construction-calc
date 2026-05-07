@@ -5,7 +5,6 @@
  */
 
 import type { EstimatePayload, EstimateResult } from "@/lib/estimates/types";
-import { getNumberFormatter } from "@/utils/formatters";
 
 type InvoiceTemplateInput = {
   payload: EstimatePayload;
@@ -13,6 +12,17 @@ type InvoiceTemplateInput = {
   contractorContact: string | null;
   contractorLogoUrl: string | null;
 };
+
+/**
+ * Hoisted currency formatter to avoid Map lookup and key generation overhead
+ * during document generation, especially for estimates with many line items.
+ */
+const CURRENCY_FORMATTER = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
 
 /** Safely format a number to 2 decimal places, avoiding floating point display errors */
 function safeNumber(value: string | number): string {
@@ -27,12 +37,7 @@ function safeNumber(value: string | number): string {
 }
 
 function formatCurrency(value: number): string {
-  return getNumberFormatter({
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(Math.round(value * 100) / 100);
+  return CURRENCY_FORMATTER.format(Math.round(value * 100) / 100);
 }
 
 export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
