@@ -9,6 +9,7 @@ import {
   PackagePlus,
   FolderOpen,
   ExternalLink,
+  Loader2,
   MapPin,
 } from "lucide-react";
 import { PlaceAutocomplete } from "@/components/ui/PlaceAutocomplete";
@@ -213,6 +214,7 @@ export function SavedContent({
   const [createError, setCreateError] = useState<string | null>(null);
   const [createSuccess, setCreateSuccess] = useState<string | null>(null);
   const [updateSuccess, setUpdateSuccess] = useState<string | null>(null);
+  const [isFetchingLocation, setIsFetchingLocation] = useState(false);
 
   const haptic = useHaptic();
   const saveLockStart = useRef<number>(0);
@@ -1490,6 +1492,7 @@ export function SavedContent({
                   onClick={(e) => {
                     e.preventDefault();
                     if ("geolocation" in navigator) {
+                      setIsFetchingLocation(true);
                       navigator.geolocation.getCurrentPosition(async (pos) => {
                         const { latitude, longitude } = pos.coords;
                         try {
@@ -1498,14 +1501,25 @@ export function SavedContent({
                           if (data && data.display_name) {
                             setBuilderJobSiteAddress(data.display_name);
                           }
-                        } catch {}
+                        } catch {
+                        } finally {
+                          setIsFetchingLocation(false);
+                        }
+                      }, () => {
+                        setIsFetchingLocation(false);
                       })
                     }
                   }}
-                  className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-[--color-ink-dim] hover:text-[--color-blue-brand] transition-colors"
+                  disabled={isFetchingLocation}
+                  className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-[--color-ink-dim] hover:text-[--color-blue-brand] transition-colors disabled:opacity-50"
                   title="Use Current Location"
+                  aria-label="Use current location"
                 >
-                  <MapPin className="h-4 w-4" aria-hidden />
+                  {isFetchingLocation ? (
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                  ) : (
+                    <MapPin className="h-4 w-4" aria-hidden />
+                  )}
                 </button>
               </div>
             </label>
