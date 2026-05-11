@@ -9,6 +9,7 @@ import {
   PackagePlus,
   FolderOpen,
   ExternalLink,
+  Loader2,
   MapPin,
 } from "lucide-react";
 import { PlaceAutocomplete } from "@/components/ui/PlaceAutocomplete";
@@ -192,7 +193,11 @@ export function SavedContent({
         },
       }
     : null;
-  const status = isLoaded ? (userId ? "authenticated" : "unauthenticated") : "loading";
+  const status = isLoaded
+    ? userId
+      ? "authenticated"
+      : "unauthenticated"
+    : "loading";
   const contractorProfile = useContractorProfile();
   const effectiveServerFinancialData = isAuthenticated
     ? serverFinancialData
@@ -201,6 +206,7 @@ export function SavedContent({
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [isFetchingLocation, setIsFetchingLocation] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<SavedEstimate | null>(null);
   const [downloadError, setDownloadError] = useState<string | null>(null);
   const [fetchError, setFetchError] = useState<string | null>(null);
@@ -920,7 +926,8 @@ export function SavedContent({
 
         if (row.isCustom) {
           const unitCostCents = toCents(
-            Number.isFinite(row.customUnitCost) && row.customUnitCost !== undefined
+            Number.isFinite(row.customUnitCost) &&
+              row.customUnitCost !== undefined
               ? Number(row.customUnitCost)
               : 0,
           );
@@ -952,9 +959,7 @@ export function SavedContent({
           lineTotalCents,
         };
       })
-      .filter(
-        (row): row is SelectedMaterialRow => row !== null,
-      );
+      .filter((row): row is SelectedMaterialRow => row !== null);
   }, [builderRows, materials]);
 
   const priceBookSubtotalCents = useMemo(() => {
@@ -1129,29 +1134,34 @@ export function SavedContent({
             });
           } catch (error) {
             if (process.env.NODE_ENV === "development") {
-              console.warn("Unable to save custom material to price book", error);
+              console.warn(
+                "Unable to save custom material to price book",
+                error,
+              );
             }
           }
         }
       }
 
-      const budgetItems = selectedMaterialRows.map(({ material, custom, quantity, lineTotalCents }) => {
-        const name = material?.material_name ?? custom?.name ?? "Material";
-        const unitType = material?.unit_type ?? custom?.unit_type ?? "each";
-        const pricePerUnit = material?.unit_cost ?? custom?.unit_cost ?? 0;
+      const budgetItems = selectedMaterialRows.map(
+        ({ material, custom, quantity, lineTotalCents }) => {
+          const name = material?.material_name ?? custom?.name ?? "Material";
+          const unitType = material?.unit_type ?? custom?.unit_type ?? "each";
+          const pricePerUnit = material?.unit_cost ?? custom?.unit_cost ?? 0;
 
-        return {
-          id: material?.id ?? `custom-${name}`,
-          name,
-          category: material?.category ?? "Other",
-          unit_type: unitType,
-          quantity,
-          pricePerUnit,
-          line_total: centsToDollars(lineTotalCents),
-          cost_type: "material",
-          source: material ? "pricebook" : "custom",
-        };
-      });
+          return {
+            id: material?.id ?? `custom-${name}`,
+            name,
+            category: material?.category ?? "Other",
+            unit_type: unitType,
+            quantity,
+            pricePerUnit,
+            line_total: centsToDollars(lineTotalCents),
+            cost_type: "material",
+            source: material ? "pricebook" : "custom",
+          };
+        },
+      );
 
       const attachedTotalCents = toCents(attachedEstimate?.total_cost ?? 0);
       const combinedTotalCents = priceBookSubtotalCents + attachedTotalCents;
@@ -1211,9 +1221,7 @@ export function SavedContent({
       setBuilderJobSiteAddress("");
       await fetchEstimates();
     } catch (error) {
-      setCreateError(
-        "⚠️ Connection drop. Estimate saved locally. Retrying…",
-      );
+      setCreateError("⚠️ Connection drop. Estimate saved locally. Retrying…");
       console.error("[SavedContent] estimate save failed", error);
     } finally {
       setCreatingEstimate(false);
@@ -1338,14 +1346,19 @@ export function SavedContent({
           },
           signature: {
             signerName:
-              typeof signing.signerName === "string" ? signing.signerName : null,
+              typeof signing.signerName === "string"
+                ? signing.signerName
+                : null,
             signerEmail:
-              typeof signing.signerEmail === "string" ? signing.signerEmail : null,
+              typeof signing.signerEmail === "string"
+                ? signing.signerEmail
+                : null,
             signatureDataUrl:
               typeof signing.signatureDataUrl === "string"
                 ? signing.signatureDataUrl
                 : null,
-            signedAt: typeof signing.signedAt === "string" ? signing.signedAt : null,
+            signedAt:
+              typeof signing.signedAt === "string" ? signing.signedAt : null,
           },
         }),
       });
@@ -1482,7 +1495,9 @@ export function SavedContent({
                     setBuilderJobSiteAddress(address);
                   }}
                   defaultValue={builderJobSiteAddress}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBuilderJobSiteAddress(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setBuilderJobSiteAddress(e.target.value)
+                  }
                   className="w-full rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 pr-10 py-2 text-sm text-[--color-ink]"
                 />
                 <button
@@ -1490,22 +1505,40 @@ export function SavedContent({
                   onClick={(e) => {
                     e.preventDefault();
                     if ("geolocation" in navigator) {
-                      navigator.geolocation.getCurrentPosition(async (pos) => {
-                        const { latitude, longitude } = pos.coords;
-                        try {
-                          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
-                          const data = await res.json();
-                          if (data && data.display_name) {
-                            setBuilderJobSiteAddress(data.display_name);
+                      setIsFetchingLocation(true);
+                      navigator.geolocation.getCurrentPosition(
+                        async (pos) => {
+                          const { latitude, longitude } = pos.coords;
+                          try {
+                            const res = await fetch(
+                              `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
+                            );
+                            const data = await res.json();
+                            if (data && data.display_name) {
+                              setBuilderJobSiteAddress(data.display_name);
+                            }
+                          } catch {
+                          } finally {
+                            setIsFetchingLocation(false);
                           }
-                        } catch {}
-                      })
+                        },
+                        () => {
+                          setIsFetchingLocation(false);
+                        },
+                      );
                     }
                   }}
-                  className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-[--color-ink-dim] hover:text-[--color-blue-brand] transition-colors"
+                  disabled={isFetchingLocation}
+                  aria-busy={isFetchingLocation}
+                  aria-label="Use current location"
+                  className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-[--color-ink-dim] hover:text-[--color-blue-brand] transition-colors disabled:opacity-50"
                   title="Use Current Location"
                 >
-                  <MapPin className="h-4 w-4" aria-hidden />
+                  {isFetchingLocation ? (
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                  ) : (
+                    <MapPin className="h-4 w-4" aria-hidden />
+                  )}
                 </button>
               </div>
             </label>
@@ -1555,7 +1588,9 @@ export function SavedContent({
                     placeholder="Custom material name"
                     value={row.customName ?? ""}
                     onChange={(event) =>
-                      updateBuilderRow(index, { customName: event.target.value })
+                      updateBuilderRow(index, {
+                        customName: event.target.value,
+                      })
                     }
                     className="rounded-lg border border-[--color-border] bg-[--color-bg] px-3 py-2 text-sm text-[--color-ink]"
                   />
@@ -1564,7 +1599,9 @@ export function SavedContent({
                     placeholder="Unit type (e.g., each, lf)"
                     value={row.customUnitType ?? "each"}
                     onChange={(event) =>
-                      updateBuilderRow(index, { customUnitType: event.target.value })
+                      updateBuilderRow(index, {
+                        customUnitType: event.target.value,
+                      })
                     }
                     className="rounded-lg border border-[--color-border] bg-[--color-bg] px-3 py-2 text-sm text-[--color-ink]"
                   />
@@ -1626,7 +1663,9 @@ export function SavedContent({
                   <select
                     value={row.materialId}
                     onChange={(event) =>
-                      updateBuilderRow(index, { materialId: event.target.value })
+                      updateBuilderRow(index, {
+                        materialId: event.target.value,
+                      })
                     }
                     className="rounded-lg border border-[--color-border] bg-[--color-surface-alt] px-3 py-2 text-sm text-[--color-ink]"
                   >
