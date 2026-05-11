@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import {
   useState,
   useEffect,
@@ -31,7 +32,6 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { useEstimateForm } from "@/lib/estimates/useEstimateForm";
-import { getNumberFormatter } from "@/utils/formatters";
 import { routes } from "@routes";
 import type {
   EstimateLineItem,
@@ -72,18 +72,17 @@ type PanelTab = "calculator" | "pricebook" | "manual" | null;
 
 // ─── Utilities ────────────────────────────────────────────────────────────────
 
+const CURRENCY_FORMATTER = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
+
 function formatCents(cents: number): string {
-  return getNumberFormatter({
-    style: "currency",
-    currency: "USD",
-  }).format(cents / 100);
+  return CURRENCY_FORMATTER.format(cents / 100);
 }
 
 function formatDollars(dollars: number): string {
-  return getNumberFormatter({
-    style: "currency",
-    currency: "USD",
-  }).format(dollars);
+  return CURRENCY_FORMATTER.format(dollars);
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -571,23 +570,31 @@ function PriceBookPanel({
   const [addedMaterials, setAddedMaterials] = useState<PriceBookMaterial[]>([]);
   const [justAdded, setJustAdded] = useState<Set<string>>(new Set());
 
-  const allMaterials = [...materials, ...addedMaterials];
+  const allMaterials = React.useMemo(
+    () => [...materials, ...addedMaterials],
+    [materials, addedMaterials],
+  );
 
-  const filtered = query.trim()
-    ? allMaterials.filter(
-        (m) =>
-          m.material_name.toLowerCase().includes(query.toLowerCase()) ||
-          m.category.toLowerCase().includes(query.toLowerCase()),
-      )
-    : allMaterials;
+  const filtered = React.useMemo(() => {
+    return query.trim()
+      ? allMaterials.filter(
+          (m) =>
+            m.material_name.toLowerCase().includes(query.toLowerCase()) ||
+            m.category.toLowerCase().includes(query.toLowerCase()),
+        )
+      : allMaterials;
+  }, [allMaterials, query]);
 
   // Group by category
-  const grouped: Record<string, PriceBookMaterial[]> = {};
-  for (const m of filtered) {
-    const cat = m.category || "Other";
-    if (!grouped[cat]) grouped[cat] = [];
-    grouped[cat].push(m);
-  }
+  const grouped = React.useMemo(() => {
+    const groups: Record<string, PriceBookMaterial[]> = {};
+    for (const m of filtered) {
+      const cat = m.category || "Other";
+      if (!groups[cat]) groups[cat] = [];
+      groups[cat].push(m);
+    }
+    return groups;
+  }, [filtered]);
 
   function handleQuickAdd(m: PriceBookMaterial) {
     onAddItem({
@@ -1335,7 +1342,6 @@ function LineItemsCard({
 interface TotalsCardProps {
   subtotalCents: number;
   discountCents: number;
-  discountedSubtotalCents: number;
   taxCents: number;
   totalCents: number;
   taxRatePercent: number;
@@ -1349,7 +1355,6 @@ interface TotalsCardProps {
 function TotalsCard({
   subtotalCents,
   discountCents,
-  discountedSubtotalCents,
   taxCents,
   totalCents,
   taxRatePercent,
@@ -1892,7 +1897,6 @@ export default function NewEstimateClient({ onOpenCalculators }: { onOpenCalcula
       <TotalsCard
         subtotalCents={totals.subtotalCents}
         discountCents={totals.discountCents}
-        discountedSubtotalCents={totals.discountedSubtotalCents}
         taxCents={totals.taxCents}
         totalCents={totals.totalCents}
         taxRatePercent={state.taxRatePercent}
