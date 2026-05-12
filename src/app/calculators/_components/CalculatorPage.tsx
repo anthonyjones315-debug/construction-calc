@@ -5152,6 +5152,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                       }}
                       className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-[--color-ink-dim] hover:text-[--color-blue-brand] transition-colors"
                       title="Use Current Location"
+                      aria-label="Use current location"
                     >
                       <MapPin className="h-4 w-4" aria-hidden />
                     </button>
