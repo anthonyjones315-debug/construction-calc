@@ -72,18 +72,18 @@ type PanelTab = "calculator" | "pricebook" | "manual" | null;
 
 // ─── Utilities ────────────────────────────────────────────────────────────────
 
+// Hoisted constant for the currency formatter to avoid redundant Intl initialization and Map lookups
+const CURRENCY_FORMATTER = getNumberFormatter({
+  style: "currency",
+  currency: "USD",
+});
+
 function formatCents(cents: number): string {
-  return getNumberFormatter({
-    style: "currency",
-    currency: "USD",
-  }).format(cents / 100);
+  return CURRENCY_FORMATTER.format(cents / 100);
 }
 
 function formatDollars(dollars: number): string {
-  return getNumberFormatter({
-    style: "currency",
-    currency: "USD",
-  }).format(dollars);
+  return CURRENCY_FORMATTER.format(dollars);
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────

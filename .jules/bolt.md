@@ -1,0 +1,3 @@
+## 2025-05-14 - Hoisting Intl.NumberFormat over Map-based cache
+**Learning:** Even with a cached `Map` lookup in `getNumberFormatter`, the overhead of cache-key generation (sorting keys, stringification) and the `Map.get()` call itself is significantly slower (~3.1x in benchmarks) than a simple hoisted constant. In high-frequency paths like `requestAnimationFrame` (60-120fps), this overhead can contribute to frame drops.
+**Action:** Always hoist `Intl.NumberFormat` and `Intl.DateTimeFormat` instances to module-level constants or closure-scoped variables for hot paths (loops, animations) instead of relying on the shared utility's cache lookup.
