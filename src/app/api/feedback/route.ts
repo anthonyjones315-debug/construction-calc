@@ -4,6 +4,7 @@ import { Resend } from "resend";
 import { z } from "zod";
 import { getClientIp } from "@/lib/http/client-ip";
 import { checkMemoryRateLimit } from "@/lib/rate-limit/memory";
+import { escapeHtml, escapeHtmlWithBr } from "@/utils/html";
 
 const SITE_ALERT_TO = "owner@proconstructioncalc.com";
 const FROM_EMAIL = "Pro Construction Calc <owner@proconstructioncalc.com>";
@@ -30,15 +31,6 @@ function getResend() {
   const key = process.env.RESEND_API_KEY;
   if (!key) return null;
   return new Resend(key);
-}
-
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/\n/g, "<br>");
 }
 
 function normalizeString(value?: string): string | undefined {
@@ -145,7 +137,7 @@ export async function POST(req: NextRequest) {
   <p><strong>Subject:</strong> ${escapeHtml(subjectLine)}</p>
   ${contextRows}
   <hr style="border:none;border-top:1px solid #e2e0db;margin:18px 0">
-  <div style="font-size:14px;line-height:1.6">${escapeHtml(message)}</div>
+  <div style="font-size:14px;line-height:1.6">${escapeHtmlWithBr(message)}</div>
   <p style="margin-top:22px;font-size:12px;color:#94a3b8;line-height:1.5">Sent via the site contact / feedback form.</p>
   </div>
 </body></html>`;
