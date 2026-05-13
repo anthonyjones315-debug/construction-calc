@@ -36,6 +36,7 @@ import {
   Layers,
   Layers3,
   Layout,
+  Loader2,
   Mail,
   Menu,
   MapPin,
@@ -942,6 +943,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   const [flooringBoxMode, setFlooringBoxMode] =
     useState<FlooringBoxMode>("custom");
   const [finalizeOpen, setFinalizeOpen] = useState(false);
+  const [isFetchingLocation, setIsFetchingLocation] = useState(false);
   const [finalizeBusy, setFinalizeBusy] = useState<"pdf" | "sign" | null>(null);
   const [finalizeError, setFinalizeError] = useState<string | null>(null);
   const [finalizeSuccess, setFinalizeSuccess] = useState<string | null>(null);
@@ -5138,6 +5140,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                       onClick={(e) => {
                         e.preventDefault();
                         if ("geolocation" in navigator) {
+                          setIsFetchingLocation(true);
                           navigator.geolocation.getCurrentPosition(async (pos) => {
                             const { latitude, longitude } = pos.coords;
                             try {
@@ -5146,14 +5149,28 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                               if (data && data.display_name) {
                                 setEstimateJobAddress(data.display_name);
                               }
-                            } catch {}
-                          })
+                            } catch (error) {
+                              console.error("Location fetch failed", error);
+                            } finally {
+                              setIsFetchingLocation(false);
+                            }
+                          }, (error) => {
+                            console.error("Geolocation failed", error);
+                            setIsFetchingLocation(false);
+                          });
                         }
                       }}
-                      className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-[--color-ink-dim] hover:text-[--color-blue-brand] transition-colors"
+                      disabled={isFetchingLocation}
+                      className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-[--color-ink-dim] hover:text-[--color-blue-brand] transition-colors disabled:opacity-50"
                       title="Use Current Location"
+                      aria-label="Use current location"
+                      aria-busy={isFetchingLocation}
                     >
-                      <MapPin className="h-4 w-4" aria-hidden />
+                      {isFetchingLocation ? (
+                        <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                      ) : (
+                        <MapPin className="h-4 w-4" aria-hidden />
+                      )}
                     </button>
                   </div>
                 </label>
