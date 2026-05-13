@@ -3,6 +3,8 @@ import { revalidateTag } from "next/cache";
 import * as Sentry from "@sentry/nextjs";
 import { auth } from "@/lib/auth/config";
 import { createServerClient } from "@/lib/supabase/server";
+import { getClientIp } from "@/lib/http/client-ip";
+import { checkMemoryRateLimit } from "@/lib/rate-limit/memory";
 import {
   assertNoBusinessIdOverride,
   getBusinessContextForSession,
@@ -10,8 +12,20 @@ import {
   getTenantScopeId,
 } from "@/lib/supabase/business";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    const ip = getClientIp(req);
+    const rl = checkMemoryRateLimit("materials-get", ip, 100, 900_000); // 100 requests / 15 min
+    if (!rl.ok) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(rl.retryAfterSeconds) },
+        },
+      );
+    }
+
     const session = await auth();
     if (!session?.user?.id)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -49,6 +63,18 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = getClientIp(req);
+    const rl = checkMemoryRateLimit("materials-post", ip, 20, 900_000); // 20 requests / 15 min
+    if (!rl.ok) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(rl.retryAfterSeconds) },
+        },
+      );
+    }
+
     const session = await auth();
     if (!session?.user?.id)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
