@@ -72,18 +72,17 @@ type PanelTab = "calculator" | "pricebook" | "manual" | null;
 
 // ─── Utilities ────────────────────────────────────────────────────────────────
 
+const CURRENCY_FORMATTER = getNumberFormatter({
+  style: "currency",
+  currency: "USD",
+});
+
 function formatCents(cents: number): string {
-  return getNumberFormatter({
-    style: "currency",
-    currency: "USD",
-  }).format(cents / 100);
+  return CURRENCY_FORMATTER.format(cents / 100);
 }
 
 function formatDollars(dollars: number): string {
-  return getNumberFormatter({
-    style: "currency",
-    currency: "USD",
-  }).format(dollars);
+  return CURRENCY_FORMATTER.format(dollars);
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -1335,7 +1334,6 @@ function LineItemsCard({
 interface TotalsCardProps {
   subtotalCents: number;
   discountCents: number;
-  discountedSubtotalCents: number;
   taxCents: number;
   totalCents: number;
   taxRatePercent: number;
@@ -1349,7 +1347,6 @@ interface TotalsCardProps {
 function TotalsCard({
   subtotalCents,
   discountCents,
-  discountedSubtotalCents,
   taxCents,
   totalCents,
   taxRatePercent,
@@ -1892,7 +1889,6 @@ export default function NewEstimateClient({ onOpenCalculators }: { onOpenCalcula
       <TotalsCard
         subtotalCents={totals.subtotalCents}
         discountCents={totals.discountCents}
-        discountedSubtotalCents={totals.discountedSubtotalCents}
         taxCents={totals.taxCents}
         totalCents={totals.totalCents}
         taxRatePercent={state.taxRatePercent}
