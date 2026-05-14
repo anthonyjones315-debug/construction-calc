@@ -33,6 +33,11 @@ import {
 import { useEstimateForm } from "@/lib/estimates/useEstimateForm";
 import { getNumberFormatter } from "@/utils/formatters";
 import { routes } from "@routes";
+
+const CURRENCY_FORMATTER = getNumberFormatter({
+  style: "currency",
+  currency: "USD",
+});
 import type {
   EstimateLineItem,
   PriceBookMaterial,
@@ -73,17 +78,11 @@ type PanelTab = "calculator" | "pricebook" | "manual" | null;
 // ─── Utilities ────────────────────────────────────────────────────────────────
 
 function formatCents(cents: number): string {
-  return getNumberFormatter({
-    style: "currency",
-    currency: "USD",
-  }).format(cents / 100);
+  return CURRENCY_FORMATTER.format(cents / 100);
 }
 
 function formatDollars(dollars: number): string {
-  return getNumberFormatter({
-    style: "currency",
-    currency: "USD",
-  }).format(dollars);
+  return CURRENCY_FORMATTER.format(dollars);
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -1335,7 +1334,6 @@ function LineItemsCard({
 interface TotalsCardProps {
   subtotalCents: number;
   discountCents: number;
-  discountedSubtotalCents: number;
   taxCents: number;
   totalCents: number;
   taxRatePercent: number;
@@ -1349,7 +1347,6 @@ interface TotalsCardProps {
 function TotalsCard({
   subtotalCents,
   discountCents,
-  discountedSubtotalCents,
   taxCents,
   totalCents,
   taxRatePercent,
@@ -1627,12 +1624,11 @@ export default function NewEstimateClient({ onOpenCalculators }: { onOpenCalcula
   } = useEstimateForm();
 
   const [materials, setMaterials] = useState<PriceBookMaterial[]>([]);
-  const [loadingMaterials, setLoadingMaterials] = useState(false);
+  const [loadingMaterials, setLoadingMaterials] = useState(true);
   const [sending, setSending] = useState(false);
 
   // Fetch price book materials on mount
   useEffect(() => {
-    setLoadingMaterials(true);
     fetch("/api/materials")
       .then((r) => r.json())
       .then((j: { data?: PriceBookMaterial[] }) => setMaterials(j.data ?? []))
@@ -1892,7 +1888,6 @@ export default function NewEstimateClient({ onOpenCalculators }: { onOpenCalcula
       <TotalsCard
         subtotalCents={totals.subtotalCents}
         discountCents={totals.discountCents}
-        discountedSubtotalCents={totals.discountedSubtotalCents}
         taxCents={totals.taxCents}
         totalCents={totals.totalCents}
         taxRatePercent={state.taxRatePercent}

@@ -49,6 +49,10 @@ function useAnimatedDisplayValue(value: string, duration = 320) {
     const from = previousMeta.parsed;
     const to = nextMeta.parsed;
     const decimals = Math.max(previousMeta.decimals, nextMeta.decimals);
+    const formatter = getNumberFormatter({
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    });
 
     if (from === to) {
       previousValueRef.current = value;
@@ -63,10 +67,7 @@ function useAnimatedDisplayValue(value: string, duration = 320) {
       const progress = Math.min((now - start) / duration, 1);
       const eased = easeOutCubic(progress);
       const current = from + (to - from) * eased;
-      const formatted = getNumberFormatter({
-        minimumFractionDigits: decimals,
-        maximumFractionDigits: decimals,
-      }).format(current);
+      const formatted = formatter.format(current);
 
       setDisplayValue(`${formatted}${nextMeta.suffix}`);
 
