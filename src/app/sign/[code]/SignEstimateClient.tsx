@@ -50,11 +50,13 @@ function formatValue(value: string | number, unit?: string) {
   return unit ? `${rendered} ${unit}` : rendered;
 }
 
+const CURRENCY_FORMATTER = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
+
 function formatCurrency(value: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(Math.round(value * 100) / 100);
+  return CURRENCY_FORMATTER.format(Math.round(value * 100) / 100);
 }
 
 function toSmsHref(phone: string) {
