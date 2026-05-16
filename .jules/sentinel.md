@@ -9,3 +9,8 @@
 **Vulnerability:** The Documenso webhook receiver would skip signature verification if the `WEBHOOK_SECRET` was not configured, and used a simple string comparison for signatures.
 **Learning:** Fail-open logic in authentication checks can lead to complete bypasses if environment variables are misconfigured. Non-constant-time string comparisons are susceptible to timing attacks.
 **Prevention:** Always implement fail-closed logic for security checks. Use `crypto.timingSafeEqual` for comparing sensitive values like signatures or tokens.
+
+## 2025-05-16 - Improper Prerender Error Handling in Authenticated Routes
+**Vulnerability:** Returning a `401 Unauthorized` response when Next.js fails to access `headers()` or `auth()` during static prerendering.
+**Learning:** In Next.js, certain errors during prerendering are signals to bail out of static generation and switch to dynamic rendering. Swallowing these and returning a 401 response can cause the build to cache an unauthorized state for all users.
+**Prevention:** Always re-throw errors identified as prerender header access errors to allow Next.js to handle them appropriately.
