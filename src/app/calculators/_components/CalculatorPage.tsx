@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import Image from "next/image";
 import type { Route } from "next";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import { useAuth, useUser } from "@clerk/nextjs";
 import * as Sentry from "@sentry/nextjs";
@@ -834,6 +834,7 @@ function getHeroImageForKey(key: string): string {
 }
 
 export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
+  const addressFieldId = useId();
   const calculatorShellRef = useRef<HTMLElement>(null);
   const { userId, isLoaded } = useAuth();
   const { user: clerkUser } = useUser();
@@ -5120,10 +5121,14 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                     placeholder="Optional"
                   />
                 </label>
-                <label className="text-sm text-copy-secondary">
+                <label
+                  htmlFor={addressFieldId}
+                  className="text-sm text-copy-secondary"
+                >
                   Job Site Address
                   <div className="relative mt-1">
                     <PlaceAutocomplete
+                      id={addressFieldId}
                       apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
                       onPlaceSelect={(address) => {
                         setEstimateJobAddress(address);
