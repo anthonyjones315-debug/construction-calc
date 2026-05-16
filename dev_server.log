@@ -1,0 +1,54 @@
+
+> proconstructioncalc@1.0.0 dev /app
+> next dev --turbopack
+
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+✓ Ready in 530ms
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+- Cache Components enabled
+- Experiments (use with caution):
+  · clientTraceMetadata
+  · optimizePackageImports
+
+○ Compiling /calculators/concrete/slab ...
+
+[35m
+[Clerk]:[0m You are running in keyless mode.
+You can [35mclaim your keys[0m by visiting https://dashboard.clerk.com/apps/claim?framework=nextjs&token=9sl4i6c0m6xuid6rfspifuw0cmho97elq8i69jsp&return_url=http%3A%2F%2Flocalhost%3A3000%2F
+
+Error: Route "/calculators/concrete/slab": Uncached data or `connection()` was accessed outside of `<Suspense>`. This delays the entire page from rendering, resulting in a slow user experience. Learn more: https://nextjs.org/docs/messages/blocking-route
+    at RootLayout (src/app/layout.tsx:139:5)
+  137 |
+  138 |   return (
+> 139 |     <ClerkProvider
+      |     ^
+  140 |       appearance={{
+  141 |         variables: {
+  142 |           colorPrimary: "#2563eb",
+ GET /calculators/concrete/slab 200 in 20.4s (next.js: 15.7s, proxy.ts: 317ms, application-code: 4.4s)
+[browser] Error: Route "/calculators/concrete/slab": Uncached data or `connection()` was accessed outside of `<Suspense>`. This delays the entire page from rendering, resulting in a slow user experience. Learn more: https://nextjs.org/docs/messages/blocking-route
+    at Object.createAccountlessApplication (node_modules/.pnpm/@clerk+nextjs@7.3.5_next@16.2.6_@babel+core@7.29.0_@opentelemetry+api@1.9.1_@playwright_f887487bf3897ee814480047a1136ad8/node_modules/@clerk/nextjs/src/server/keyless-node.ts:29:72)
+    at Object.getOrCreateKeys (node_modules/.pnpm/@clerk+shared@4.12.0_react-dom@19.2.6_react@19.2.6__react@19.2.6/node_modules/@clerk/shared/src/keyless/service.ts:200:48)
+    at <anonymous> (node_modules/.pnpm/@clerk+nextjs@7.3.5_next@16.2.6_@babel+core@7.29.0_@opentelemetry+api@1.9.1_@playwright_f887487bf3897ee814480047a1136ad8/node_modules/@clerk/nextjs/src/app-router/server/keyless-provider.tsx:43:32)
+    at KeylessProvider (node_modules/.pnpm/@clerk+nextjs@7.3.5_next@16.2.6_@babel+core@7.29.0_@opentelemetry+api@1.9.1_@playwright_f887487bf3897ee814480047a1136ad8/node_modules/@clerk/nextjs/src/app-router/server/keyless-provider.tsx:42:25)
+    at ClerkProvider (node_modules/.pnpm/@clerk+nextjs@7.3.5_next@16.2.6_@babel+core@7.29.0_@opentelemetry+api@1.9.1_@playwright_f887487bf3897ee814480047a1136ad8/node_modules/@clerk/nextjs/src/app-router/server/ClerkProvider.tsx:56:7)
+    at RootLayout (src/app/layout.tsx:139:5)
+  27 | ...essApplication(requestHeaders?: Headers) {
+  28 | ...
+> 29 | ...ent.__experimental_accountlessApplications.createAccountlessApplication({
+     |                                               ^
+  30 | ...,
+  31 | ...
+  32 | ...
+ GET /calculators/concrete/slab 200 in 190ms (next.js: 7ms, proxy.ts: 42ms, application-code: 141ms)
+ POST /calculators/concrete/slab 303 in 307ms (next.js: 10ms, proxy.ts: 18ms, application-code: 279ms)
+  └─ ƒ syncKeylessConfigAction({"apiKeysUrl":"https://dashboard.clerk.com/apps/app_3DmeggzzzmZV87WZlhwB88ASM13/instances/ins_3Dmegh8VOlIq0rfpSJQtM6DJbga/api-keys","claimUrl":"https://dashboard.clerk.com/apps/claim?framework=nextjs&token=9sl4i6c0m6xuid6rfspifuw0cmho97elq8i69jsp","...":"3 items not stringified"}) in 10ms node_modules/.pnpm/@clerk+nextjs@7.3.5_next@16.2.6_@babel+core@7.29.0_@opentelemetry+api@1.9.1_@playwright_f887487bf3897ee814480047a1136ad8/node_modules/@clerk/nextjs/dist/esm-router/keyless-actions.js
+[browser] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview (https://talented-scorpion-92.clerk.accounts.dev/npm/@clerk/clerk-js@6/dist/clerk.browser.js:12:3216)
+ GET /calculators/concrete/slab 200 in 50ms (next.js: 8ms, proxy.ts: 18ms, application-code: 24ms)
+ GET /calculators/concrete/slab 200 in 95ms (next.js: 4ms, proxy.ts: 14ms, application-code: 76ms)
