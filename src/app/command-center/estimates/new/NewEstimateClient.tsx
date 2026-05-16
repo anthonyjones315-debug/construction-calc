@@ -3,6 +3,7 @@
 import {
   useState,
   useEffect,
+  useId,
   useRef,
   useCallback,
   type FormEvent,
@@ -161,6 +162,7 @@ function EstimateDetailsCard({
   fromCrm,
   onChange,
 }: EstimateDetailsCardProps) {
+  const addressFieldId = useId();
   const [lat, setLat] = useState<number | null>(null);
   const [lng, setLng] = useState<number | null>(null);
   const [isFetchingLocation, setIsFetchingLocation] = useState(false);
@@ -290,14 +292,18 @@ function EstimateDetailsCard({
 
       {/* Job Site Address & Widgets */}
       <div className="mt-4 border-t border-slate-100 pt-4">
-        <label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
+        <label
+          htmlFor={addressFieldId}
+          className="mb-2 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500"
+        >
           Project Location
         </label>
-        
+
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
           <div className="flex-1 space-y-3">
             <div className="relative">
               <AddressAutocomplete
+                id={addressFieldId}
                 apiKey={mapsKey}
                 onAddressSelect={(addr, lat, lng) => {
                   onChange("jobSiteAddress", addr);

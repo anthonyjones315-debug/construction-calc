@@ -12,7 +12,7 @@ import {
   MapPin,
 } from "lucide-react";
 import { PlaceAutocomplete } from "@/components/ui/PlaceAutocomplete";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { useAuth, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import {
@@ -177,6 +177,7 @@ export function SavedContent({
   initialEstimates,
   isAuthenticated,
 }: SavedContentProps) {
+  const addressFieldId = useId();
   const { userId, isLoaded } = useAuth();
   const { user: clerkUser } = useUser();
   const session = userId
@@ -1473,10 +1474,14 @@ export function SavedContent({
               />
             </label>
 
-            <label className="flex flex-col gap-1 text-sm text-[--color-ink-mid]">
+            <label
+              htmlFor={addressFieldId}
+              className="flex flex-col gap-1 text-sm text-[--color-ink-mid]"
+            >
               Job Site Address
               <div className="relative">
                 <PlaceAutocomplete
+                  id={addressFieldId}
                   apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
                   onPlaceSelect={(address) => {
                     setBuilderJobSiteAddress(address);
