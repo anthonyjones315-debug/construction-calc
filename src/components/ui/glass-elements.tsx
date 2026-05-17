@@ -56,6 +56,12 @@ function useAnimatedDisplayValue(value: string, duration = 320) {
       return;
     }
 
+    // Hoist formatter outside the animation loop to avoid redundant cache lookups (approx 60-120x per sec)
+    const formatter = getNumberFormatter({
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    });
+
     let frameId = 0;
     const start = performance.now();
 
@@ -63,10 +69,7 @@ function useAnimatedDisplayValue(value: string, duration = 320) {
       const progress = Math.min((now - start) / duration, 1);
       const eased = easeOutCubic(progress);
       const current = from + (to - from) * eased;
-      const formatted = getNumberFormatter({
-        minimumFractionDigits: decimals,
-        maximumFractionDigits: decimals,
-      }).format(current);
+      const formatted = formatter.format(current);
 
       setDisplayValue(`${formatted}${nextMeta.suffix}`);
 
