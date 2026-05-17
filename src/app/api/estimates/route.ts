@@ -6,24 +6,10 @@ import { auth } from "@/lib/auth/config";
 import { createServerClient } from "@/lib/supabase/server";
 import { getBusinessContextForUserId } from "@/lib/supabase/business";
 import { tenantScopedSelect } from "@/lib/supabase/tenant-scope";
+import { isPrerenderHeadersAccessError } from "@/lib/next/prerender";
 
 const SELECT =
   "id, name, calculator_id, inputs, total_cost, status, budget_items, created_at, updated_at, results, client_name, job_site_address";
-
-function isPrerenderHeadersAccessError(error: unknown): boolean {
-  if (!error || typeof error !== "object") return false;
-
-  const maybeError = error as { message?: string; digest?: string };
-  const message = maybeError.message?.toLowerCase() ?? "";
-  const digest = maybeError.digest ?? "";
-
-  return (
-    digest === "HANGING_PROMISE_REJECTION" ||
-    (message.includes("during prerendering") &&
-      message.includes("headers()") &&
-      message.includes("rejects"))
-  );
-}
 
 export async function GET() {
   noStore();
@@ -33,7 +19,7 @@ export async function GET() {
     session = await auth();
   } catch (error) {
     if (isPrerenderHeadersAccessError(error)) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      throw error;
     }
     Sentry.captureException(error);
     return NextResponse.json(
