@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
+import { auth } from "@/lib/auth/config";
+import { getClientIp } from "@/lib/http/client-ip";
+import { checkMemoryRateLimit } from "@/lib/rate-limit/memory";
+import { isPrerenderHeadersAccessError } from "@/lib/next/prerender";
 
 async function geocodeZip(zip: string, googleKey: string) {
   const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(zip)},US&key=${googleKey}`;
@@ -20,6 +24,26 @@ function wmoToCondition(code: number) {
 
 export async function GET(req: Request) {
   try {
+    // 1. Rate Limiting (Fixed window: 50 requests per 15 mins per IP)
+    const ip = getClientIp(req);
+    const rl = checkMemoryRateLimit("weather-api", ip, 50, 900_000);
+    if (!rl.ok) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(rl.retryAfterSeconds) },
+        },
+      );
+    }
+
+    // 2. Authentication
+    const session = await auth();
+
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(req.url);
     const latParam = searchParams.get("lat");
     const lngParam = searchParams.get("lng");
@@ -101,6 +125,9 @@ export async function GET(req: Request) {
     });
 
   } catch (error: unknown) {
+    if (isPrerenderHeadersAccessError(error)) {
+      throw error;
+    }
     Sentry.captureException(error);
     console.error("[WEATHER_API_ERROR]", error);
     return NextResponse.json({ error: error instanceof Error ? error.message : "Weather error" }, { status: 500 });
