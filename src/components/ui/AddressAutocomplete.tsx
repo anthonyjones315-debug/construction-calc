@@ -11,6 +11,7 @@ interface AddressAutocompleteProps {
   onAddressSelect: (address: string, lat?: number, lng?: number) => void;
   placeholder?: string;
   className?: string;
+  id?: string;
 }
 
 export function AddressAutocomplete({
@@ -20,6 +21,7 @@ export function AddressAutocomplete({
   onAddressSelect,
   placeholder = "Start typing an address...",
   className,
+  id,
 }: AddressAutocompleteProps) {
   return (
     <PlaceAutocomplete
@@ -28,6 +30,7 @@ export function AddressAutocomplete({
       onChange={onChange}
       defaultValue={defaultValue}
       placeholder={placeholder}
+      id={id}
       className={
         className ||
         "h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[--color-blue-brand]/45 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[--color-blue-brand]/20"

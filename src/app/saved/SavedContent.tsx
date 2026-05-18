@@ -10,6 +10,7 @@ import {
   FolderOpen,
   ExternalLink,
   MapPin,
+  Loader2,
 } from "lucide-react";
 import { PlaceAutocomplete } from "@/components/ui/PlaceAutocomplete";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -237,6 +238,7 @@ export function SavedContent({
   const [builderName, setBuilderName] = useState("Price Book Estimate");
   const [builderClientName, setBuilderClientName] = useState("");
   const [builderJobSiteAddress, setBuilderJobSiteAddress] = useState("");
+  const [isFetchingLocation, setIsFetchingLocation] = useState(false);
   const [builderRows, setBuilderRows] = useState<BuilderRow[]>([]);
   const [attachedEstimateId, setAttachedEstimateId] = useState("");
   const [lastUpdatedAt, setLastUpdatedAt] = useState<Date | null>(
@@ -1473,10 +1475,13 @@ export function SavedContent({
               />
             </label>
 
-            <label className="flex flex-col gap-1 text-sm text-[--color-ink-mid]">
-              Job Site Address
+            <div className="flex flex-col gap-1">
+              <label htmlFor="builder-job-site-address" className="text-sm text-[--color-ink-mid]">
+                Job Site Address
+              </label>
               <div className="relative">
                 <PlaceAutocomplete
+                  id="builder-job-site-address"
                   apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
                   onPlaceSelect={(address) => {
                     setBuilderJobSiteAddress(address);
@@ -1487,28 +1492,42 @@ export function SavedContent({
                 />
                 <button
                   type="button"
-                  onClick={(e) => {
+                  onClick={async (e) => {
                     e.preventDefault();
-                    if ("geolocation" in navigator) {
-                      navigator.geolocation.getCurrentPosition(async (pos) => {
-                        const { latitude, longitude } = pos.coords;
-                        try {
-                          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
-                          const data = await res.json();
-                          if (data && data.display_name) {
-                            setBuilderJobSiteAddress(data.display_name);
-                          }
-                        } catch {}
-                      })
-                    }
+                    if (!("geolocation" in navigator)) return;
+
+                    setIsFetchingLocation(true);
+                    navigator.geolocation.getCurrentPosition(async (pos) => {
+                      const { latitude, longitude } = pos.coords;
+                      try {
+                        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
+                        const data = await res.json();
+                        if (data && data.display_name) {
+                          setBuilderJobSiteAddress(data.display_name);
+                        }
+                      } catch {
+                        // Non-critical
+                      } finally {
+                        setIsFetchingLocation(false);
+                      }
+                    }, () => {
+                      setIsFetchingLocation(false);
+                    });
                   }}
-                  className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-[--color-ink-dim] hover:text-[--color-blue-brand] transition-colors"
+                  disabled={isFetchingLocation}
+                  className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-[--color-ink-dim] hover:text-[--color-blue-brand] transition-colors disabled:opacity-50"
+                  aria-label="Use current location"
+                  aria-busy={isFetchingLocation}
                   title="Use Current Location"
                 >
-                  <MapPin className="h-4 w-4" aria-hidden />
+                  {isFetchingLocation ? (
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                  ) : (
+                    <MapPin className="h-4 w-4" aria-hidden />
+                  )}
                 </button>
               </div>
-            </label>
+            </div>
           </div>
 
           <div className="mt-4 flex items-center justify-between gap-2">
