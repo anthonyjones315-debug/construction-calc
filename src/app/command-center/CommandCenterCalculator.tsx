@@ -36,6 +36,7 @@ import {
   Layers,
   Layers3,
   Layout,
+  Loader2,
   Mail,
   Menu,
   MapPin,
@@ -962,6 +963,7 @@ export function CommandCenterCalculator({ page, closeModal }: CalculatorPageProp
   const [estimateClientEmail, setEstimateClientEmail] = useState("");
   const [estimateJobName, setEstimateJobName] = useState("");
   const [estimateJobAddress, setEstimateJobAddress] = useState("");
+  const [isFetchingLocation, setIsFetchingLocation] = useState(false);
   const [estimateQuoteNote, setEstimateQuoteNote] = useState("");
   const [estimateInternalNote, setEstimateInternalNote] = useState("");
 
@@ -5078,23 +5080,41 @@ export function CommandCenterCalculator({ page, closeModal }: CalculatorPageProp
                       type="button"
                       onClick={(e) => {
                         e.preventDefault();
-                        if ("geolocation" in navigator) {
-                          navigator.geolocation.getCurrentPosition(async (pos) => {
+                        if (!("geolocation" in navigator)) return;
+                        setIsFetchingLocation(true);
+                        navigator.geolocation.getCurrentPosition(
+                          async (pos) => {
                             const { latitude, longitude } = pos.coords;
                             try {
-                              const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
+                              const res = await fetch(
+                                `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
+                              );
                               const data = await res.json();
                               if (data && data.display_name) {
                                 setEstimateJobAddress(data.display_name);
                               }
-                            } catch {}
-                          })
-                        }
+                            } catch {
+                              // Fallback error handling could go here
+                            } finally {
+                              setIsFetchingLocation(false);
+                            }
+                          },
+                          () => {
+                            setIsFetchingLocation(false);
+                          },
+                        );
                       }}
-                      className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-[--color-ink-dim] hover:text-[--color-blue-brand] transition-colors"
+                      disabled={isFetchingLocation}
+                      className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-[--color-ink-dim] hover:text-[--color-blue-brand] transition-colors disabled:opacity-50"
                       title="Use Current Location"
+                      aria-label="Use current location"
+                      aria-busy={isFetchingLocation}
                     >
-                      <MapPin className="h-4 w-4" aria-hidden />
+                      {isFetchingLocation ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <MapPin className="h-4 w-4" aria-hidden />
+                      )}
                     </button>
                   </div>
                 </label>
