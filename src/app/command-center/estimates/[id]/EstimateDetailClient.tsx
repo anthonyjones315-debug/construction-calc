@@ -58,11 +58,18 @@ function statusClass(status: string | null) {
   return "border-slate-300 bg-slate-100 text-slate-700";
 }
 
+/**
+ * Hoisted formatter for performance.
+ * Re-instantiating Intl.NumberFormat inside a render loop or multiple times per render
+ * (e.g., in a large table) can be a significant bottleneck.
+ */
+const USD_FORMATTER = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
+
 function formatDollars(n: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(n);
+  return USD_FORMATTER.format(n);
 }
 
 export function EstimateDetailClient({
