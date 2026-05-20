@@ -1,5 +1,19 @@
 import { NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
+import { auth } from "@/lib/auth/config";
+import { getClientIp } from "@/lib/http/client-ip";
+import { checkMemoryRateLimit } from "@/lib/rate-limit/memory";
+
+function isPrerenderError(error: unknown): boolean {
+  if (!error || typeof error !== "object") return false;
+  const maybeError = error as { message?: string; digest?: string };
+  const message = maybeError.message?.toLowerCase() ?? "";
+  return (
+    maybeError.digest === "HANGING_PROMISE_REJECTION" ||
+    (message.includes("during prerendering") &&
+      (message.includes("headers()") || message.includes("auth()")))
+  );
+}
 
 async function geocodeZip(zip: string, googleKey: string) {
   const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(zip)},US&key=${googleKey}`;
@@ -20,6 +34,23 @@ function wmoToCondition(code: number) {
 
 export async function GET(req: Request) {
   try {
+    const ip = getClientIp(req);
+    const rl = checkMemoryRateLimit("weather-api", ip, 50, 900_000); // 50 requests per 15 min
+    if (!rl.ok) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(rl.retryAfterSeconds) },
+        },
+      );
+    }
+
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(req.url);
     const latParam = searchParams.get("lat");
     const lngParam = searchParams.get("lng");
@@ -101,9 +132,15 @@ export async function GET(req: Request) {
     });
 
   } catch (error: unknown) {
+    if (isPrerenderError(error)) {
+      throw error;
+    }
     Sentry.captureException(error);
     console.error("[WEATHER_API_ERROR]", error);
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Weather error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Weather data unavailable" },
+      { status: 500 },
+    );
   }
 }
 
