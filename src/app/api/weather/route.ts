@@ -1,5 +1,20 @@
 import { NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
+import { auth } from "@/lib/auth/config";
+
+/** Detects Next.js prerendering errors to ensure correct bail-out. */
+function isPrerenderHeadersAccessError(error: unknown): boolean {
+  if (!error || typeof error !== "object") return false;
+  const maybeError = error as { message?: string; digest?: string };
+  const message = maybeError.message?.toLowerCase() ?? "";
+  const digest = maybeError.digest ?? "";
+  return (
+    digest === "HANGING_PROMISE_REJECTION" ||
+    (message.includes("during prerendering") &&
+      message.includes("headers()") &&
+      message.includes("rejects"))
+  );
+}
 
 async function geocodeZip(zip: string, googleKey: string) {
   const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(zip)},US&key=${googleKey}`;
@@ -20,6 +35,17 @@ function wmoToCondition(code: number) {
 
 export async function GET(req: Request) {
   try {
+    try {
+      const session = await auth();
+      if (!session?.user?.id) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+    } catch (error) {
+      if (isPrerenderHeadersAccessError(error)) throw error;
+      Sentry.captureException(error);
+      return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    }
+
     const { searchParams } = new URL(req.url);
     const latParam = searchParams.get("lat");
     const lngParam = searchParams.get("lng");
@@ -101,9 +127,8 @@ export async function GET(req: Request) {
     });
 
   } catch (error: unknown) {
+    if (isPrerenderHeadersAccessError(error)) throw error;
     Sentry.captureException(error);
-    console.error("[WEATHER_API_ERROR]", error);
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Weather error" }, { status: 500 });
+    return NextResponse.json({ error: "Weather data unavailable" }, { status: 500 });
   }
 }
-
