@@ -9,6 +9,7 @@ import {
   PackagePlus,
   FolderOpen,
   ExternalLink,
+  Loader2,
   MapPin,
 } from "lucide-react";
 import { PlaceAutocomplete } from "@/components/ui/PlaceAutocomplete";
@@ -202,6 +203,7 @@ export function SavedContent({
   const [refreshing, setRefreshing] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<SavedEstimate | null>(null);
+  const [isFetchingLocation, setIsFetchingLocation] = useState(false);
   const [downloadError, setDownloadError] = useState<string | null>(null);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [showBuilder, setShowBuilder] = useState(false);
@@ -1489,23 +1491,40 @@ export function SavedContent({
                   type="button"
                   onClick={(e) => {
                     e.preventDefault();
-                    if ("geolocation" in navigator) {
-                      navigator.geolocation.getCurrentPosition(async (pos) => {
+                    if (!("geolocation" in navigator)) return;
+                    setIsFetchingLocation(true);
+                    navigator.geolocation.getCurrentPosition(
+                      async (pos) => {
                         const { latitude, longitude } = pos.coords;
                         try {
-                          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
+                          const res = await fetch(
+                            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
+                          );
                           const data = await res.json();
                           if (data && data.display_name) {
                             setBuilderJobSiteAddress(data.display_name);
                           }
-                        } catch {}
-                      })
-                    }
+                        } catch {
+                        } finally {
+                          setIsFetchingLocation(false);
+                        }
+                      },
+                      () => {
+                        setIsFetchingLocation(false);
+                      },
+                    );
                   }}
-                  className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-[--color-ink-dim] hover:text-[--color-blue-brand] transition-colors"
+                  disabled={isFetchingLocation}
+                  className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-[--color-ink-dim] hover:text-[--color-blue-brand] transition-colors disabled:cursor-not-allowed"
                   title="Use Current Location"
+                  aria-label="Use current location"
+                  aria-busy={isFetchingLocation}
                 >
-                  <MapPin className="h-4 w-4" aria-hidden />
+                  {isFetchingLocation ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <MapPin className="h-4 w-4" aria-hidden />
+                  )}
                 </button>
               </div>
             </label>
