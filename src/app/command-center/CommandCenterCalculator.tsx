@@ -105,6 +105,21 @@ const EmailEstimateModal = dynamic(
   { ssr: false },
 );
 
+/* ── Performance Optimized Formatters ────────────────────────── */
+
+/**
+ * Hoisted formatters to avoid redundant instantiation in render loops.
+ * Locales are omitted to default to the user's system locale, matching
+ * the original behavior of .toLocaleString() and .toLocaleDateString().
+ */
+const NUMBER_FORMATTER = new Intl.NumberFormat();
+
+const DATE_LONG_FORMATTER = new Intl.DateTimeFormat(undefined, {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+
 const CalculatorAuditPanel = dynamic(
   () =>
     import("@/app/calculators/_components/CalculatorAuditPanel").then((mod) => mod.CalculatorAuditPanel),
@@ -2099,7 +2114,7 @@ export function CommandCenterCalculator({ page, closeModal }: CalculatorPageProp
           `${adjustedCubicYards.toFixed(2)} cu yd Ready-Mix Concrete (3000-4000 PSI)`,
           `${bags80} High-Strength Concrete Bags (80lb)`,
           `${bags60} High-Strength Concrete Bags (60lb)`,
-          `Approx payload: ${Math.round(estimatedWeightLbs).toLocaleString()} lbs`,
+          `Approx payload: ${NUMBER_FORMATTER.format(Math.round(estimatedWeightLbs))} lbs`,
         ],
       };
     }
@@ -2238,7 +2253,7 @@ export function CommandCenterCalculator({ page, closeModal }: CalculatorPageProp
             ? [
                 {
                   label: "Nails",
-                  value: nails.toLocaleString(),
+                  value: NUMBER_FORMATTER.format(nails),
                   unit: "nails",
                 },
               ]
@@ -2253,7 +2268,7 @@ export function CommandCenterCalculator({ page, closeModal }: CalculatorPageProp
           `${rollsUnderlayment} Rolls Synthetic Underlayment`,
           ...(isRoofingShinglesCalculator
             ? [
-                `Allow ~${nails.toLocaleString()} nails (≈320 nails/square @ 4 nails/shingle).`,
+                `Allow ~${NUMBER_FORMATTER.format(nails)} nails (≈320 nails/square @ 4 nails/shingle).`,
               ]
             : []),
         ],
@@ -2473,7 +2488,7 @@ export function CommandCenterCalculator({ page, closeModal }: CalculatorPageProp
         ],
         materialList: [
           `${netSheets} sheets (4×8 × ¹/₂" standard)`,
-          `${screws.toLocaleString()} drywall screws (1¹/₄")`,
+          `${NUMBER_FORMATTER.format(screws)} drywall screws (1¹/₄")`,
           `${Math.ceil(tapeFeet / 250)} rolls of joint tape (250 ft/roll)`,
           `${mudGallons} gallons premixed joint compound`,
         ],
@@ -2520,9 +2535,9 @@ export function CommandCenterCalculator({ page, closeModal }: CalculatorPageProp
             },
           ],
           materialList: [
-            `System must produce min. ${heatingBtu.toLocaleString()} BTU/hr for a ${tempRise}°F heat rise.`,
-            `Total conditioned space is ${volumeCuFt.toLocaleString()} cu ft.`,
-            `Estimated cooling requirement: ${tonnage} tons (${coolingBtu.toLocaleString()} BTU/hr).`,
+            `System must produce min. ${NUMBER_FORMATTER.format(heatingBtu)} BTU/hr for a ${tempRise}°F heat rise.`,
+            `Total conditioned space is ${NUMBER_FORMATTER.format(volumeCuFt)} cu ft.`,
+            `Estimated cooling requirement: ${tonnage} tons (${NUMBER_FORMATTER.format(coolingBtu)} BTU/hr).`,
             `load with Manual J calculation prior to ordering plant equipment.`
           ],
         };
@@ -2539,13 +2554,13 @@ export function CommandCenterCalculator({ page, closeModal }: CalculatorPageProp
         return {
           primary: {
             label: "Exhaust/Supply",
-            value: requiredCfm.toLocaleString(),
+            value: NUMBER_FORMATTER.format(requiredCfm),
             unit: "CFM",
           },
           secondary: [
             {
               label: "Conditioned Vol",
-              value: volumeCuFt.toLocaleString(),
+              value: NUMBER_FORMATTER.format(volumeCuFt),
               unit: "cu ft",
             },
             {
@@ -2555,8 +2570,8 @@ export function CommandCenterCalculator({ page, closeModal }: CalculatorPageProp
             },
           ],
           materialList: [
-            `Requires a minimum of ${requiredCfm.toLocaleString()} CFM to achieve ${airChangesPerHour} air changes per hour (ACH).`,
-            `Total conditioned space is ${volumeCuFt.toLocaleString()} cu ft.`,
+            `Requires a minimum of ${NUMBER_FORMATTER.format(requiredCfm)} CFM to achieve ${airChangesPerHour} air changes per hour (ACH).`,
+            `Total conditioned space is ${NUMBER_FORMATTER.format(volumeCuFt)} cu ft.`,
             `actual building code requirements before ordering exhaust fans or ERV units.`,
           ],
         };
@@ -3045,11 +3060,7 @@ export function CommandCenterCalculator({ page, closeModal }: CalculatorPageProp
       metadata: {
         title: page.title,
         calculatorLabel: page.heroKicker,
-        generatedAt: new Date().toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        }),
+        generatedAt: DATE_LONG_FORMATTER.format(new Date()),
         jobName: estimateJobName.trim() || null,
       },
       ...(finalizeEstimateId ? { id: finalizeEstimateId } : {}),
