@@ -1,0 +1,3 @@
+## 2025-05-14 - [Intl Hoisting & Clean PRs]
+**Learning:** Hoisting `Intl` formatters in high-traffic dashboard components significantly reduces rendering overhead. However, technical correctness must be paired with operational hygiene: always add explanatory comments for optimizations and strictly purge environment-specific artifacts like `dev_server.log`, `pnpm-lock.yaml`, and `next-env.d.ts` before submission to avoid PR noise.
+**Action:** Proactively scan for inline `Intl` or `toLocaleString` calls in dashboard/list views and ensure the pre-commit cleanup specifically targets log files and lockfile bloat if no dependency changes were intended.

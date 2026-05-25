@@ -43,6 +43,30 @@ import { KanbanBoard, type KanbanProject } from "@/components/dashboard/KanbanBo
 import { DispatchCalendar, type CalendarEvent } from "@/components/dashboard/DispatchCalendar";
 import { Calendar as CalendarIcon, Columns3 } from "lucide-react";
 
+/**
+ * Hoisted Intl formatters to avoid redundant instantiation overhead on every render.
+ * Re-instantiating Intl engines (especially DateTimeFormat) is an expensive operation
+ * in high-frequency rendering contexts like the Command Center dashboard.
+ */
+const DATE_FORMATTER_SHORT_YEAR = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+});
+
+const NUMBER_FORMATTER = new Intl.NumberFormat("en-US");
+
+const DATE_FORMATTER_WEEKDAY = new Intl.DateTimeFormat("en-US", {
+  weekday: "long",
+  month: "short",
+  day: "numeric",
+});
+
+const DATE_FORMATTER_SHORT = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+});
+
 /* ── Kanban ↔ Estimate status mapping ────────────────────────── */
 
 /** Map Kanban column IDs → estimate DB status values */
@@ -328,11 +352,7 @@ function roleBadgeClasses(role: string): string {
 }
 
 function formatJoinedAt(value: string) {
-  return new Date(value).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+  return DATE_FORMATTER_SHORT_YEAR.format(new Date(value));
 }
 
 function initialsForName(name: string): string {
@@ -392,7 +412,7 @@ function categorizeTool(item: NavItem): ToolCategory {
 
 function formatCartValue(value: string | number | undefined) {
   if (typeof value === "number") {
-    return value.toLocaleString("en-US");
+    return NUMBER_FORMATTER.format(value);
   }
 
   return value ?? "Ready";
@@ -673,16 +693,9 @@ export default function CommandCenterClient({
     recentEstimates.length - signedEstimateCount - sentEstimateCount,
     0,
   );
-  const todayLabel = new Intl.DateTimeFormat("en-US", {
-    weekday: "long",
-    month: "short",
-    day: "numeric",
-  }).format(new Date());
+  const todayLabel = DATE_FORMATTER_WEEKDAY.format(new Date());
   const lastEstimateLabel = recentEstimates[0]
-    ? new Date(recentEstimates[0].updatedAt).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      })
+    ? DATE_FORMATTER_SHORT.format(new Date(recentEstimates[0].updatedAt))
     : "No estimate activity yet";
   const recentEstimatePreview = recentEstimates.slice(0, 4);
   const memberPreview = members.slice(0, 6);
@@ -696,10 +709,7 @@ export default function CommandCenterClient({
         status: estimateStatusToKanbanColumn(est.status),
         customerName: est.clientName,
         pipelineValue: null,
-        startDate: new Date(est.updatedAt).toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-        }),
+        startDate: DATE_FORMATTER_SHORT.format(new Date(est.updatedAt)),
       })),
     [recentEstimates],
   );
@@ -1401,11 +1411,7 @@ export default function CommandCenterClient({
                   </div>
                   <div className="mt-4 flex items-center justify-between">
                     <p className="text-xs text-[--color-ink-dim]">
-                      Updated{" "}
-                      {new Date(estimate.updatedAt).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                      })}
+                      Updated {DATE_FORMATTER_SHORT.format(new Date(estimate.updatedAt))}
                     </p>
                     <div className="flex items-center gap-2">
                        <button
