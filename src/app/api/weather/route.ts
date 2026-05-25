@@ -1,5 +1,22 @@
 import { NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
+import { auth } from "@/lib/auth/config";
+import { checkMemoryRateLimit } from "@/lib/rate-limit/memory";
+
+function isPrerenderHeadersAccessError(error: unknown): boolean {
+  if (!error || typeof error !== "object") return false;
+
+  const maybeError = error as { message?: string; digest?: string };
+  const message = maybeError.message?.toLowerCase() ?? "";
+  const digest = maybeError.digest ?? "";
+
+  return (
+    digest === "HANGING_PROMISE_REJECTION" ||
+    (message.includes("during prerendering") &&
+      message.includes("headers()") &&
+      message.includes("rejects"))
+  );
+}
 
 async function geocodeZip(zip: string, googleKey: string) {
   const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(zip)},US&key=${googleKey}`;
@@ -19,6 +36,33 @@ function wmoToCondition(code: number) {
 }
 
 export async function GET(req: Request) {
+  let userId: string | undefined;
+
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    userId = session.user.id;
+
+    const rateLimit = checkMemoryRateLimit("weather_api", userId, 10, 60000); // 10 requests per minute
+    if (!rateLimit.ok) {
+      return NextResponse.json(
+        { error: "Too many requests" },
+        {
+          status: 429,
+          headers: { "Retry-After": rateLimit.retryAfterSeconds.toString() },
+        },
+      );
+    }
+  } catch (error) {
+    if (isPrerenderHeadersAccessError(error)) {
+      throw error;
+    }
+    Sentry.captureException(error);
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { searchParams } = new URL(req.url);
     const latParam = searchParams.get("lat");
@@ -101,9 +145,15 @@ export async function GET(req: Request) {
     });
 
   } catch (error: unknown) {
+    if (isPrerenderHeadersAccessError(error)) {
+      throw error;
+    }
     Sentry.captureException(error);
     console.error("[WEATHER_API_ERROR]", error);
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Weather error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Weather data unavailable" },
+      { status: 500 },
+    );
   }
 }
 
