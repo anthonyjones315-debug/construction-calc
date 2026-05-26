@@ -244,25 +244,24 @@ export function ProInput({
     type === "number" && Number.isFinite(numericValue) && numericValue > 0;
 
   return (
-    <label
-      className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary"
-      htmlFor={fieldId}
-    >
-      <span className="flex items-center justify-between gap-2">
-        <span id={labelId} className="truncate">
-          {label}
+    <fieldset className="flex flex-col gap-1">
+      <legend className="mb-1 block w-full text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary">
+        <span className="flex items-center justify-between gap-2">
+          <label htmlFor={fieldId} id={labelId} className="truncate">
+            {label}
+          </label>
+          {subLabel ? (
+            <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
+              {subLabel}
+            </span>
+          ) : null}
         </span>
-        {subLabel ? (
-          <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
-            {subLabel}
+        {helpText ? (
+          <span className="block text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
+            {helpText}
           </span>
         ) : null}
-      </span>
-      {helpText ? (
-        <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
-          {helpText}
-        </span>
-      ) : null}
+      </legend>
       <div
         data-valid={isValid ? "true" : "false"}
         className="glass-input-shell relative flex min-h-[3.5rem] items-stretch overflow-hidden rounded-xl p-0"
@@ -300,7 +299,7 @@ export function ProInput({
           </div>
         ) : null}
       </div>
-    </label>
+    </fieldset>
   );
 }
 
