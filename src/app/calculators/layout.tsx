@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { JsonLD, getPageMetadata, getWebAppSchema } from "@/seo";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -20,7 +21,11 @@ export default function CalculatorsLayout({
     <div className="light public-page">
       <JsonLD schema={getWebAppSchema()} />
       <Header />
-      <div className="flex-1">{children}</div>
+      <div className="flex-1">
+        <Suspense fallback={<div className="min-h-screen animate-pulse bg-slate-50/50" />}>
+          {children}
+        </Suspense>
+      </div>
       <Footer />
     </div>
   );
