@@ -72,18 +72,17 @@ type PanelTab = "calculator" | "pricebook" | "manual" | null;
 
 // ─── Utilities ────────────────────────────────────────────────────────────────
 
+const USD_FORMATTER = getNumberFormatter({
+  style: "currency",
+  currency: "USD",
+});
+
 function formatCents(cents: number): string {
-  return getNumberFormatter({
-    style: "currency",
-    currency: "USD",
-  }).format(cents / 100);
+  return USD_FORMATTER.format(cents / 100);
 }
 
 function formatDollars(dollars: number): string {
-  return getNumberFormatter({
-    style: "currency",
-    currency: "USD",
-  }).format(dollars);
+  return USD_FORMATTER.format(dollars);
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────

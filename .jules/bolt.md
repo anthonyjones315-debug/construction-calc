@@ -1,0 +1,3 @@
+## 2025-05-14 - Performance Overhead of Generic Formatter Caching
+**Learning:** The `getNumberFormatter` utility in `src/utils/formatters.ts`, while useful for caching, introduces a ~3x performance penalty compared to a hoisted static `Intl.NumberFormat` reference in high-frequency contexts. This is due to the overhead of deterministic cache-key generation (sorting keys, string concatenation).
+**Action:** For high-frequency formatting (e.g., inside `requestAnimationFrame` or loops rendering large tables), hoist a static `Intl.NumberFormat` instance to the module level or component scope instead of relying on `getNumberFormatter`.
