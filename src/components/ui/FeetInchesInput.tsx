@@ -162,21 +162,23 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
   return (
     <fieldset className="flex flex-col gap-1">
       <legend className="mb-1 block w-full text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary">
-        <span className="flex items-center justify-between gap-2">
-          <span id={labelId} className="truncate">
-            {label}
+        <label htmlFor={`${fieldId}-ft`} className="cursor-pointer">
+          <span className="flex items-center justify-between gap-2">
+            <span id={labelId} className="truncate">
+              {label}
+            </span>
+            {subLabel ? (
+              <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
+                {subLabel}
+              </span>
+            ) : null}
           </span>
-          {subLabel ? (
-            <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
-              {subLabel}
+          {helpText ? (
+            <span className="block text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
+              {helpText}
             </span>
           ) : null}
-        </span>
-        {helpText ? (
-          <span className="block text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
-            {helpText}
-          </span>
-        ) : null}
+        </label>
       </legend>
       <div
         data-valid={isValid ? "true" : "false"}
