@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { getSafeEstimate } from "@/lib/dal/estimates";
+import { USD_FORMATTER_NO_CENTS } from "@/utils/formatters";
 
 type InvoiceStatus = "Draft" | "Sent" | "Partially Paid" | "Paid";
 
@@ -46,11 +47,7 @@ type Props = {
   params: Promise<{ id: string; invoiceId: string }>;
 };
 
-const USD_CURRENCY = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0,
-});
+const USD_CURRENCY = USD_FORMATTER_NO_CENTS;
 
 function parseInvoices(
   inputs: Record<string, unknown> | null | undefined,
