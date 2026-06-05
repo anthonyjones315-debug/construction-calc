@@ -16,6 +16,7 @@ import {
   setCalculatorAuditSnapshot,
 } from "@/app/calculators/_lib/calculator-audit-ref";
 import { useHaptic } from "@/hooks/useHaptic";
+import { useGeolocation } from "@/hooks/useGeolocation";
 import {
   ArrowLeft,
   ArrowRight,
@@ -36,6 +37,7 @@ import {
   Layers,
   Layers3,
   Layout,
+  Loader2,
   Mail,
   Menu,
   MapPin,
@@ -966,6 +968,9 @@ export function CommandCenterCalculator({ page, closeModal }: CalculatorPageProp
   const [estimateInternalNote, setEstimateInternalNote] = useState("");
 
   const haptic = useHaptic();
+  const { isLoading: isLocationLoading, handleUseLocation } = useGeolocation(
+    ({ address }) => setEstimateJobAddress(address),
+  );
   const hapticTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isFirstCalcRender = useRef(true);
   const userInteracted = useRef(false);
@@ -5078,23 +5083,19 @@ export function CommandCenterCalculator({ page, closeModal }: CalculatorPageProp
                       type="button"
                       onClick={(e) => {
                         e.preventDefault();
-                        if ("geolocation" in navigator) {
-                          navigator.geolocation.getCurrentPosition(async (pos) => {
-                            const { latitude, longitude } = pos.coords;
-                            try {
-                              const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
-                              const data = await res.json();
-                              if (data && data.display_name) {
-                                setEstimateJobAddress(data.display_name);
-                              }
-                            } catch {}
-                          })
-                        }
+                        handleUseLocation();
                       }}
-                      className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-[--color-ink-dim] hover:text-[--color-blue-brand] transition-colors"
+                      disabled={isLocationLoading}
+                      className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-[--color-ink-dim] hover:text-[--color-blue-brand] transition-colors disabled:opacity-50"
                       title="Use Current Location"
+                      aria-label="Use current location"
+                      aria-busy={isLocationLoading}
                     >
-                      <MapPin className="h-4 w-4" aria-hidden />
+                      {isLocationLoading ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <MapPin className="h-4 w-4" aria-hidden />
+                      )}
                     </button>
                   </div>
                 </label>
