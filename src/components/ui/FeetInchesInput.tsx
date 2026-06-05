@@ -190,6 +190,7 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
           onChange={(e) => {
             handleFeetChange(Number.parseInt(e.target.value, 10) || 0);
           }}
+          onFocus={(e) => e.target.select()}
           min={0}
           step={1}
           autoFocus={autoFocus}
@@ -213,6 +214,7 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
               Number.parseInt(e.target.value, 10) || 0,
             );
           }}
+          onFocus={(e) => e.target.select()}
           min={0}
           step={1}
           inputMode="numeric"
