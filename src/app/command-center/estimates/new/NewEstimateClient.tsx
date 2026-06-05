@@ -33,6 +33,7 @@ import {
 import { useEstimateForm } from "@/lib/estimates/useEstimateForm";
 import { getNumberFormatter } from "@/utils/formatters";
 import { routes } from "@routes";
+import { useGeolocation } from "@/hooks/useGeolocation";
 import type {
   EstimateLineItem,
   PriceBookMaterial,
@@ -163,8 +164,14 @@ function EstimateDetailsCard({
 }: EstimateDetailsCardProps) {
   const [lat, setLat] = useState<number | null>(null);
   const [lng, setLng] = useState<number | null>(null);
-  const [isFetchingLocation, setIsFetchingLocation] = useState(false);
   const mapsKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
+  const { isLoading: isFetchingLocation, handleUseLocation } = useGeolocation(
+    ({ address, latitude, longitude }) => {
+      onChange("jobSiteAddress", address);
+      setLat(latitude);
+      setLng(longitude);
+    },
+  );
   const [crmClients, setCrmClients] = useState<{id: string, name: string, email?: string, address?: string}[]>([]);
 
   useEffect(() => {
@@ -313,43 +320,18 @@ function EstimateDetailsCard({
               />
               <button
                 type="button"
-                onClick={async () => {
-                  // setError(null); // Removed setError call
-                  if (!("geolocation" in navigator)) {
-                    // setError("Geolocation is not supported by this browser."); // Removed setError call
-                    return;
-                  }
-                  setIsFetchingLocation(true);
-                  navigator.geolocation.getCurrentPosition(async (pos) => {
-                    const { latitude, longitude } = pos.coords;
-                    try {
-                      const res = await fetch(
-                        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${mapsKey}`
-                      );
-                      const data = await res.json();
-                      if (data.status === "OK" && data.results?.[0]) {
-                        const addr = data.results[0].formatted_address;
-                        onChange("jobSiteAddress", addr);
-                        setLat(latitude);
-                        setLng(longitude);
-                      } else {
-                        // setError("Unable to retrieve address from Google Geocoding."); // Removed setError call
-                      }
-                    } catch {
-                      // setError("Failed to fetch location data from Google."); // Removed setError call
-                    } finally {
-                      setIsFetchingLocation(false);
-                    }
-                  }, () => {
-                    // setError("Geolocation error."); // Removed setError call
-                    setIsFetchingLocation(false);
-                  });
-                }}
+                onClick={() => handleUseLocation()}
                 disabled={isFetchingLocation}
                 className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-slate-400 hover:text-[--color-blue-brand] transition-colors"
                 title="Use Current Location"
+                aria-label="Use current location"
+                aria-busy={isFetchingLocation}
               >
-                {isFetchingLocation ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <MapPin className="h-4 w-4" aria-hidden />}
+                {isFetchingLocation ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <MapPin className="h-4 w-4" aria-hidden />
+                )}
               </button>
             </div>
             {lat && lng && <WeatherWidget lat={lat} lng={lng} />}

@@ -9,6 +9,7 @@ import {
   PackagePlus,
   FolderOpen,
   ExternalLink,
+  Loader2,
   MapPin,
 } from "lucide-react";
 import { PlaceAutocomplete } from "@/components/ui/PlaceAutocomplete";
@@ -27,6 +28,7 @@ import type { EstimateStatus } from "@/lib/estimates/status";
 import { sanitizeFilename } from "@/utils/sanitize-filename";
 import { useContractorProfile } from "@/components/pdf/useContractorProfile";
 import { useHaptic } from "@/hooks/useHaptic";
+import { useGeolocation } from "@/hooks/useGeolocation";
 import { routes } from "@routes";
 import {
   toCents,
@@ -237,6 +239,9 @@ export function SavedContent({
   const [builderName, setBuilderName] = useState("Price Book Estimate");
   const [builderClientName, setBuilderClientName] = useState("");
   const [builderJobSiteAddress, setBuilderJobSiteAddress] = useState("");
+  const { isLoading: isLocationLoading, handleUseLocation } = useGeolocation(
+    ({ address }) => setBuilderJobSiteAddress(address),
+  );
   const [builderRows, setBuilderRows] = useState<BuilderRow[]>([]);
   const [attachedEstimateId, setAttachedEstimateId] = useState("");
   const [lastUpdatedAt, setLastUpdatedAt] = useState<Date | null>(
@@ -1489,23 +1494,19 @@ export function SavedContent({
                   type="button"
                   onClick={(e) => {
                     e.preventDefault();
-                    if ("geolocation" in navigator) {
-                      navigator.geolocation.getCurrentPosition(async (pos) => {
-                        const { latitude, longitude } = pos.coords;
-                        try {
-                          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
-                          const data = await res.json();
-                          if (data && data.display_name) {
-                            setBuilderJobSiteAddress(data.display_name);
-                          }
-                        } catch {}
-                      })
-                    }
+                    handleUseLocation();
                   }}
-                  className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-[--color-ink-dim] hover:text-[--color-blue-brand] transition-colors"
+                  disabled={isLocationLoading}
+                  className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-[--color-ink-dim] hover:text-[--color-blue-brand] transition-colors disabled:opacity-50"
                   title="Use Current Location"
+                  aria-label="Use current location"
+                  aria-busy={isLocationLoading}
                 >
-                  <MapPin className="h-4 w-4" aria-hidden />
+                  {isLocationLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <MapPin className="h-4 w-4" aria-hidden />
+                  )}
                 </button>
               </div>
             </label>
