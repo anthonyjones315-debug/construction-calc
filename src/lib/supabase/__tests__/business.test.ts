@@ -1,20 +1,15 @@
-/**
- * Smoke tests — role capability matrix
- *
- * Verifies that each role (owner / admin / editor / member) receives
- * the correct set of boolean capabilities from the business context
- * helper functions in src/lib/supabase/business.ts.
- *
- * These are pure-function tests — no DB, no network, no mocks needed.
- */
-
 import { describe, it, expect } from "vitest";
 import {
+  assertNoBusinessIdOverride,
+  getTenantScopeColumn,
+  getTenantScopeId,
   isBusinessAdminRole,
   canWriteBusinessData,
   canDeleteBusinessData,
+  type BusinessContext,
   type MembershipRole,
-} from "@/lib/supabase/business";
+} from "../business";
+import { UnauthorizedError } from "@/lib/errors/unauthorized";
 
 // ---------------------------------------------------------------------------
 // Helper: build the same capability object that buildBusinessCapabilities()
@@ -28,6 +23,116 @@ function buildCapabilities(role: MembershipRole) {
     canDeleteBusinessData: canDeleteBusinessData(role),
   };
 }
+
+describe("assertNoBusinessIdOverride", () => {
+  const baseContext: BusinessContext = {
+    userId: "user-123",
+    businessId: "business-123",
+    role: "owner",
+    isOwner: true,
+    isAdmin: true,
+    canWriteBusinessData: true,
+    canDeleteBusinessData: true,
+    usesLegacyUserScope: false,
+  };
+
+  const legacyContext: BusinessContext = {
+    ...baseContext,
+    usesLegacyUserScope: true,
+  };
+
+  it("does not throw when requested business ID is undefined", () => {
+    expect(() => assertNoBusinessIdOverride(undefined, baseContext)).not.toThrow();
+  });
+
+  it("does not throw when requested business ID is null", () => {
+    expect(() => assertNoBusinessIdOverride(null, baseContext)).not.toThrow();
+  });
+
+  it("does not throw when requested business ID is empty string", () => {
+    expect(() => assertNoBusinessIdOverride("", baseContext)).not.toThrow();
+  });
+
+  it("does not throw when requested business ID is whitespace", () => {
+    expect(() => assertNoBusinessIdOverride("   ", baseContext)).not.toThrow();
+  });
+
+  it("does not throw when requested business ID matches business ID (modern scope)", () => {
+    expect(() => assertNoBusinessIdOverride("business-123", baseContext)).not.toThrow();
+  });
+
+  it("throws when requested business ID does not match business ID (modern scope)", () => {
+    expect(() => assertNoBusinessIdOverride("business-456", baseContext)).toThrow(UnauthorizedError);
+  });
+
+  it("does not throw when requested business ID matches user ID (legacy scope)", () => {
+    expect(() => assertNoBusinessIdOverride("user-123", legacyContext)).not.toThrow();
+  });
+
+  it("throws when requested business ID does not match user ID (legacy scope)", () => {
+    expect(() => assertNoBusinessIdOverride("business-123", legacyContext)).toThrow(UnauthorizedError);
+  });
+});
+
+describe("getTenantScopeColumn", () => {
+  it("returns 'business_id' when not using legacy scope", () => {
+    const context: BusinessContext = {
+      userId: "user-123",
+      businessId: "business-123",
+      role: "owner",
+      isOwner: true,
+      isAdmin: true,
+      canWriteBusinessData: true,
+      canDeleteBusinessData: true,
+      usesLegacyUserScope: false,
+    };
+    expect(getTenantScopeColumn(context)).toBe("business_id");
+  });
+
+  it("returns 'user_id' when using legacy scope", () => {
+    const context: BusinessContext = {
+      userId: "user-123",
+      businessId: "business-123",
+      role: "owner",
+      isOwner: true,
+      isAdmin: true,
+      canWriteBusinessData: true,
+      canDeleteBusinessData: true,
+      usesLegacyUserScope: true,
+    };
+    expect(getTenantScopeColumn(context)).toBe("user_id");
+  });
+});
+
+describe("getTenantScopeId", () => {
+  it("returns the businessId when not using legacy scope", () => {
+    const context: BusinessContext = {
+      userId: "user-123",
+      businessId: "business-123",
+      role: "owner",
+      isOwner: true,
+      isAdmin: true,
+      canWriteBusinessData: true,
+      canDeleteBusinessData: true,
+      usesLegacyUserScope: false,
+    };
+    expect(getTenantScopeId(context)).toBe("business-123");
+  });
+
+  it("returns the userId when using legacy scope", () => {
+    const context: BusinessContext = {
+      userId: "user-123",
+      businessId: "business-123",
+      role: "owner",
+      isOwner: true,
+      isAdmin: true,
+      canWriteBusinessData: true,
+      canDeleteBusinessData: true,
+      usesLegacyUserScope: true,
+    };
+    expect(getTenantScopeId(context)).toBe("user-123");
+  });
+});
 
 // ---------------------------------------------------------------------------
 // Role matrix
