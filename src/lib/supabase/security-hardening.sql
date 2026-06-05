@@ -116,12 +116,13 @@ begin
     return old;
   end if;
 
-  insert into public.users (id, name, email, image)
-  values (new.id, new.name, new.email, new.image)
+  insert into public.users (id, name, email, "emailVerified", image)
+  values (new.id, new.name, new.email, new."emailVerified", new.image)
   on conflict (id) do update
-    set name  = excluded.name,
-        email = excluded.email,
-        image = excluded.image;
+    set name            = excluded.name,
+        email           = excluded.email,
+        "emailVerified" = excluded."emailVerified",
+        image           = excluded.image;
 
   return new;
 end;
