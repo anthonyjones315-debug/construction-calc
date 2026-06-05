@@ -361,17 +361,16 @@ function estimateStatusClasses(status: string | null) {
   }
   return "border-[--color-border] bg-[--color-surface-alt] text-[--color-ink-mid]";
 }
+const CONCRETE_TOOLS = new Set(["slab-thickness", "running-lineal-feet", "cubic-yards", "masonry"]);
+const STRUCTURE_TOOLS = new Set(["framing", "interior"]);
+
 
 function categorizeTool(item: NavItem): ToolCategory {
-  if (
-    ["slab-thickness", "running-lineal-feet", "cubic-yards", "masonry"].includes(
-      item.slug,
-    )
-  ) {
+  if (CONCRETE_TOOLS.has(item.slug)) {
     return "concrete";
   }
 
-  if (["framing", "interior"].includes(item.slug)) {
+  if (STRUCTURE_TOOLS.has(item.slug)) {
     return "structure";
   }
 
