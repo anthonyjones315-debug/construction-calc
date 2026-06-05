@@ -197,6 +197,7 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
           enterKeyHint="next"
           aria-labelledby={labelId}
           aria-label={`${label} feet`}
+          onFocus={(e) => e.target.select()}
           className="glass-input flex-1 rounded-none border-0 bg-transparent px-3 text-sm tabular-nums tracking-tight text-field-input shadow-none"
         />
         <div className="flex items-center border-l border-[--color-border] bg-[--color-surface-alt] px-2 text-[11px] font-semibold uppercase tabular-nums tracking-tight text-copy-secondary">
@@ -219,6 +220,7 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
           enterKeyHint="next"
           aria-labelledby={labelId}
           aria-label={`${label} inches`}
+          onFocus={(e) => e.target.select()}
           className="glass-input flex-1 rounded-none border-0 border-l border-[--color-border] bg-transparent px-3 text-sm tabular-nums tracking-tight text-field-input shadow-none"
         />
         <div className="flex items-center border-l border-[--color-border] bg-[--color-surface-alt] px-2 text-[11px] font-semibold uppercase tabular-nums tracking-tight text-copy-secondary">

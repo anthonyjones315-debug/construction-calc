@@ -279,6 +279,7 @@ export function ProInput({
           inputMode={type === "number" ? "decimal" : undefined}
           enterKeyHint="done"
           aria-labelledby={labelId}
+          onFocus={(e) => e.target.select()}
           className="glass-input flex-1 rounded-none border-0 bg-transparent px-3 text-sm tabular-nums tracking-tight text-field-input shadow-none"
         />
         {hasSelect ? (
