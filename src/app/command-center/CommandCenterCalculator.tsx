@@ -43,6 +43,7 @@ import {
   Search,
   Save,
   ShieldCheck,
+  Loader2,
   SlidersHorizontal,
   Sparkles,
   SquareStack,
@@ -93,6 +94,7 @@ import {
 import { useContractorProfile } from "@/components/pdf/useContractorProfile";
 import { getConcreteInputLabelsFromCopy } from "@/data/construction-terms";
 import { useStore } from "@/lib/store";
+import { useGeolocation } from "@/hooks/useGeolocation";
 import { recordVisit } from "@/lib/recommendations/activity";
 import { getUserFacingErrorDetails } from "@/lib/errors/user-facing";
 import { useDeviceProfile } from "@/hooks/useDeviceProfile";
@@ -853,6 +855,7 @@ export function CommandCenterCalculator({ page, closeModal }: CalculatorPageProp
   const status = isLoaded ? (userId ? "authenticated" : "unauthenticated") : "loading";
   const contractorProfile = useContractorProfile();
   const { proMode, mounted } = useProMode();
+  const { getPosition, loading: geoloading } = useGeolocation();
   const effectiveProMode = mounted && proMode;
   const lockedFramingMaterial = getLockedFramingMaterial(page.canonicalPath);
   const canShowPricing = Boolean(session?.user?.id);
@@ -5078,23 +5081,21 @@ export function CommandCenterCalculator({ page, closeModal }: CalculatorPageProp
                       type="button"
                       onClick={(e) => {
                         e.preventDefault();
-                        if ("geolocation" in navigator) {
-                          navigator.geolocation.getCurrentPosition(async (pos) => {
-                            const { latitude, longitude } = pos.coords;
-                            try {
-                              const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
-                              const data = await res.json();
-                              if (data && data.display_name) {
-                                setEstimateJobAddress(data.display_name);
-                              }
-                            } catch {}
-                          })
-                        }
+                        getPosition((result) => {
+                          setEstimateJobAddress(result.address);
+                        });
                       }}
+                      disabled={geoloading}
                       className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-[--color-ink-dim] hover:text-[--color-blue-brand] transition-colors"
                       title="Use Current Location"
+                      aria-label="Use current location"
+                      aria-busy={geoloading}
                     >
-                      <MapPin className="h-4 w-4" aria-hidden />
+                      {geoloading ? (
+                        <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                      ) : (
+                        <MapPin className="h-4 w-4" aria-hidden />
+                      )}
                     </button>
                   </div>
                 </label>
