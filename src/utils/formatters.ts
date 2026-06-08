@@ -57,3 +57,40 @@ export function getDateTimeFormatter(
 
   return formatter;
 }
+
+/**
+ * Pre-instantiated formatters for common patterns to avoid the overhead of
+ * 'new Intl.*' instantiation and cache lookups.
+ */
+export const USD_FORMATTER = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
+
+export const NUMBER_FORMATTER_EN_US = new Intl.NumberFormat("en-US");
+
+export const DATE_FORMATTER_MONTH_DAY_YEAR = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+});
+
+export const DATE_FORMATTER_MONTH_DAY = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+});
+
+export const DATE_FORMATTER_FULL = new Intl.DateTimeFormat("en-US", {
+  weekday: "long",
+  month: "short",
+  day: "numeric",
+});
+
+export const DATE_FORMATTER_LOCAL_DATETIME = new Intl.DateTimeFormat("en-US", {
+  year: "numeric",
+  month: "numeric",
+  day: "numeric",
+  hour: "numeric",
+  minute: "numeric",
+  second: "numeric",
+});
