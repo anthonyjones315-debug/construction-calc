@@ -5,6 +5,7 @@ import {
   useEffect,
   useRef,
   useCallback,
+  useId,
   type FormEvent,
   type ChangeEvent,
 } from "react";
@@ -161,6 +162,13 @@ function EstimateDetailsCard({
   fromCrm,
   onChange,
 }: EstimateDetailsCardProps) {
+  const projectNameId = useId();
+  const clientNameId = useId();
+  const clientEmailId = useId();
+  const dateId = useId();
+  const locationId = useId();
+  const notesId = useId();
+
   const [lat, setLat] = useState<number | null>(null);
   const [lng, setLng] = useState<number | null>(null);
   const [isFetchingLocation, setIsFetchingLocation] = useState(false);
@@ -209,10 +217,14 @@ function EstimateDetailsCard({
       {/* Two-column grid */}
       <div className="grid gap-3 sm:grid-cols-2 mb-3">
         <div>
-          <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
+          <label
+            htmlFor={projectNameId}
+            className="mb-1 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500"
+          >
             Project Name <span className="text-red-500">*</span>
           </label>
           <input
+            id={projectNameId}
             type="text"
             value={projectName}
             onChange={(e) => onChange("projectName", e.target.value)}
@@ -221,11 +233,15 @@ function EstimateDetailsCard({
           />
         </div>
         <div>
-          <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
+          <label
+            htmlFor={clientNameId}
+            className="mb-1 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500"
+          >
             Client Name <span className="text-red-500">*</span>
           </label>
           <div className="flex gap-2">
             <input
+              id={clientNameId}
               type="text"
               value={clientName}
               onChange={(e) => onChange("clientName", e.target.value)}
@@ -262,10 +278,14 @@ function EstimateDetailsCard({
       {/* Two-column grid */}
       <div className="grid gap-3 sm:grid-cols-2">
         <div>
-          <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
+          <label
+            htmlFor={clientEmailId}
+            className="mb-1 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500"
+          >
             Client Email
           </label>
           <input
+            id={clientEmailId}
             type="email"
             value={clientEmail}
             onChange={(e) => onChange("clientEmail", e.target.value)}
@@ -276,10 +296,14 @@ function EstimateDetailsCard({
 
 
         <div>
-          <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
+          <label
+            htmlFor={dateId}
+            className="mb-1 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500"
+          >
             Date
           </label>
           <input
+            id={dateId}
             type="date"
             value={estimateDate}
             onChange={(e) => onChange("estimateDate", e.target.value)}
@@ -290,14 +314,18 @@ function EstimateDetailsCard({
 
       {/* Job Site Address & Widgets */}
       <div className="mt-4 border-t border-slate-100 pt-4">
-        <label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
+        <label
+          htmlFor={locationId}
+          className="mb-2 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500"
+        >
           Project Location
         </label>
-        
+
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
           <div className="flex-1 space-y-3">
             <div className="relative">
               <AddressAutocomplete
+                id={locationId}
                 apiKey={mapsKey}
                 onAddressSelect={(addr, lat, lng) => {
                   onChange("jobSiteAddress", addr);
@@ -348,8 +376,14 @@ function EstimateDetailsCard({
                 disabled={isFetchingLocation}
                 className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-slate-400 hover:text-[--color-blue-brand] transition-colors"
                 title="Use Current Location"
+                aria-label="Use Current Location"
+                aria-busy={isFetchingLocation}
               >
-                {isFetchingLocation ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <MapPin className="h-4 w-4" aria-hidden />}
+                {isFetchingLocation ? (
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                ) : (
+                  <MapPin className="h-4 w-4" aria-hidden />
+                )}
               </button>
             </div>
             {lat && lng && <WeatherWidget lat={lat} lng={lng} />}
@@ -379,13 +413,17 @@ function EstimateDetailsCard({
 
       {/* Notes — collapsible-ish */}
       <div className="mt-3">
-        <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
+        <label
+          htmlFor={notesId}
+          className="mb-1 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500"
+        >
           Estimate Notes{" "}
           <span className="font-normal normal-case text-slate-400">
             (optional)
           </span>
         </label>
         <textarea
+          id={notesId}
           value={estimateNotes}
           onChange={(e) => onChange("estimateNotes", e.target.value)}
           placeholder="Add any notes for the client or your team…"
@@ -1187,6 +1225,7 @@ function LineItemsCard({
                             disabled={idx === 0}
                             className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 disabled:opacity-30"
                             title="Move up"
+                            aria-label={`Move line item ${idx + 1} up`}
                           >
                             <ChevronUp className="h-3.5 w-3.5" />
                           </button>
@@ -1196,6 +1235,7 @@ function LineItemsCard({
                             disabled={idx === lineItems.length - 1}
                             className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 disabled:opacity-30"
                             title="Move down"
+                            aria-label={`Move line item ${idx + 1} down`}
                           >
                             <ChevronDown className="h-3.5 w-3.5" />
                           </button>
@@ -1204,6 +1244,7 @@ function LineItemsCard({
                             onClick={() => onRemove(item.id)}
                             className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 transition hover:bg-red-50 hover:text-red-600"
                             title="Remove"
+                            aria-label={`Remove line item ${idx + 1}: ${item.description}`}
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
@@ -1301,6 +1342,7 @@ function LineItemsCard({
                       onClick={() => onMoveUp(idx)}
                       disabled={idx === 0}
                       className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 disabled:opacity-30"
+                      aria-label={`Move line item ${idx + 1} up`}
                     >
                       <ChevronUp className="h-3.5 w-3.5" />
                     </button>
@@ -1309,6 +1351,7 @@ function LineItemsCard({
                       onClick={() => onMoveDown(idx)}
                       disabled={idx === lineItems.length - 1}
                       className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 disabled:opacity-30"
+                      aria-label={`Move line item ${idx + 1} down`}
                     >
                       <ChevronDown className="h-3.5 w-3.5" />
                     </button>
@@ -1316,6 +1359,7 @@ function LineItemsCard({
                       type="button"
                       onClick={() => onRemove(item.id)}
                       className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-red-100 bg-white text-red-500 hover:bg-red-50"
+                      aria-label={`Remove line item ${idx + 1}: ${item.description}`}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>
@@ -1627,12 +1671,11 @@ export default function NewEstimateClient({ onOpenCalculators }: { onOpenCalcula
   } = useEstimateForm();
 
   const [materials, setMaterials] = useState<PriceBookMaterial[]>([]);
-  const [loadingMaterials, setLoadingMaterials] = useState(false);
+  const [loadingMaterials, setLoadingMaterials] = useState(true);
   const [sending, setSending] = useState(false);
 
   // Fetch price book materials on mount
   useEffect(() => {
-    setLoadingMaterials(true);
     fetch("/api/materials")
       .then((r) => r.json())
       .then((j: { data?: PriceBookMaterial[] }) => setMaterials(j.data ?? []))
