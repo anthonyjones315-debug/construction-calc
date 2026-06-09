@@ -38,6 +38,7 @@ import { routes } from "@routes";
 import { CommandCenterCalculator } from "./CommandCenterCalculator";
 import { getTradePageByPath, tradePages } from "@/app/calculators/_lib/trade-pages";
 import { useProMode } from "@/hooks/useProMode";
+import { DATE_FORMATTER_MONTH_DAY } from "@/utils/formatters";
 import { useStore } from "@/lib/store";
 import { KanbanBoard, type KanbanProject } from "@/components/dashboard/KanbanBoard";
 import { DispatchCalendar, type CalendarEvent } from "@/components/dashboard/DispatchCalendar";
@@ -673,11 +674,7 @@ export default function CommandCenterClient({
     recentEstimates.length - signedEstimateCount - sentEstimateCount,
     0,
   );
-  const todayLabel = new Intl.DateTimeFormat("en-US", {
-    weekday: "long",
-    month: "short",
-    day: "numeric",
-  }).format(new Date());
+  const todayLabel = DATE_FORMATTER_MONTH_DAY.format(new Date());
   const lastEstimateLabel = recentEstimates[0]
     ? new Date(recentEstimates[0].updatedAt).toLocaleDateString("en-US", {
         month: "short",
