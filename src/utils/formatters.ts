@@ -4,6 +4,32 @@ const numberFormatters = new Map<string, Intl.NumberFormat>();
 const dateTimeFormatters = new Map<string, Intl.DateTimeFormat>();
 
 /**
+ * Pre-instantiated formatters for common patterns.
+ * These avoid Map lookups and key generation overhead in hot loops.
+ */
+export const USD_FORMATTER = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
+
+export const DATE_FORMATTER_MONTH_DAY = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+});
+
+export const DATE_FORMATTER_FULL = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+});
+
+export const DATE_FORMATTER_WEEKDAY_MONTH_DAY = new Intl.DateTimeFormat("en-US", {
+  weekday: "long",
+  month: "short",
+  day: "numeric",
+});
+
+/**
  * Generates a deterministic cache key for a given locale and options object.
  */
 function getCacheKey(locale: string, options: FormatterOptions): string {
