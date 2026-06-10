@@ -163,6 +163,7 @@ function EstimateDetailsCard({
 }: EstimateDetailsCardProps) {
   const [lat, setLat] = useState<number | null>(null);
   const [lng, setLng] = useState<number | null>(null);
+  const addressFieldId = React.useId();
   const [isFetchingLocation, setIsFetchingLocation] = useState(false);
   const mapsKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
   const [crmClients, setCrmClients] = useState<{id: string, name: string, email?: string, address?: string}[]>([]);
@@ -290,7 +291,10 @@ function EstimateDetailsCard({
 
       {/* Job Site Address & Widgets */}
       <div className="mt-4 border-t border-slate-100 pt-4">
-        <label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
+        <label
+          htmlFor={addressFieldId}
+          className="mb-2 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500"
+        >
           Project Location
         </label>
         
@@ -298,6 +302,7 @@ function EstimateDetailsCard({
           <div className="flex-1 space-y-3">
             <div className="relative">
               <AddressAutocomplete
+                id={addressFieldId}
                 apiKey={mapsKey}
                 onAddressSelect={(addr, lat, lng) => {
                   onChange("jobSiteAddress", addr);
