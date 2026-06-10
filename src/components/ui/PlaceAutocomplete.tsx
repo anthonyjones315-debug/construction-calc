@@ -19,6 +19,7 @@ interface PlaceAutocompleteProps {
   placeholder?: string;
   defaultValue?: string;
   className?: string;
+  id?: string;
 }
 
 // Module-level singleton so we only load the script once across all instances.
@@ -77,6 +78,7 @@ export function PlaceAutocomplete({
   placeholder = "Start typing an address...",
   defaultValue = "",
   className,
+  id,
 }: PlaceAutocompleteProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const elementRef = useRef<google.maps.places.PlaceAutocompleteElement | null>(
@@ -103,6 +105,9 @@ export function PlaceAutocomplete({
       });
 
       el.placeholder = placeholder;
+      if (id) {
+        el.id = id;
+      }
 
       // Listen for selects
       el.addEventListener("gmp-select", async (event: Event) => {
@@ -135,7 +140,7 @@ export function PlaceAutocomplete({
     } catch (err) {
       console.warn("[PlaceAutocomplete] Failed to initialize:", err);
     }
-  }, [apiKey, placeholder]);
+  }, [apiKey, placeholder, id]);
 
   useEffect(() => {
     initElement();
@@ -176,6 +181,7 @@ export function PlaceAutocomplete({
       {/* Fallback: plain input shown while the API loads */}
       {!ready && (
         <input
+          id={id}
           type="text"
           placeholder={placeholder}
           value={fallbackValue}
