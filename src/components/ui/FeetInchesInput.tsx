@@ -43,21 +43,21 @@ export type FeetInchesInputProps = {
 
 /** Standard construction fractions in sixteenths */
 const FRACTION_OPTIONS: { label: string; value: number }[] = [
-  { label: "–",     value: 0 },
-  { label: "1/16",  value: 1 / 16 },
-  { label: "1/8",   value: 1 / 8 },
-  { label: "3/16",  value: 3 / 16 },
-  { label: "1/4",   value: 1 / 4 },
-  { label: "5/16",  value: 5 / 16 },
-  { label: "3/8",   value: 3 / 8 },
-  { label: "7/16",  value: 7 / 16 },
-  { label: "1/2",   value: 1 / 2 },
-  { label: "9/16",  value: 9 / 16 },
-  { label: "5/8",   value: 5 / 8 },
+  { label: "–", value: 0 },
+  { label: "1/16", value: 1 / 16 },
+  { label: "1/8", value: 1 / 8 },
+  { label: "3/16", value: 3 / 16 },
+  { label: "1/4", value: 1 / 4 },
+  { label: "5/16", value: 5 / 16 },
+  { label: "3/8", value: 3 / 8 },
+  { label: "7/16", value: 7 / 16 },
+  { label: "1/2", value: 1 / 2 },
+  { label: "9/16", value: 9 / 16 },
+  { label: "5/8", value: 5 / 8 },
   { label: "11/16", value: 11 / 16 },
-  { label: "3/4",   value: 3 / 4 },
+  { label: "3/4", value: 3 / 4 },
   { label: "13/16", value: 13 / 16 },
-  { label: "7/8",   value: 7 / 8 },
+  { label: "7/8", value: 7 / 8 },
   { label: "15/16", value: 15 / 16 },
 ];
 
@@ -128,7 +128,10 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
       p.onInchesChange(wholeInches + FRACTION_OPTIONS[idx].value);
     };
   } else {
-    const p = props as Extract<FeetInchesInputProps, { value: string | number }>;
+    const p = props as Extract<
+      FeetInchesInputProps,
+      { value: string | number }
+    >;
     const numericValue =
       typeof p.value === "number"
         ? p.value
@@ -151,32 +154,31 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
       if (p.max != null && total > p.max) total = p.max;
       p.onChange(String(Math.round(total * 10000) / 10000));
     };
-    handleFeetChange = (val) =>
-      emitCombined(val, wholeInches, fractionIndex);
-    handleWholeInchesChange = (val) =>
-      emitCombined(feet, val, fractionIndex);
-    handleFractionChange = (idx) =>
-      emitCombined(feet, wholeInches, idx);
+    handleFeetChange = (val) => emitCombined(val, wholeInches, fractionIndex);
+    handleWholeInchesChange = (val) => emitCombined(feet, val, fractionIndex);
+    handleFractionChange = (idx) => emitCombined(feet, wholeInches, idx);
   }
 
   return (
     <fieldset className="flex flex-col gap-1">
       <legend className="mb-1 block w-full text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary">
-        <span className="flex items-center justify-between gap-2">
-          <span id={labelId} className="truncate">
-            {label}
+        <label htmlFor={`${fieldId}-ft`} className="cursor-pointer">
+          <span className="flex items-center justify-between gap-2">
+            <span id={labelId} className="truncate">
+              {label}
+            </span>
+            {subLabel ? (
+              <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
+                {subLabel}
+              </span>
+            ) : null}
           </span>
-          {subLabel ? (
-            <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
-              {subLabel}
+          {helpText ? (
+            <span className="block text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
+              {helpText}
             </span>
           ) : null}
-        </span>
-        {helpText ? (
-          <span className="block text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
-            {helpText}
-          </span>
-        ) : null}
+        </label>
       </legend>
       <div
         data-valid={isValid ? "true" : "false"}
@@ -209,9 +211,7 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
           type="number"
           value={wholeInches}
           onChange={(e) => {
-            handleWholeInchesChange(
-              Number.parseInt(e.target.value, 10) || 0,
-            );
+            handleWholeInchesChange(Number.parseInt(e.target.value, 10) || 0);
           }}
           min={0}
           step={1}

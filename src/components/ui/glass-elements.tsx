@@ -243,26 +243,30 @@ export function ProInput({
   const isValid =
     type === "number" && Number.isFinite(numericValue) && numericValue > 0;
 
+  const Root = hasSelect ? "fieldset" : "div";
+  const Header = hasSelect ? "legend" : "div";
+
   return (
-    <label
-      className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary"
-      htmlFor={fieldId}
-    >
-      <span className="flex items-center justify-between gap-2">
-        <span id={labelId} className="truncate">
-          {label}
-        </span>
-        {subLabel ? (
-          <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
-            {subLabel}
+    <Root className="flex flex-col gap-1">
+      <Header className="mb-0.5 block w-full text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary">
+        <label htmlFor={fieldId} className="flex cursor-pointer flex-col gap-1">
+          <span className="flex items-center justify-between gap-2">
+            <span id={labelId} className="truncate">
+              {label}
+            </span>
+            {subLabel ? (
+              <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
+                {subLabel}
+              </span>
+            ) : null}
           </span>
-        ) : null}
-      </span>
-      {helpText ? (
-        <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
-          {helpText}
-        </span>
-      ) : null}
+          {helpText ? (
+            <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
+              {helpText}
+            </span>
+          ) : null}
+        </label>
+      </Header>
       <div
         data-valid={isValid ? "true" : "false"}
         className="glass-input-shell relative flex min-h-[3.5rem] items-stretch overflow-hidden rounded-xl p-0"
@@ -300,7 +304,7 @@ export function ProInput({
           </div>
         ) : null}
       </div>
-    </label>
+    </Root>
   );
 }
 
@@ -416,7 +420,9 @@ export function ProResult({
                 type="button"
                 onClick={handleCopy}
                 className="min-h-7 rounded-lg border-[--color-border] px-2 py-1 text-xs font-bold uppercase tracking-widest text-copy-secondary hover:border-primary/40"
-                aria-label={copied ? "Copied to clipboard" : "Copy material list"}
+                aria-label={
+                  copied ? "Copied to clipboard" : "Copy material list"
+                }
               >
                 {copied ? "Copied" : "Copy"}
               </GlassButton>
