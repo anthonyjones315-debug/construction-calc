@@ -88,24 +88,37 @@ function formatDollars(dollars: number): string {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function WeatherWidget({ lat, lng }: { lat: number | null; lng: number | null }) {
-  const [weather, setWeather] = useState<{ temp: number; wind: number; isDay: boolean } | null>(null);
+function WeatherWidget({
+  lat,
+  lng,
+}: {
+  lat: number | null;
+  lng: number | null;
+}) {
+  const [weather, setWeather] = useState<{
+    temp: number;
+    wind: number;
+    isDay: boolean;
+  } | null>(null);
 
   useEffect(() => {
     if (lat === null || lng === null) return;
     let cancel = false;
     fetch(`/api/weather?lat=${lat}&lng=${lng}`)
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         if (!cancel && data.temperature != null) {
-          setWeather({ 
-            temp: data.temperature, 
+          setWeather({
+            temp: data.temperature,
             wind: data.windspeed ?? 0,
             isDay: data.isDay ?? true,
           });
         }
-      }).catch(() => {});
-    return () => { cancel = true; };
+      })
+      .catch(() => {});
+    return () => {
+      cancel = true;
+    };
   }, [lat, lng]);
 
   return (
@@ -117,13 +130,22 @@ function WeatherWidget({ lat, lng }: { lat: number | null; lng: number | null })
         </div>
       ) : (
         <>
-          <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${weather?.isDay ? "bg-amber-100 text-amber-600" : "bg-indigo-100 text-indigo-600"} text-lg`}>
+          <div
+            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${weather?.isDay ? "bg-amber-100 text-amber-600" : "bg-indigo-100 text-indigo-600"} text-lg`}
+          >
             {weather ? (weather.isDay ? "☀️" : "🌙") : "🌤️"}
           </div>
           <div className="min-w-0">
-            <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-slate-500">Site Weather</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-slate-500">
+              Site Weather
+            </p>
             {weather ? (
-              <p className="truncate text-sm font-semibold text-slate-900">{weather.temp}°F <span className="text-xs font-normal text-slate-500">· {weather.wind} mph wind</span></p>
+              <p className="truncate text-sm font-semibold text-slate-900">
+                {weather.temp}°F{" "}
+                <span className="text-xs font-normal text-slate-500">
+                  · {weather.wind} mph wind
+                </span>
+              </p>
             ) : (
               <p className="text-xs text-slate-400">Loading forecast...</p>
             )}
@@ -165,12 +187,17 @@ function EstimateDetailsCard({
   const [lng, setLng] = useState<number | null>(null);
   const [isFetchingLocation, setIsFetchingLocation] = useState(false);
   const mapsKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
-  const [crmClients, setCrmClients] = useState<{id: string, name: string, email?: string, address?: string}[]>([]);
+  const [crmClients, setCrmClients] = useState<
+    { id: string; name: string; email?: string; address?: string }[]
+  >([]);
 
   useEffect(() => {
-    fetch("/api/clients").then(res => res.json()).then(data => {
-      if (Array.isArray(data)) setCrmClients(data);
-    }).catch(() => {});
+    fetch("/api/clients")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) setCrmClients(data);
+      })
+      .catch(() => {});
   }, []);
 
   return (
@@ -191,16 +218,14 @@ function EstimateDetailsCard({
         </label>
         <input
           type="text"
-            value={
-              (() => {
-                const lastName = clientName.trim().split(/\s+/).pop() || "";
-                const project = projectName.trim();
-                if (!lastName && !project) return estimateName || "";
-                if (lastName && !project) return lastName;
-                if (!lastName && project) return project;
-                return `${lastName} - ${project}`;
-              })()
-            }
+          value={(() => {
+            const lastName = clientName.trim().split(/\s+/).pop() || "";
+            const project = projectName.trim();
+            if (!lastName && !project) return estimateName || "";
+            if (lastName && !project) return lastName;
+            if (!lastName && project) return project;
+            return `${lastName} - ${project}`;
+          })()}
           readOnly
           className="h-11 w-full rounded-xl border border-slate-200 bg-slate-100 px-3 text-sm text-slate-600 opacity-80 cursor-not-allowed focus:outline-none"
         />
@@ -274,7 +299,6 @@ function EstimateDetailsCard({
           />
         </div>
 
-
         <div>
           <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
             Date
@@ -293,7 +317,7 @@ function EstimateDetailsCard({
         <label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
           Project Location
         </label>
-        
+
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
           <div className="flex-1 space-y-3">
             <div className="relative">
@@ -307,7 +331,9 @@ function EstimateDetailsCard({
                   }
                 }}
                 defaultValue={jobSiteAddress}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange("jobSiteAddress", e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  onChange("jobSiteAddress", e.target.value)
+                }
                 placeholder="Start typing an address..."
                 className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 pl-3 pr-10 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[--color-blue-brand]/45 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[--color-blue-brand]/20"
               />
@@ -320,47 +346,60 @@ function EstimateDetailsCard({
                     return;
                   }
                   setIsFetchingLocation(true);
-                  navigator.geolocation.getCurrentPosition(async (pos) => {
-                    const { latitude, longitude } = pos.coords;
-                    try {
-                      const res = await fetch(
-                        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${mapsKey}`
-                      );
-                      const data = await res.json();
-                      if (data.status === "OK" && data.results?.[0]) {
-                        const addr = data.results[0].formatted_address;
-                        onChange("jobSiteAddress", addr);
-                        setLat(latitude);
-                        setLng(longitude);
-                      } else {
-                        // setError("Unable to retrieve address from Google Geocoding."); // Removed setError call
+                  navigator.geolocation.getCurrentPosition(
+                    async (pos) => {
+                      const { latitude, longitude } = pos.coords;
+                      try {
+                        const res = await fetch(
+                          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${mapsKey}`,
+                        );
+                        const data = await res.json();
+                        if (data.status === "OK" && data.results?.[0]) {
+                          const addr = data.results[0].formatted_address;
+                          onChange("jobSiteAddress", addr);
+                          setLat(latitude);
+                          setLng(longitude);
+                        } else {
+                          // setError("Unable to retrieve address from Google Geocoding."); // Removed setError call
+                        }
+                      } catch {
+                        // setError("Failed to fetch location data from Google."); // Removed setError call
+                      } finally {
+                        setIsFetchingLocation(false);
                       }
-                    } catch {
-                      // setError("Failed to fetch location data from Google."); // Removed setError call
-                    } finally {
+                    },
+                    () => {
+                      // setError("Geolocation error."); // Removed setError call
                       setIsFetchingLocation(false);
-                    }
-                  }, () => {
-                    // setError("Geolocation error."); // Removed setError call
-                    setIsFetchingLocation(false);
-                  });
+                    },
+                  );
                 }}
                 disabled={isFetchingLocation}
                 className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-slate-400 hover:text-[--color-blue-brand] transition-colors"
                 title="Use Current Location"
+                aria-label="Use current location"
+                aria-busy={isFetchingLocation}
               >
-                {isFetchingLocation ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <MapPin className="h-4 w-4" aria-hidden />}
+                {isFetchingLocation ? (
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                ) : (
+                  <MapPin className="h-4 w-4" aria-hidden />
+                )}
               </button>
             </div>
             {lat && lng && <WeatherWidget lat={lat} lng={lng} />}
           </div>
-          
+
           <div className="shrink-0 w-full sm:w-[240px] xl:w-[280px]">
             {jobSiteAddress && mapsKey ? (
               <iframe
                 width="100%"
                 height="100"
-                style={{ border: 0, borderRadius: "12px", background: "#f8fafc" }}
+                style={{
+                  border: 0,
+                  borderRadius: "12px",
+                  background: "#f8fafc",
+                }}
                 loading="lazy"
                 allowFullScreen
                 referrerPolicy="no-referrer-when-downgrade"
@@ -370,7 +409,9 @@ function EstimateDetailsCard({
             ) : (
               <div className="flex h-[100px] w-full flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 text-slate-400">
                 <span className="text-xl mb-1">📍</span>
-                <span className="text-[10px] font-medium uppercase tracking-widest text-slate-400">Map Preview</span>
+                <span className="text-[10px] font-medium uppercase tracking-widest text-slate-400">
+                  Map Preview
+                </span>
               </div>
             )}
           </div>
@@ -1169,7 +1210,9 @@ function LineItemsCard({
                             }
                             onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
                               const v = parseFloat(e.target.value) || 0;
-                              onUpdate(item.id, { unitPrice: Math.round(v * 100) / 100 });
+                              onUpdate(item.id, {
+                                unitPrice: Math.round(v * 100) / 100,
+                              });
                               e.target.value = v.toFixed(2);
                             }}
                             className="w-24 rounded-lg border border-transparent bg-transparent pl-4 pr-1.5 py-1 text-right text-sm text-slate-900 focus:border-[--color-blue-rim] focus:bg-white focus:outline-none"
@@ -1288,7 +1331,9 @@ function LineItemsCard({
                         }
                         onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
                           const v = parseFloat(e.target.value) || 0;
-                          onUpdate(item.id, { unitPrice: Math.round(v * 100) / 100 });
+                          onUpdate(item.id, {
+                            unitPrice: Math.round(v * 100) / 100,
+                          });
                           e.target.value = v.toFixed(2);
                         }}
                         className="h-9 w-full rounded-lg border border-slate-200 bg-white pl-5 pr-2.5 text-sm text-slate-900 focus:border-[--color-blue-rim] focus:outline-none"
@@ -1489,7 +1534,8 @@ function TotalsCard({
           {discountCents > 0 && (
             <div className="flex items-center justify-between gap-12 sm:justify-end">
               <span className="text-xs text-emerald-600">
-                Discount{discountType === "percent" ? ` (${discountValue}%)` : ""}
+                Discount
+                {discountType === "percent" ? ` (${discountValue}%)` : ""}
               </span>
               <span className="font-mono text-sm font-semibold text-emerald-600">
                 −{formatCents(discountCents)}
@@ -1499,11 +1545,11 @@ function TotalsCard({
           {taxCents > 0 && (
             <div className="flex items-center justify-between gap-12 sm:justify-end">
               <span className="text-xs text-slate-500">
-                Tax{" "}
-                {discountCents > 0 ? "(on discounted subtotal) " : ""}
-                ({selectedPreset?.county === "custom"
+                Tax {discountCents > 0 ? "(on discounted subtotal) " : ""}(
+                {selectedPreset?.county === "custom"
                   ? `${taxRatePercent}%`
-                  : selectedPreset?.label})
+                  : selectedPreset?.label}
+                )
               </span>
               <span className="font-mono text-sm text-slate-700">
                 {formatCents(taxCents)}
@@ -1606,7 +1652,11 @@ function ActionBar({
 
 // ─── Main Client Component ────────────────────────────────────────────────────
 
-export default function NewEstimateClient({ onOpenCalculators }: { onOpenCalculators?: () => void }) {
+export default function NewEstimateClient({
+  onOpenCalculators,
+}: {
+  onOpenCalculators?: () => void;
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const {
@@ -1627,12 +1677,11 @@ export default function NewEstimateClient({ onOpenCalculators }: { onOpenCalcula
   } = useEstimateForm();
 
   const [materials, setMaterials] = useState<PriceBookMaterial[]>([]);
-  const [loadingMaterials, setLoadingMaterials] = useState(false);
+  const [loadingMaterials, setLoadingMaterials] = useState(true);
   const [sending, setSending] = useState(false);
 
   // Fetch price book materials on mount
   useEffect(() => {
-    setLoadingMaterials(true);
     fetch("/api/materials")
       .then((r) => r.json())
       .then((j: { data?: PriceBookMaterial[] }) => setMaterials(j.data ?? []))
@@ -1649,9 +1698,24 @@ export default function NewEstimateClient({ onOpenCalculators }: { onOpenCalcula
       .then((r) => r.json())
       .then((client) => {
         if (client && !client.error) {
-          if (client.name) dispatch({ type: "SET_FIELD", field: "clientName", value: client.name });
-          if (client.email) dispatch({ type: "SET_FIELD", field: "clientEmail", value: client.email });
-          if (client.address) dispatch({ type: "SET_FIELD", field: "jobSiteAddress", value: client.address });
+          if (client.name)
+            dispatch({
+              type: "SET_FIELD",
+              field: "clientName",
+              value: client.name,
+            });
+          if (client.email)
+            dispatch({
+              type: "SET_FIELD",
+              field: "clientEmail",
+              value: client.email,
+            });
+          if (client.address)
+            dispatch({
+              type: "SET_FIELD",
+              field: "jobSiteAddress",
+              value: client.address,
+            });
         }
       })
       .catch(() => {});
@@ -1952,8 +2016,6 @@ export default function NewEstimateClient({ onOpenCalculators }: { onOpenCalcula
         hasLineItems={hasLineItems}
         hasClientEmail={hasClientEmail}
       />
-
-
     </div>
   );
 }
