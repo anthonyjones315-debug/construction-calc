@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
-import { getClientIp } from "@/lib/http/client-ip";
+import { auth } from "@/lib/auth/config";
 import { checkMemoryRateLimit } from "@/lib/rate-limit/memory";
+
+export const dynamic = "force-dynamic";
 
 // Sanitize output to prevent XSS in markdown rendering
 function sanitize(text: string): string {
@@ -18,8 +20,13 @@ interface RequestBody {
 }
 
 export async function POST(req: NextRequest) {
-  const ip = getClientIp(req);
-  const rl = checkMemoryRateLimit("ai-optimize", ip, 5, 60_000);
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const rateLimitKey = session.user.id;
+  const rl = checkMemoryRateLimit("ai-optimize", rateLimitKey, 5, 60_000);
   if (!rl.ok) {
     return NextResponse.json(
       { error: "Too many requests. Please wait a moment before trying again." },
