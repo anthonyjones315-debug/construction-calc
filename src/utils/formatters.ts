@@ -41,6 +41,42 @@ export function getNumberFormatter(
 }
 
 /**
+ * Common currency formatter for USD.
+ */
+export const USD_FORMATTER = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+/**
+ * Common date formatter: "Jan 1, 2024"
+ */
+export const DATE_FORMATTER_FULL = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+});
+
+/**
+ * Common date formatter: "Jan 1"
+ */
+export const DATE_FORMATTER_MONTH_DAY = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+});
+
+/**
+ * Common date formatter: "Monday, Jan 1"
+ */
+export const DATE_FORMATTER_TODAY = new Intl.DateTimeFormat("en-US", {
+  weekday: "long",
+  month: "short",
+  day: "numeric",
+});
+
+/**
  * Returns a cached Intl.DateTimeFormat instance for the given options and locale.
  */
 export function getDateTimeFormatter(
