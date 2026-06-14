@@ -9,3 +9,8 @@
 **Vulnerability:** The Documenso webhook receiver would skip signature verification if the `WEBHOOK_SECRET` was not configured, and used a simple string comparison for signatures.
 **Learning:** Fail-open logic in authentication checks can lead to complete bypasses if environment variables are misconfigured. Non-constant-time string comparisons are susceptible to timing attacks.
 **Prevention:** Always implement fail-closed logic for security checks. Use `crypto.timingSafeEqual` for comparing sensitive values like signatures or tokens.
+
+## 2025-05-16 - Information Leakage and Authentication Gaps in Utility APIs
+**Vulnerability:** The `/api/weather` endpoint was publicly accessible and leaked raw exception messages (e.g., `error.message`) to users.
+**Learning:** Utility endpoints, even those not directly handling PII, can incur costs (API quotas) and leak stack traces or internal implementation details if not properly guarded.
+**Prevention:** Ensure all internal utility APIs are wrapped in `auth()` checks and return generic error messages. Use `force-dynamic` to ensure auth cookies are evaluated.
