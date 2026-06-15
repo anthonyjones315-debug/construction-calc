@@ -37,18 +37,12 @@ import {
   normalizeDollars,
   sumDollars,
 } from "@/utils/money";
+import { DATE_FORMATTER_FULL, USD_FORMATTER } from "@/utils/formatters";
 
 const LIVE_REFRESH_MS = 15000;
 
-const USD_CURRENCY = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
-
 function formatCents(cents: number): string {
-  return USD_CURRENCY.format(centsToDollars(cents));
+  return USD_FORMATTER.format(centsToDollars(cents));
 }
 
 type SavedContentProps = {
@@ -485,11 +479,7 @@ export function SavedContent({
 
     const invoiceDoc = createInvoicePDF({
       estimateTitle: estimate.name,
-      generatedAt: new Date().toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      }),
+      generatedAt: DATE_FORMATTER_FULL.format(new Date()),
       invoiceNumber: invoice.invoiceNumber,
       issuedDate: invoice.issuedDate,
       dueDate: invoice.dueDate,
@@ -1327,10 +1317,7 @@ export function SavedContent({
               finalize.calculatorLabel
                 ? finalize.calculatorLabel
                 : estimate.calculator_id,
-            generatedAt: new Date(estimate.created_at).toLocaleDateString(
-              "en-US",
-              { year: "numeric", month: "long", day: "numeric" },
-            ),
+            generatedAt: DATE_FORMATTER_FULL.format(new Date(estimate.created_at)),
             jobName:
               typeof finalize.jobName === "string" && finalize.jobName
                 ? finalize.jobName
@@ -1634,7 +1621,7 @@ export function SavedContent({
                     {materials.map((item) => (
                       <option key={item.id} value={item.id}>
                         {item.material_name} ·{" "}
-                        {USD_CURRENCY.format(item.unit_cost)}/
+                  {USD_FORMATTER.format(item.unit_cost)}/
                         {item.unit_type ?? "each"}
                       </option>
                     ))}
@@ -1776,18 +1763,14 @@ export function SavedContent({
               <p>
                 <span className="font-semibold text-[--color-ink]">Total:</span>{" "}
                 {deleteTarget.total_cost !== null
-                  ? USD_CURRENCY.format(deleteTarget.total_cost)
+                  ? USD_FORMATTER.format(deleteTarget.total_cost)
                   : "Not set"}
               </p>
               <p>
                 <span className="font-semibold text-[--color-ink]">
                   Created:
                 </span>{" "}
-                {new Date(deleteTarget.created_at).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                })}
+                {DATE_FORMATTER_FULL.format(new Date(deleteTarget.created_at))}
               </p>
             </div>
 
@@ -1846,11 +1829,7 @@ export function SavedContent({
                     </p>
                     <div className="flex items-center gap-3 mt-1 flex-wrap">
                       <span className="text-xs text-[--color-ink-dim]">
-                        {new Date(est.created_at).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        })}
+                        {DATE_FORMATTER_FULL.format(new Date(est.created_at))}
                       </span>
                       {hero && (
                         <span className="inline-flex items-center rounded-full border border-[--color-blue-brand]/35 bg-[--color-blue-brand]/10 px-2 py-0.5 text-xs font-bold text-[--color-blue-brand]">
@@ -1859,7 +1838,7 @@ export function SavedContent({
                       )}
                       {est.total_cost !== null && (
                         <span className="inline-flex items-center rounded-full border border-emerald-500/35 bg-emerald-500/10 px-2 py-0.5 text-xs font-bold text-emerald-700">
-                          {USD_CURRENCY.format(est.total_cost)}
+                          {USD_FORMATTER.format(est.total_cost)}
                         </span>
                       )}
                       <span className="inline-flex items-center rounded-full border border-[--color-border] bg-[--color-surface-alt] px-2 py-0.5 text-xs text-[--color-ink-dim]">

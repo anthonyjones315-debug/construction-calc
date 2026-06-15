@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { getSafeEstimate } from "@/lib/dal/estimates";
+import { USD_FORMATTER } from "@/utils/formatters";
 
 type InvoiceStatus = "Draft" | "Sent" | "Partially Paid" | "Paid";
 
@@ -46,11 +47,6 @@ type Props = {
   params: Promise<{ id: string; invoiceId: string }>;
 };
 
-const USD_CURRENCY = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0,
-});
 
 function parseInvoices(
   inputs: Record<string, unknown> | null | undefined,
@@ -135,7 +131,7 @@ export default async function SavedInvoiceDetailPage({ params }: Props) {
             </p>
             <p>
               <span className="font-semibold text-[--color-ink]">Amount:</span>{" "}
-              {USD_CURRENCY.format(invoice.amount)}
+              {USD_FORMATTER.format(invoice.amount)}
             </p>
             <p>
               <span className="font-semibold text-[--color-ink]">
