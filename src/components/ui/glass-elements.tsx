@@ -243,26 +243,36 @@ export function ProInput({
   const isValid =
     type === "number" && Number.isFinite(numericValue) && numericValue > 0;
 
+  const Root = hasSelect ? "fieldset" : "label";
+  const Header = hasSelect ? "legend" : "span";
+
   return (
-    <label
+    <Root
       className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary"
-      htmlFor={fieldId}
+      {...(hasSelect ? {} : { htmlFor: fieldId })}
     >
-      <span className="flex items-center justify-between gap-2">
-        <span id={labelId} className="truncate">
-          {label}
-        </span>
-        {subLabel ? (
-          <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
-            {subLabel}
+      <Header className="mb-1 block w-full">
+        <label
+          htmlFor={fieldId}
+          className={hasSelect ? "cursor-pointer" : undefined}
+        >
+          <span className="flex items-center justify-between gap-2">
+            <span id={labelId} className="truncate">
+              {label}
+            </span>
+            {subLabel ? (
+              <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
+                {subLabel}
+              </span>
+            ) : null}
           </span>
-        ) : null}
-      </span>
-      {helpText ? (
-        <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
-          {helpText}
-        </span>
-      ) : null}
+          {helpText ? (
+            <span className="block text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
+              {helpText}
+            </span>
+          ) : null}
+        </label>
+      </Header>
       <div
         data-valid={isValid ? "true" : "false"}
         className="glass-input-shell relative flex min-h-[3.5rem] items-stretch overflow-hidden rounded-xl p-0"
@@ -300,7 +310,7 @@ export function ProInput({
           </div>
         ) : null}
       </div>
-    </label>
+    </Root>
   );
 }
 
