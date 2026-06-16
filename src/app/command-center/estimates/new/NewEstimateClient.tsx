@@ -31,7 +31,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { useEstimateForm } from "@/lib/estimates/useEstimateForm";
-import { getNumberFormatter } from "@/utils/formatters";
+import { USD_FORMATTER } from "@/utils/formatters";
 import { routes } from "@routes";
 import type {
   EstimateLineItem,
@@ -73,17 +73,11 @@ type PanelTab = "calculator" | "pricebook" | "manual" | null;
 // ─── Utilities ────────────────────────────────────────────────────────────────
 
 function formatCents(cents: number): string {
-  return getNumberFormatter({
-    style: "currency",
-    currency: "USD",
-  }).format(cents / 100);
+  return USD_FORMATTER.format(cents / 100);
 }
 
 function formatDollars(dollars: number): string {
-  return getNumberFormatter({
-    style: "currency",
-    currency: "USD",
-  }).format(dollars);
+  return USD_FORMATTER.format(dollars);
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -1627,12 +1621,11 @@ export default function NewEstimateClient({ onOpenCalculators }: { onOpenCalcula
   } = useEstimateForm();
 
   const [materials, setMaterials] = useState<PriceBookMaterial[]>([]);
-  const [loadingMaterials, setLoadingMaterials] = useState(false);
+  const [loadingMaterials, setLoadingMaterials] = useState(true);
   const [sending, setSending] = useState(false);
 
   // Fetch price book materials on mount
   useEffect(() => {
-    setLoadingMaterials(true);
     fetch("/api/materials")
       .then((r) => r.json())
       .then((j: { data?: PriceBookMaterial[] }) => setMaterials(j.data ?? []))
