@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
+import { auth } from "@/lib/auth/config";
 
 async function geocodeZip(zip: string, googleKey: string) {
   const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(zip)},US&key=${googleKey}`;
@@ -18,8 +19,15 @@ function wmoToCondition(code: number) {
   return "Clear";
 }
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: Request) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(req.url);
     const latParam = searchParams.get("lat");
     const lngParam = searchParams.get("lng");
@@ -103,7 +111,7 @@ export async function GET(req: Request) {
   } catch (error: unknown) {
     Sentry.captureException(error);
     console.error("[WEATHER_API_ERROR]", error);
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Weather error" }, { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
 
