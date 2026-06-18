@@ -243,21 +243,36 @@ export function ProInput({
   const isValid =
     type === "number" && Number.isFinite(numericValue) && numericValue > 0;
 
+  const Container = hasSelect ? "fieldset" : "label";
+  const LabelWrapper = hasSelect ? "legend" : "span";
+
   return (
-    <label
+    <Container
       className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary"
-      htmlFor={fieldId}
+      {...(hasSelect ? {} : { htmlFor: fieldId })}
     >
-      <span className="flex items-center justify-between gap-2">
-        <span id={labelId} className="truncate">
-          {label}
-        </span>
-        {subLabel ? (
-          <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
-            {subLabel}
-          </span>
-        ) : null}
-      </span>
+      <LabelWrapper className={cx("w-full", hasSelect && "mb-1")}>
+        {React.createElement(
+          hasSelect ? "label" : "span",
+          {
+            ...(hasSelect ? { htmlFor: fieldId } : {}),
+            className: cx(
+              "flex items-center justify-between gap-2",
+              hasSelect && "cursor-pointer",
+            ),
+          },
+          <>
+            <span id={labelId} className="truncate">
+              {label}
+            </span>
+            {subLabel ? (
+              <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
+                {subLabel}
+              </span>
+            ) : null}
+          </>,
+        )}
+      </LabelWrapper>
       {helpText ? (
         <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
           {helpText}
@@ -300,7 +315,7 @@ export function ProInput({
           </div>
         ) : null}
       </div>
-    </label>
+    </Container>
   );
 }
 

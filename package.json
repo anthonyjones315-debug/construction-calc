@@ -57,6 +57,7 @@
     "@types/react-dom": "^19.2.3",
     "axe-core": "^4.11.1",
     "date-fns": "^4.1.0",
+    "dotenv": "^17.4.2",
     "drizzle-orm": "^0.44.5",
     "immer": "^11.1.4",
     "lucide-react": "^0.577.0",

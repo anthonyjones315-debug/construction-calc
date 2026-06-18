@@ -162,7 +162,10 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
   return (
     <fieldset className="flex flex-col gap-1">
       <legend className="mb-1 block w-full text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary">
-        <span className="flex items-center justify-between gap-2">
+        <label
+          htmlFor={`${fieldId}-ft`}
+          className="flex cursor-pointer items-center justify-between gap-2"
+        >
           <span id={labelId} className="truncate">
             {label}
           </span>
@@ -171,7 +174,7 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
               {subLabel}
             </span>
           ) : null}
-        </span>
+        </label>
         {helpText ? (
           <span className="block text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
             {helpText}
