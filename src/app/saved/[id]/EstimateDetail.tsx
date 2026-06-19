@@ -21,6 +21,7 @@ import { useContractorProfile } from "@/components/pdf/useContractorProfile";
 import { useHaptic } from "@/hooks/useHaptic";
 import { supabase } from "@/lib/supabase/client";
 import { routes } from "@routes";
+import { USD_FORMATTER } from "@/utils/formatters";
 import {
   centsToDollars,
   multiplyDollars,
@@ -94,12 +95,7 @@ function getEstimateControlNumber(estimate: SafeEstimateDTO): string {
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-const USD = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
+const USD = USD_FORMATTER;
 
 function todayIso(): string {
   return new Date().toISOString().slice(0, 10);
