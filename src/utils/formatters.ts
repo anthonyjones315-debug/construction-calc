@@ -41,6 +41,35 @@ export function getNumberFormatter(
 }
 
 /**
+ * Optimized pre-instantiated USD currency formatter.
+ * Use this for high-performance rendering of currency values.
+ */
+export const USD_FORMATTER = getNumberFormatter({
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+/**
+ * Optimized pre-instantiated full date formatter (e.g., "Oct 12, 2023").
+ */
+export const DATE_FORMATTER_FULL = getDateTimeFormatter({
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+});
+
+/**
+ * Optimized pre-instantiated today's date formatter (e.g., "Thursday, Oct 12").
+ */
+export const DATE_FORMATTER_TODAY = getDateTimeFormatter({
+  weekday: "long",
+  month: "short",
+  day: "numeric",
+});
+
+/**
  * Returns a cached Intl.DateTimeFormat instance for the given options and locale.
  */
 export function getDateTimeFormatter(

@@ -4,6 +4,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { getSafeEstimate } from "@/lib/dal/estimates";
 import { routes } from "@routes";
+import { getNumberFormatter } from "@/utils/formatters";
 
 type InvoiceStatus = "Draft" | "Sent" | "Partially Paid" | "Paid";
 
@@ -45,7 +46,7 @@ type Props = {
   params: Promise<{ id: string }>;
 };
 
-const USD_CURRENCY = new Intl.NumberFormat("en-US", {
+const USD_CURRENCY = getNumberFormatter({
   style: "currency",
   currency: "USD",
   maximumFractionDigits: 0,
