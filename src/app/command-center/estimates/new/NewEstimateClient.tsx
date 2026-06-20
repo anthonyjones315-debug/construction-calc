@@ -186,10 +186,14 @@ function EstimateDetailsCard({
 
       {/* Estimate Name — full width Auto-Generated */}
       <div className="mb-3">
-        <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
+        <label
+          htmlFor="estimate-name-auto"
+          className="mb-1 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500"
+        >
           Estimate Name (Auto-Generated)
         </label>
         <input
+          id="estimate-name-auto"
           type="text"
             value={
               (() => {
@@ -209,10 +213,14 @@ function EstimateDetailsCard({
       {/* Two-column grid */}
       <div className="grid gap-3 sm:grid-cols-2 mb-3">
         <div>
-          <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
+          <label
+            htmlFor="project-name"
+            className="mb-1 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500"
+          >
             Project Name <span className="text-red-500">*</span>
           </label>
           <input
+            id="project-name"
             type="text"
             value={projectName}
             onChange={(e) => onChange("projectName", e.target.value)}
@@ -221,11 +229,15 @@ function EstimateDetailsCard({
           />
         </div>
         <div>
-          <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
+          <label
+            htmlFor="client-name"
+            className="mb-1 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500"
+          >
             Client Name <span className="text-red-500">*</span>
           </label>
           <div className="flex gap-2">
             <input
+              id="client-name"
               type="text"
               value={clientName}
               onChange={(e) => onChange("clientName", e.target.value)}
@@ -262,10 +274,14 @@ function EstimateDetailsCard({
       {/* Two-column grid */}
       <div className="grid gap-3 sm:grid-cols-2">
         <div>
-          <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
+          <label
+            htmlFor="client-email"
+            className="mb-1 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500"
+          >
             Client Email
           </label>
           <input
+            id="client-email"
             type="email"
             value={clientEmail}
             onChange={(e) => onChange("clientEmail", e.target.value)}
@@ -276,10 +292,14 @@ function EstimateDetailsCard({
 
 
         <div>
-          <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
+          <label
+            htmlFor="estimate-date"
+            className="mb-1 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500"
+          >
             Date
           </label>
           <input
+            id="estimate-date"
             type="date"
             value={estimateDate}
             onChange={(e) => onChange("estimateDate", e.target.value)}
@@ -290,7 +310,10 @@ function EstimateDetailsCard({
 
       {/* Job Site Address & Widgets */}
       <div className="mt-4 border-t border-slate-100 pt-4">
-        <label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
+        <label
+          htmlFor="job-site-address"
+          className="mb-2 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500"
+        >
           Project Location
         </label>
         
@@ -298,6 +321,7 @@ function EstimateDetailsCard({
           <div className="flex-1 space-y-3">
             <div className="relative">
               <AddressAutocomplete
+                id="job-site-address"
                 apiKey={mapsKey}
                 onAddressSelect={(addr, lat, lng) => {
                   onChange("jobSiteAddress", addr);
@@ -348,6 +372,8 @@ function EstimateDetailsCard({
                 disabled={isFetchingLocation}
                 className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-slate-400 hover:text-[--color-blue-brand] transition-colors"
                 title="Use Current Location"
+                aria-label="Use current location"
+                aria-busy={isFetchingLocation}
               >
                 {isFetchingLocation ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <MapPin className="h-4 w-4" aria-hidden />}
               </button>
@@ -1007,7 +1033,10 @@ function AddItemPanel({
 
       {/* Panel content */}
       {activeTab ? (
-        <div className="mt-3 rounded-xl border border-slate-100 bg-slate-50 p-3">
+        <div
+          key={activeTab}
+          className="animate-fade-up mt-3 rounded-xl border border-slate-100 bg-slate-50 p-3"
+        >
           {activeTab === "calculator" && (
             <CalculatorImportPanel
               estimateCart={estimateCart}
@@ -1909,13 +1938,17 @@ export default function NewEstimateClient({ onOpenCalculators }: { onOpenCalcula
           Terms & Customization
         </p>
         <div>
-          <label className="mb-1 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
+          <label
+            htmlFor="terms-conditions"
+            className="mb-1 block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500"
+          >
             Terms & Conditions{" "}
             <span className="font-normal normal-case text-slate-400">
               (shown on estimate PDF)
             </span>
           </label>
           <textarea
+            id="terms-conditions"
             value={state.terms}
             onChange={(e) =>
               dispatch({
