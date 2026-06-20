@@ -18,13 +18,7 @@ import {
   sumCents,
   toCents,
 } from "@/utils/money";
-
-const USD_CURRENCY = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
+import { USD_FORMATTER } from "@/utils/formatters";
 
 export interface SavedEstimate {
   id: string;
@@ -474,6 +468,8 @@ export function FinancialDashboard({
   const financialDashboard = useMemo(() => {
     return computeFinancialDashboard(estimates);
   }, [estimates]);
+
+  const USD_CURRENCY = USD_FORMATTER;
 
   const billedAmount =
     serverData?.billed.total ?? financialDashboard.billedAmount;
