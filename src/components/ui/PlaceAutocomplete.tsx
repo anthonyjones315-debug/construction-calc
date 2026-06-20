@@ -19,6 +19,7 @@ interface PlaceAutocompleteProps {
   placeholder?: string;
   defaultValue?: string;
   className?: string;
+  id?: string;
 }
 
 // Module-level singleton so we only load the script once across all instances.
@@ -77,6 +78,7 @@ export function PlaceAutocomplete({
   placeholder = "Start typing an address...",
   defaultValue = "",
   className,
+  id,
 }: PlaceAutocompleteProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const elementRef = useRef<google.maps.places.PlaceAutocompleteElement | null>(
@@ -162,6 +164,7 @@ export function PlaceAutocomplete({
       {/* Container for the Web Component */}
       <div
         ref={containerRef}
+        id={id}
         className={ready ? (className || "") : "hidden"}
         style={
           ready
@@ -176,6 +179,7 @@ export function PlaceAutocomplete({
       {/* Fallback: plain input shown while the API loads */}
       {!ready && (
         <input
+          id={id}
           type="text"
           placeholder={placeholder}
           value={fallbackValue}
