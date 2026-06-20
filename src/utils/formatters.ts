@@ -57,3 +57,32 @@ export function getDateTimeFormatter(
 
   return formatter;
 }
+
+/**
+ * Pre-instantiated common formatters for performance.
+ * Using these avoids the overhead of Map lookups and key generation.
+ */
+
+export const USD_FORMATTER = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+export const DATE_FORMATTER_FULL = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+});
+
+export const DATE_FORMATTER_MONTH_DAY = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+});
+
+export const DATE_FORMATTER_TODAY = new Intl.DateTimeFormat("en-US", {
+  weekday: "long",
+  month: "short",
+  day: "numeric",
+});
