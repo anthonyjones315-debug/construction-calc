@@ -41,6 +41,42 @@ export function getNumberFormatter(
 }
 
 /**
+ * Pre-instantiated USD currency formatter.
+ */
+export const USD_FORMATTER = getNumberFormatter({
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+/**
+ * Pre-instantiated full date formatter (e.g., "Jan 1, 2024").
+ */
+export const DATE_FORMATTER_FULL = getDateTimeFormatter({
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+});
+
+/**
+ * Pre-instantiated month/day formatter (e.g., "Jan 1").
+ */
+export const DATE_FORMATTER_MONTH_DAY = getDateTimeFormatter({
+  month: "short",
+  day: "numeric",
+});
+
+/**
+ * Pre-instantiated today/full weekday formatter (e.g., "Monday, Jan 1").
+ */
+export const DATE_FORMATTER_TODAY = getDateTimeFormatter({
+  weekday: "long",
+  month: "short",
+  day: "numeric",
+});
+
+/**
  * Returns a cached Intl.DateTimeFormat instance for the given options and locale.
  */
 export function getDateTimeFormatter(
