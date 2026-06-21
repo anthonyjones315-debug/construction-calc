@@ -243,15 +243,21 @@ export function ProInput({
   const isValid =
     type === "number" && Number.isFinite(numericValue) && numericValue > 0;
 
-  return (
-    <label
-      className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary"
-      htmlFor={fieldId}
-    >
+  const Container = hasSelect ? "fieldset" : "label";
+  const LabelTextWrapper = hasSelect ? "label" : "span";
+
+  const labelContent = (
+    <>
       <span className="flex items-center justify-between gap-2">
-        <span id={labelId} className="truncate">
-          {label}
-        </span>
+        {React.createElement(
+          LabelTextWrapper,
+          {
+            id: labelId,
+            ...(hasSelect ? { htmlFor: fieldId } : {}),
+            className: cx("truncate", hasSelect && "cursor-pointer"),
+          },
+          label,
+        )}
         {subLabel ? (
           <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
             {subLabel}
@@ -263,44 +269,59 @@ export function ProInput({
           {helpText}
         </span>
       ) : null}
-      <div
-        data-valid={isValid ? "true" : "false"}
-        className="glass-input-shell relative flex min-h-[3.5rem] items-stretch overflow-hidden rounded-xl p-0"
-      >
-        <input
-          id={fieldId}
-          type={type}
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          min={min}
-          max={max}
-          step={step}
-          autoFocus={autoFocus}
-          inputMode={type === "number" ? "decimal" : undefined}
-          enterKeyHint="done"
+    </>
+  );
+
+  return React.createElement(
+    Container,
+    {
+      className:
+        "flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary",
+      ...(!hasSelect ? { htmlFor: fieldId } : {}),
+    },
+    hasSelect ? (
+      <legend className="mb-1 block w-full">{labelContent}</legend>
+    ) : (
+      labelContent
+    ),
+    <div
+      key="shell"
+      data-valid={isValid ? "true" : "false"}
+      className="glass-input-shell relative flex min-h-[3.5rem] items-stretch overflow-hidden rounded-xl p-0"
+    >
+      <input
+        id={fieldId}
+        type={type}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        min={min}
+        max={max}
+        step={step}
+        autoFocus={autoFocus}
+        inputMode={type === "number" ? "decimal" : undefined}
+        enterKeyHint="done"
+        aria-labelledby={labelId}
+        className="glass-input flex-1 rounded-none border-0 bg-transparent px-3 text-sm tabular-nums tracking-tight text-field-input shadow-none"
+      />
+      {hasSelect ? (
+        <select
           aria-labelledby={labelId}
-          className="glass-input flex-1 rounded-none border-0 bg-transparent px-3 text-sm tabular-nums tracking-tight text-field-input shadow-none"
-        />
-        {hasSelect ? (
-          <select
-            aria-labelledby={labelId}
-            value={unitSelectValue}
-            onChange={(event) => onUnitSelectChange?.(event.target.value)}
-            className="border-l border-[--color-border] bg-[--color-surface-alt] px-2 text-[11px] font-semibold uppercase tabular-nums tracking-tight text-copy-secondary outline-none"
-          >
-            {unitSelectOptions!.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        ) : unitSuffix ? (
-          <div className="flex items-center border-l border-[--color-border] bg-[--color-surface-alt] px-2 text-[11px] font-semibold uppercase tabular-nums tracking-tight text-copy-secondary">
-            {unitSuffix}
-          </div>
-        ) : null}
-      </div>
-    </label>
+          value={unitSelectValue}
+          onChange={(event) => onUnitSelectChange?.(event.target.value)}
+          className="border-l border-[--color-border] bg-[--color-surface-alt] px-2 text-[11px] font-semibold uppercase tabular-nums tracking-tight text-copy-secondary outline-none"
+        >
+          {unitSelectOptions!.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      ) : unitSuffix ? (
+        <div className="flex items-center border-l border-[--color-border] bg-[--color-surface-alt] px-2 text-[11px] font-semibold uppercase tabular-nums tracking-tight text-copy-secondary">
+          {unitSuffix}
+        </div>
+      ) : null}
+    </div>,
   );
 }
 

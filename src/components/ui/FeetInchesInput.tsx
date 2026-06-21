@@ -163,9 +163,13 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
     <fieldset className="flex flex-col gap-1">
       <legend className="mb-1 block w-full text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary">
         <span className="flex items-center justify-between gap-2">
-          <span id={labelId} className="truncate">
+          <label
+            id={labelId}
+            htmlFor={`${fieldId}-ft`}
+            className="truncate cursor-pointer"
+          >
             {label}
-          </span>
+          </label>
           {subLabel ? (
             <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
               {subLabel}
