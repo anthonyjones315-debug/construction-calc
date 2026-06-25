@@ -57,3 +57,39 @@ export function getDateTimeFormatter(
 
   return formatter;
 }
+
+/**
+ * Pre-instantiated USD currency formatter for performance.
+ */
+export const USD_FORMATTER = getNumberFormatter({
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+/**
+ * Pre-instantiated full date formatter (e.g., "Monday, Jan 1") for performance.
+ */
+export const DATE_FORMATTER_FULL = getDateTimeFormatter({
+  weekday: "long",
+  month: "short",
+  day: "numeric",
+});
+
+/**
+ * Pre-instantiated month/day formatter (e.g., "Jan 1") for performance.
+ */
+export const DATE_FORMATTER_MONTH_DAY = getDateTimeFormatter({
+  month: "short",
+  day: "numeric",
+});
+
+/**
+ * Pre-instantiated short date formatter (e.g., "Jan 1, 2024") for performance.
+ */
+export const DATE_FORMATTER_SHORT_DATE = getDateTimeFormatter({
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+});

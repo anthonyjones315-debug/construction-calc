@@ -11,6 +11,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { routes } from "@routes";
+import { DATE_FORMATTER_SHORT_DATE, USD_FORMATTER } from "@/utils/formatters";
 
 interface EstimateDetailProps {
   canDelete?: boolean;
@@ -59,10 +60,7 @@ function statusClass(status: string | null) {
 }
 
 function formatDollars(n: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(n);
+  return USD_FORMATTER.format(n);
 }
 
 export function EstimateDetailClient({
@@ -199,12 +197,7 @@ export function EstimateDetailClient({
               </p>
             )}
             <p className="mt-1 text-xs text-slate-400">
-              Created{" "}
-              {new Date(estimate.createdAt).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-              })}
+              Created {DATE_FORMATTER_SHORT_DATE.format(new Date(estimate.createdAt))}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
