@@ -348,6 +348,8 @@ function EstimateDetailsCard({
                 disabled={isFetchingLocation}
                 className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-slate-400 hover:text-[--color-blue-brand] transition-colors"
                 title="Use Current Location"
+                aria-label={isFetchingLocation ? "Fetching current location..." : "Use current location"}
+                aria-busy={isFetchingLocation}
               >
                 {isFetchingLocation ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <MapPin className="h-4 w-4" aria-hidden />}
               </button>
@@ -1187,6 +1189,7 @@ function LineItemsCard({
                             disabled={idx === 0}
                             className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 disabled:opacity-30"
                             title="Move up"
+                            aria-label={`Move line item ${idx + 1} up`}
                           >
                             <ChevronUp className="h-3.5 w-3.5" />
                           </button>
@@ -1196,6 +1199,7 @@ function LineItemsCard({
                             disabled={idx === lineItems.length - 1}
                             className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 disabled:opacity-30"
                             title="Move down"
+                            aria-label={`Move line item ${idx + 1} down`}
                           >
                             <ChevronDown className="h-3.5 w-3.5" />
                           </button>
@@ -1204,6 +1208,7 @@ function LineItemsCard({
                             onClick={() => onRemove(item.id)}
                             className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 transition hover:bg-red-50 hover:text-red-600"
                             title="Remove"
+                            aria-label={`Remove line item ${idx + 1}: ${item.description}`}
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
@@ -1301,6 +1306,7 @@ function LineItemsCard({
                       onClick={() => onMoveUp(idx)}
                       disabled={idx === 0}
                       className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 disabled:opacity-30"
+                      aria-label={`Move item ${idx + 1} up`}
                     >
                       <ChevronUp className="h-3.5 w-3.5" />
                     </button>
@@ -1309,6 +1315,7 @@ function LineItemsCard({
                       onClick={() => onMoveDown(idx)}
                       disabled={idx === lineItems.length - 1}
                       className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 disabled:opacity-30"
+                      aria-label={`Move item ${idx + 1} down`}
                     >
                       <ChevronDown className="h-3.5 w-3.5" />
                     </button>
@@ -1316,6 +1323,7 @@ function LineItemsCard({
                       type="button"
                       onClick={() => onRemove(item.id)}
                       className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-red-100 bg-white text-red-500 hover:bg-red-50"
+                      aria-label={`Remove item ${idx + 1}: ${item.description}`}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>
