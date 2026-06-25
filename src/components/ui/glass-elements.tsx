@@ -243,22 +243,47 @@ export function ProInput({
   const isValid =
     type === "number" && Number.isFinite(numericValue) && numericValue > 0;
 
+  const Root = hasSelect ? "fieldset" : "label";
+  const LabelContainer = hasSelect ? "legend" : "span";
+  const ClickTarget = hasSelect ? "label" : "span";
+
   return (
-    <label
+    <Root
       className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary"
-      htmlFor={fieldId}
+      {...(hasSelect ? {} : { htmlFor: fieldId })}
     >
-      <span className="flex items-center justify-between gap-2">
-        <span id={labelId} className="truncate">
-          {label}
+      <LabelContainer
+        className={
+          hasSelect
+            ? "mb-1 block w-full"
+            : "flex items-center justify-between gap-2"
+        }
+      >
+        <span
+          className={
+            hasSelect ? "flex items-center justify-between gap-2" : "contents"
+          }
+        >
+          <ClickTarget
+            id={labelId}
+            className="cursor-pointer truncate"
+            {...(hasSelect ? { htmlFor: fieldId } : {})}
+          >
+            {label}
+          </ClickTarget>
+          {subLabel ? (
+            <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
+              {subLabel}
+            </span>
+          ) : null}
         </span>
-        {subLabel ? (
-          <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
-            {subLabel}
+        {hasSelect && helpText ? (
+          <span className="block text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
+            {helpText}
           </span>
         ) : null}
-      </span>
-      {helpText ? (
+      </LabelContainer>
+      {!hasSelect && helpText ? (
         <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
           {helpText}
         </span>
@@ -300,7 +325,7 @@ export function ProInput({
           </div>
         ) : null}
       </div>
-    </label>
+    </Root>
   );
 }
 
