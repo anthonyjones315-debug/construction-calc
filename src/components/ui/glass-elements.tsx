@@ -243,26 +243,50 @@ export function ProInput({
   const isValid =
     type === "number" && Number.isFinite(numericValue) && numericValue > 0;
 
-  return (
-    <label
-      className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary"
-      htmlFor={fieldId}
-    >
-      <span className="flex items-center justify-between gap-2">
-        <span id={labelId} className="truncate">
-          {label}
-        </span>
-        {subLabel ? (
-          <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
-            {subLabel}
-          </span>
-        ) : null}
-      </span>
+  const Container = hasSelect ? "fieldset" : "label";
+  const LabelInnerWrapper = hasSelect ? "label" : "span";
+
+  const labelContent = (
+    <>
+      {React.createElement(
+        LabelInnerWrapper,
+        {
+          id: labelId,
+          className: "flex items-center justify-between gap-2",
+          ...(hasSelect ? { htmlFor: fieldId } : {}),
+        },
+        <>
+          <span className="truncate">{label}</span>
+          {subLabel ? (
+            <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
+              {subLabel}
+            </span>
+          ) : null}
+        </>
+      )}
       {helpText ? (
         <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
           {helpText}
         </span>
       ) : null}
+    </>
+  );
+
+  return React.createElement(
+    Container,
+    {
+      className:
+        "flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary",
+      ...(hasSelect ? {} : { htmlFor: fieldId }),
+    },
+    <>
+      {hasSelect ? (
+        <legend className="mb-1 block w-full text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary">
+          {labelContent}
+        </legend>
+      ) : (
+        labelContent
+      )}
       <div
         data-valid={isValid ? "true" : "false"}
         className="glass-input-shell relative flex min-h-[3.5rem] items-stretch overflow-hidden rounded-xl p-0"
@@ -300,7 +324,7 @@ export function ProInput({
           </div>
         ) : null}
       </div>
-    </label>
+    </>
   );
 }
 
