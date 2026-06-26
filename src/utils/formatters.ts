@@ -41,6 +41,14 @@ export function getNumberFormatter(
 }
 
 /**
+ * Pre-configured USD currency formatter.
+ */
+export const USD_FORMATTER = getNumberFormatter({
+  style: "currency",
+  currency: "USD",
+});
+
+/**
  * Returns a cached Intl.DateTimeFormat instance for the given options and locale.
  */
 export function getDateTimeFormatter(
@@ -57,3 +65,29 @@ export function getDateTimeFormatter(
 
   return formatter;
 }
+
+/**
+ * Pre-configured short date formatter (e.g., "Jan 1, 2023").
+ */
+export const DATE_FORMATTER_SHORT_DATE = getDateTimeFormatter({
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+});
+
+/**
+ * Pre-configured month/day date formatter (e.g., "Jan 1").
+ */
+export const DATE_FORMATTER_MONTH_DAY = getDateTimeFormatter({
+  month: "short",
+  day: "numeric",
+});
+
+/**
+ * Pre-configured full date formatter with weekday (e.g., "Monday, Jan 1").
+ */
+export const DATE_FORMATTER_FULL = getDateTimeFormatter({
+  weekday: "long",
+  month: "short",
+  day: "numeric",
+});
