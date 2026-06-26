@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
+import { auth } from "@/lib/auth/config";
 
 async function geocodeZip(zip: string, googleKey: string) {
   const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(zip)},US&key=${googleKey}`;
@@ -18,7 +19,12 @@ function wmoToCondition(code: number) {
   return "Clear";
 }
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { searchParams } = new URL(req.url);
     const latParam = searchParams.get("lat");
@@ -106,4 +112,3 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Weather error" }, { status: 500 });
   }
 }
-
