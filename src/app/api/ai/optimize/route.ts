@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
+import { auth } from "@/lib/auth/config";
 import { getClientIp } from "@/lib/http/client-ip";
 import { checkMemoryRateLimit } from "@/lib/rate-limit/memory";
 
@@ -18,6 +19,11 @@ interface RequestBody {
 }
 
 export async function POST(req: NextRequest) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const ip = getClientIp(req);
   const rl = checkMemoryRateLimit("ai-optimize", ip, 5, 60_000);
   if (!rl.ok) {
