@@ -41,6 +41,27 @@ export function getNumberFormatter(
 }
 
 /**
+ * Pre-instantiated formatters for common use cases to avoid cache lookups.
+ */
+export const USD_FORMATTER = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+export const DATE_FORMATTER_FULL = new Intl.DateTimeFormat("en-US", {
+  weekday: "long",
+  month: "short",
+  day: "numeric",
+});
+
+export const DATE_FORMATTER_SHORT_DATE = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+});
+
+/**
  * Returns a cached Intl.DateTimeFormat instance for the given options and locale.
  */
 export function getDateTimeFormatter(
