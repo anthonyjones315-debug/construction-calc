@@ -34,6 +34,7 @@ import {
   HardHat,
   Hammer,
   Layers,
+  Loader2,
   Layers3,
   Layout,
   Mail,
@@ -964,6 +965,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
   const [estimateJobAddress, setEstimateJobAddress] = useState("");
   const [estimateQuoteNote, setEstimateQuoteNote] = useState("");
   const [estimateInternalNote, setEstimateInternalNote] = useState("");
+  const [isFetchingLocation, setIsFetchingLocation] = useState(false);
 
   const haptic = useHaptic();
   const hapticTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -5137,23 +5139,51 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
                       type="button"
                       onClick={(e) => {
                         e.preventDefault();
-                        if ("geolocation" in navigator) {
-                          navigator.geolocation.getCurrentPosition(async (pos) => {
+                        if (!("geolocation" in navigator)) return;
+                        setIsFetchingLocation(true);
+                        navigator.geolocation.getCurrentPosition(
+                          async (pos) => {
                             const { latitude, longitude } = pos.coords;
                             try {
-                              const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
+                              const res = await fetch(
+                                `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
+                                {
+                                  headers: {
+                                    "User-Agent": "ProConstructionCalc/1.0",
+                                  },
+                                },
+                              );
                               const data = await res.json();
                               if (data && data.display_name) {
                                 setEstimateJobAddress(data.display_name);
                               }
-                            } catch {}
-                          })
-                        }
+                            } catch (error) {
+                              console.error("Geocoding failed:", error);
+                            } finally {
+                              setIsFetchingLocation(false);
+                            }
+                          },
+                          (error) => {
+                            console.error("Geolocation failed:", error);
+                            setIsFetchingLocation(false);
+                          },
+                        );
                       }}
-                      className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-[--color-ink-dim] hover:text-[--color-blue-brand] transition-colors"
+                      disabled={isFetchingLocation}
+                      className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-[--color-ink-dim] transition-colors hover:text-[--color-blue-brand] disabled:cursor-not-allowed disabled:opacity-50"
                       title="Use Current Location"
+                      aria-label={
+                        isFetchingLocation
+                          ? "Fetching location..."
+                          : "Use Current Location"
+                      }
+                      aria-busy={isFetchingLocation}
                     >
-                      <MapPin className="h-4 w-4" aria-hidden />
+                      {isFetchingLocation ? (
+                        <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                      ) : (
+                        <MapPin className="h-4 w-4" aria-hidden />
+                      )}
                     </button>
                   </div>
                 </label>
