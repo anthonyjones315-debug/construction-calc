@@ -346,10 +346,20 @@ function EstimateDetailsCard({
                   });
                 }}
                 disabled={isFetchingLocation}
-                className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-slate-400 hover:text-[--color-blue-brand] transition-colors"
+                className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-slate-400 transition-colors hover:text-[--color-blue-brand] disabled:cursor-not-allowed disabled:opacity-50"
                 title="Use Current Location"
+                aria-label={
+                  isFetchingLocation
+                    ? "Fetching location..."
+                    : "Use Current Location"
+                }
+                aria-busy={isFetchingLocation}
               >
-                {isFetchingLocation ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <MapPin className="h-4 w-4" aria-hidden />}
+                {isFetchingLocation ? (
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                ) : (
+                  <MapPin className="h-4 w-4" aria-hidden />
+                )}
               </button>
             </div>
             {lat && lng && <WeatherWidget lat={lat} lng={lng} />}
