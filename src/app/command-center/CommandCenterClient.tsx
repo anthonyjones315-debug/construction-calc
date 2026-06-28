@@ -42,6 +42,10 @@ import { useStore } from "@/lib/store";
 import { KanbanBoard, type KanbanProject } from "@/components/dashboard/KanbanBoard";
 import { DispatchCalendar, type CalendarEvent } from "@/components/dashboard/DispatchCalendar";
 import { Calendar as CalendarIcon, Columns3 } from "lucide-react";
+import {
+  DATE_FORMATTER_FULL,
+  DATE_FORMATTER_SHORT_DATE,
+} from "@/utils/formatters";
 
 /* ── Kanban ↔ Estimate status mapping ────────────────────────── */
 
@@ -673,16 +677,9 @@ export default function CommandCenterClient({
     recentEstimates.length - signedEstimateCount - sentEstimateCount,
     0,
   );
-  const todayLabel = new Intl.DateTimeFormat("en-US", {
-    weekday: "long",
-    month: "short",
-    day: "numeric",
-  }).format(new Date());
+  const todayLabel = DATE_FORMATTER_FULL.format(new Date());
   const lastEstimateLabel = recentEstimates[0]
-    ? new Date(recentEstimates[0].updatedAt).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      })
+    ? DATE_FORMATTER_SHORT_DATE.format(new Date(recentEstimates[0].updatedAt))
     : "No estimate activity yet";
   const recentEstimatePreview = recentEstimates.slice(0, 4);
   const memberPreview = members.slice(0, 6);
