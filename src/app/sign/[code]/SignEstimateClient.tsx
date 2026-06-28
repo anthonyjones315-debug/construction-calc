@@ -3,6 +3,11 @@
 import Link from "next/link";
 import { CheckCircle2, Mail, PencilLine, Phone } from "lucide-react";
 import { useMemo } from "react";
+import {
+  USD_FORMATTER,
+  DATE_FORMATTER_SHORT_DATE,
+  DATE_FORMATTER_FULL,
+} from "@/utils/formatters";
 
 type PublicEstimate = {
   id: string;
@@ -51,10 +56,7 @@ function formatValue(value: string | number, unit?: string) {
 }
 
 function formatCurrency(value: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(Math.round(value * 100) / 100);
+  return USD_FORMATTER.format(Math.round(value * 100) / 100);
 }
 
 function toSmsHref(phone: string) {
@@ -123,11 +125,7 @@ export function SignEstimateClient({ estimate }: Props) {
                 </h1>
               </div>
               <p className="text-xs text-slate-400">
-                {new Date(estimate.createdAt).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                })}
+                {DATE_FORMATTER_SHORT_DATE.format(new Date(estimate.createdAt))}
               </p>
             </div>
             <div className="mt-3 flex flex-wrap gap-4 text-sm text-slate-600">
@@ -254,7 +252,7 @@ export function SignEstimateClient({ estimate }: Props) {
               </p>
               <p className="mt-1 text-xs text-emerald-500">
                 {signedAt
-                  ? new Date(signedAt).toLocaleString("en-US")
+                  ? DATE_FORMATTER_FULL.format(new Date(signedAt))
                   : "Signature recorded"}
               </p>
             </div>

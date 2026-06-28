@@ -18,13 +18,7 @@ import {
   sumCents,
   toCents,
 } from "@/utils/money";
-
-const USD_CURRENCY = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
+import { USD_FORMATTER } from "@/utils/formatters";
 
 export interface SavedEstimate {
   id: string;
@@ -502,7 +496,7 @@ export function FinancialDashboard({
             Billed
           </p>
           <p className="text-2xl font-display font-bold text-[--color-ink] mt-2">
-            {USD_CURRENCY.format(billedAmount)}
+            {USD_FORMATTER.format(billedAmount)}
           </p>
           <p className="text-xs text-[--color-ink-dim] mt-1">
             {billedCount} signed project
@@ -516,7 +510,7 @@ export function FinancialDashboard({
             Unbilled
           </p>
           <p className="text-2xl font-display font-bold text-[--color-ink] mt-2">
-            {USD_CURRENCY.format(unbilledAmount)}
+            {USD_FORMATTER.format(unbilledAmount)}
           </p>
           <p className="text-xs text-[--color-ink-dim] mt-1">
             {unbilledCount} open project
@@ -557,10 +551,10 @@ export function FinancialDashboard({
                 </p>
                 <p className="text-xs text-[--color-ink-dim] mt-0.5">
                   {alert.bucket === "labor" ? "Labor" : "Material"} actual{" "}
-                  {USD_CURRENCY.format(alert.actual)} exceeded estimate{" "}
-                  {USD_CURRENCY.format(alert.estimated)} by{" "}
+                  {USD_FORMATTER.format(alert.actual)} exceeded estimate{" "}
+                  {USD_FORMATTER.format(alert.estimated)} by{" "}
                   <span className="font-semibold text-red-600">
-                    {USD_CURRENCY.format(alert.delta)} (
+                    {USD_FORMATTER.format(alert.delta)} (
                     {alert.deltaPercent.toFixed(1)}%)
                   </span>
                 </p>
@@ -586,9 +580,9 @@ export function FinancialDashboard({
                 </p>
                 <p className="text-xs text-[--color-ink-dim] mt-0.5">
                   {formatStatus(project.status)} · Revenue{" "}
-                  {USD_CURRENCY.format(project.revenue)}
+                  {USD_FORMATTER.format(project.revenue)}
                   {project.projectCost !== null
-                    ? ` · ${project.costBasis === "actual" ? "Actual" : project.costBasis === "mixed" ? "Tracked" : "Estimated"} Cost ${USD_CURRENCY.format(project.projectCost)}`
+                    ? ` · ${project.costBasis === "actual" ? "Actual" : project.costBasis === "mixed" ? "Tracked" : "Estimated"} Cost ${USD_FORMATTER.format(project.projectCost)}`
                     : ""}
                 </p>
               </div>

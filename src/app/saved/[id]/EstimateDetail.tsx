@@ -28,6 +28,7 @@ import {
   toCents,
   sumDollars,
 } from "@/utils/money";
+import { USD_FORMATTER } from "@/utils/formatters";
 
 // ─── Local types ────────────────────────────────────────────────────────────
 
@@ -93,13 +94,6 @@ function getEstimateControlNumber(estimate: SafeEstimateDTO): string {
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-
-const USD = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
 
 function todayIso(): string {
   return new Date().toISOString().slice(0, 10);
@@ -380,7 +374,7 @@ export function EstimateDetail({ estimate }: Props) {
       .filter((row) => row.name.trim())
       .map(
         (row) =>
-          `Order ${row.quantity || 0} ${row.name.trim()} @ ${USD.format(row.pricePerUnit || 0)}`,
+          `Order ${row.quantity || 0} ${row.name.trim()} @ ${USD_FORMATTER.format(row.pricePerUnit || 0)}`,
       );
 
     return {
@@ -781,7 +775,7 @@ export function EstimateDetail({ estimate }: Props) {
         `${draft.name || estimate.name} - ${invoice.invoiceNumber}`,
       );
       const body = encodeURIComponent(
-        `Hi ${draft.clientName || "there"},\n\nAttached is invoice ${invoice.invoiceNumber} for ${USD.format(invoiceAmount)}.\n\nPayment method: ${invoice.paymentMethod || "to be provided"}\n${invoice.paymentInstructions ? `\n${invoice.paymentInstructions}` : ""}\n\nThanks,\n${contractor.businessName || "Contractor"}`,
+        `Hi ${draft.clientName || "there"},\n\nAttached is invoice ${invoice.invoiceNumber} for ${USD_FORMATTER.format(invoiceAmount)}.\n\nPayment method: ${invoice.paymentMethod || "to be provided"}\n${invoice.paymentInstructions ? `\n${invoice.paymentInstructions}` : ""}\n\nThanks,\n${contractor.businessName || "Contractor"}`,
       );
       const to = encodeURIComponent(
         getClientEmail(estimate.inputs as Record<string, unknown> | null),
@@ -943,7 +937,7 @@ export function EstimateDetail({ estimate }: Props) {
                       {row.name}
                     </p>
                     <p className="text-xs text-[--color-ink-dim]">
-                      Estimated: {USD.format(estimated)}
+                      Estimated: {USD_FORMATTER.format(estimated)}
                     </p>
                   </div>
                   <span className="text-xs text-[--color-ink-dim] shrink-0">
@@ -991,19 +985,19 @@ export function EstimateDetail({ estimate }: Props) {
               <span>
                 Contract:{" "}
                 <strong className="text-[--color-ink]">
-                  {USD.format(contractTotal)}
+                  {USD_FORMATTER.format(contractTotal)}
                 </strong>
               </span>
               <span>
                 Billed:{" "}
                 <strong className="text-[--color-ink]">
-                  {USD.format(totalBilled)}
+                  {USD_FORMATTER.format(totalBilled)}
                 </strong>
               </span>
               <span>
                 Remaining:{" "}
                 <strong className="text-[--color-ink]">
-                  {USD.format(remaining)}
+                  {USD_FORMATTER.format(remaining)}
                 </strong>
               </span>
             </div>
