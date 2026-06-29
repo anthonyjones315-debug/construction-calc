@@ -9,3 +9,8 @@
 **Vulnerability:** The Documenso webhook receiver would skip signature verification if the `WEBHOOK_SECRET` was not configured, and used a simple string comparison for signatures.
 **Learning:** Fail-open logic in authentication checks can lead to complete bypasses if environment variables are misconfigured. Non-constant-time string comparisons are susceptible to timing attacks.
 **Prevention:** Always implement fail-closed logic for security checks. Use `crypto.timingSafeEqual` for comparing sensitive values like signatures or tokens.
+
+## 2025-05-15 - Unprotected Public API Endpoint
+**Vulnerability:** The `/api/weather` endpoint was publicly accessible without authentication or rate limiting, exposing the Google Maps Geocoding API to unauthorized use and potential cost spikes.
+**Learning:** Utilities for geocoding and weather often seem "harmless" but can be abused if they wrap paid third-party APIs without protection.
+**Prevention:** Always apply the standard security gate (Clerk `auth` + `checkMemoryRateLimit`) to API routes that consume paid resources or external services.
