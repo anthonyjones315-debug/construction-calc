@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { CheckCircle2, Mail, PencilLine, Phone } from "lucide-react";
 import { useMemo } from "react";
+import { USD_FORMATTER } from "@/utils/formatters";
 
 type PublicEstimate = {
   id: string;
@@ -50,11 +51,9 @@ function formatValue(value: string | number, unit?: string) {
   return unit ? `${rendered} ${unit}` : rendered;
 }
 
+// Optimized: Use centralized USD_FORMATTER
 function formatCurrency(value: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(Math.round(value * 100) / 100);
+  return USD_FORMATTER.format(Math.round(value * 100) / 100);
 }
 
 function toSmsHref(phone: string) {
