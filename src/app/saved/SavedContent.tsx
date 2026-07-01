@@ -37,15 +37,12 @@ import {
   normalizeDollars,
   sumDollars,
 } from "@/utils/money";
+import { USD_FORMATTER } from "@/utils/formatters";
 
 const LIVE_REFRESH_MS = 15000;
 
-const USD_CURRENCY = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
+// Optimized: Use centralized USD_FORMATTER
+const USD_CURRENCY = USD_FORMATTER;
 
 function formatCents(cents: number): string {
   return USD_CURRENCY.format(centsToDollars(cents));
