@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
+import { auth } from "@/lib/auth/config";
 import { getClientIp } from "@/lib/http/client-ip";
 import { checkMemoryRateLimit } from "@/lib/rate-limit/memory";
 
@@ -28,6 +29,11 @@ export async function POST(req: NextRequest) {
         headers: { "Retry-After": String(rl.retryAfterSeconds) },
       },
     );
+  }
+
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   if (!process.env.ANTHROPIC_API_KEY) {
