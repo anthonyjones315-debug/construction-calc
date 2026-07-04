@@ -348,6 +348,8 @@ function EstimateDetailsCard({
                 disabled={isFetchingLocation}
                 className="absolute right-0 top-0 flex h-full items-center justify-center px-3 text-slate-400 hover:text-[--color-blue-brand] transition-colors"
                 title="Use Current Location"
+                aria-label={isFetchingLocation ? "Fetching location..." : "Use Current Location"}
+                aria-busy={isFetchingLocation}
               >
                 {isFetchingLocation ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <MapPin className="h-4 w-4" aria-hidden />}
               </button>

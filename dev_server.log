@@ -1,0 +1,234 @@
+
+> proconstructioncalc@1.0.0 dev
+> next dev --turbopack
+
+▲ Next.js 16.2.10 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+✓ Ready in 561ms
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+- Cache Components enabled
+- Experiments (use with caution):
+  · optimizePackageImports
+
+○ Compiling /calculators/landscape/mulch ...
+
+[35m
+[Clerk]:[0m You are running in keyless mode.
+You can [35mclaim your keys[0m by visiting https://dashboard.clerk.com/apps/claim?framework=nextjs&token=ar9uihegusdl641twi9tnckpd362najf22pb6e8j&return_url=http%3A%2F%2Flocalhost%3A3000%2F
+
+Error: Route "/calculators/landscape/mulch": Uncached data or `connection()` was accessed outside of `<Suspense>`. This delays the entire page from rendering, resulting in a slow user experience. Learn more: https://nextjs.org/docs/messages/blocking-route
+    at RootLayout (src/app/layout.tsx:139:5)
+  137 |
+  138 |   return (
+> 139 |     <ClerkProvider
+      |     ^
+  140 |       appearance={{
+  141 |         variables: {
+  142 |           colorPrimary: "#2563eb",
+ GET /calculators/landscape/mulch 200 in 25.1s (next.js: 18.6s, proxy.ts: 323ms, application-code: 6.2s)
+[browser] Error: Route "/calculators/landscape/mulch": Uncached data or `connection()` was accessed outside of `<Suspense>`. This delays the entire page from rendering, resulting in a slow user experience. Learn more: https://nextjs.org/docs/messages/blocking-route
+    at requestFn (node_modules/.pnpm/@clerk+backend@3.10.0_react-dom@19.2.7_react@19.2.7__react@19.2.7/node_modules/@clerk/backend/src/api/request.ts:180:29)
+    at AccountlessApplicationAPI.request (node_modules/.pnpm/@clerk+backend@3.10.0_react-dom@19.2.7_react@19.2.7__react@19.2.7/node_modules/@clerk/backend/src/api/request.ts:280:94)
+    at AccountlessApplicationAPI.createAccountlessApplication (node_modules/.pnpm/@clerk+backend@3.10.0_react-dom@19.2.7_react@19.2.7__react@19.2.7/node_modules/@clerk/backend/src/api/endpoints/AccountlessApplicationsAPI.ts:15:17)
+    at Object.createAccountlessApplication (node_modules/.pnpm/@clerk+nextjs@7.5.12_next@16.2.10_@babel+core@7.29.7_@opentelemetry+api@1.9.1_@playwrig_506ee593c950e663eac3e5904637f559/node_modules/@clerk/nextjs/src/server/keyless-node.ts:29:72)
+    at Object.getOrCreateKeys (node_modules/.pnpm/@clerk+shared@4.23.0_react-dom@19.2.7_react@19.2.7__react@19.2.7/node_modules/@clerk/shared/src/keyless/service.ts:217:48)
+    at <anonymous> (node_modules/.pnpm/@clerk+nextjs@7.5.12_next@16.2.10_@babel+core@7.29.7_@opentelemetry+api@1.9.1_@playwrig_506ee593c950e663eac3e5904637f559/node_modules/@clerk/nextjs/src/app-router/server/keyless-provider.tsx:43:32)
+    at KeylessProvider (node_modules/.pnpm/@clerk+nextjs@7.5.12_next@16.2.10_@babel+core@7.29.7_@opentelemetry+api@1.9.1_@playwrig_506ee593c950e663eac3e5904637f559/node_modules/@clerk/nextjs/src/app-router/server/keyless-provider.tsx:42:25)
+    at ClerkProvider (node_modules/.pnpm/@clerk+nextjs@7.5.12_next@16.2.10_@babel+core@7.29.7_@opentelemetry+api@1.9.1_@playwrig_506ee593c950e663eac3e5904637f559/node_modules/@clerk/nextjs/src/app-router/server/ClerkProvider.tsx:56:7)
+    at RootLayout (src/app/layout.tsx:139:5)
+  178 |         };
+  179 |
+> 180 |         res = await runtime.fetch(finalUrl.href, {
+      |                             ^
+  181 |           method,
+  182 |           headers,
+  183 |           ...buildBody(),
+[browser] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview (https://exciting-labrador-2.clerk.accounts.dev/npm/@clerk/clerk-js@6/dist/clerk.browser.js:12:6133)
+ GET /calculators/landscape/mulch 200 in 154ms (next.js: 6ms, proxy.ts: 26ms, application-code: 121ms)
+ POST /calculators/landscape/mulch 303 in 229ms (next.js: 6ms, proxy.ts: 11ms, application-code: 212ms)
+  └─ ƒ syncKeylessConfigAction({"apiKeysUrl":"https://dashboard.clerk.com/apps/app_3G12bBnuvarSaNsUQ6TfoCBCDhd/instances/ins_3G12bG2j2PzSglbw0Z1uVUPHgAn/api-keys","claimUrl":"https://dashboard.clerk.com/apps/claim?framework=nextjs&token=ar9uihegusdl641twi9tnckpd362najf22pb6e8j","...":"3 items not stringified"}) in 9ms node_modules/.pnpm/@clerk+nextjs@7.5.12_next@16.2.10_@babel+core@7.29.7_@opentelemetry+api@1.9.1_@playwrig_506ee593c950e663eac3e5904637f559/node_modules/@clerk/nextjs/dist/esm-router/keyless-actions.js
+ GET /calculators/landscape/mulch 200 in 58ms (next.js: 9ms, proxy.ts: 14ms, application-code: 35ms)
+ GET /calculators/landscape/mulch 200 in 77ms (next.js: 5ms, proxy.ts: 13ms, application-code: 59ms)
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+      <RedirectBoundary>
+        <RedirectErrorBoundary router={{...}}>
+          <InnerLayoutRouter url="/calculato..." tree={[...]} params={{}} cacheNode={{rsc:Promise, ...}} ...>
+            <SegmentViewNode type="page" pagePath="src/calcul...">
+              <SegmentTrieNode>
+              <MulchCalculatorPage>
+                <CalculatorPage page={{key:"lands...", ...}}>
+                  <ErrorBoundary fallback={function fallback} onError={function onError}>
+                    <main ref={{current:null}} id="main-content" className={"command-..."}>
+                      <section className="mx-auto w-..." suppressHydrationWarning={true}>
+                        <JsonLD>
+                        <div>
+                        <div className="overflow-h...">
+                          <div>
+                          <div className="p-5 sm:p-6...">
+                            ...
+                              <div className="mt-2 space...">
+                                <div>
+                                <div className="grid gap-3">
+                                  <FeetInchesInput label="Area Lengt..." subLabel={undefined} min={0} max={100000000} ...>
+                                    <fieldset className="flex flex-...">
+                                      <legend>
+                                      <div data-valid="false" className="glass-inpu...">
+                                        <input
+                                          id="_R_1eb8klritperknedblb_-ft"
+                                          type="number"
+                                          value={0}
+                                          onChange={function FeetInchesInput[<input>.onChange]}
+                                          min={0}
+                                          step={1}
+                                          autoFocus={undefined}
+                                          inputMode="numeric"
+                                          enterKeyHint="next"
+                                          aria-labelledby="_R_1eb8klritperknedblb_-label"
+                                          aria-label="Area Length (ft) feet"
+                                          className="glass-input flex-1 rounded-none border-0 bg-transparent px-3 text..."
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                        <div>
+                                        <input
+                                          id="_R_1eb8klritperknedblb_-in"
+                                          type="number"
+                                          value={0}
+                                          onChange={function FeetInchesInput[<input>.onChange]}
+                                          min={0}
+                                          step={1}
+                                          inputMode="numeric"
+                                          enterKeyHint="next"
+                                          aria-labelledby="_R_1eb8klritperknedblb_-label"
+                                          aria-label="Area Length (ft) inches"
+                                          className="glass-input flex-1 rounded-none border-0 border-l border-[--color..."
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                        ...
+                                  <FeetInchesInput label="Area Width..." subLabel={undefined} min={0} max={100} value="0" ...>
+                                    <fieldset className="flex flex-...">
+                                      <legend>
+                                      <div data-valid="false" className="glass-inpu...">
+                                        <input
+                                          id="_R_2eb8klritperknedblb_-ft"
+                                          type="number"
+                                          value={0}
+                                          onChange={function FeetInchesInput[<input>.onChange]}
+                                          min={0}
+                                          step={1}
+                                          autoFocus={undefined}
+                                          inputMode="numeric"
+                                          enterKeyHint="next"
+                                          aria-labelledby="_R_2eb8klritperknedblb_-label"
+                                          aria-label="Area Width (ft) feet"
+                                          className="glass-input flex-1 rounded-none border-0 bg-transparent px-3 text..."
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                        <div>
+                                        <input
+                                          id="_R_2eb8klritperknedblb_-in"
+                                          type="number"
+                                          value={0}
+                                          onChange={function FeetInchesInput[<input>.onChange]}
+                                          min={0}
+                                          step={1}
+                                          inputMode="numeric"
+                                          enterKeyHint="next"
+                                          aria-labelledby="_R_2eb8klritperknedblb_-label"
+                                          aria-label="Area Width (ft) inches"
+                                          className="glass-input flex-1 rounded-none border-0 border-l border-[--color..."
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                        ...
+                                  <ProInput label="Depth (in)" subLabel={undefined} type="number" min={1} max={96} ...>
+                                    <label className="flex flex-..." htmlFor="_R_3eb8klr...">
+                                      <span>
+                                      <div data-valid="false" className="glass-inpu...">
+                                        <input
+                                          id="_R_3eb8klritperknedblb_"
+                                          type="number"
+                                          value="0"
+                                          onChange={function ProInput[<input>.onChange]}
+                                          min={1}
+                                          max={96}
+                                          step={undefined}
+                                          autoFocus={undefined}
+                                          inputMode="decimal"
+                                          enterKeyHint="done"
+                                          aria-labelledby="_R_3eb8klritperknedblb_-label"
+                                          className="glass-input flex-1 rounded-none border-0 bg-transparent px-3 text..."
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                <details open={true} className="overflow-h...">
+                                  <summary>
+                                  <div className="px-3 pb-3">
+                                    <p>
+                                    <input
+                                      type="range"
+                                      aria-labelledby="waste-factor-label"
+                                      min={0}
+                                      max={30}
+                                      value={0}
+                                      onChange={function onChange}
+                                      className="w-full accent-blue-base"
+-                                     style={{caret-color:"transparent"}}
+                                    >
+                            <section>
+                            <aside className="hidden lg:...">
+                              <h2>
+                              <div className="relative mt-3">
+                                <Search>
+                                <input
+                                  value=""
+                                  onChange={function onChange}
+                                  placeholder="Search 25+ trade tools"
+                                  className="glass-input h-10 w-full rounded-xl pl-9 pr-3 text-sm text-field-input tab..."
+-                                 style={{caret-color:"transparent"}}
+                                >
+                              ...
+                        ...
+                      ...
+            ...
+          ...
+
+Error: Route "/command-center/estimates/new": Runtime data such as `cookies()`, `headers()`, `params`, or `searchParams` was accessed outside of `<Suspense>`. This delays the entire page from rendering, resulting in a slow user experience. Learn more: https://nextjs.org/docs/messages/blocking-route
+    at RootLayout (src/app/layout.tsx:139:5)
+  137 |
+  138 |   return (
+> 139 |     <ClerkProvider
+      |     ^
+  140 |       appearance={{
+  141 |         variables: {
+  142 |           colorPrimary: "#2563eb",
+ GET /command-center/estimates/new 200 in 3.2s (next.js: 2.7s, proxy.ts: 11ms, application-code: 538ms)
+[browser] Error: Route "/command-center/estimates/new": Runtime data such as `cookies()`, `headers()`, `params`, or `searchParams` was accessed outside of `<Suspense>`. This delays the entire page from rendering, resulting in a slow user experience. Learn more: https://nextjs.org/docs/messages/blocking-route
+    at KeylessProvider (node_modules/.pnpm/@clerk+nextjs@7.5.12_next@16.2.10_@babel+core@7.29.7_@opentelemetry+api@1.9.1_@playwrig_506ee593c950e663eac3e5904637f559/node_modules/@clerk/nextjs/src/app-router/server/keyless-provider.tsx:107:37)
+    at ClerkProvider (node_modules/.pnpm/@clerk+nextjs@7.5.12_next@16.2.10_@babel+core@7.29.7_@opentelemetry+api@1.9.1_@playwrig_506ee593c950e663eac3e5904637f559/node_modules/@clerk/nextjs/src/app-router/server/ClerkProvider.tsx:56:7)
+    at RootLayout (src/app/layout.tsx:139:5)
+  105 |   const KeylessCookieSync = await import('../client/keyless-cookie-sync.js').then(mod => ...
+  106 |
+> 107 |   const headerStore = await headers();
+      |                                     ^
+  108 |   /**
+  109 |    * Allow developer to return to local application after claiming
+  110 |    */
+ POST /command-center/estimates/new 200 in 36ms (next.js: 6ms, proxy.ts: 14ms, application-code: 16ms)
+  └─ ƒ syncKeylessConfigAction({"apiKeysUrl":"https://dashboard.clerk.com/apps/app_3G12bBnuvarSaNsUQ6TfoCBCDhd/instances/ins_3G12bG2j2PzSglbw0Z1uVUPHgAn/api-keys","claimUrl":"https://dashboard.clerk.com/apps/claim?framework=nextjs&token=ar9uihegusdl641twi9tnckpd362najf22pb6e8j","...":"3 items not stringified"}) in 5ms node_modules/.pnpm/@clerk+nextjs@7.5.12_next@16.2.10_@babel+core@7.29.7_@opentelemetry+api@1.9.1_@playwrig_506ee593c950e663eac3e5904637f559/node_modules/@clerk/nextjs/dist/esm-router/keyless-actions.js
+[browser] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview (https://exciting-labrador-2.clerk.accounts.dev/npm/@clerk/clerk-js@6/dist/clerk.browser.js:12:6133)
