@@ -243,16 +243,31 @@ export function ProInput({
   const isValid =
     type === "number" && Number.isFinite(numericValue) && numericValue > 0;
 
+  const RootElement = hasSelect ? "fieldset" : "label";
+
   return (
-    <label
-      className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary"
-      htmlFor={fieldId}
+    <RootElement
+      className="flex flex-col gap-1 border-none p-0 m-0 text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary"
+      {...(hasSelect ? {} : { htmlFor: fieldId })}
     >
       <span className="flex items-center justify-between gap-2">
-        <span id={labelId} className="truncate">
-          {label}
-        </span>
-        {subLabel ? (
+        {hasSelect ? (
+          <legend id={labelId} className="truncate w-full">
+            <span className="flex items-center justify-between gap-2">
+              <span>{label}</span>
+              {subLabel ? (
+                <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
+                  {subLabel}
+                </span>
+              ) : null}
+            </span>
+          </legend>
+        ) : (
+          <span id={labelId} className="truncate">
+            {label}
+          </span>
+        )}
+        {!hasSelect && subLabel ? (
           <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
             {subLabel}
           </span>
@@ -300,7 +315,7 @@ export function ProInput({
           </div>
         ) : null}
       </div>
-    </label>
+    </RootElement>
   );
 }
 
