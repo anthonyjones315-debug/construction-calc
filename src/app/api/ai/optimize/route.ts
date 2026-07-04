@@ -1,7 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
+import { z } from "zod";
 import { getClientIp } from "@/lib/http/client-ip";
 import { checkMemoryRateLimit } from "@/lib/rate-limit/memory";
+import { auth } from "@/lib/auth/config";
+
+const optimizeSchema = z.object({
+  calculatorId: z.string().min(1).max(100),
+  results: z.string().min(1).max(10000),
+  context: z.string().max(2000).optional(),
+});
 
 // Sanitize output to prevent XSS in markdown rendering
 function sanitize(text: string): string {
@@ -9,12 +17,6 @@ function sanitize(text: string): string {
     .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
     .replace(/<[^>]+>/g, '')
     .trim()
-}
-
-interface RequestBody {
-  calculatorId?: string
-  results?: string
-  context?: string
 }
 
 export async function POST(req: NextRequest) {
@@ -30,6 +32,11 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   if (!process.env.ANTHROPIC_API_KEY) {
     return NextResponse.json(
       { error: 'AI service not configured.' },
@@ -37,18 +44,22 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  let body: RequestBody
+  let body: unknown;
   try {
-    body = await req.json() as RequestBody
+    body = await req.json();
   } catch {
-    return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid JSON body.' }, { status: 400 })
   }
 
-  const { calculatorId, results, context } = body
-
-  if (!calculatorId || !results) {
-    return NextResponse.json({ error: 'Missing required fields.' }, { status: 400 })
+  const parsed = optimizeSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: parsed.error.issues[0]?.message ?? 'Invalid payload.' },
+      { status: 400 }
+    )
   }
+
+  const { calculatorId, results, context } = parsed.data;
 
   const contextLine = context ? `\nAdditional context: ${context}` : ''
   const prompt = `You are a professional construction estimator AI assistant. A contractor just ran a ${calculatorId} calculation. Analyze the results and provide 3-5 brief, practical tips to optimize their project. Be specific, actionable, and field-ready. Use markdown for formatting.

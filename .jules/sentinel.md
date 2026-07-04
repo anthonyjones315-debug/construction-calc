@@ -9,3 +9,8 @@
 **Vulnerability:** The Documenso webhook receiver would skip signature verification if the `WEBHOOK_SECRET` was not configured, and used a simple string comparison for signatures.
 **Learning:** Fail-open logic in authentication checks can lead to complete bypasses if environment variables are misconfigured. Non-constant-time string comparisons are susceptible to timing attacks.
 **Prevention:** Always implement fail-closed logic for security checks. Use `crypto.timingSafeEqual` for comparing sensitive values like signatures or tokens.
+
+## 2026-07-04 - Unprotected AI Optimization Endpoint
+**Vulnerability:** The `/api/ai/optimize` endpoint lacked authentication and strict input validation, allowing anonymous users to consume AI credits and potentially perform DoS via oversized payloads.
+**Learning:** AI-integrated endpoints often focus on functionality first, leading to missed security wrappers. Publicly accessible AI endpoints are high-value targets for abuse.
+**Prevention:** Always wrap AI and other high-cost API routes with authentication and strict Zod-based payload limits. Apply rate limiting before authentication to protect against unauthenticated floods.
