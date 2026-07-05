@@ -41,6 +41,43 @@ export function getNumberFormatter(
 }
 
 /**
+ * Shared USD currency formatter for consistent financial display.
+ * Reusing a single instance is ~100x faster than 'new Intl.NumberFormat'.
+ */
+export const USD_FORMATTER = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+/**
+ * Shared date formatter for full date display (e.g., "Jan 1, 2024").
+ */
+export const DATE_FORMATTER_FULL = new Intl.DateTimeFormat("en-US", {
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+});
+
+/**
+ * Shared date formatter for short date display (e.g., "Jan 1").
+ */
+export const DATE_FORMATTER_SHORT_DATE = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+});
+
+/**
+ * Shared date formatter for context-aware labels (e.g., "Monday, Jan 1").
+ */
+export const DATE_FORMATTER_WITH_WEEKDAY = new Intl.DateTimeFormat("en-US", {
+  weekday: "long",
+  month: "short",
+  day: "numeric",
+});
+
+/**
  * Returns a cached Intl.DateTimeFormat instance for the given options and locale.
  */
 export function getDateTimeFormatter(
