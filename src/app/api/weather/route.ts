@@ -1,5 +1,18 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
+import { auth } from "@/lib/auth/config";
+import { getClientIp } from "@/lib/http/client-ip";
+import { checkMemoryRateLimit } from "@/lib/rate-limit/memory";
+import { z } from "zod";
+
+const weatherQuerySchema = z.object({
+  lat: z.coerce.number().optional(),
+  lng: z.coerce.number().optional(),
+  address: z.string().max(200).optional(),
+  zip: z.string().regex(/^\d{5}(-\d{4})?$/).optional(),
+}).refine(data => (data.lat !== undefined && data.lng !== undefined) || data.address || data.zip, {
+  message: "Provide address, zip, or lat/lng",
+});
 
 async function geocodeZip(zip: string, googleKey: string) {
   const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(zip)},US&key=${googleKey}`;
@@ -18,25 +31,51 @@ function wmoToCondition(code: number) {
   return "Clear";
 }
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url);
-    const latParam = searchParams.get("lat");
-    const lngParam = searchParams.get("lng");
-    const address = searchParams.get("address");
-    const zip = searchParams.get("zip");
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const ip = getClientIp(req);
+    const rl = checkMemoryRateLimit("weather-api", ip, 10, 60_000);
+    if (!rl.ok) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(rl.retryAfterSeconds) },
+        },
+      );
+    }
+
+    const { searchParams } = req.nextUrl;
+    const params = {
+      lat: searchParams.get("lat") ?? undefined,
+      lng: searchParams.get("lng") ?? undefined,
+      address: searchParams.get("address") ?? undefined,
+      zip: searchParams.get("zip") ?? undefined,
+    };
+
+    const parsed = weatherQuerySchema.safeParse(params);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.issues[0]?.message ?? "Invalid parameters." },
+        { status: 400 },
+      );
+    }
+
+    const { lat: latParam, lng: lngParam, address, zip } = parsed.data;
 
     let lat: number;
     let lng: number;
     let formattedAddress = address || "";
     const googleKey = process.env.GOOGLE_MAPS_API_KEY;
 
-    if (latParam && lngParam) {
-      lat = parseFloat(latParam);
-      lng = parseFloat(lngParam);
-      if (isNaN(lat) || isNaN(lng)) {
-        return NextResponse.json({ error: "Invalid lat/lng values" }, { status: 400 });
-      }
+    if (latParam !== undefined && lngParam !== undefined) {
+      lat = latParam;
+      lng = lngParam;
     } else if (zip && googleKey) {
       const geo = await geocodeZip(zip, googleKey);
       if (!geo) return NextResponse.json({ error: "Failed to geocode zip" }, { status: 400 });
