@@ -195,7 +195,6 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
           autoFocus={autoFocus}
           inputMode="numeric"
           enterKeyHint="next"
-          aria-labelledby={labelId}
           aria-label={`${label} feet`}
           className="glass-input flex-1 rounded-none border-0 bg-transparent px-3 text-sm tabular-nums tracking-tight text-field-input shadow-none"
         />
@@ -217,7 +216,6 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
           step={1}
           inputMode="numeric"
           enterKeyHint="next"
-          aria-labelledby={labelId}
           aria-label={`${label} inches`}
           className="glass-input flex-1 rounded-none border-0 border-l border-[--color-border] bg-transparent px-3 text-sm tabular-nums tracking-tight text-field-input shadow-none"
         />
@@ -232,7 +230,6 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
           onChange={(e) => {
             handleFractionChange(Number.parseInt(e.target.value, 10));
           }}
-          aria-labelledby={labelId}
           aria-label={`${label} fractional inches`}
           className="glass-input w-16 min-w-0 shrink-0 appearance-none rounded-none border-0 border-l border-[--color-border] bg-transparent px-1.5 text-center text-xs tabular-nums tracking-tight text-field-input shadow-none"
         >
