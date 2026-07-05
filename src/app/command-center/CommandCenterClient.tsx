@@ -35,6 +35,10 @@ import { UserButton } from "@clerk/nextjs";
 import { useSearchParams } from "next/navigation";
 import * as Sentry from "@sentry/nextjs";
 import { routes } from "@routes";
+import {
+  DATE_FORMATTER_SHORT_DATE,
+  DATE_FORMATTER_WITH_WEEKDAY,
+} from "@/utils/formatters";
 import { CommandCenterCalculator } from "./CommandCenterCalculator";
 import { getTradePageByPath, tradePages } from "@/app/calculators/_lib/trade-pages";
 import { useProMode } from "@/hooks/useProMode";
@@ -673,16 +677,9 @@ export default function CommandCenterClient({
     recentEstimates.length - signedEstimateCount - sentEstimateCount,
     0,
   );
-  const todayLabel = new Intl.DateTimeFormat("en-US", {
-    weekday: "long",
-    month: "short",
-    day: "numeric",
-  }).format(new Date());
+  const todayLabel = DATE_FORMATTER_WITH_WEEKDAY.format(new Date());
   const lastEstimateLabel = recentEstimates[0]
-    ? new Date(recentEstimates[0].updatedAt).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      })
+    ? DATE_FORMATTER_SHORT_DATE.format(new Date(recentEstimates[0].updatedAt))
     : "No estimate activity yet";
   const recentEstimatePreview = recentEstimates.slice(0, 4);
   const memberPreview = members.slice(0, 6);
