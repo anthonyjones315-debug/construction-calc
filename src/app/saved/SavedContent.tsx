@@ -37,18 +37,12 @@ import {
   normalizeDollars,
   sumDollars,
 } from "@/utils/money";
+import { USD_FORMATTER } from "@/utils/formatters";
 
 const LIVE_REFRESH_MS = 15000;
 
-const USD_CURRENCY = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
-
 function formatCents(cents: number): string {
-  return USD_CURRENCY.format(centsToDollars(cents));
+  return USD_FORMATTER.format(centsToDollars(cents));
 }
 
 type SavedContentProps = {
@@ -556,7 +550,7 @@ export function SavedContent({
         ) {
           await mobileNavigator.share({
             title: `${estimate.name} - ${invoice.invoiceNumber}`,
-            text: `Invoice ${invoice.invoiceNumber} for ${USD_CURRENCY.format(invoiceAmount)}.`,
+            text: `Invoice ${invoice.invoiceNumber} for ${USD_FORMATTER.format(invoiceAmount)}.`,
             files: [file],
           });
           setUpdateSuccess("Invoice shared.");
@@ -566,7 +560,7 @@ export function SavedContent({
         if (typeof mobileNavigator.share === "function") {
           await mobileNavigator.share({
             title: `${estimate.name} - ${invoice.invoiceNumber}`,
-            text: `Invoice ${invoice.invoiceNumber} for ${USD_CURRENCY.format(invoiceAmount)}. Please sign and return via email.`,
+            text: `Invoice ${invoice.invoiceNumber} for ${USD_FORMATTER.format(invoiceAmount)}. Please sign and return via email.`,
           });
           triggerDownload(blob, invoiceFileName);
           setUpdateSuccess("Share sheet opened. Invoice also downloaded.");
@@ -579,7 +573,7 @@ export function SavedContent({
         `${estimate.name} - ${invoice.invoiceNumber}`,
       );
       const body = encodeURIComponent(
-        `Hi ${estimate.client_name || "there"},\n\nAttached is invoice ${invoice.invoiceNumber} for ${USD_CURRENCY.format(invoiceAmount)}.\n\nPlease review, sign, and return this invoice by email.\n\nPayment details:\nMethod: ${invoice.paymentMethod || "Not specified"}\nInstructions: ${invoice.paymentInstructions || "Not specified"}\n\nThanks,\n${contractorProfile.businessName || "Contractor"}`,
+        `Hi ${estimate.client_name || "there"},\n\nAttached is invoice ${invoice.invoiceNumber} for ${USD_FORMATTER.format(invoiceAmount)}.\n\nPlease review, sign, and return this invoice by email.\n\nPayment details:\nMethod: ${invoice.paymentMethod || "Not specified"}\nInstructions: ${invoice.paymentInstructions || "Not specified"}\n\nThanks,\n${contractorProfile.businessName || "Contractor"}`,
       );
       const emailTo = getClientEmail(estimate) ?? "";
       const opened = openDefaultMailClient(
@@ -1634,7 +1628,7 @@ export function SavedContent({
                     {materials.map((item) => (
                       <option key={item.id} value={item.id}>
                         {item.material_name} ·{" "}
-                        {USD_CURRENCY.format(item.unit_cost)}/
+                        {USD_FORMATTER.format(item.unit_cost)}/
                         {item.unit_type ?? "each"}
                       </option>
                     ))}
@@ -1776,7 +1770,7 @@ export function SavedContent({
               <p>
                 <span className="font-semibold text-[--color-ink]">Total:</span>{" "}
                 {deleteTarget.total_cost !== null
-                  ? USD_CURRENCY.format(deleteTarget.total_cost)
+                  ? USD_FORMATTER.format(deleteTarget.total_cost)
                   : "Not set"}
               </p>
               <p>
@@ -1859,7 +1853,7 @@ export function SavedContent({
                       )}
                       {est.total_cost !== null && (
                         <span className="inline-flex items-center rounded-full border border-emerald-500/35 bg-emerald-500/10 px-2 py-0.5 text-xs font-bold text-emerald-700">
-                          {USD_CURRENCY.format(est.total_cost)}
+                          {USD_FORMATTER.format(est.total_cost)}
                         </span>
                       )}
                       <span className="inline-flex items-center rounded-full border border-[--color-border] bg-[--color-surface-alt] px-2 py-0.5 text-xs text-[--color-ink-dim]">
