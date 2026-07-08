@@ -1,23 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
+import { z } from "zod";
+import { auth } from "@/lib/auth/config";
 import { getClientIp } from "@/lib/http/client-ip";
 import { checkMemoryRateLimit } from "@/lib/rate-limit/memory";
 
 // Sanitize output to prevent XSS in markdown rendering
 function sanitize(text: string): string {
   return text
-    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
-    .replace(/<[^>]+>/g, '')
-    .trim()
+    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
+    .replace(/<[^>]+>/g, "")
+    .trim();
 }
 
-interface RequestBody {
-  calculatorId?: string
-  results?: string
-  context?: string
-}
+const OptimizeRequestSchema = z.object({
+  calculatorId: z.string().min(1, "Calculator ID is required"),
+  results: z.string().min(1, "Results are required"),
+  context: z.string().optional(),
+});
 
 export async function POST(req: NextRequest) {
+  // 1. Rate limiting (before auth to prevent expensive session lookups for blocked IPs)
   const ip = getClientIp(req);
   const rl = checkMemoryRateLimit("ai-optimize", ip, 5, 60_000);
   if (!rl.ok) {
@@ -30,25 +33,36 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // 2. Authentication
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   if (!process.env.ANTHROPIC_API_KEY) {
     return NextResponse.json(
-      { error: 'AI service not configured.' },
-      { status: 503 }
-    )
+      { error: "AI service not configured." },
+      { status: 503 },
+    );
   }
 
-  let body: RequestBody
+  // 3. Input validation
+  let jsonBody;
   try {
-    body = await req.json() as RequestBody
+    jsonBody = await req.json();
   } catch {
-    return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 })
+    return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
   }
 
-  const { calculatorId, results, context } = body
-
-  if (!calculatorId || !results) {
-    return NextResponse.json({ error: 'Missing required fields.' }, { status: 400 })
+  const result = OptimizeRequestSchema.safeParse(jsonBody);
+  if (!result.success) {
+    return NextResponse.json(
+      { error: "Invalid request data", details: result.error.format() },
+      { status: 400 },
+    );
   }
+
+  const { calculatorId, results, context } = result.data;
 
   const contextLine = context ? `\nAdditional context: ${context}` : ''
   const prompt = `You are a professional construction estimator AI assistant. A contractor just ran a ${calculatorId} calculation. Analyze the results and provide 3-5 brief, practical tips to optimize their project. Be specific, actionable, and field-ready. Use markdown for formatting.
