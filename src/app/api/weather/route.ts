@@ -1,5 +1,18 @@
 import { NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
+import { auth } from "@/lib/auth/config";
+import { getClientIp } from "@/lib/http/client-ip";
+import { checkMemoryRateLimit } from "@/lib/rate-limit/memory";
+import { z } from "zod";
+
+const WeatherQuerySchema = z.object({
+  lat: z.string().optional(),
+  lng: z.string().optional(),
+  address: z.string().min(1).max(500).optional(),
+  zip: z.string().regex(/^\d{5}(-\d{4})?$/).optional(),
+}).refine(data => (data.lat && data.lng) || data.address || data.zip, {
+  message: "Provide address, zip, or lat/lng",
+});
 
 async function geocodeZip(zip: string, googleKey: string) {
   const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(zip)},US&key=${googleKey}`;
@@ -20,11 +33,36 @@ function wmoToCondition(code: number) {
 
 export async function GET(req: Request) {
   try {
+    const ip = getClientIp(req);
+    const rl = checkMemoryRateLimit("weather-api", ip, 10, 60_000);
+    if (!rl.ok) {
+      return NextResponse.json(
+        { error: "Too many requests" },
+        { status: 429, headers: { "Retry-After": String(rl.retryAfterSeconds) } }
+      );
+    }
+
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(req.url);
-    const latParam = searchParams.get("lat");
-    const lngParam = searchParams.get("lng");
-    const address = searchParams.get("address");
-    const zip = searchParams.get("zip");
+    const queryResult = WeatherQuerySchema.safeParse({
+      lat: searchParams.get("lat") || undefined,
+      lng: searchParams.get("lng") || undefined,
+      address: searchParams.get("address") || undefined,
+      zip: searchParams.get("zip") || undefined,
+    });
+
+    if (!queryResult.success) {
+      return NextResponse.json(
+        { error: queryResult.error.issues[0]?.message || "Invalid query" },
+        { status: 400 }
+      );
+    }
+
+    const { lat: latParam, lng: lngParam, address, zip } = queryResult.data;
 
     let lat: number;
     let lng: number;
@@ -34,9 +72,6 @@ export async function GET(req: Request) {
     if (latParam && lngParam) {
       lat = parseFloat(latParam);
       lng = parseFloat(lngParam);
-      if (isNaN(lat) || isNaN(lng)) {
-        return NextResponse.json({ error: "Invalid lat/lng values" }, { status: 400 });
-      }
     } else if (zip && googleKey) {
       const geo = await geocodeZip(zip, googleKey);
       if (!geo) return NextResponse.json({ error: "Failed to geocode zip" }, { status: 400 });
@@ -48,14 +83,14 @@ export async function GET(req: Request) {
       const geocodeReq = await fetch(geocodeUrl);
       const geocodeData = await geocodeReq.json();
       if (geocodeData.status !== "OK" || !geocodeData.results?.[0]) {
-        return NextResponse.json({ error: "Failed to geocode address via Google Maps." }, { status: 400 });
+        return NextResponse.json({ error: "Failed to geocode address" }, { status: 400 });
       }
       const location = geocodeData.results[0].geometry.location;
       lat = location.lat;
       lng = location.lng;
       formattedAddress = geocodeData.results[0].formatted_address;
     } else {
-      return NextResponse.json({ error: "Provide address, zip, or lat/lng" }, { status: 400 });
+      return NextResponse.json({ error: "Geocoding service unavailable" }, { status: 503 });
     }
 
     // Fetch current + daily forecast from Open-Meteo
