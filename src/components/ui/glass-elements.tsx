@@ -243,26 +243,53 @@ export function ProInput({
   const isValid =
     type === "number" && Number.isFinite(numericValue) && numericValue > 0;
 
+  const Root = hasSelect ? "fieldset" : "label";
+
   return (
-    <label
-      className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary"
-      htmlFor={fieldId}
+    <Root
+      className={cx(
+        "flex flex-col gap-1",
+        hasSelect
+          ? "m-0 border-none p-0"
+          : "text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary",
+      )}
+      {...(hasSelect ? {} : { htmlFor: fieldId })}
     >
-      <span className="flex items-center justify-between gap-2">
-        <span id={labelId} className="truncate">
-          {label}
-        </span>
-        {subLabel ? (
-          <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
-            {subLabel}
+      {hasSelect ? (
+        <legend className="mb-1 block w-full text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary">
+          <span className="flex items-center justify-between gap-2">
+            <span className="truncate">{label}</span>
+            {subLabel ? (
+              <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
+                {subLabel}
+              </span>
+            ) : null}
           </span>
-        ) : null}
-      </span>
-      {helpText ? (
-        <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
-          {helpText}
-        </span>
-      ) : null}
+          {helpText ? (
+            <span className="block text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
+              {helpText}
+            </span>
+          ) : null}
+        </legend>
+      ) : (
+        <>
+          <span className="flex items-center justify-between gap-2">
+            <span id={labelId} className="truncate">
+              {label}
+            </span>
+            {subLabel ? (
+              <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
+                {subLabel}
+              </span>
+            ) : null}
+          </span>
+          {helpText ? (
+            <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
+              {helpText}
+            </span>
+          ) : null}
+        </>
+      )}
       <div
         data-valid={isValid ? "true" : "false"}
         className="glass-input-shell relative flex min-h-[3.5rem] items-stretch overflow-hidden rounded-xl p-0"
@@ -278,12 +305,13 @@ export function ProInput({
           autoFocus={autoFocus}
           inputMode={type === "number" ? "decimal" : undefined}
           enterKeyHint="done"
-          aria-labelledby={labelId}
+          aria-labelledby={hasSelect ? undefined : labelId}
+          aria-label={hasSelect ? label : undefined}
           className="glass-input flex-1 rounded-none border-0 bg-transparent px-3 text-sm tabular-nums tracking-tight text-field-input shadow-none"
         />
         {hasSelect ? (
           <select
-            aria-labelledby={labelId}
+            aria-label={`${label} unit`}
             value={unitSelectValue}
             onChange={(event) => onUnitSelectChange?.(event.target.value)}
             className="border-l border-[--color-border] bg-[--color-surface-alt] px-2 text-[11px] font-semibold uppercase tabular-nums tracking-tight text-copy-secondary outline-none"
@@ -300,7 +328,7 @@ export function ProInput({
           </div>
         ) : null}
       </div>
-    </label>
+    </Root>
   );
 }
 
