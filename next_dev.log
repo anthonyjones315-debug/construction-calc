@@ -1,0 +1,56 @@
+
+> proconstructioncalc@1.0.0 dev /app
+> next dev --turbopack
+
+▲ Next.js 16.2.10 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+✓ Ready in 558ms
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+- Cache Components enabled
+- Experiments (use with caution):
+  · optimizePackageImports
+
+○ Compiling / ...
+
+[35m
+[Clerk]:[0m You are running in keyless mode.
+You can [35mclaim your keys[0m by visiting https://dashboard.clerk.com/apps/claim?framework=nextjs&token=t1t3ybongpgbzu3deucgu3jm4m2ev6g2vtcwt0by&return_url=http%3A%2F%2Flocalhost%3A3000%2F
+
+Error: Route "/": Uncached data or `connection()` was accessed outside of `<Suspense>`. This delays the entire page from rendering, resulting in a slow user experience. Learn more: https://nextjs.org/docs/messages/blocking-route
+    at RootLayout (src/app/layout.tsx:139:5)
+  137 |
+  138 |   return (
+> 139 |     <ClerkProvider
+      |     ^
+  140 |       appearance={{
+  141 |         variables: {
+  142 |           colorPrimary: "#2563eb",
+ GET / 200 in 17.8s (next.js: 13.7s, proxy.ts: 320ms, application-code: 3.8s)
+[browser] Error: Route "/": Uncached data or `connection()` was accessed outside of `<Suspense>`. This delays the entire page from rendering, resulting in a slow user experience. Learn more: https://nextjs.org/docs/messages/blocking-route
+    at requestFn (node_modules/.pnpm/@clerk+backend@3.11.3_react-dom@19.2.7_react@19.2.7__react@19.2.7/node_modules/@clerk/backend/src/api/request.ts:180:29)
+    at AccountlessApplicationAPI.request (node_modules/.pnpm/@clerk+backend@3.11.3_react-dom@19.2.7_react@19.2.7__react@19.2.7/node_modules/@clerk/backend/src/api/request.ts:280:94)
+    at AccountlessApplicationAPI.createAccountlessApplication (node_modules/.pnpm/@clerk+backend@3.11.3_react-dom@19.2.7_react@19.2.7__react@19.2.7/node_modules/@clerk/backend/src/api/endpoints/AccountlessApplicationsAPI.ts:15:17)
+    at Object.createAccountlessApplication (node_modules/.pnpm/@clerk+nextjs@7.5.16_next@16.2.10_@babel+core@7.29.7_@opentelemetry+api@1.9.1_@playwrig_32151c2c235b402cbdc7196702ec6a09/node_modules/@clerk/nextjs/src/server/keyless-node.ts:29:72)
+    at Object.getOrCreateKeys (node_modules/.pnpm/@clerk+shared@4.25.2_react-dom@19.2.7_react@19.2.7__react@19.2.7/node_modules/@clerk/shared/src/keyless/service.ts:217:48)
+    at <anonymous> (node_modules/.pnpm/@clerk+nextjs@7.5.16_next@16.2.10_@babel+core@7.29.7_@opentelemetry+api@1.9.1_@playwrig_32151c2c235b402cbdc7196702ec6a09/node_modules/@clerk/nextjs/src/app-router/server/keyless-provider.tsx:43:32)
+    at KeylessProvider (node_modules/.pnpm/@clerk+nextjs@7.5.16_next@16.2.10_@babel+core@7.29.7_@opentelemetry+api@1.9.1_@playwrig_32151c2c235b402cbdc7196702ec6a09/node_modules/@clerk/nextjs/src/app-router/server/keyless-provider.tsx:42:25)
+    at ClerkProvider (node_modules/.pnpm/@clerk+nextjs@7.5.16_next@16.2.10_@babel+core@7.29.7_@opentelemetry+api@1.9.1_@playwrig_32151c2c235b402cbdc7196702ec6a09/node_modules/@clerk/nextjs/src/app-router/server/ClerkProvider.tsx:56:7)
+    at RootLayout (src/app/layout.tsx:139:5)
+  178 |         };
+  179 |
+> 180 |         res = await runtime.fetch(finalUrl.href, {
+      |                             ^
+  181 |           method,
+  182 |           headers,
+  183 |           ...buildBody(),
+ GET / 200 in 233ms (next.js: 5ms, proxy.ts: 29ms, application-code: 199ms)
+[browser] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview (https://cuddly-chicken-54.clerk.accounts.dev/npm/@clerk/clerk-js@6/dist/clerk.browser.js:12:6133)
+ POST / 303 in 375ms (next.js: 16ms, proxy.ts: 21ms, application-code: 338ms)
+  └─ ƒ syncKeylessConfigAction({"apiKeysUrl":"https://dashboard.clerk.com/apps/app_3GI1PYrwOM44nXNYR0Du9eGIcF1/instances/ins_3GI1PdsbXIjG0ekTSpoTzE27yvD/api-keys","claimUrl":"https://dashboard.clerk.com/apps/claim?framework=nextjs&token=t1t3ybongpgbzu3deucgu3jm4m2ev6g2vtcwt0by","...":"3 items not stringified"}) in 31ms node_modules/.pnpm/@clerk+nextjs@7.5.16_next@16.2.10_@babel+core@7.29.7_@opentelemetry+api@1.9.1_@playwrig_32151c2c235b402cbdc7196702ec6a09/node_modules/@clerk/nextjs/dist/esm-router/keyless-actions.js
+ GET / 200 in 39ms (next.js: 4ms, proxy.ts: 15ms, application-code: 20ms)
+ GET / 200 in 145ms (next.js: 5ms, proxy.ts: 15ms, application-code: 125ms)
