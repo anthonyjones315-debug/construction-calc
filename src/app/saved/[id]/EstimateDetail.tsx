@@ -28,6 +28,7 @@ import {
   toCents,
   sumDollars,
 } from "@/utils/money";
+import { USD_FORMATTER as USD, DATE_FORMATTER_FULL } from "@/utils/formatters";
 
 // ─── Local types ────────────────────────────────────────────────────────────
 
@@ -93,13 +94,6 @@ function getEstimateControlNumber(estimate: SafeEstimateDTO): string {
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-
-const USD = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
 
 function todayIso(): string {
   return new Date().toISOString().slice(0, 10);
@@ -824,12 +818,7 @@ export function EstimateDetail({ estimate }: Props) {
           Saved Estimates
         </Link>
         <span className="text-xs text-[--color-ink-dim]">
-          Created{" "}
-          {new Date(estimate.createdAt).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-          })}
+          Created {DATE_FORMATTER_FULL.format(new Date(estimate.createdAt))}
         </span>
       </div>
 
