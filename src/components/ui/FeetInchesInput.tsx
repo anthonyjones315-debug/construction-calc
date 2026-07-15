@@ -100,6 +100,15 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
   const reactGeneratedId = React.useId();
   const fieldId = id ?? reactGeneratedId;
   const labelId = `${fieldId}-label`;
+  const subLabelId = `${fieldId}-sublabel`;
+  const helpTextId = `${fieldId}-helptext`;
+
+  const describedBy = [
+    subLabel ? subLabelId : "",
+    helpText ? helpTextId : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   // Determine which API is in use
   const isExplicitMode = "feet" in props && props.feet !== undefined;
@@ -160,20 +169,26 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
   }
 
   return (
-    <fieldset className="flex flex-col gap-1">
+    <fieldset className="flex flex-col gap-1 border-none m-0 p-0">
       <legend className="mb-1 block w-full text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary">
         <span className="flex items-center justify-between gap-2">
           <span id={labelId} className="truncate">
             {label}
           </span>
           {subLabel ? (
-            <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
+            <span
+              id={subLabelId}
+              className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden"
+            >
               {subLabel}
             </span>
           ) : null}
         </span>
         {helpText ? (
-          <span className="block text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
+          <span
+            id={helpTextId}
+            className="block text-[10px] font-normal normal-case text-copy-tertiary lg:hidden"
+          >
             {helpText}
           </span>
         ) : null}
@@ -196,6 +211,7 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
           inputMode="numeric"
           enterKeyHint="next"
           aria-labelledby={labelId}
+          aria-describedby={describedBy || undefined}
           aria-label={`${label} feet`}
           className="glass-input flex-1 rounded-none border-0 bg-transparent px-3 text-sm tabular-nums tracking-tight text-field-input shadow-none"
         />
@@ -218,6 +234,7 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
           inputMode="numeric"
           enterKeyHint="next"
           aria-labelledby={labelId}
+          aria-describedby={describedBy || undefined}
           aria-label={`${label} inches`}
           className="glass-input flex-1 rounded-none border-0 border-l border-[--color-border] bg-transparent px-3 text-sm tabular-nums tracking-tight text-field-input shadow-none"
         />
@@ -233,6 +250,7 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
             handleFractionChange(Number.parseInt(e.target.value, 10));
           }}
           aria-labelledby={labelId}
+          aria-describedby={describedBy || undefined}
           aria-label={`${label} fractional inches`}
           className="glass-input w-16 min-w-0 shrink-0 appearance-none rounded-none border-0 border-l border-[--color-border] bg-transparent px-1.5 text-center text-xs tabular-nums tracking-tight text-field-input shadow-none"
         >
