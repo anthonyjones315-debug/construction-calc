@@ -15,6 +15,7 @@ import { PlaceAutocomplete } from "@/components/ui/PlaceAutocomplete";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuth, useUser } from "@clerk/nextjs";
 import Link from "next/link";
+import { USD_FORMATTER } from "@/utils/formatters";
 import {
   FinancialDashboard,
   formatStatus,
@@ -40,12 +41,7 @@ import {
 
 const LIVE_REFRESH_MS = 15000;
 
-const USD_CURRENCY = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
+const USD_CURRENCY = USD_FORMATTER;
 
 function formatCents(cents: number): string {
   return USD_CURRENCY.format(centsToDollars(cents));
