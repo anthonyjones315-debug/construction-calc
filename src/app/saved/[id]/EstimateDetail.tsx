@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { USD_FORMATTER as USD } from "@/utils/formatters";
 import { useAuth, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import type { SafeEstimateDTO } from "@/lib/dal/estimates";
@@ -94,12 +95,6 @@ function getEstimateControlNumber(estimate: SafeEstimateDTO): string {
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-const USD = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
 
 function todayIso(): string {
   return new Date().toISOString().slice(0, 10);

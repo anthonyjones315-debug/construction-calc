@@ -4,6 +4,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { getSafeEstimate } from "@/lib/dal/estimates";
 import { routes } from "@routes";
+import { USD_FORMATTER_COMPACT } from "@/utils/formatters";
 
 type InvoiceStatus = "Draft" | "Sent" | "Partially Paid" | "Paid";
 
@@ -45,11 +46,7 @@ type Props = {
   params: Promise<{ id: string }>;
 };
 
-const USD_CURRENCY = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0,
-});
+const USD_CURRENCY = USD_FORMATTER_COMPACT;
 
 function parseInvoices(
   inputs: Record<string, unknown> | null | undefined,
