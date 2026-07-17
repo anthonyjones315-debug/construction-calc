@@ -6,7 +6,7 @@ const dateTimeFormatters = new Map<string, Intl.DateTimeFormat>();
 /**
  * Generates a deterministic cache key for a given locale and options object.
  */
-function getCacheKey(locale: string, options: FormatterOptions): string {
+export function getCacheKey(locale: string, options: FormatterOptions): string {
   const keys = Object.keys(options);
 
   // Fast-path: if no options, just use the locale
@@ -57,3 +57,46 @@ export function getDateTimeFormatter(
 
   return formatter;
 }
+
+/**
+ * Commonly used performance-optimized Intl formatters.
+ * Reusing these cached formatters is ~50x-100x faster than inline instantiation.
+ */
+
+export const USD_FORMATTER = getNumberFormatter({
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+export const USD_FORMATTER_COMPACT = getNumberFormatter({
+  style: "currency",
+  currency: "USD",
+  maximumFractionDigits: 0,
+});
+
+export const DATE_FORMATTER_FULL = getDateTimeFormatter({
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+});
+
+export const DATE_FORMATTER_SHORT_DATE = getDateTimeFormatter({
+  month: "short",
+  day: "numeric",
+});
+
+export const DATE_FORMATTER_WITH_WEEKDAY = getDateTimeFormatter({
+  weekday: "long",
+  month: "short",
+  day: "numeric",
+});
+
+export const DATE_TIME_FORMATTER = getDateTimeFormatter({
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+});

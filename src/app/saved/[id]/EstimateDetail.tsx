@@ -28,6 +28,7 @@ import {
   toCents,
   sumDollars,
 } from "@/utils/money";
+import { USD_FORMATTER as USD } from "@/utils/formatters";
 
 // ─── Local types ────────────────────────────────────────────────────────────
 
@@ -93,13 +94,6 @@ function getEstimateControlNumber(estimate: SafeEstimateDTO): string {
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-
-const USD = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
 
 function todayIso(): string {
   return new Date().toISOString().slice(0, 10);
