@@ -9,3 +9,8 @@
 **Vulnerability:** The Documenso webhook receiver would skip signature verification if the `WEBHOOK_SECRET` was not configured, and used a simple string comparison for signatures.
 **Learning:** Fail-open logic in authentication checks can lead to complete bypasses if environment variables are misconfigured. Non-constant-time string comparisons are susceptible to timing attacks.
 **Prevention:** Always implement fail-closed logic for security checks. Use `crypto.timingSafeEqual` for comparing sensitive values like signatures or tokens.
+
+## 2025-05-20 - Unauthenticated Endpoint Exposing Placeholder/Demo Data
+**Vulnerability:** The `/api/crm/contacts` endpoint served placeholder contact data without requiring user authentication, creating a high-priority exposure risk once real integration is established.
+**Learning:** Unused or placeholder API endpoints can be overlooked during early scaffolding, but they still represent an active attack surface if exposed in production without session checks.
+**Prevention:** Ensure all endpoints (including placeholders/skeletons) default to a closed state with standard `auth()` session validation from day one.
