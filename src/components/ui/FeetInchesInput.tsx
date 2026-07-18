@@ -159,6 +159,10 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
       emitCombined(feet, wholeInches, idx);
   }
 
+  const subLabelId = subLabel ? `${fieldId}-sublabel` : undefined;
+  const helpTextId = helpText ? `${fieldId}-helptext` : undefined;
+  const describedBy = [subLabelId, helpTextId].filter(Boolean).join(" ");
+
   return (
     <fieldset className="flex flex-col gap-1">
       <legend className="mb-1 block w-full text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary">
@@ -167,13 +171,13 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
             {label}
           </span>
           {subLabel ? (
-            <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
+            <span id={subLabelId} className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
               {subLabel}
             </span>
           ) : null}
         </span>
         {helpText ? (
-          <span className="block text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
+          <span id={helpTextId} className="block text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
             {helpText}
           </span>
         ) : null}
@@ -195,7 +199,7 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
           autoFocus={autoFocus}
           inputMode="numeric"
           enterKeyHint="next"
-          aria-labelledby={labelId}
+          aria-describedby={describedBy || undefined}
           aria-label={`${label} feet`}
           className="glass-input flex-1 rounded-none border-0 bg-transparent px-3 text-sm tabular-nums tracking-tight text-field-input shadow-none"
         />
@@ -217,7 +221,7 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
           step={1}
           inputMode="numeric"
           enterKeyHint="next"
-          aria-labelledby={labelId}
+          aria-describedby={describedBy || undefined}
           aria-label={`${label} inches`}
           className="glass-input flex-1 rounded-none border-0 border-l border-[--color-border] bg-transparent px-3 text-sm tabular-nums tracking-tight text-field-input shadow-none"
         />
@@ -232,7 +236,7 @@ export function FeetInchesInput(props: FeetInchesInputProps) {
           onChange={(e) => {
             handleFractionChange(Number.parseInt(e.target.value, 10));
           }}
-          aria-labelledby={labelId}
+          aria-describedby={describedBy || undefined}
           aria-label={`${label} fractional inches`}
           className="glass-input w-16 min-w-0 shrink-0 appearance-none rounded-none border-0 border-l border-[--color-border] bg-transparent px-1.5 text-center text-xs tabular-nums tracking-tight text-field-input shadow-none"
         >
