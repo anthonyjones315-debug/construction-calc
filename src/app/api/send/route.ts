@@ -55,11 +55,8 @@ const estimatePayloadSchema = z.object({
 const sendSchema = z.object({
   to: z.string().email(),
   subject: z.string().min(1).max(200),
-  html: z.string().min(1).optional(),
-  estimate: estimatePayloadSchema.optional(),
+  estimate: estimatePayloadSchema,
   replyTo: z.string().email().optional(),
-}).refine((d) => d.html !== undefined || d.estimate !== undefined, {
-  message: "Provide either html or estimate.",
 });
 
 function buildEstimateEmailHtml(estimate: z.infer<typeof estimatePayloadSchema>): string {
@@ -171,7 +168,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { to, subject, html: rawHtml, estimate, replyTo } = parsed.data;
+    const { to, subject, estimate, replyTo } = parsed.data;
     const db = createServerClient();
     const businessContext = await getBusinessContextForSession(db, session);
     const tenantColumn = getTenantScopeColumn(businessContext);
@@ -199,7 +196,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const html = rawHtml ?? (estimate ? buildEstimateEmailHtml(estimate) : "");
+    const html = buildEstimateEmailHtml(estimate);
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
       to: [to],
