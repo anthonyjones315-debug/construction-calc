@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { Route } from "next";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Modal } from "@/components/Modal";
+import { DATE_FORMATTER_WITH_WEEKDAY } from "@/utils/formatters";
 import NewEstimateClient from "@/app/command-center/estimates/new/NewEstimateClient";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -673,11 +674,7 @@ export default function CommandCenterClient({
     recentEstimates.length - signedEstimateCount - sentEstimateCount,
     0,
   );
-  const todayLabel = new Intl.DateTimeFormat("en-US", {
-    weekday: "long",
-    month: "short",
-    day: "numeric",
-  }).format(new Date());
+  const todayLabel = DATE_FORMATTER_WITH_WEEKDAY.format(new Date());
   const lastEstimateLabel = recentEstimates[0]
     ? new Date(recentEstimates[0].updatedAt).toLocaleDateString("en-US", {
         month: "short",
