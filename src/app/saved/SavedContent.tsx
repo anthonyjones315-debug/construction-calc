@@ -11,6 +11,7 @@ import {
   ExternalLink,
   MapPin,
 } from "lucide-react";
+import { USD_FORMATTER as USD_CURRENCY, DATE_FORMATTER_FULL, DATE_FORMATTER_LONG } from "@/utils/formatters";
 import { PlaceAutocomplete } from "@/components/ui/PlaceAutocomplete";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuth, useUser } from "@clerk/nextjs";
@@ -40,12 +41,6 @@ import {
 
 const LIVE_REFRESH_MS = 15000;
 
-const USD_CURRENCY = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
 
 function formatCents(cents: number): string {
   return USD_CURRENCY.format(centsToDollars(cents));
@@ -485,11 +480,7 @@ export function SavedContent({
 
     const invoiceDoc = createInvoicePDF({
       estimateTitle: estimate.name,
-      generatedAt: new Date().toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      }),
+      generatedAt: DATE_FORMATTER_LONG.format(new Date()),
       invoiceNumber: invoice.invoiceNumber,
       issuedDate: invoice.issuedDate,
       dueDate: invoice.dueDate,
@@ -1327,10 +1318,7 @@ export function SavedContent({
               finalize.calculatorLabel
                 ? finalize.calculatorLabel
                 : estimate.calculator_id,
-            generatedAt: new Date(estimate.created_at).toLocaleDateString(
-              "en-US",
-              { year: "numeric", month: "long", day: "numeric" },
-            ),
+            generatedAt: DATE_FORMATTER_LONG.format(new Date(estimate.created_at)),
             jobName:
               typeof finalize.jobName === "string" && finalize.jobName
                 ? finalize.jobName
@@ -1783,11 +1771,7 @@ export function SavedContent({
                 <span className="font-semibold text-[--color-ink]">
                   Created:
                 </span>{" "}
-                {new Date(deleteTarget.created_at).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                })}
+                {DATE_FORMATTER_FULL.format(new Date(deleteTarget.created_at))}
               </p>
             </div>
 
@@ -1846,11 +1830,7 @@ export function SavedContent({
                     </p>
                     <div className="flex items-center gap-3 mt-1 flex-wrap">
                       <span className="text-xs text-[--color-ink-dim]">
-                        {new Date(est.created_at).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        })}
+                        {DATE_FORMATTER_FULL.format(new Date(est.created_at))}
                       </span>
                       {hero && (
                         <span className="inline-flex items-center rounded-full border border-[--color-blue-brand]/35 bg-[--color-blue-brand]/10 px-2 py-0.5 text-xs font-bold text-[--color-blue-brand]">

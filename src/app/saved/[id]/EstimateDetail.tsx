@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { useAuth, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import type { SafeEstimateDTO } from "@/lib/dal/estimates";
+import { USD_FORMATTER as USD, DATE_FORMATTER_FULL, DATE_FORMATTER_LONG } from "@/utils/formatters";
 import { normalizeEstimateStatus, type EstimateStatus } from "@/lib/estimates/status";
 import { sanitizeFilename } from "@/utils/sanitize-filename";
 import { useContractorProfile } from "@/components/pdf/useContractorProfile";
@@ -94,12 +95,6 @@ function getEstimateControlNumber(estimate: SafeEstimateDTO): string {
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-const USD = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
 
 function todayIso(): string {
   return new Date().toISOString().slice(0, 10);
@@ -409,11 +404,7 @@ export function EstimateDetail({ estimate }: Props) {
           typeof finalize.calculatorLabel === "string" && finalize.calculatorLabel
             ? finalize.calculatorLabel
             : estimate.calculatorId,
-        generatedAt: new Date().toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        }),
+        generatedAt: DATE_FORMATTER_LONG.format(new Date()),
         jobName:
           typeof finalize.jobName === "string" && finalize.jobName
             ? finalize.jobName
@@ -729,11 +720,7 @@ export function EstimateDetail({ estimate }: Props) {
       const blob = await pdf(
         createInvoicePDF({
           estimateTitle: draft.name || estimate.name,
-          generatedAt: new Date().toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          }),
+          generatedAt: DATE_FORMATTER_LONG.format(new Date()),
           invoiceNumber: invoice.invoiceNumber,
           issuedDate: invoice.issuedDate,
           dueDate: invoice.dueDate,
@@ -825,11 +812,7 @@ export function EstimateDetail({ estimate }: Props) {
         </Link>
         <span className="text-xs text-[--color-ink-dim]">
           Created{" "}
-          {new Date(estimate.createdAt).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-          })}
+          {DATE_FORMATTER_FULL.format(new Date(estimate.createdAt))}
         </span>
       </div>
 
