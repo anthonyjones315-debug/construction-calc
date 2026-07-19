@@ -41,6 +41,16 @@ export function getNumberFormatter(
 }
 
 /**
+ * Pre-configured compact currency formatter for USD ($ without cents).
+ * Cached and optimized to prevent redundant Instantiations.
+ */
+export const USD_FORMATTER_COMPACT = getNumberFormatter({
+  style: "currency",
+  currency: "USD",
+  maximumFractionDigits: 0,
+});
+
+/**
  * Returns a cached Intl.DateTimeFormat instance for the given options and locale.
  */
 export function getDateTimeFormatter(
