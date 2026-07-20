@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Modal } from "@/components/Modal";
 import NewEstimateClient from "@/app/command-center/estimates/new/NewEstimateClient";
 import type { LucideIcon } from "lucide-react";
+import { DATE_FORMATTER_WITH_WEEKDAY } from "@/utils/formatters";
 import {
   ArrowRight,
   BarChart3,
@@ -673,11 +674,8 @@ export default function CommandCenterClient({
     recentEstimates.length - signedEstimateCount - sentEstimateCount,
     0,
   );
-  const todayLabel = new Intl.DateTimeFormat("en-US", {
-    weekday: "long",
-    month: "short",
-    day: "numeric",
-  }).format(new Date());
+  // Performance optimization: use cached DATE_FORMATTER_WITH_WEEKDAY to prevent inline instantiation in render body
+  const todayLabel = DATE_FORMATTER_WITH_WEEKDAY.format(new Date());
   const lastEstimateLabel = recentEstimates[0]
     ? new Date(recentEstimates[0].updatedAt).toLocaleDateString("en-US", {
         month: "short",
