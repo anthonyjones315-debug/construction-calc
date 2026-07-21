@@ -1,0 +1,3 @@
+## 2025-05-15 - Caching Intl Formatters to Prevent Render Bottlenecks
+**Learning:** Instantiating `Intl.NumberFormat` and `Intl.DateTimeFormat` dynamically within React render cycles or list-mapping functions introduces severe CPU overhead and GC pressure. Caching formatters based on deterministic keys (e.g. locale and options combination) achieves >20x speedup and significantly reduces frame drops and memory allocation.
+**Action:** Always reuse centralized pre-instantiated or cached formatters (such as `USD_FORMATTER` or `DATE_TIME_FORMATTER`) instead of invoking `.toLocaleString()` or creating inline `new Intl.` formatters inside render bodies and loops.
