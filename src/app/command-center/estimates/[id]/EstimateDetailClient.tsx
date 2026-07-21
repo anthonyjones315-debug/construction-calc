@@ -58,11 +58,11 @@ function statusClass(status: string | null) {
   return "border-slate-300 bg-slate-100 text-slate-700";
 }
 
+import { USD_FORMATTER, DATE_TIME_FORMATTER, DATE_FORMATTER_SHORT_DATE } from "@/utils/formatters";
+
+// Reuses pre-instantiated performance-optimized currency formatter to prevent render GC pressure
 function formatDollars(n: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(n);
+  return USD_FORMATTER.format(n);
 }
 
 export function EstimateDetailClient({
@@ -200,11 +200,8 @@ export function EstimateDetailClient({
             )}
             <p className="mt-1 text-xs text-slate-400">
               Created{" "}
-              {new Date(estimate.createdAt).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-              })}
+              {/* Reuses cached fast-path short date formatter to prevent per-render Intl overhead */}
+              {DATE_FORMATTER_SHORT_DATE.format(new Date(estimate.createdAt))}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -378,9 +375,7 @@ export function EstimateDetailClient({
                 {estimate.contractorSignedAt && (
                   <p className="text-[10px] text-slate-500">
                     Signed{" "}
-                    {new Date(estimate.contractorSignedAt).toLocaleString(
-                      "en-US",
-                    )}
+                    {DATE_TIME_FORMATTER.format(new Date(estimate.contractorSignedAt))}
                   </p>
                 )}
               </div>
@@ -412,7 +407,7 @@ export function EstimateDetailClient({
                   <p className="flex items-center gap-1 text-[10px] text-emerald-700">
                     <CheckCircle2 className="h-3 w-3" />
                     Signed{" "}
-                    {new Date(estimate.clientSignedAt).toLocaleString("en-US")}
+                    {DATE_TIME_FORMATTER.format(new Date(estimate.clientSignedAt))}
                   </p>
                 )}
               </div>
