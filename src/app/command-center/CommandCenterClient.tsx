@@ -40,6 +40,7 @@ import { getTradePageByPath, tradePages } from "@/app/calculators/_lib/trade-pag
 import { useProMode } from "@/hooks/useProMode";
 import { useStore } from "@/lib/store";
 import { KanbanBoard, type KanbanProject } from "@/components/dashboard/KanbanBoard";
+import { DATE_FORMATTER_WITH_WEEKDAY } from "@/utils/formatters";
 import { DispatchCalendar, type CalendarEvent } from "@/components/dashboard/DispatchCalendar";
 import { Calendar as CalendarIcon, Columns3 } from "lucide-react";
 
@@ -673,11 +674,7 @@ export default function CommandCenterClient({
     recentEstimates.length - signedEstimateCount - sentEstimateCount,
     0,
   );
-  const todayLabel = new Intl.DateTimeFormat("en-US", {
-    weekday: "long",
-    month: "short",
-    day: "numeric",
-  }).format(new Date());
+  const todayLabel = DATE_FORMATTER_WITH_WEEKDAY.format(new Date());
   const lastEstimateLabel = recentEstimates[0]
     ? new Date(recentEstimates[0].updatedAt).toLocaleDateString("en-US", {
         month: "short",
