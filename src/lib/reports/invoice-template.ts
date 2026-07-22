@@ -58,6 +58,9 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
       ? payload.quote_note.trim()
       : null;
 
+  const materialList = Array.isArray(payload.material_list) ? payload.material_list : [];
+  const hasMaterialList = materialList.length > 0;
+
   const dollars =
     typeof payload.total_cost === "number"
       ? formatCurrency(payload.total_cost)
@@ -273,6 +276,19 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
           <p style="font-size: 10px; color: #9ca3af; margin-top: 4px;">Date: ____________</p>
         </div>
       </div>`
+      }
+
+      <!-- Material List -->
+      ${
+        hasMaterialList
+          ? `
+      <div style="margin-top: 24px; padding: 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;">
+        <p style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 6px;">Material List</p>
+        <ul style="margin: 0; padding-left: 18px; font-size: 11px; color: #6b7280; line-height: 1.5;">
+          ${materialList.map((item) => `<li>${String(item)}</li>`).join("")}
+        </ul>
+      </div>`
+          : ""
       }
 
       <!-- Notes -->
