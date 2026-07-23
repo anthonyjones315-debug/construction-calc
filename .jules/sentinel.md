@@ -1,5 +1,10 @@
 # Sentinel Journal
 
+## 2026-03-14 - Database and System Driver Information Leakage
+**Vulnerability:** Internal database errors and connection failure stack traces were being returned in API responses (such as `/api/estimates/[id]/regen-share` and `/api/estimates/finalize`), exposing internal DB details to clients.
+**Learning:** Returning un-sanitized thrown `Error` objects directly to clients can leak critical infrastructure, schema design, and driver specifics.
+**Prevention:** Always intercept database/system errors, forward the raw stack/details to Sentry or internal logs, and return a safe, generic `"Internal Server Error"` response to the client.
+
 ## 2025-05-15 - Private Key Exposure in Version Control
 **Vulnerability:** A `.p12` certificate file (`documenso-pdf-seal.p12`) was committed to the repository.
 **Learning:** Private keys and certificates were being tracked in Git, posing a significant risk if the repository were compromised or made public.

@@ -16,7 +16,10 @@ import {
   SAVED_ESTIMATES_TAG,
 } from "@/lib/cache-tags";
 import { revalidateTag } from "next/cache";
-import { buildSigningMeta, generateEstimateShareCode } from "@/lib/estimates/finalize";
+import {
+  buildSigningMeta,
+  generateEstimateShareCode,
+} from "@/lib/estimates/finalize";
 import {
   SHARE_CODE_UNAVAILABLE_MESSAGE,
   isMissingShareCodeColumnError,
@@ -61,9 +64,16 @@ export async function POST(
       .single();
 
     if (estimateError || !estimateRow) {
+      if (estimateError && estimateError.code !== "PGRST116") {
+        Sentry.captureException(estimateError);
+        return NextResponse.json(
+          { error: "Internal Server Error" },
+          { status: 500 },
+        );
+      }
       return NextResponse.json(
-        { error: estimateError?.message ?? "Estimate not found." },
-        { status: estimateError ? 500 : 404 },
+        { error: "Estimate not found." },
+        { status: 404 },
       );
     }
 
