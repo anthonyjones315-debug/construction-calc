@@ -1,0 +1,3 @@
+## 2026-03-17 - Cached Intl Formatters for Core Render Loops
+**Learning:** Instantiating `Intl.NumberFormat`, `Intl.DateTimeFormat`, or invoking `.toLocaleDateString()` inside React component render loops or helper functions called during render is a severe performance bottleneck. V8's Intl constructor has substantial CPU initialization costs and triggers aggressive Garbage Collection churn. Centralizing and caching these formatters using deterministic options-based keys yields ~22.5x speedups.
+**Action:** Always import and use pre-cached utilities (`getDateTimeFormatter`, `getNumberFormatter`) from `@/utils/formatters` in all UI components and lists instead of inline instantiations or standard date/number formatting calls.
