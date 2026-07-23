@@ -35,6 +35,15 @@ function formatCurrency(value: number): string {
   }).format(Math.round(value * 100) / 100);
 }
 
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
   const { payload, contractorName, contractorContact, contractorLogoUrl } =
     input;
@@ -66,7 +75,9 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
   // Build line items from budget_items (stored in inputs.line_items) if available
   const inputs = payload.inputs as Record<string, unknown> | undefined;
   const rawLineItems = inputs?.line_items;
-  const budgetItems: Record<string, unknown>[] = Array.isArray(rawLineItems) ? rawLineItems : [];
+  const budgetItems: Record<string, unknown>[] = Array.isArray(rawLineItems)
+    ? rawLineItems
+    : [];
   const hasBudgetItems = budgetItems.length > 0;
 
   const lineItemRows = hasBudgetItems
@@ -101,9 +112,12 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
         .join("");
 
   // Extract tax info from inputs if available
-  const subtotalCents = typeof inputs?.subtotal_cents === "number" ? inputs.subtotal_cents : null;
-  const taxCents = typeof inputs?.tax_cents === "number" ? inputs.tax_cents : null;
-  const totalCents = typeof inputs?.total_cents === "number" ? inputs.total_cents : null;
+  const subtotalCents =
+    typeof inputs?.subtotal_cents === "number" ? inputs.subtotal_cents : null;
+  const taxCents =
+    typeof inputs?.tax_cents === "number" ? inputs.tax_cents : null;
+  const totalCents =
+    typeof inputs?.total_cents === "number" ? inputs.total_cents : null;
 
   const hasBreakdown = subtotalCents !== null && totalCents !== null;
   const subtotal = hasBreakdown ? formatCurrency(subtotalCents / 100) : null;
@@ -123,8 +137,6 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
   const signature = payload.signature as
     | { signatureDataUrl?: string; signedAt?: string; signerName?: string }
     | undefined;
-
-
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -273,6 +285,19 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
           <p style="font-size: 10px; color: #9ca3af; margin-top: 4px;">Date: ____________</p>
         </div>
       </div>`
+      }
+
+      <!-- Materials Needed -->
+      ${
+        payload.material_list && payload.material_list.length > 0
+          ? `
+          <div style="margin-top: 24px; padding: 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;">
+            <p style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 8px;">Materials Needed</p>
+            <ul style="margin: 0; padding-left: 20px; font-size: 12px; color: #374151; line-height: 1.6;">
+              ${payload.material_list.map((m) => `<li>${escapeHtml(m)}</li>`).join("")}
+            </ul>
+          </div>`
+          : ""
       }
 
       <!-- Notes -->
