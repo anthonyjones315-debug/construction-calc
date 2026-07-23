@@ -275,6 +275,19 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
       </div>`
       }
 
+      <!-- Materials -->
+      ${
+        payload.material_list && payload.material_list.length > 0
+          ? `
+      <div style="margin-top: 24px; padding: 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;">
+        <p style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 8px;">Recommended Materials</p>
+        <ul style="margin: 0; padding-left: 16px; font-size: 11px; color: #4b5563; line-height: 1.5;">
+          ${payload.material_list.map((item: string) => `<li style="margin-bottom: 4px;">${item}</li>`).join("")}
+        </ul>
+      </div>`
+          : ""
+      }
+
       <!-- Notes -->
       <div style="margin-top: 24px; padding: 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;">
         <p style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 6px;">Terms & Notes</p>
