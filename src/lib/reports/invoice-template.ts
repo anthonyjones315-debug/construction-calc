@@ -14,6 +14,15 @@ type InvoiceTemplateInput = {
   contractorLogoUrl: string | null;
 };
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 /** Safely format a number to 2 decimal places, avoiding floating point display errors */
 function safeNumber(value: string | number): string {
   if (typeof value === "number") {
@@ -124,7 +133,20 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
     | { signatureDataUrl?: string; signedAt?: string; signerName?: string }
     | undefined;
 
+  const materialsList = Array.isArray(payload.material_list) && payload.material_list.length > 0
+    ? payload.material_list
+    : [];
 
+  const materialsHtml = materialsList.length > 0
+    ? `
+      <!-- Materials Needed -->
+      <div style="margin-top: 24px; padding: 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;">
+        <p style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 6px;">Materials Needed</p>
+        <ul style="padding-left: 20px; font-size: 13px; color: #374151; line-height: 1.5; margin: 0;">
+          ${materialsList.map((item) => `<li style="margin-bottom: 4px;">${escapeHtml(item)}</li>`).join("")}
+        </ul>
+      </div>`
+    : "";
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -274,6 +296,8 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
         </div>
       </div>`
       }
+
+      ${materialsHtml}
 
       <!-- Notes -->
       <div style="margin-top: 24px; padding: 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;">
