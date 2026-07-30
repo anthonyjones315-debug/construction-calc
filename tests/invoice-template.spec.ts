@@ -46,4 +46,43 @@ describe("generateInvoiceHtml", () => {
     expect(html).toContain("#ea580c");
     expect(html).toContain("Kitchen Remodel");
   });
+
+  it("escapes malicious inputs/HTML tags in the material list to prevent HTML Injection / XSS", () => {
+    const payload: FinalizeEstimateInput = {
+      name: "Kitchen Remodel",
+      calculator_id: "interior/flooring-waste",
+      client_name: "Jane Contractor",
+      job_site_address: "123 Main St, Utica, NY",
+      total_cost: 1842.55,
+      results: [
+        { label: "Total Cents", value: 184255, unit: "cents" },
+      ],
+      material_list: ["<script>alert('XSS')</script>", "<b>bold text</b>"],
+      inputs: {},
+      metadata: {
+        title: "Kitchen Remodel Estimate",
+        calculatorLabel: "Flooring Waste Calculator",
+        generatedAt: "March 17, 2026",
+        jobName: "Kitchen Remodel",
+      },
+      signature: {
+        signerName: null,
+        signerEmail: null,
+        signatureDataUrl: null,
+        signedAt: null,
+      },
+    };
+
+    const html = generateInvoiceHtml({
+      payload,
+      contractorName: "Acme Contracting",
+      contractorContact: "(315) 555-0101",
+      contractorLogoUrl: null,
+    });
+
+    expect(html).not.toContain("<script>alert('XSS')</script>");
+    expect(html).toContain("&lt;script&gt;alert(&#039;XSS&#039;)&lt;/script&gt;");
+    expect(html).not.toContain("<b>bold text</b>");
+    expect(html).toContain("&lt;b&gt;bold text&lt;/b&gt;");
+  });
 });
