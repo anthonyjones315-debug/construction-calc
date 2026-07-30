@@ -1,3 +1,7 @@
 ## 2025-05-14 - Accessibility Grouping for Composite Inputs
 **Learning:** Wrapping multiple interactive controls (like feet, inches, and fractions) in a single `<label>` is an accessibility violation and confusing for screen readers. Using `<fieldset>` with a `<legend>` provides the correct semantic grouping and allows the group description to be announced properly for each internal control.
 **Action:** Use `<fieldset>` and `<legend>` for any form component that combines multiple related inputs into a single logical field.
+
+## 2026-03-18 - Accessibility Naming & Association in Compound Inputs
+**Learning:** In composite inputs (such as ProInput with select options or FeetInchesInput with multiple inputs), individual interactive elements must omit `aria-labelledby` referencing the high-level parent label or legend. Doing so prevents screen readers from overriding the descriptive, element-specific `aria-label` attribute (e.g. "Length feet" or "Length inches") with the generic parent label ("Length"). Additionally, associated help and description elements must be linked to focused controls via `aria-describedby` referencing their distinct IDs rather than remaining unlinked.
+**Action:** Always omit `aria-labelledby` on nested controls when specific `aria-label` attributes are present to preserve distinct names, and associate secondary texts using unique ID arrays mapped to `aria-describedby`.
