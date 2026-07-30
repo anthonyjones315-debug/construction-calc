@@ -1,3 +1,4 @@
+// Centralized performance-optimized Intl formatters cache
 type FormatterOptions = Intl.NumberFormatOptions | Intl.DateTimeFormatOptions;
 
 const numberFormatters = new Map<string, Intl.NumberFormat>();
