@@ -35,6 +35,19 @@ function formatCurrency(value: number): string {
   }).format(Math.round(value * 100) / 100);
 }
 
+function escapeHtml(value: unknown): string {
+  if (value === null || value === undefined) {
+    return "";
+  }
+  const str = String(value);
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
   const { payload, contractorName, contractorContact, contractorLogoUrl } =
     input;
@@ -273,6 +286,19 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
           <p style="font-size: 10px; color: #9ca3af; margin-top: 4px;">Date: ____________</p>
         </div>
       </div>`
+      }
+
+      <!-- Material List -->
+      ${
+        !hasBudgetItems && payload.material_list && payload.material_list.length > 0
+          ? `
+          <div style="margin-top: 24px; padding: 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;">
+            <p style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 6px;">Material List</p>
+            <ul style="padding-left: 20px; font-size: 12px; color: #374151; line-height: 1.6; margin: 0;">
+              ${payload.material_list.map(item => `<li>${escapeHtml(item)}</li>`).join("")}
+            </ul>
+          </div>`
+          : ""
       }
 
       <!-- Notes -->
