@@ -9,3 +9,8 @@
 **Vulnerability:** The Documenso webhook receiver would skip signature verification if the `WEBHOOK_SECRET` was not configured, and used a simple string comparison for signatures.
 **Learning:** Fail-open logic in authentication checks can lead to complete bypasses if environment variables are misconfigured. Non-constant-time string comparisons are susceptible to timing attacks.
 **Prevention:** Always implement fail-closed logic for security checks. Use `crypto.timingSafeEqual` for comparing sensitive values like signatures or tokens.
+
+## 2026-03-17 - HTML Injection and XSS in PDF Template Generation
+**Vulnerability:** User-controlled string fields (contractor name, client details, job address) and image URLs (logo, signatures) were directly interpolated into raw HTML template literals utilized by a server-side PDF generator (Browserless/Puppeteer). This allowed arbitrary HTML injection, potentially leading to client-side XSS or server-side request forgery (SSRF).
+**Learning:** Raw HTML interpolation of user inputs is extremely risky, especially when parsed by server-side headless browsers, which may execute javascript or fetch local system files.
+**Prevention:** Implement strict HTML escaping (`escapeHtml`) for all dynamic text parameters and strictly white-list safe URL schemes (`data:image/`, `http://`, `https://`) for image sources before generating raw HTML templates.
