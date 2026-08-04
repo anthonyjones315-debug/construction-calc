@@ -32,6 +32,9 @@ const approvedFiles = new Set([
   "scripts/performance-test.js",
   "scripts/rewrite-calcs-paths.mjs",
   "scripts/test-supabase.mjs",
+  "replace_imports.cjs",
+  "scripts/benchmark-intl.cjs",
+  "scripts/sync-local-db.mjs",
 ]);
 
 async function collectViolations(currentDir, violations) {

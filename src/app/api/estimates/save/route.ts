@@ -103,7 +103,6 @@ export async function POST(req: NextRequest) {
   }
 
   const body = parsed.data;
-  const projectUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "unknown";
 
   try {
     const db = createServerClient();
@@ -212,8 +211,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           error: schemaHint
-            ? `${schemaHint} Raw error: ${error.message}. Project: ${projectUrl} (ref: ${requestId})`
-            : `Save failed: ${error.message} (ref: ${requestId})`,
+            ? `${schemaHint} (ref: ${requestId})`
+            : `Save failed. Please try again. (ref: ${requestId})`,
         },
         { status: 500 },
       );
