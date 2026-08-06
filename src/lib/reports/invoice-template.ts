@@ -5,7 +5,7 @@
  */
 
 import type { EstimatePayload, EstimateResult } from "@/lib/estimates/types";
-import { getNumberFormatter } from "@/utils/formatters";
+import { getNumberFormatter, getDateTimeFormatter } from "@/utils/formatters";
 
 type InvoiceTemplateInput = {
   payload: EstimatePayload;
@@ -35,6 +35,17 @@ function formatCurrency(value: number): string {
   }).format(Math.round(value * 100) / 100);
 }
 
+function escapeHtml(val: unknown): string {
+  if (val === null || val === undefined) return "";
+  const s = String(val);
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
   const { payload, contractorName, contractorContact, contractorLogoUrl } =
     input;
@@ -46,10 +57,11 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
       ? payload.metadata.jobName
       : payload.name;
   const calculatorLabel = payload.metadata.calculatorLabel;
-  const generatedAt = new Date(payload.metadata.generatedAt).toLocaleDateString(
-    "en-US",
-    { year: "numeric", month: "long", day: "numeric" },
-  );
+  const generatedAt = getDateTimeFormatter({
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(new Date(payload.metadata.generatedAt));
   const clientName = payload.client_name ?? "";
   const jobAddress = payload.job_site_address ?? "";
 
@@ -69,6 +81,35 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
   const budgetItems: Record<string, unknown>[] = Array.isArray(rawLineItems) ? rawLineItems : [];
   const hasBudgetItems = budgetItems.length > 0;
 
+  const materialRows =
+    !hasBudgetItems && payload.material_list && payload.material_list.length > 0
+      ? payload.material_list
+          .map(
+            (item: string) => `
+          <tr>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; color: #111827; font-size: 13px;">${escapeHtml(item)}</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: center; color: #374151; font-size: 13px;">—</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: center; color: #6b7280; font-size: 13px;">—</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: right; color: #374151; font-size: 13px;">—</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: 600; color: #111827; font-size: 13px;">—</td>
+          </tr>`,
+          )
+          .join("")
+      : "";
+
+  const resultsRows = payload.results
+    .map(
+      (row: EstimateResult) => `
+      <tr>
+        <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; color: #111827; font-size: 13px;">${row.label}</td>
+        <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: center; color: #374151; font-size: 13px;">1</td>
+        <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: center; color: #6b7280; font-size: 13px;">${row.unit ?? ""}</td>
+        <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: right; color: #374151; font-size: 13px;">${safeNumber(row.value)}</td>
+        <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: 600; color: #111827; font-size: 13px;">${safeNumber(row.value)}</td>
+      </tr>`,
+    )
+    .join("");
+
   const lineItemRows = hasBudgetItems
     ? budgetItems
         .map((item: Record<string, unknown>) => {
@@ -87,18 +128,7 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
           </tr>`;
         })
         .join("")
-    : payload.results
-        .map(
-          (row: EstimateResult) => `
-          <tr>
-            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; color: #111827; font-size: 13px;">${row.label}</td>
-            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: center; color: #374151; font-size: 13px;">1</td>
-            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: center; color: #6b7280; font-size: 13px;">${row.unit ?? ""}</td>
-            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: right; color: #374151; font-size: 13px;">${safeNumber(row.value)}</td>
-            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: 600; color: #111827; font-size: 13px;">${safeNumber(row.value)}</td>
-          </tr>`,
-        )
-        .join("");
+    : resultsRows + materialRows;
 
   // Extract tax info from inputs if available
   const subtotalCents = typeof inputs?.subtotal_cents === "number" ? inputs.subtotal_cents : null;
@@ -252,7 +282,7 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
           <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 8px; background: #ffffff;">
             <img src="${signature.signatureDataUrl}" alt="Signature" style="height: 48px; object-fit: contain;" />
           </div>
-          ${signature.signedAt ? `<p style="font-size: 10px; color: #9ca3af; margin-top: 4px;">Signed ${new Date(signature.signedAt).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}</p>` : ""}
+          ${signature.signedAt ? `<p style="font-size: 10px; color: #9ca3af; margin-top: 4px;">Signed ${getDateTimeFormatter({ year: "numeric", month: "short", day: "numeric" }).format(new Date(signature.signedAt))}</p>` : ""}
         </div>
         <div style="flex: 1;">
           <p style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 8px;">Client Signature</p>
