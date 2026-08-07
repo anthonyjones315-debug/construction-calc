@@ -57,3 +57,36 @@ export function getDateTimeFormatter(
 
   return formatter;
 }
+
+// Centralized, pre-configured cached formatters for high-performance reuse
+export const USD_FORMATTER = getNumberFormatter({
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+export const USD_FORMATTER_COMPACT = getNumberFormatter({
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+});
+
+export const DATE_FORMATTER_LONG = getDateTimeFormatter({
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+
+export const DATE_FORMATTER_SHORT = getDateTimeFormatter({
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+});
+
+export const DATE_FORMATTER_WITH_WEEKDAY = getDateTimeFormatter({
+  weekday: "long",
+  month: "short",
+  day: "numeric",
+});

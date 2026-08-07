@@ -18,13 +18,7 @@ import {
   sumCents,
   toCents,
 } from "@/utils/money";
-
-const USD_CURRENCY = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
+import { USD_FORMATTER as USD_CURRENCY } from "@/utils/formatters";
 
 export interface SavedEstimate {
   id: string;

@@ -38,14 +38,9 @@ import {
   sumDollars,
 } from "@/utils/money";
 
-const LIVE_REFRESH_MS = 15000;
+import { USD_FORMATTER as USD_CURRENCY } from "@/utils/formatters";
 
-const USD_CURRENCY = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
+const LIVE_REFRESH_MS = 15000;
 
 function formatCents(cents: number): string {
   return USD_CURRENCY.format(centsToDollars(cents));
