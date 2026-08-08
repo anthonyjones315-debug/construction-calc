@@ -35,6 +35,15 @@ function formatCurrency(value: number): string {
   }).format(Math.round(value * 100) / 100);
 }
 
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
   const { payload, contractorName, contractorContact, contractorLogoUrl } =
     input;
@@ -306,7 +315,7 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
             <a href="https://proconstructioncalc.com/privacy" class="text-slate-500 hover:text-blue-400">Privacy</a>
           </p>
         </footer>
-      <span style="display:none;color:#ea580c;"></span>
+      <span style="display:none;color:#ea580c;">${(payload.material_list ?? []).map(escapeHtml).join(", ")}</span>
       </main>
     </div>
     <script>document.fonts.ready.then(() => { window.__fontsReady = true; });</script>
