@@ -15,6 +15,17 @@ const ALLOWED_TYPES = [
   "image/gif",
 ];
 
+// ✅ SECURITY: Mapping of approved MIME types to safe extensions.
+// This prevents path traversal, extension spoofing, or upload of dangerous arbitrary extensions
+// derived from user-controlled metadata (like `file.name`).
+const TYPE_TO_EXT: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "image/svg+xml": "svg",
+  "image/gif": "gif",
+};
+
 function newErrorId() {
   return crypto.randomUUID();
 }
@@ -85,7 +96,8 @@ export async function POST(req: NextRequest) {
         { status: 400 },
       );
 
-    const ext = file.name.split(".").pop() ?? "png";
+    // ✅ SECURITY: Always use mapped secure extension based on content type instead of parsing file.name
+    const ext = TYPE_TO_EXT[file.type] ?? "png";
 
     const db = createServerClient();
     const businessContext = await getBusinessContextForSession(db, session);
