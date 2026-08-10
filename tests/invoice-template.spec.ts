@@ -46,4 +46,66 @@ describe("generateInvoiceHtml", () => {
     expect(html).toContain("#ea580c");
     expect(html).toContain("Kitchen Remodel");
   });
+
+  it("escapes user-controlled fields to prevent XSS and HTML injection", () => {
+    const payload: FinalizeEstimateInput = {
+      name: "<script>alert('name')</script>",
+      calculator_id: "interior/flooring-waste",
+      client_name: "<b>Client</b>",
+      job_site_address: "Address & Co",
+      total_cost: 100,
+      results: [
+        { label: "<i>Label</i>", value: 10, unit: "<u>unit</u>" },
+      ],
+      material_list: ["<s>material</s>"],
+      inputs: {},
+      metadata: {
+        title: "Title",
+        calculatorLabel: "Calculator",
+        generatedAt: "March 17, 2026",
+        jobName: "<script>alert('name')</script>",
+      },
+      signature: {
+        signerName: null,
+        signerEmail: null,
+        signatureDataUrl: "javascript:alert('XSS')",
+        signedAt: null,
+      },
+    };
+
+    const html = generateInvoiceHtml({
+      payload,
+      contractorName: "<strong>Contractor</strong>",
+      contractorContact: "Contact & Phone",
+      contractorLogoUrl: "javascript:alert('logo')",
+    });
+
+    // Check that HTML entities are escaped and raw HTML tag structures do not exist
+    expect(html).not.toContain("<script>alert");
+    expect(html).toContain("&lt;script&gt;alert(&#039;name&#039;)&lt;/script&gt;");
+
+    expect(html).not.toContain("<b>Client</b>");
+    expect(html).toContain("&lt;b&gt;Client&lt;/b&gt;");
+
+    expect(html).not.toContain("Address & Co");
+    expect(html).toContain("Address &amp; Co");
+
+    expect(html).not.toContain("<i>Label</i>");
+    expect(html).toContain("&lt;i&gt;Label&lt;/i&gt;");
+
+    expect(html).not.toContain("<u>unit</u>");
+    expect(html).toContain("&lt;u&gt;unit&lt;/u&gt;");
+
+    expect(html).not.toContain("<s>material</s>");
+    expect(html).toContain("&lt;s&gt;material&lt;/s&gt;");
+
+    expect(html).not.toContain("<strong>Contractor</strong>");
+    expect(html).toContain("&lt;strong&gt;Contractor&lt;/strong&gt;");
+
+    expect(html).not.toContain("Contact & Phone");
+    expect(html).toContain("Contact &amp; Phone");
+
+    // Check that javascript: URLs are blocked and not rendered as image sources
+    expect(html).not.toContain("javascript:alert");
+  });
 });
