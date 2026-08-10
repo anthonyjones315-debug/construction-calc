@@ -9,3 +9,8 @@
 **Vulnerability:** The Documenso webhook receiver would skip signature verification if the `WEBHOOK_SECRET` was not configured, and used a simple string comparison for signatures.
 **Learning:** Fail-open logic in authentication checks can lead to complete bypasses if environment variables are misconfigured. Non-constant-time string comparisons are susceptible to timing attacks.
 **Prevention:** Always implement fail-closed logic for security checks. Use `crypto.timingSafeEqual` for comparing sensitive values like signatures or tokens.
+
+## 2026-03-17 - HTML Injection and XSS via Raw Invoice Template Interpolation
+**Vulnerability:** Dynamic properties like client name, project name, job address, and list item values were interpolated as raw strings directly into the invoice's HTML template, creating cross-site scripting (XSS) and HTML injection vulnerability vectors.
+**Learning:** Document generation engines using headless browsers (e.g. Browserless) render HTML code inside the browser. Unescaped input can easily allow tag breakout or javascript execution.
+**Prevention:** Implement a strict helper to escape HTML special characters across all interpolated properties, and enforce white-listed protocols (data:image/, http://, https://) for remote resource sources such as logos and signatures.
