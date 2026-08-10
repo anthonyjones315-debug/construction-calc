@@ -40,6 +40,20 @@ export function getNumberFormatter(
   return formatter;
 }
 
+/** Cached date formatter for expanded date views like generated estimate/invoice PDF headers. */
+export const DATE_FORMATTER_LONG = getDateTimeFormatter({
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+
+/** Cached date formatter for abbreviated document dates/signature stamps. */
+export const DATE_FORMATTER_SHORT = getDateTimeFormatter({
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+});
+
 /**
  * Returns a cached Intl.DateTimeFormat instance for the given options and locale.
  */
