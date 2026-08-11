@@ -3,6 +3,7 @@
 import { AlertTriangle, DollarSign, TrendingUp, Wallet } from "lucide-react";
 import { useMemo } from "react";
 import type { CalculationResult } from "@/types";
+import { getNumberFormatter } from "@/utils/formatters";
 import type { FinancialData } from "@/components/financial/FinancialDataFetcher";
 import {
   formatEstimateStatus,
@@ -19,12 +20,15 @@ import {
   toCents,
 } from "@/utils/money";
 
-const USD_CURRENCY = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
+const USD_CURRENCY = {
+  format: (val: number) =>
+    getNumberFormatter({
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(val),
+};
 
 export interface SavedEstimate {
   id: string;

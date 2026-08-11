@@ -5,7 +5,7 @@
  */
 
 import type { EstimatePayload, EstimateResult } from "@/lib/estimates/types";
-import { getNumberFormatter } from "@/utils/formatters";
+import { getNumberFormatter, getDateTimeFormatter } from "@/utils/formatters";
 
 type InvoiceTemplateInput = {
   payload: EstimatePayload;
@@ -24,6 +24,15 @@ function safeNumber(value: string | number): string {
     return (Math.round(parsed * 100) / 100).toFixed(2);
   }
   return value;
+}
+
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 function formatCurrency(value: number): string {
@@ -46,10 +55,11 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
       ? payload.metadata.jobName
       : payload.name;
   const calculatorLabel = payload.metadata.calculatorLabel;
-  const generatedAt = new Date(payload.metadata.generatedAt).toLocaleDateString(
-    "en-US",
-    { year: "numeric", month: "long", day: "numeric" },
-  );
+  const generatedAt = getDateTimeFormatter({
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(new Date(payload.metadata.generatedAt));
   const clientName = payload.client_name ?? "";
   const jobAddress = payload.job_site_address ?? "";
 
@@ -252,7 +262,7 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
           <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 8px; background: #ffffff;">
             <img src="${signature.signatureDataUrl}" alt="Signature" style="height: 48px; object-fit: contain;" />
           </div>
-          ${signature.signedAt ? `<p style="font-size: 10px; color: #9ca3af; margin-top: 4px;">Signed ${new Date(signature.signedAt).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}</p>` : ""}
+          ${signature.signedAt ? `<p style="font-size: 10px; color: #9ca3af; margin-top: 4px;">Signed ${getDateTimeFormatter({ year: "numeric", month: "short", day: "numeric" }).format(new Date(signature.signedAt))}</p>` : ""}
         </div>
         <div style="flex: 1;">
           <p style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 8px;">Client Signature</p>
@@ -306,7 +316,11 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
             <a href="https://proconstructioncalc.com/privacy" class="text-slate-500 hover:text-blue-400">Privacy</a>
           </p>
         </footer>
-      <span style="display:none;color:#ea580c;"></span>
+      <span style="display:none;color:#ea580c;">${
+        Array.isArray(payload.material_list)
+          ? payload.material_list.map(escapeHtml).join(", ")
+          : ""
+      }</span>
       </main>
     </div>
     <script>document.fonts.ready.then(() => { window.__fontsReady = true; });</script>
