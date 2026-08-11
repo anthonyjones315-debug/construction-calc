@@ -4,6 +4,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { getSafeEstimate } from "@/lib/dal/estimates";
 import { routes } from "@routes";
+import { getNumberFormatter, getDateTimeFormatter } from "@/utils/formatters";
 
 type InvoiceStatus = "Draft" | "Sent" | "Partially Paid" | "Paid";
 
@@ -45,11 +46,14 @@ type Props = {
   params: Promise<{ id: string }>;
 };
 
-const USD_CURRENCY = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0,
-});
+const USD_CURRENCY = {
+  format: (val: number) =>
+    getNumberFormatter({
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 0,
+    }).format(val),
+};
 
 function parseInvoices(
   inputs: Record<string, unknown> | null | undefined,
@@ -156,13 +160,13 @@ export default async function SavedEstimateDetailPage({ params }: Props) {
                 <span className="font-semibold text-[--color-ink]">
                   Created:
                 </span>{" "}
-                {new Date(estimate.createdAt).toLocaleDateString("en-US")}
+                {getDateTimeFormatter().format(new Date(estimate.createdAt))}
               </p>
               <p>
                 <span className="font-semibold text-[--color-ink]">
                   Updated:
                 </span>{" "}
-                {new Date(estimate.updatedAt).toLocaleDateString("en-US")}
+                {getDateTimeFormatter().format(new Date(estimate.updatedAt))}
               </p>
             </div>
           </section>
