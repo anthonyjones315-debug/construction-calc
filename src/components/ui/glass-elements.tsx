@@ -238,68 +238,99 @@ export function ProInput({
   const reactGeneratedId = React.useId();
   const fieldId = id ?? reactGeneratedId;
   const labelId = `${fieldId}-label`;
+  const subLabelId = `${fieldId}-sublabel`;
+  const helpTextId = `${fieldId}-helptext`;
+
+  const describedBy = [
+    subLabel ? subLabelId : "",
+    helpText ? helpTextId : "",
+  ].filter(Boolean).join(" ") || undefined;
+
   const numericValue =
     typeof value === "number" ? value : Number.parseFloat(String(value));
   const isValid =
     type === "number" && Number.isFinite(numericValue) && numericValue > 0;
+
+  const headerContent = (
+    <>
+      <span className="flex items-center justify-between gap-2 w-full">
+        <span id={labelId} className="truncate">
+          {label}
+        </span>
+        {subLabel ? (
+          <span id={subLabelId} className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
+            {subLabel}
+          </span>
+        ) : null}
+      </span>
+      {helpText ? (
+        <span id={helpTextId} className="block text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
+          {helpText}
+        </span>
+      ) : null}
+    </>
+  );
+
+  const inputAndSelectContent = (
+    <div
+      data-valid={isValid ? "true" : "false"}
+      className="glass-input-shell relative flex min-h-[3.5rem] items-stretch overflow-hidden rounded-xl p-0 w-full"
+    >
+      <input
+        id={fieldId}
+        type={type}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        min={min}
+        max={max}
+        step={step}
+        autoFocus={autoFocus}
+        inputMode={type === "number" ? "decimal" : undefined}
+        enterKeyHint="done"
+        aria-labelledby={labelId}
+        aria-describedby={describedBy}
+        className="glass-input flex-1 rounded-none border-0 bg-transparent px-3 text-sm tabular-nums tracking-tight text-field-input shadow-none"
+      />
+      {hasSelect ? (
+        <select
+          value={unitSelectValue}
+          onChange={(event) => onUnitSelectChange?.(event.target.value)}
+          aria-label={`${label} unit`}
+          aria-describedby={describedBy}
+          className="border-l border-[--color-border] bg-[--color-surface-alt] px-2 text-[11px] font-semibold uppercase tabular-nums tracking-tight text-copy-secondary outline-none"
+        >
+          {unitSelectOptions!.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      ) : unitSuffix ? (
+        <div className="flex items-center border-l border-[--color-border] bg-[--color-surface-alt] px-2 text-[11px] font-semibold uppercase tabular-nums tracking-tight text-copy-secondary">
+          {unitSuffix}
+        </div>
+      ) : null}
+    </div>
+  );
+
+  if (hasSelect) {
+    return (
+      <fieldset className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary">
+        <legend className="mb-1 block w-full text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary">
+          {headerContent}
+        </legend>
+        {inputAndSelectContent}
+      </fieldset>
+    );
+  }
 
   return (
     <label
       className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary"
       htmlFor={fieldId}
     >
-      <span className="flex items-center justify-between gap-2">
-        <span id={labelId} className="truncate">
-          {label}
-        </span>
-        {subLabel ? (
-          <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
-            {subLabel}
-          </span>
-        ) : null}
-      </span>
-      {helpText ? (
-        <span className="text-[10px] font-normal normal-case text-copy-tertiary lg:hidden">
-          {helpText}
-        </span>
-      ) : null}
-      <div
-        data-valid={isValid ? "true" : "false"}
-        className="glass-input-shell relative flex min-h-[3.5rem] items-stretch overflow-hidden rounded-xl p-0"
-      >
-        <input
-          id={fieldId}
-          type={type}
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          min={min}
-          max={max}
-          step={step}
-          autoFocus={autoFocus}
-          inputMode={type === "number" ? "decimal" : undefined}
-          enterKeyHint="done"
-          aria-labelledby={labelId}
-          className="glass-input flex-1 rounded-none border-0 bg-transparent px-3 text-sm tabular-nums tracking-tight text-field-input shadow-none"
-        />
-        {hasSelect ? (
-          <select
-            aria-labelledby={labelId}
-            value={unitSelectValue}
-            onChange={(event) => onUnitSelectChange?.(event.target.value)}
-            className="border-l border-[--color-border] bg-[--color-surface-alt] px-2 text-[11px] font-semibold uppercase tabular-nums tracking-tight text-copy-secondary outline-none"
-          >
-            {unitSelectOptions!.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        ) : unitSuffix ? (
-          <div className="flex items-center border-l border-[--color-border] bg-[--color-surface-alt] px-2 text-[11px] font-semibold uppercase tabular-nums tracking-tight text-copy-secondary">
-            {unitSuffix}
-          </div>
-        ) : null}
-      </div>
+      {headerContent}
+      {inputAndSelectContent}
     </label>
   );
 }
