@@ -30,6 +30,9 @@ const approvedFiles = new Set([
   "scripts/liquid-orange-glass-performance-test.js",
   "scripts/liquid-orange-glass-performance-test.mjs",
   "scripts/performance-test.js",
+  "replace_imports.cjs",
+  "scripts/benchmark-intl.cjs",
+  "scripts/sync-local-db.mjs",
   "scripts/rewrite-calcs-paths.mjs",
   "scripts/test-supabase.mjs",
 ]);
