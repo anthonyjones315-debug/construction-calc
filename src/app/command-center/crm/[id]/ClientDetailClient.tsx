@@ -19,6 +19,7 @@ import {
 import type { Route } from "next";
 import type { ClientDTO } from "@/lib/dal/clients";
 import { routes } from "@routes";
+import { getDateTimeFormatter, getNumberFormatter } from "@/utils/formatters";
 
 type ShortEstimate = {
   id: string;
@@ -44,14 +45,14 @@ const TABS: { id: DetailTab; label: string; icon: React.ComponentType<{ classNam
 ];
 
 function formatTimestamp(date: Date): string {
-  return date.toLocaleString("en-US", {
+  return getDateTimeFormatter({
     month: "short",
     day: "numeric",
     year: "numeric",
     hour: "numeric",
     minute: "2-digit",
     hour12: true,
-  });
+  }).format(date);
 }
 
 function statusBadgeClasses(status: string | null): string {
@@ -106,12 +107,12 @@ function EstimatesTab({ clientId, estimates }: { clientId: string; estimates: Sh
               <div>
                 <p className="text-sm font-bold text-[--color-ink]">{est.name}</p>
                 <p className="mt-0.5 text-xs text-[--color-ink-dim]">
-                  Updated {new Date(est.updated_at).toLocaleDateString()}
+                  Updated {getDateTimeFormatter().format(new Date(est.updated_at))}
                 </p>
               </div>
               <div className="text-right">
                 <p className="text-sm font-mono font-bold text-[--color-ink]">
-                  {est.total_cost != null ? `$${est.total_cost.toLocaleString()}` : "Pending"}
+                  {est.total_cost != null ? getNumberFormatter({ style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(est.total_cost) : "Pending"}
                 </p>
                 <span
                   className={`mt-0.5 inline-block rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${statusBadgeClasses(est.status)}`}
