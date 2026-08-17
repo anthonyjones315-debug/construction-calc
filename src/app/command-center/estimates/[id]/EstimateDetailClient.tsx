@@ -11,6 +11,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { routes } from "@routes";
+import { getNumberFormatter } from "@/utils/formatters";
 
 interface EstimateDetailProps {
   canDelete?: boolean;
@@ -59,7 +60,8 @@ function statusClass(status: string | null) {
 }
 
 function formatDollars(n: number) {
-  return new Intl.NumberFormat("en-US", {
+  // Use cached Intl.NumberFormat instance to prevent Garbage Collection pauses during re-renders
+  return getNumberFormatter({
     style: "currency",
     currency: "USD",
   }).format(n);
