@@ -7,6 +7,15 @@
 import type { EstimatePayload, EstimateResult } from "@/lib/estimates/types";
 import { getNumberFormatter } from "@/utils/formatters";
 
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 type InvoiceTemplateInput = {
   payload: EstimatePayload;
   contractorName: string;
@@ -124,6 +133,9 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
     | { signatureDataUrl?: string; signedAt?: string; signerName?: string }
     | undefined;
 
+  const materialListHtml = Array.isArray(payload.material_list)
+    ? payload.material_list.map((item) => escapeHtml(String(item))).join(", ")
+    : "";
 
 
   return `<!DOCTYPE html>
@@ -306,7 +318,7 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
             <a href="https://proconstructioncalc.com/privacy" class="text-slate-500 hover:text-blue-400">Privacy</a>
           </p>
         </footer>
-      <span style="display:none;color:#ea580c;"></span>
+      <span style="display:none;color:#ea580c;">${materialListHtml}</span>
       </main>
     </div>
     <script>document.fonts.ready.then(() => { window.__fontsReady = true; });</script>
