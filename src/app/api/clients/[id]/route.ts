@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import { getClient, updateClient, deleteClient } from "@/lib/dal/clients";
+import { UnauthorizedError } from "@/lib/errors/unauthorized";
 
 export async function GET(
   request: Request,
@@ -14,8 +15,11 @@ export async function GET(
     }
     return NextResponse.json(client);
   } catch (error: unknown) {
+    if (error instanceof UnauthorizedError) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     Sentry.captureException(error);
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Unknown error" }, { status: 401 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
 
@@ -29,8 +33,11 @@ export async function PATCH(
     const client = await updateClient(id, json);
     return NextResponse.json(client);
   } catch (error: unknown) {
+    if (error instanceof UnauthorizedError) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     Sentry.captureException(error);
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Unknown error" }, { status: 400 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
 
@@ -43,7 +50,10 @@ export async function DELETE(
     await deleteClient(id);
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
+    if (error instanceof UnauthorizedError) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     Sentry.captureException(error);
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Unknown error" }, { status: 400 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
