@@ -85,6 +85,7 @@ import { useProMode } from "@/hooks/useProMode";
 import { triggerHaptic } from "@/hooks/useHaptic";
 import { sanitizeFilename } from "@/utils/sanitize-filename";
 import { centsToDollars, toCents } from "@/utils/money";
+import { getDateTimeFormatter } from "@/utils/formatters";
 import {
   divideCentsByBasisPoints,
   scaleCentsByBasisPoints,
@@ -3045,11 +3046,12 @@ export function CommandCenterCalculator({ page, closeModal }: CalculatorPageProp
       metadata: {
         title: page.title,
         calculatorLabel: page.heroKicker,
-        generatedAt: new Date().toLocaleDateString("en-US", {
+        // Use cached DateTimeFormat instance to avoid runtime Intl instantiation overhead
+        generatedAt: getDateTimeFormatter({
           year: "numeric",
           month: "long",
           day: "numeric",
-        }),
+        }).format(new Date()),
         jobName: estimateJobName.trim() || null,
       },
       ...(finalizeEstimateId ? { id: finalizeEstimateId } : {}),
