@@ -162,9 +162,7 @@ export async function POST(req: NextRequest) {
       Sentry.captureMessage(`Resend feedback API error: ${error.message}`, "warning");
       return NextResponse.json(
         {
-          error:
-            error.message ??
-            "Failed to send. Ensure the 'from' address uses your Resend verified domain (e.g. owner@proconstructioncalc.com).",
+          error: "Failed to send feedback. Please try again later.",
         },
         { status: 502 }
       );

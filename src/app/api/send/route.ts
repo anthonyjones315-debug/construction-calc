@@ -211,7 +211,7 @@ export async function POST(req: NextRequest) {
     if (error) {
       Sentry.captureMessage(`Resend API error: ${error.message}`, "warning");
       return NextResponse.json(
-        { error: error.message ?? "Failed to send email. Ensure the 'from' address uses your Resend verified domain (e.g. @proconstructioncalc.com)." },
+        { error: "Failed to send email. Please verify domain configuration or try again later." },
         { status: 502 }
       );
     }
