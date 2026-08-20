@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth/config";
 import { createServerClient } from "@/lib/supabase/server";
 import {
   assertNoBusinessIdOverride,
+  canWriteBusinessData,
   getBusinessContextForSession,
   getTenantScopeColumn,
   getTenantScopeId,
@@ -56,6 +57,12 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const db = createServerClient();
     const businessContext = await getBusinessContextForSession(db, session);
+    if (!canWriteBusinessData(businessContext.role)) {
+      return NextResponse.json(
+        { error: "Only owners, admins, or editors can create shared materials." },
+        { status: 403 },
+      );
+    }
     try {
       assertNoBusinessIdOverride(
         body && typeof body === "object"

@@ -11,11 +11,19 @@
 
 import { describe, it, expect } from "vitest";
 import type { MembershipRole } from "@/lib/supabase/business";
-import { isBusinessAdminRole } from "@/lib/supabase/business";
+import { isBusinessAdminRole, canWriteBusinessData } from "@/lib/supabase/business";
 
 // ---------------------------------------------------------------------------
 // Mirror of the gate functions used inside the route handlers
 // ---------------------------------------------------------------------------
+
+/** Returns an error string if the caller is not allowed to write/create materials. */
+function checkCanWriteMaterials(callerRole: MembershipRole): string | null {
+  if (!canWriteBusinessData(callerRole)) {
+    return "Only owners, admins, or editors can create shared materials.";
+  }
+  return null;
+}
 
 /** Returns an error string if the caller is not allowed to manage members. */
 function checkCanManageMembers(callerRole: MembershipRole): string | null {
@@ -64,6 +72,16 @@ function checkCanRemoveMember(
   }
   return null;
 }
+
+// ---------------------------------------------------------------------------
+// Access gate: who can create/edit materials
+// ---------------------------------------------------------------------------
+describe("checkCanWriteMaterials", () => {
+  it("allows owner", () => expect(checkCanWriteMaterials("owner")).toBeNull());
+  it("allows admin", () => expect(checkCanWriteMaterials("admin")).toBeNull());
+  it("allows editor", () => expect(checkCanWriteMaterials("editor")).toBeNull());
+  it("blocks member", () => expect(checkCanWriteMaterials("member")).toBe("Only owners, admins, or editors can create shared materials."));
+});
 
 // ---------------------------------------------------------------------------
 // Access gate: who can manage members at all
