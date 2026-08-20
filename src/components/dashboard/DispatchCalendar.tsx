@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useMemo, useEffect } from "react";
-import { Calendar, dateFnsLocalizer, type Event, type View } from "react-big-calendar";
+import { Calendar, dateFnsLocalizer, type View } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import { enUS } from "date-fns/locale/en-US";
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -85,15 +85,22 @@ function SlideOver({
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
-      <div className="absolute inset-0 bg-black/30" onClick={onClose} />
-      <div className="relative w-full max-w-md animate-slide-in-right bg-white shadow-2xl">
+      <div className="absolute inset-0 bg-black/30" onClick={onClose} aria-hidden="true" />
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Event Details"
+        className="relative w-full max-w-md animate-slide-in-right bg-white shadow-2xl"
+      >
         <div className="flex items-center justify-between border-b border-slate-200 px-5 py-3">
           <h3 className="text-sm font-bold text-slate-800">Event Details</h3>
           <button
+            type="button"
             onClick={onClose}
-            className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+            className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+            aria-label="Close event details"
           >
-            <X className="h-4 w-4" />
+            <X className="h-4 w-4" aria-hidden="true" />
           </button>
         </div>
         <div className="space-y-4 p-5">
@@ -214,12 +221,16 @@ function TeamMemberFilter({
   return (
     <div className="relative">
       <button
+        type="button"
         onClick={() => setOpen((o) => !o)}
-        className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition-colors hover:border-slate-300"
+        aria-expanded={open}
+        aria-haspopup="true"
+        aria-label="Filter by team member"
+        className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition-colors hover:border-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
       >
-        <User className="h-3 w-3" />
+        <User className="h-3 w-3" aria-hidden="true" />
         Team ({selected.length}/{members.length})
-        <ChevronDown className="h-3 w-3" />
+        <ChevronDown className="h-3 w-3" aria-hidden="true" />
       </button>
       {open && (
         <div className="absolute left-0 top-full z-30 mt-1 w-56 rounded-xl border border-slate-200 bg-white p-2 shadow-lg">
@@ -238,8 +249,9 @@ function TeamMemberFilter({
             </label>
           ))}
           <button
+            type="button"
             onClick={() => setOpen(false)}
-            className="mt-1 w-full rounded-lg bg-slate-100 px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500 hover:bg-slate-200"
+            className="mt-1 w-full rounded-lg bg-slate-100 px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500 hover:bg-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
           >
             Done
           </button>
