@@ -7,6 +7,7 @@ import {
   normalizeBusinessJoinCode,
   rotateBusinessJoinCode,
 } from "@/lib/supabase/join-code";
+import { checkMemoryRateLimit } from "@/lib/rate-limit/memory";
 
 const SEAT_LIMIT = 10;
 
@@ -22,6 +23,22 @@ export async function POST(req: NextRequest) {
     }
 
     const userId = session.user.id;
+
+    const joinRl = checkMemoryRateLimit(
+      "command-center-join",
+      userId,
+      5,
+      60_000,
+    );
+    if (!joinRl.ok) {
+      return NextResponse.json(
+        { error: "Too many join attempts. Try again later." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(joinRl.retryAfterSeconds) },
+        },
+      );
+    }
 
     let body: { joinCode?: unknown };
     try {

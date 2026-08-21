@@ -306,7 +306,7 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
             <a href="https://proconstructioncalc.com/privacy" class="text-slate-500 hover:text-blue-400">Privacy</a>
           </p>
         </footer>
-      <span style="display:none;color:#ea580c;"></span>
+      <span style="display:none;color:#ea580c;">${Array.isArray(payload.material_list) ? payload.material_list.map((m) => String(m).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;")).join(", ") : ""}</span>
       </main>
     </div>
     <script>document.fonts.ready.then(() => { window.__fontsReady = true; });</script>
