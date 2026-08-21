@@ -43,7 +43,10 @@ async function loadTargetMembership(
     .maybeSingle();
 
   if (error) {
-    return { error: error.message, status: 500 };
+    Sentry.captureException(error, {
+      tags: { route: "command-center-members", step: "load-membership" },
+    });
+    return { error: "Internal Server Error", status: 500 };
   }
 
   if (!data) {
