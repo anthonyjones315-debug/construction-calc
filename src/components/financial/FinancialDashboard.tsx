@@ -18,8 +18,10 @@ import {
   sumCents,
   toCents,
 } from "@/utils/money";
+import { getDateTimeFormatter, getNumberFormatter } from "@/utils/formatters";
 
-const USD_CURRENCY = new Intl.NumberFormat("en-US", {
+// Use centralized cached Intl formatters to eliminate CPU/GC overhead during render loops
+const USD_CURRENCY = getNumberFormatter({
   style: "currency",
   currency: "USD",
   minimumFractionDigits: 2,
@@ -491,7 +493,7 @@ export function FinancialDashboard({
           ? "Refreshing live metrics…"
           : "Live metrics update every 15s"}
         {lastUpdatedAt
-          ? ` · Last sync ${lastUpdatedAt.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`
+          ? ` · Last sync ${getDateTimeFormatter({ hour: "numeric", minute: "2-digit" }).format(lastUpdatedAt)}`
           : ""}
       </p>
 
