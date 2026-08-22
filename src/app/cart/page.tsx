@@ -78,6 +78,7 @@ export default function CartPage() {
                       <button
                         type="button"
                         onClick={() => removeCartItem(item.id)}
+                        aria-label={`Remove ${item.estimateName} from estimate queue`}
                         className="text-xs font-semibold text-red-600 hover:text-red-700"
                       >
                         Remove
@@ -97,6 +98,7 @@ export default function CartPage() {
                   <button
                     type="button"
                     onClick={clearCart}
+                    aria-label="Clear all estimates from queue"
                     className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-[--color-ink] hover:bg-slate-50"
                   >
                     Clear queue
@@ -104,6 +106,7 @@ export default function CartPage() {
                   <button
                     type="button"
                     onClick={handleCreateInvoiceBatch}
+                    aria-label="Create invoice batch from estimate queue"
                     className="rounded-xl bg-[--color-blue-brand] px-4 py-2 text-sm font-bold text-white hover:brightness-95"
                   >
                     Create invoice batch
