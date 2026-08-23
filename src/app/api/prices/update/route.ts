@@ -48,6 +48,11 @@ async function getPricesForCurrentUser(): Promise<MarketPrices> {
 
 export async function POST() {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const prices = await getPricesForCurrentUser();
     return NextResponse.json({ prices });
   } catch (err) {
