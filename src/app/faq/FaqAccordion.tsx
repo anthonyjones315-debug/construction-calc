@@ -34,14 +34,14 @@ export function FAQAccordion({ items }: { items: FAQItem[] }) {
               aria-expanded={isOpen}
               aria-controls={panelId}
               onClick={() => toggleItem(index)}
-              className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left focus:outline-none"
+              className="flex w-full items-center justify-between gap-4 rounded-2xl px-5 py-4 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand] focus-visible:ring-offset-2"
             >
               <h2 className="text-base font-bold tracking-tight text-[--color-ink]">
                 {item.q}
               </h2>
               <span
                 className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[--color-border] bg-[--color-surface-alt] text-lg font-black leading-none text-[--color-ink-dim] transition-all hover:bg-[--color-blue-soft] hover:text-[--color-blue-brand] ${isOpen ? "rotate-45" : ""}`}
-                aria-hidden
+                aria-hidden="true"
               >
                 +
               </span>
