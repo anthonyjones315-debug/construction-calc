@@ -5,7 +5,7 @@
  */
 
 import type { EstimatePayload, EstimateResult } from "@/lib/estimates/types";
-import { getNumberFormatter } from "@/utils/formatters";
+import { getNumberFormatter, getDateTimeFormatter } from "@/utils/formatters";
 
 type InvoiceTemplateInput = {
   payload: EstimatePayload;
@@ -46,10 +46,10 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
       ? payload.metadata.jobName
       : payload.name;
   const calculatorLabel = payload.metadata.calculatorLabel;
-  const generatedAt = new Date(payload.metadata.generatedAt).toLocaleDateString(
-    "en-US",
+  const generatedAt = getDateTimeFormatter(
     { year: "numeric", month: "long", day: "numeric" },
-  );
+    "en-US",
+  ).format(new Date(payload.metadata.generatedAt));
   const clientName = payload.client_name ?? "";
   const jobAddress = payload.job_site_address ?? "";
 
@@ -306,7 +306,7 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
             <a href="https://proconstructioncalc.com/privacy" class="text-slate-500 hover:text-blue-400">Privacy</a>
           </p>
         </footer>
-      <span style="display:none;color:#ea580c;"></span>
+      <span style="display:none;color:#ea580c;">${(payload.material_list ?? []).join(", ")}</span>
       </main>
     </div>
     <script>document.fonts.ready.then(() => { window.__fontsReady = true; });</script>
