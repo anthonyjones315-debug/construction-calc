@@ -11,7 +11,7 @@
 
 import { describe, it, expect } from "vitest";
 import type { MembershipRole } from "@/lib/supabase/business";
-import { isBusinessAdminRole } from "@/lib/supabase/business";
+import { isBusinessAdminRole, canWriteBusinessData } from "@/lib/supabase/business";
 
 // ---------------------------------------------------------------------------
 // Mirror of the gate functions used inside the route handlers
@@ -137,6 +137,16 @@ describe("checkCanRemoveMember", () => {
     // Admin calling with MEMBER_ID as target, "admin" as caller — only owner check applies here
     expect(checkCanRemoveMember(MEMBER_ID, "member", "user-admin")).toBeNull();
   });
+});
+
+// ---------------------------------------------------------------------------
+// Shared materials creation access gate (POST /api/materials)
+// ---------------------------------------------------------------------------
+describe("canWriteBusinessData for material creation", () => {
+  it("allows owner", () => expect(canWriteBusinessData("owner")).toBe(true));
+  it("allows admin", () => expect(canWriteBusinessData("admin")).toBe(true));
+  it("allows editor", () => expect(canWriteBusinessData("editor")).toBe(true));
+  it("blocks member", () => expect(canWriteBusinessData("member")).toBe(false));
 });
 
 // ---------------------------------------------------------------------------
