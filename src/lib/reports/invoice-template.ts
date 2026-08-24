@@ -26,6 +26,15 @@ function safeNumber(value: string | number): string {
   return value;
 }
 
+function escapeHtml(str: string | unknown): string {
+  return String(str ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 function formatCurrency(value: number): string {
   return getNumberFormatter({
     style: "currency",
@@ -306,7 +315,7 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
             <a href="https://proconstructioncalc.com/privacy" class="text-slate-500 hover:text-blue-400">Privacy</a>
           </p>
         </footer>
-      <span style="display:none;color:#ea580c;"></span>
+      <span style="display:none;color:#ea580c;">${Array.isArray(payload.material_list) ? payload.material_list.map((m) => escapeHtml(m)).join(", ") : ""}</span>
       </main>
     </div>
     <script>document.fonts.ready.then(() => { window.__fontsReady = true; });</script>
