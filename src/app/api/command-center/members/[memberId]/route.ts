@@ -43,7 +43,8 @@ async function loadTargetMembership(
     .maybeSingle();
 
   if (error) {
-    return { error: error.message, status: 500 };
+    Sentry.captureException(error);
+    return { error: "Internal Server Error", status: 500 };
   }
 
   if (!data) {
