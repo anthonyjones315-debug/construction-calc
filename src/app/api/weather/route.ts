@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
+import { getDateTimeFormatter } from "@/utils/formatters";
 
 async function geocodeZip(zip: string, googleKey: string) {
   const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(zip)},US&key=${googleKey}`;
@@ -78,7 +79,8 @@ export async function GET(req: Request) {
       const codes: number[] = weatherData.daily.weathercode;
       for (let i = 0; i < Math.min(3, times.length); i++) {
         const d = new Date(times[i]);
-        const label = d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+        // Bolt performance optimization: Use cached DateTimeFormat instance to avoid runtime Intl allocation overhead per iteration/request
+        const label = getDateTimeFormatter({ weekday: "short", month: "short", day: "numeric" }, "en-US").format(d);
         const cond = wmoToCondition(codes[i]);
         forecast.push({
           date: label,
