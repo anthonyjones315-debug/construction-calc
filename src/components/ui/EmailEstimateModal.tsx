@@ -1,8 +1,8 @@
 "use client";
 
 import * as Sentry from "@sentry/nextjs";
-import { useState } from "react";
-import { X, Mail, Loader2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { X, Mail, Loader2, CheckCircle2 } from "lucide-react";
 import posthog from "posthog-js";
 
 export type EstimatePayload = {
@@ -54,6 +54,17 @@ export function EmailEstimateModal({
   );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [open, onClose]);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const email = to.trim().toLowerCase();
@@ -104,7 +115,7 @@ export function EmailEstimateModal({
       <div
         className="fixed inset-0 z-[70] bg-black/30"
         onClick={onClose}
-        aria-hidden
+        aria-hidden="true"
       />
       <div
         role="dialog"
@@ -138,8 +149,20 @@ export function EmailEstimateModal({
           </p>
 
           {status === "sent" ? (
-            <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-              Estimate sent successfully.
+            <div className="mt-4 space-y-4">
+              <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800">
+                <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0" aria-hidden="true" />
+                <span>Estimate sent successfully.</span>
+              </div>
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="rounded-xl bg-[--color-blue-brand] px-5 py-2 text-sm font-bold text-white transition hover:bg-[--color-blue-dark]"
+                >
+                  Done
+                </button>
+              </div>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="mt-4 space-y-4">
