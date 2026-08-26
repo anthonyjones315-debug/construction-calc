@@ -11,7 +11,7 @@
 
 import { describe, it, expect } from "vitest";
 import type { MembershipRole } from "@/lib/supabase/business";
-import { isBusinessAdminRole } from "@/lib/supabase/business";
+import { canWriteBusinessData, isBusinessAdminRole } from "@/lib/supabase/business";
 
 // ---------------------------------------------------------------------------
 // Mirror of the gate functions used inside the route handlers
@@ -182,5 +182,26 @@ describe("Simulated role flows", () => {
       const role = userId === EDITOR_ID ? "editor" : ("member" as MembershipRole);
       expect(checkCanManageMembers(role)).toBeTruthy();
     });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Material creation access control (POST /api/materials)
+// ---------------------------------------------------------------------------
+describe("Material creation permissions (canWriteBusinessData)", () => {
+  it("allows owner to create materials", () => {
+    expect(canWriteBusinessData("owner")).toBe(true);
+  });
+
+  it("allows admin to create materials", () => {
+    expect(canWriteBusinessData("admin")).toBe(true);
+  });
+
+  it("allows editor to create materials", () => {
+    expect(canWriteBusinessData("editor")).toBe(true);
+  });
+
+  it("blocks plain member from creating materials", () => {
+    expect(canWriteBusinessData("member")).toBe(false);
   });
 });
