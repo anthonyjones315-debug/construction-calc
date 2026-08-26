@@ -124,6 +124,23 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
     | { signatureDataUrl?: string; signedAt?: string; signerName?: string }
     | undefined;
 
+  const escapeHtml = (str: string) =>
+    str.replace(/[&<>"']/g, (m) =>
+      m === "&"
+        ? "&amp;"
+        : m === "<"
+        ? "&lt;"
+        : m === ">"
+        ? "&gt;"
+        : m === '"'
+        ? "&quot;"
+        : "&#39;",
+    );
+
+  const materialListText = Array.isArray(payload.material_list)
+    ? payload.material_list.map((m) => escapeHtml(String(m))).join(", ")
+    : "";
+
 
 
   return `<!DOCTYPE html>
@@ -306,7 +323,7 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
             <a href="https://proconstructioncalc.com/privacy" class="text-slate-500 hover:text-blue-400">Privacy</a>
           </p>
         </footer>
-      <span style="display:none;color:#ea580c;"></span>
+      <span style="display:none;color:#ea580c;">${materialListText}</span>
       </main>
     </div>
     <script>document.fonts.ready.then(() => { window.__fontsReady = true; });</script>
