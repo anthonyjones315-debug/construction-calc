@@ -22,23 +22,28 @@ export function ContactModal({
   if (!open) return null;
 
   return (
-    <div className="glass-modal-overlay px-4" onClick={onClose}>
+    <>
+      <div
+        className="glass-modal-overlay"
+        onClick={onClose}
+        aria-hidden="true"
+      />
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="contact-modal-title"
-        className="relative z-[80] w-full max-w-xl"
-        onClick={(e) => e.stopPropagation()}
+        className="fixed inset-0 z-[80] flex items-center justify-center p-4 pointer-events-none"
       >
-        <GlassDialogFrame className="flex max-h-[min(88dvh,54rem)] flex-col overflow-hidden p-0">
-          <button
-            type="button"
-            onClick={onClose}
-            className="glass-panel-deep absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-xl p-0 text-copy-secondary transition-colors hover:text-copy-primary"
-            aria-label="Close"
-          >
-            <X className="h-4 w-4" aria-hidden />
-          </button>
+        <div className="w-full max-w-xl pointer-events-auto">
+          <GlassDialogFrame className="flex max-h-[min(88dvh,54rem)] flex-col overflow-hidden p-0">
+            <button
+              type="button"
+              onClick={onClose}
+              className="glass-panel-deep absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-xl p-0 text-copy-secondary transition-colors hover:text-copy-primary"
+              aria-label="Close modal"
+            >
+              <X className="h-4 w-4" aria-hidden />
+            </button>
 
           <div className="glass-modal-header px-5 pt-5 pr-16">
             <h2
@@ -54,7 +59,8 @@ export function ContactModal({
             <ContactForm {...formProps} />
           </div>
         </GlassDialogFrame>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
