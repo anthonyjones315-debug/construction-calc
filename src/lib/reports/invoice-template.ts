@@ -7,6 +7,16 @@
 import type { EstimatePayload, EstimateResult } from "@/lib/estimates/types";
 import { getNumberFormatter } from "@/utils/formatters";
 
+/** Helper to escape HTML special characters */
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 type InvoiceTemplateInput = {
   payload: EstimatePayload;
   contractorName: string;
@@ -306,7 +316,11 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
             <a href="https://proconstructioncalc.com/privacy" class="text-slate-500 hover:text-blue-400">Privacy</a>
           </p>
         </footer>
-      <span style="display:none;color:#ea580c;"></span>
+      <span style="display:none;color:#ea580c;">${
+        payload.material_list && payload.material_list.length > 0
+          ? payload.material_list.map((m) => escapeHtml(m)).join(", ")
+          : ""
+      }</span>
       </main>
     </div>
     <script>document.fonts.ready.then(() => { window.__fontsReady = true; });</script>
