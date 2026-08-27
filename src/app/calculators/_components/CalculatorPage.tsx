@@ -85,6 +85,7 @@ import { useProMode } from "@/hooks/useProMode";
 import { triggerHaptic } from "@/hooks/useHaptic";
 import { sanitizeFilename } from "@/utils/sanitize-filename";
 import { centsToDollars, toCents } from "@/utils/money";
+import { getNumberFormatter } from "@/utils/formatters";
 import {
   divideCentsByBasisPoints,
   scaleCentsByBasisPoints,
@@ -2099,7 +2100,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
           `${adjustedCubicYards.toFixed(2)} cu yd Ready-Mix Concrete (3000-4000 PSI)`,
           `${bags80} High-Strength Concrete Bags (80lb)`,
           `${bags60} High-Strength Concrete Bags (60lb)`,
-          `Approx payload: ${Math.round(estimatedWeightLbs).toLocaleString()} lbs`,
+          // Optimization: Reusing cached Intl.NumberFormat instance to eliminate GC pauses during high-frequency input changes
+          `Approx payload: ${getNumberFormatter().format(Math.round(estimatedWeightLbs))} lbs`,
         ],
       };
     }
@@ -2238,7 +2240,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             ? [
                 {
                   label: "Nails",
-                  value: nails.toLocaleString(),
+                  value: getNumberFormatter().format(nails),
                   unit: "nails",
                 },
               ]
@@ -2253,7 +2255,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
           `${rollsUnderlayment} Rolls Synthetic Underlayment`,
           ...(isRoofingShinglesCalculator
             ? [
-                `Allow ~${nails.toLocaleString()} nails (≈320 nails/square @ 4 nails/shingle).`,
+                `Allow ~${getNumberFormatter().format(nails)} nails (≈320 nails/square @ 4 nails/shingle).`,
               ]
             : []),
         ],
@@ -2473,7 +2475,7 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         ],
         materialList: [
           `${netSheets} sheets (4×8 × ¹/₂" standard)`,
-          `${screws.toLocaleString()} drywall screws (1¹/₄")`,
+          `${getNumberFormatter().format(screws)} drywall screws (1¹/₄")`,
           `${Math.ceil(tapeFeet / 250)} rolls of joint tape (250 ft/roll)`,
           `${mudGallons} gallons premixed joint compound`,
         ],
@@ -2520,9 +2522,9 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             },
           ],
           materialList: [
-            `System must produce min. ${heatingBtu.toLocaleString()} BTU/hr for a ${tempRise}°F heat rise.`,
-            `Total conditioned space is ${volumeCuFt.toLocaleString()} cu ft.`,
-            `Estimated cooling requirement: ${tonnage} tons (${coolingBtu.toLocaleString()} BTU/hr).`,
+            `System must produce min. ${getNumberFormatter().format(heatingBtu)} BTU/hr for a ${tempRise}°F heat rise.`,
+            `Total conditioned space is ${getNumberFormatter().format(volumeCuFt)} cu ft.`,
+            `Estimated cooling requirement: ${tonnage} tons (${getNumberFormatter().format(coolingBtu)} BTU/hr).`,
             `load with Manual J calculation prior to ordering plant equipment.`
           ],
         };
@@ -2539,13 +2541,13 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
         return {
           primary: {
             label: "Exhaust/Supply",
-            value: requiredCfm.toLocaleString(),
+            value: getNumberFormatter().format(requiredCfm),
             unit: "CFM",
           },
           secondary: [
             {
               label: "Conditioned Vol",
-              value: volumeCuFt.toLocaleString(),
+              value: getNumberFormatter().format(volumeCuFt),
               unit: "cu ft",
             },
             {
@@ -2555,8 +2557,8 @@ export function CalculatorPage({ page, closeModal }: CalculatorPageProps) {
             },
           ],
           materialList: [
-            `Requires a minimum of ${requiredCfm.toLocaleString()} CFM to achieve ${airChangesPerHour} air changes per hour (ACH).`,
-            `Total conditioned space is ${volumeCuFt.toLocaleString()} cu ft.`,
+            `Requires a minimum of ${getNumberFormatter().format(requiredCfm)} CFM to achieve ${airChangesPerHour} air changes per hour (ACH).`,
+            `Total conditioned space is ${getNumberFormatter().format(volumeCuFt)} cu ft.`,
             `actual building code requirements before ordering exhaust fans or ERV units.`,
           ],
         };
