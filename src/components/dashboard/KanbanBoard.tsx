@@ -72,8 +72,8 @@ function KanbanCard({ project }: { project: KanbanProject }) {
       <button
         {...attributes}
         {...listeners}
-        className="absolute left-1 top-1/2 -translate-y-1/2 cursor-grab rounded p-0.5 text-slate-300 opacity-0 transition-opacity group-hover:opacity-100 active:cursor-grabbing"
-        aria-label="Drag to reorder"
+        className="absolute left-1 top-1/2 -translate-y-1/2 cursor-grab rounded p-0.5 text-slate-300 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:text-slate-600 focus-visible:outline-none active:cursor-grabbing"
+        aria-label={`Drag ${project.name} to reorder`}
       >
         <GripVertical className="h-3.5 w-3.5" />
       </button>
