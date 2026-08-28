@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { CheckCircle2, Mail, PencilLine, Phone } from "lucide-react";
 import { useMemo } from "react";
+import { getDateTimeFormatter, getNumberFormatter } from "@/utils/formatters";
 
 type PublicEstimate = {
   id: string;
@@ -51,7 +52,8 @@ function formatValue(value: string | number, unit?: string) {
 }
 
 function formatCurrency(value: number) {
-  return new Intl.NumberFormat("en-US", {
+  // Performance optimization: Use cached Intl.NumberFormat to avoid GC overhead during render cycles
+  return getNumberFormatter({
     style: "currency",
     currency: "USD",
   }).format(Math.round(value * 100) / 100);
@@ -123,11 +125,11 @@ export function SignEstimateClient({ estimate }: Props) {
                 </h1>
               </div>
               <p className="text-xs text-slate-400">
-                {new Date(estimate.createdAt).toLocaleDateString("en-US", {
+                {getDateTimeFormatter({
                   month: "short",
                   day: "numeric",
                   year: "numeric",
-                })}
+                }).format(new Date(estimate.createdAt))}
               </p>
             </div>
             <div className="mt-3 flex flex-wrap gap-4 text-sm text-slate-600">
@@ -254,7 +256,14 @@ export function SignEstimateClient({ estimate }: Props) {
               </p>
               <p className="mt-1 text-xs text-emerald-500">
                 {signedAt
-                  ? new Date(signedAt).toLocaleString("en-US")
+                  ? getDateTimeFormatter({
+                      year: "numeric",
+                      month: "numeric",
+                      day: "numeric",
+                      hour: "numeric",
+                      minute: "numeric",
+                      second: "numeric",
+                    }).format(new Date(signedAt))
                   : "Signature recorded"}
               </p>
             </div>
