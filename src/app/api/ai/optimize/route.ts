@@ -44,7 +44,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 })
   }
 
-  const { calculatorId, results, context } = body
+  let { calculatorId, results, context } = body
+
+  if (typeof calculatorId !== 'string' || typeof results !== 'string') {
+    return NextResponse.json({ error: 'Missing required fields.' }, { status: 400 })
+  }
+
+  calculatorId = calculatorId.trim().slice(0, 64)
+  results = results.trim().slice(0, 2000)
+  context = typeof context === 'string' ? context.trim().slice(0, 1000) : ''
 
   if (!calculatorId || !results) {
     return NextResponse.json({ error: 'Missing required fields.' }, { status: 400 })
