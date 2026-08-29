@@ -6,6 +6,7 @@ import { format, parse, startOfWeek, getDay } from "date-fns";
 import { enUS } from "date-fns/locale/en-US";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { ChevronDown, X, User } from "lucide-react";
+import { getDateTimeFormatter } from "@/utils/formatters";
 
 /* ──────────────────────── localizer ──────────────────────── */
 
@@ -111,7 +112,8 @@ function SlideOver({
                 Start
               </p>
               <p className="text-xs text-slate-600">
-                {event.start.toLocaleString()}
+                {/* Bolt Optimization: Use cached DateTimeFormatter to eliminate runtime Intl instantiation overhead */}
+                {getDateTimeFormatter().format(event.start)}
               </p>
             </div>
             <div>
@@ -119,7 +121,8 @@ function SlideOver({
                 End
               </p>
               <p className="text-xs text-slate-600">
-                {event.end.toLocaleString()}
+                {/* Bolt Optimization: Use cached DateTimeFormatter to eliminate runtime Intl instantiation overhead */}
+                {getDateTimeFormatter().format(event.end)}
               </p>
             </div>
           </div>
