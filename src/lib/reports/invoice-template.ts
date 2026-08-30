@@ -35,28 +35,61 @@ function formatCurrency(value: number): string {
   }).format(Math.round(value * 100) / 100);
 }
 
+/** Sanitize HTML text content to prevent XSS / HTML Injection attacks */
+function escapeHtml(str: string | null | undefined): string {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+/** Validate image URLs to ensure safe schemes (data:image/, http://, https://) */
+function sanitizeUrl(url: string | null | undefined): string | null {
+  if (!url) return null;
+  const trimmed = url.trim();
+  if (
+    trimmed.startsWith("data:image/") ||
+    trimmed.startsWith("http://") ||
+    trimmed.startsWith("https://")
+  ) {
+    return escapeHtml(trimmed);
+  }
+  return null;
+}
+
 export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
   const { payload, contractorName, contractorContact, contractorLogoUrl } =
     input;
 
-  const safeContractorName = contractorName || "Your Contractor";
-  const contactLine = contractorContact?.trim() || "";
-  const jobName =
+  const safeContractorName = escapeHtml(contractorName || "Your Contractor");
+  const contactLine = escapeHtml(contractorContact?.trim() || "");
+  const safeContractorLogoUrl = sanitizeUrl(contractorLogoUrl);
+  const rawJobName =
     typeof payload.metadata.jobName === "string" && payload.metadata.jobName
       ? payload.metadata.jobName
       : payload.name;
-  const calculatorLabel = payload.metadata.calculatorLabel;
-  const generatedAt = new Date(payload.metadata.generatedAt).toLocaleDateString(
-    "en-US",
-    { year: "numeric", month: "long", day: "numeric" },
+  const jobName = escapeHtml(rawJobName);
+  const calculatorLabel = escapeHtml(payload.metadata.calculatorLabel);
+  const generatedAt = escapeHtml(
+    new Date(payload.metadata.generatedAt).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }),
   );
-  const clientName = payload.client_name ?? "";
-  const jobAddress = payload.job_site_address ?? "";
+  const clientName = escapeHtml(payload.client_name ?? "");
+  const jobAddress = escapeHtml(payload.job_site_address ?? "");
 
   const quoteNote =
     typeof payload.quote_note === "string" && payload.quote_note.trim()
-      ? payload.quote_note.trim()
+      ? escapeHtml(payload.quote_note.trim())
       : null;
+  const materialList = Array.isArray(payload.material_list)
+    ? payload.material_list.map((m) => escapeHtml(String(m))).join(", ")
+    : "";
 
   const dollars =
     typeof payload.total_cost === "number"
@@ -79,21 +112,21 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
           const total = qty * price;
           return `
           <tr>
-            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; color: #111827; font-size: 13px;">${desc}</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; color: #111827; font-size: 13px;">${escapeHtml(desc)}</td>
             <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: center; color: #374151; font-size: 13px;">${qty}</td>
-            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: center; color: #6b7280; font-size: 13px;">${unit}</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: center; color: #6b7280; font-size: 13px;">${escapeHtml(unit)}</td>
             <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: right; color: #374151; font-size: 13px;">${formatCurrency(price)}</td>
             <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: 600; color: #111827; font-size: 13px;">${formatCurrency(total)}</td>
           </tr>`;
         })
         .join("")
-    : payload.results
+    : (payload.results ?? [])
         .map(
           (row: EstimateResult) => `
           <tr>
-            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; color: #111827; font-size: 13px;">${row.label}</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; color: #111827; font-size: 13px;">${escapeHtml(row.label)}</td>
             <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: center; color: #374151; font-size: 13px;">1</td>
-            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: center; color: #6b7280; font-size: 13px;">${row.unit ?? ""}</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: center; color: #6b7280; font-size: 13px;">${escapeHtml(row.unit ?? "")}</td>
             <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: right; color: #374151; font-size: 13px;">${safeNumber(row.value)}</td>
             <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: 600; color: #111827; font-size: 13px;">${safeNumber(row.value)}</td>
           </tr>`,
@@ -117,12 +150,18 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
     : "Tax";
 
   // Control number
-  const controlNumber = inputs?.control_number ?? "";
+  const controlNumber = escapeHtml(String(inputs?.control_number ?? ""));
 
   // Contractor signature
-  const signature = payload.signature as
+  const rawSignature = payload.signature as
     | { signatureDataUrl?: string; signedAt?: string; signerName?: string }
     | undefined;
+  const signature = rawSignature
+    ? {
+        ...rawSignature,
+        signatureDataUrl: sanitizeUrl(rawSignature.signatureDataUrl) ?? undefined,
+      }
+    : undefined;
 
 
 
@@ -164,8 +203,8 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
       <div style="display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 20px; border-bottom: 3px solid #2563eb;">
         <div style="display: flex; align-items: center; gap: 12px;">
           ${
-            contractorLogoUrl
-              ? `<img src="${contractorLogoUrl}" alt="" style="width: 48px; height: 48px; border-radius: 8px; object-fit: contain; border: 1px solid #e5e7eb;" />`
+            safeContractorLogoUrl
+              ? `<img src="${safeContractorLogoUrl}" alt="" style="width: 48px; height: 48px; border-radius: 8px; object-fit: contain; border: 1px solid #e5e7eb;" />`
               : `<div style="width: 48px; height: 48px; border-radius: 8px; background: #2563eb; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 20px;">${safeContractorName.charAt(0).toUpperCase()}</div>`
           }
           <div>
@@ -306,7 +345,7 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
             <a href="https://proconstructioncalc.com/privacy" class="text-slate-500 hover:text-blue-400">Privacy</a>
           </p>
         </footer>
-      <span style="display:none;color:#ea580c;"></span>
+      <span style="display:none;color:#ea580c;">${materialList}</span>
       </main>
     </div>
     <script>document.fonts.ready.then(() => { window.__fontsReady = true; });</script>
