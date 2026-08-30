@@ -1,5 +1,7 @@
+"use client";
+
 import Link from "next/link";
-import { HardHat } from "lucide-react";
+import { HardHat, ChevronUp } from "lucide-react";
 import { CookiePreferencesButton } from "@/components/layout/CookiePreferencesButton";
 import { routes } from "@routes";
 import {
@@ -36,6 +38,15 @@ export function Footer() {
             Contact
           </a>
           <CookiePreferencesButton />
+          <button
+            type="button"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-[--color-ink-dim] transition hover:bg-slate-200 hover:text-[--color-blue-brand] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+            aria-label="Scroll to top of page"
+          >
+            <ChevronUp className="h-3 w-3" aria-hidden="true" />
+            <span className="hidden sm:inline">Top</span>
+          </button>
         </div>
       </div>
     </footer>
