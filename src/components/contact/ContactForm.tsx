@@ -156,12 +156,15 @@ export function ContactForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <label className={labelClass}>
-        <span>
-          Email <span className="text-red-400">*</span>
-        </span>
-        <div className={fieldShellClass}>
+      <div>
+        <label htmlFor="contact-email" className={labelClass}>
+          <span>
+            Email <span className="text-red-400">*</span>
+          </span>
+        </label>
+        <div className={`${fieldShellClass} mt-1`}>
           <input
+            id="contact-email"
             type="email"
             required
             value={email}
@@ -170,11 +173,14 @@ export function ContactForm({
             className={inputClass}
           />
         </div>
-      </label>
-      <label className={labelClass}>
-        <span>Name</span>
-        <div className={fieldShellClass}>
+      </div>
+      <div>
+        <label htmlFor="contact-name" className={labelClass}>
+          <span>Name</span>
+        </label>
+        <div className={`${fieldShellClass} mt-1`}>
           <input
+            id="contact-name"
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -183,11 +189,14 @@ export function ContactForm({
             className={inputClass}
           />
         </div>
-      </label>
-      <label className={labelClass}>
-        <span>Subject</span>
-        <div className={fieldShellClass}>
+      </div>
+      <div>
+        <label htmlFor="contact-subject" className={labelClass}>
+          <span>Subject</span>
+        </label>
+        <div className={`${fieldShellClass} mt-1`}>
           <input
+            id="contact-subject"
             type="text"
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
@@ -196,46 +205,55 @@ export function ContactForm({
             className={inputClass}
           />
         </div>
-      </label>
-      <label className={labelClass}>
-        <span>
-          {isErrorReport ? "What happened" : "Message"}{" "}
-          <span className="text-red-400">*</span>
-        </span>
+      </div>
+      <div>
+        <label htmlFor="contact-message" className={labelClass}>
+          <span>
+            {isErrorReport ? "What happened" : "Message"}{" "}
+            <span className="text-red-400">*</span>
+          </span>
+        </label>
         {isErrorReport ? (
-          <span className={labelHintClass}>
+          <p id="contact-message-hint" className={labelHintClass}>
             Add your field notes here. We attach the locked system details
             separately below.
-          </span>
+          </p>
         ) : null}
-        <div className={fieldShellClass}>
+        <div className={`${fieldShellClass} mt-1`}>
           <textarea
+            id="contact-message"
             required
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder={resolvedMessagePlaceholder}
             rows={6}
             maxLength={10000}
+            aria-describedby={isErrorReport ? "contact-message-hint" : undefined}
             className={`${textareaClass} resize-y`}
           />
         </div>
-      </label>
+      </div>
       {isErrorReport && lockedDiagnostics ? (
         <div className="glass-panel-deep space-y-3 border-[--color-border] bg-[--color-surface-alt] p-4">
           <div className="space-y-1">
-            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary">
+            <label
+              htmlFor="contact-locked-diagnostics"
+              className="text-xs font-semibold uppercase tracking-[0.12em] text-copy-secondary block"
+            >
               Locked System Details
-            </p>
-            <p className={labelHintClass}>
+            </label>
+            <p id="contact-diagnostics-hint" className={labelHintClass}>
               This section is attached automatically and stays read-only so the
               technical error context arrives intact.
             </p>
           </div>
           <div className={fieldShellClass}>
             <textarea
+              id="contact-locked-diagnostics"
               readOnly
               value={lockedDiagnostics}
               rows={8}
+              aria-describedby="contact-diagnostics-hint"
               className="glass-input min-h-[180px] w-full rounded-none border-0 bg-transparent px-3 py-3 font-mono text-[12px] leading-relaxed text-copy-secondary shadow-none"
             />
           </div>
