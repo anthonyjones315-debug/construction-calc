@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { getSafeEstimate } from "@/lib/dal/estimates";
+import { getDateTimeFormatter } from "@/utils/formatters";
 import { routes } from "@routes";
 
 type InvoiceStatus = "Draft" | "Sent" | "Partially Paid" | "Paid";
@@ -152,17 +153,19 @@ export default async function SavedEstimateDetailPage({ params }: Props) {
                 </span>{" "}
                 {estimate.jobSiteAddress || "Not set"}
               </p>
+              {/* Bolt Optimization: Use cached Intl.DateTimeFormat instance from getDateTimeFormatter()
+                  instead of uncached inline .toLocaleDateString() calls to prevent runtime Intl instantiation overhead. */}
               <p>
                 <span className="font-semibold text-[--color-ink]">
                   Created:
                 </span>{" "}
-                {new Date(estimate.createdAt).toLocaleDateString("en-US")}
+                {getDateTimeFormatter().format(new Date(estimate.createdAt))}
               </p>
               <p>
                 <span className="font-semibold text-[--color-ink]">
                   Updated:
                 </span>{" "}
-                {new Date(estimate.updatedAt).toLocaleDateString("en-US")}
+                {getDateTimeFormatter().format(new Date(estimate.updatedAt))}
               </p>
             </div>
           </section>
