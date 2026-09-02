@@ -17,6 +17,7 @@ import {
   Lightbulb,
 } from "lucide-react";
 import { routes, getEstimateDetailRoute } from "@routes";
+import { getDateTimeFormatter } from "@/utils/formatters";
 import SignedEstimatesNotificationsClient from "./SignedEstimatesNotificationsClient";
 
 type TeamMember = {
@@ -465,14 +466,11 @@ export default function CommandCenterLiteClient({
                       {estimate.clientName || "No client"}
                     </p>
                     <p className="mt-0.5 text-[10px] text-slate-400">
-                      {new Date(estimate.updatedAt).toLocaleDateString(
-                        "en-US",
-                        {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        },
-                      )}
+                      {getDateTimeFormatter({
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      }).format(new Date(estimate.updatedAt))}
                     </p>
                   </div>
                   <span
