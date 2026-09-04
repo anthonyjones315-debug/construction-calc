@@ -46,4 +46,61 @@ describe("generateInvoiceHtml", () => {
     expect(html).toContain("#ea580c");
     expect(html).toContain("Kitchen Remodel");
   });
+
+  it("escapes user-supplied HTML inputs to prevent HTML injection", () => {
+    const payload: FinalizeEstimateInput = {
+      name: "<script>alert('xss')</script>",
+      calculator_id: "interior/flooring-waste",
+      client_name: "<img src=x onerror=alert(1)>",
+      job_site_address: "<b>123 Main St</b>",
+      total_cost: 100,
+      results: [
+        { label: "<iframe src='evil.com'></iframe>", value: 10, unit: "<svg onload=alert(1)>" },
+      ],
+      quote_note: "<i>Special discount</i>",
+      inputs: {
+        selected_county: "<script>alert(2)</script>",
+      },
+      metadata: {
+        title: "Malicious Estimate",
+        calculatorLabel: "Custom <Script> Calculator",
+        generatedAt: "March 17, 2026",
+        jobName: "<script>alert('xss')</script>",
+      },
+      signature: {
+        signerName: null,
+        signerEmail: null,
+        signatureDataUrl: null,
+        signedAt: null,
+      },
+    };
+
+    const html = generateInvoiceHtml({
+      payload,
+      contractorName: "Hacker <Corp>",
+      contractorContact: "123-456 <b>Test</b>",
+      contractorLogoUrl: null,
+    });
+
+    expect(html).not.toContain("<script>alert('xss')</script>");
+    expect(html).toContain("&lt;script&gt;alert(&#039;xss&#039;)&lt;/script&gt;");
+
+    expect(html).not.toContain("<img src=x onerror=alert(1)>");
+    expect(html).toContain("&lt;img src=x onerror=alert(1)&gt;");
+
+    expect(html).not.toContain("<b>123 Main St</b>");
+    expect(html).toContain("&lt;b&gt;123 Main St&lt;/b&gt;");
+
+    expect(html).not.toContain("<iframe src='evil.com'></iframe>");
+    expect(html).toContain("&lt;iframe src=&#039;evil.com&#039;&gt;&lt;/iframe&gt;");
+
+    expect(html).not.toContain("<svg onload=alert(1)>");
+    expect(html).toContain("&lt;svg onload=alert(1)&gt;");
+
+    expect(html).not.toContain("<i>Special discount</i>");
+    expect(html).toContain("&lt;i&gt;Special discount&lt;/i&gt;");
+
+    expect(html).not.toContain("Hacker <Corp>");
+    expect(html).toContain("Hacker &lt;Corp&gt;");
+  });
 });
