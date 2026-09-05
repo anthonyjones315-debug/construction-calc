@@ -210,18 +210,14 @@ export async function POST(req: NextRequest) {
         extra: { requestId, userId: session.user.id, schemaHint, correctedData },
       });
       return NextResponse.json(
-        {
-          error: schemaHint
-            ? `${schemaHint} Raw error: ${error.message}. Project: ${projectUrl} (ref: ${requestId})`
-            : `Save failed: ${error.message} (ref: ${requestId})`,
-        },
+        { error: `Failed to save estimate. (ref: ${requestId})` },
         { status: 500 },
       );
     }
 
     if (!data?.id) {
       return NextResponse.json(
-        { error: `Save failed: missing estimate id (ref: ${requestId})` },
+        { error: `Failed to save estimate. (ref: ${requestId})` },
         { status: 500 },
       );
     }
