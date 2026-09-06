@@ -6,9 +6,8 @@ import { Loader2, LockKeyhole, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 export function PasswordSettings() {
-  const { userId, isLoaded } = useAuth();
+  const { userId } = useAuth();
   const session = !!userId;
-  const status = isLoaded ? (userId ? "authenticated" : "unauthenticated") : "loading";
   const { signOut } = useClerk();
   const { user } = useUser();
   const { openUserProfile } = useClerk();
@@ -55,7 +54,7 @@ export function PasswordSettings() {
         <button
           type="button"
           onClick={() => openUserProfile()}
-          className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[--color-blue-brand] px-4 text-sm font-bold text-white transition hover:bg-[--color-blue-dark]"
+          className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[--color-blue-brand] px-4 text-sm font-bold text-white transition hover:bg-[--color-blue-dark] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand] focus-visible:ring-offset-2"
         >
           Open account security
         </button>
@@ -70,19 +69,22 @@ export function PasswordSettings() {
           Permanently remove your account and linked sign-in methods. This cannot
           be undone.
         </p>
-        {deleteError && (
-          <p className="mb-3 rounded-lg border border-red-500/25 bg-red-500/8 px-4 py-2 text-sm text-red-600">
-            {deleteError}
-          </p>
-        )}
-        {deleteSuccess && (
-          <p className="mb-3 rounded-lg border border-emerald-500/25 bg-emerald-500/8 px-4 py-2 text-sm text-emerald-700">
-            {deleteSuccess}
-          </p>
-        )}
+        <div aria-live="polite" aria-atomic="true">
+          {deleteError && (
+            <p className="mb-3 rounded-lg border border-red-500/25 bg-red-500/8 px-4 py-2 text-sm text-red-600">
+              {deleteError}
+            </p>
+          )}
+          {deleteSuccess && (
+            <p className="mb-3 rounded-lg border border-emerald-500/25 bg-emerald-500/8 px-4 py-2 text-sm text-emerald-700">
+              {deleteSuccess}
+            </p>
+          )}
+        </div>
         <button
           type="button"
           disabled={deleting}
+          aria-busy={deleting}
           onClick={async () => {
             setDeleteError("");
             setDeleteSuccess("");
@@ -114,12 +116,12 @@ export function PasswordSettings() {
               setDeleting(false);
             }
           }}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-500/30 bg-red-600/90 py-3 font-bold text-white transition-all hover:bg-red-700 disabled:opacity-70"
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-500/30 bg-red-600/90 py-3 font-bold text-white transition-all hover:bg-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 disabled:opacity-70"
         >
           {deleting ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
+            <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
           ) : (
-            <Trash2 className="h-4 w-4" />
+            <Trash2 className="h-4 w-4" aria-hidden />
           )}
           {deleting ? "Deleting…" : "Delete Account"}
         </button>
