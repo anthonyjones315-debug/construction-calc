@@ -11,6 +11,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { routes } from "@routes";
+import { getDateTimeFormatter, getNumberFormatter } from "@/utils/formatters";
 
 interface EstimateDetailProps {
   canDelete?: boolean;
@@ -58,8 +59,9 @@ function statusClass(status: string | null) {
   return "border-slate-300 bg-slate-100 text-slate-700";
 }
 
+// Use cached number formatter to avoid inline Intl.NumberFormat instantiation overhead on render loops
 function formatDollars(n: number) {
-  return new Intl.NumberFormat("en-US", {
+  return getNumberFormatter({
     style: "currency",
     currency: "USD",
   }).format(n);
@@ -200,11 +202,11 @@ export function EstimateDetailClient({
             )}
             <p className="mt-1 text-xs text-slate-400">
               Created{" "}
-              {new Date(estimate.createdAt).toLocaleDateString("en-US", {
+              {getDateTimeFormatter({
                 year: "numeric",
                 month: "short",
                 day: "numeric",
-              })}
+              }).format(new Date(estimate.createdAt))}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -378,9 +380,17 @@ export function EstimateDetailClient({
                 {estimate.contractorSignedAt && (
                   <p className="text-[10px] text-slate-500">
                     Signed{" "}
-                    {new Date(estimate.contractorSignedAt).toLocaleString(
+                    {getDateTimeFormatter(
+                      {
+                        year: "numeric",
+                        month: "numeric",
+                        day: "numeric",
+                        hour: "numeric",
+                        minute: "numeric",
+                        second: "numeric",
+                      },
                       "en-US",
-                    )}
+                    ).format(new Date(estimate.contractorSignedAt))}
                   </p>
                 )}
               </div>
@@ -412,7 +422,17 @@ export function EstimateDetailClient({
                   <p className="flex items-center gap-1 text-[10px] text-emerald-700">
                     <CheckCircle2 className="h-3 w-3" />
                     Signed{" "}
-                    {new Date(estimate.clientSignedAt).toLocaleString("en-US")}
+                    {getDateTimeFormatter(
+                      {
+                        year: "numeric",
+                        month: "numeric",
+                        day: "numeric",
+                        hour: "numeric",
+                        minute: "numeric",
+                        second: "numeric",
+                      },
+                      "en-US",
+                    ).format(new Date(estimate.clientSignedAt))}
                   </p>
                 )}
               </div>
