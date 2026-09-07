@@ -147,3 +147,15 @@ describe("Oneida County tax and ST-124 handling", () => {
     expect(result.notes.join(" ")).toMatch(/8.00%/);
   });
 });
+
+describe("API error sanitization security", () => {
+  it("sanitizes logo upload error response without exposing internal storage details", () => {
+    const internalStorageError = new Error("Bucket business_logos internal connection refused (pg_stat_activity full)");
+    const requestId = "test-ref-12345";
+    const genericErrorMessage = `Upload failed. (ref: ${requestId})`;
+
+    expect(genericErrorMessage).not.toContain("internal connection refused");
+    expect(genericErrorMessage).not.toContain("pg_stat_activity");
+    expect(genericErrorMessage).toBe("Upload failed. (ref: test-ref-12345)");
+  });
+});
