@@ -10,6 +10,8 @@ export default defineConfig({
       "**/node_modules/**",
       "**/dist/**",
       "**/e2e/**",
+      "**/how-tos/**",
+      "**/playwright-guides/**",
       "**/.claude/**",
       "**/construction-calc/**",
     ],

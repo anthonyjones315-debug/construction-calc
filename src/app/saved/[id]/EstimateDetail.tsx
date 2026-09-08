@@ -17,6 +17,7 @@ import Link from "next/link";
 import type { SafeEstimateDTO } from "@/lib/dal/estimates";
 import { normalizeEstimateStatus, type EstimateStatus } from "@/lib/estimates/status";
 import { sanitizeFilename } from "@/utils/sanitize-filename";
+import { getDateTimeFormatter } from "@/utils/formatters";
 import { useContractorProfile } from "@/components/pdf/useContractorProfile";
 import { useHaptic } from "@/hooks/useHaptic";
 import { supabase } from "@/lib/supabase/client";
@@ -288,7 +289,6 @@ export function EstimateDetail({ estimate }: Props) {
         },
       }
     : null;
-  const status = isLoaded ? (userId ? "authenticated" : "unauthenticated") : "loading";
   const contractor = useContractorProfile();
   const estimateControlNumber = getEstimateControlNumber(estimate);
 
@@ -409,11 +409,11 @@ export function EstimateDetail({ estimate }: Props) {
           typeof finalize.calculatorLabel === "string" && finalize.calculatorLabel
             ? finalize.calculatorLabel
             : estimate.calculatorId,
-        generatedAt: new Date().toLocaleDateString("en-US", {
+        generatedAt: getDateTimeFormatter({
           year: "numeric",
           month: "long",
           day: "numeric",
-        }),
+        }).format(new Date()),
         jobName:
           typeof finalize.jobName === "string" && finalize.jobName
             ? finalize.jobName
@@ -729,11 +729,11 @@ export function EstimateDetail({ estimate }: Props) {
       const blob = await pdf(
         createInvoicePDF({
           estimateTitle: draft.name || estimate.name,
-          generatedAt: new Date().toLocaleDateString("en-US", {
+          generatedAt: getDateTimeFormatter({
             year: "numeric",
             month: "long",
             day: "numeric",
-          }),
+          }).format(new Date()),
           invoiceNumber: invoice.invoiceNumber,
           issuedDate: invoice.issuedDate,
           dueDate: invoice.dueDate,
@@ -825,11 +825,11 @@ export function EstimateDetail({ estimate }: Props) {
         </Link>
         <span className="text-xs text-[--color-ink-dim]">
           Created{" "}
-          {new Date(estimate.createdAt).toLocaleDateString("en-US", {
+          {getDateTimeFormatter({
             month: "short",
             day: "numeric",
             year: "numeric",
-          })}
+          }).format(new Date(estimate.createdAt))}
         </span>
       </div>
 
