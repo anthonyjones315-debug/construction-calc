@@ -51,6 +51,10 @@ describe("backup error report UI", () => {
 
     expect(html).toContain("glass-modal-overlay");
     expect(html).toContain("glass-modal relative");
+    expect(html).toContain('role="dialog"');
+    expect(html).toContain('aria-modal="true"');
+    expect(html).toContain('aria-labelledby="contact-modal-title"');
+    expect(html).toContain('aria-label="Close contact modal"');
     expect(html).toContain("Send a backup error report");
     expect(html).toContain("text-copy-primary");
   });
