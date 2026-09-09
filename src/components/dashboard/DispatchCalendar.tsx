@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useCallback, useMemo, useEffect } from "react";
-import { Calendar, dateFnsLocalizer, type Event, type View } from "react-big-calendar";
+import { Calendar, dateFnsLocalizer, type View } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import { enUS } from "date-fns/locale/en-US";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { ChevronDown, X, User } from "lucide-react";
+import { getDateTimeFormatter } from "@/utils/formatters";
 
 /* ──────────────────────── localizer ──────────────────────── */
 
@@ -110,8 +111,9 @@ function SlideOver({
               <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
                 Start
               </p>
+              {/* Optimization: Use cached getDateTimeFormatter to avoid Intl instantiation overhead on event slide-over renders */}
               <p className="text-xs text-slate-600">
-                {event.start.toLocaleString()}
+                {getDateTimeFormatter().format(event.start)}
               </p>
             </div>
             <div>
@@ -119,7 +121,7 @@ function SlideOver({
                 End
               </p>
               <p className="text-xs text-slate-600">
-                {event.end.toLocaleString()}
+                {getDateTimeFormatter().format(event.end)}
               </p>
             </div>
           </div>
