@@ -421,10 +421,9 @@ export async function POST(request: NextRequest) {
     }
 
     Sentry.captureException(error);
+    // Return a generic error message to prevent leaking raw database or system error details
     return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : "Internal Server Error",
-      },
+      { error: "Internal Server Error" },
       { status: 500 },
     );
   }
