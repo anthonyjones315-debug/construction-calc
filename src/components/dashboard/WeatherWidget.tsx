@@ -16,17 +16,19 @@ type WeatherData = {
   forecast: ForecastDay[];
 };
 
-function WeatherIcon({ icon }: { icon: string }) {
+export function WeatherIcon({ icon }: { icon: string }) {
   const cls = "h-6 w-6";
   if (icon.includes("rain") || icon.includes("drizzle"))
-    return <CloudRain className={`${cls} text-blue-500`} />;
-  if (icon.includes("snow")) return <Snowflake className={`${cls} text-cyan-400`} />;
+    return <CloudRain aria-hidden="true" className={`${cls} text-blue-500`} />;
+  if (icon.includes("snow"))
+    return <Snowflake aria-hidden="true" className={`${cls} text-cyan-400`} />;
   if (icon.includes("thunder"))
-    return <CloudLightning className={`${cls} text-amber-500`} />;
+    return <CloudLightning aria-hidden="true" className={`${cls} text-amber-500`} />;
   if (icon.includes("clear") || icon.includes("sun"))
-    return <Sun className={`${cls} text-amber-400`} />;
-  if (icon.includes("wind")) return <Wind className={`${cls} text-slate-400`} />;
-  return <Cloud className={`${cls} text-slate-400`} />;
+    return <Sun aria-hidden="true" className={`${cls} text-amber-400`} />;
+  if (icon.includes("wind"))
+    return <Wind aria-hidden="true" className={`${cls} text-slate-400`} />;
+  return <Cloud aria-hidden="true" className={`${cls} text-slate-400`} />;
 }
 
 export function WeatherWidget({ zip }: { zip?: string | null }) {
@@ -92,7 +94,9 @@ export function WeatherWidget({ zip }: { zip?: string | null }) {
             key={day.date}
             className="flex flex-col items-center rounded-xl bg-slate-50 px-2 py-3"
           >
-            <WeatherIcon icon={day.description.toLowerCase()} />
+            <div role="img" aria-label={`Weather: ${day.description}`}>
+              <WeatherIcon icon={day.description.toLowerCase()} />
+            </div>
             <p className="mt-1.5 text-[10px] font-semibold text-slate-600">
               {day.date}
             </p>
