@@ -15,39 +15,44 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-  const session = await auth();
-  if (!session?.user?.id)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const session = await auth();
+    if (!session?.user?.id)
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { id } = await params;
-  const body = await req.json();
-  const db = createServerClient();
-  const businessContext = await getBusinessContextForSession(db, session);
-  if (!canWriteBusinessData(businessContext.role)) {
-    return NextResponse.json(
-      { error: "Only owners, admins, or editors can update shared materials." },
-      { status: 403 },
-    );
-  }
-  const tenantColumn = getTenantScopeColumn(businessContext);
-  const tenantId = getTenantScopeId(businessContext);
-  const { error } = await db
-    .from("user_materials")
-    .update({
-      material_name: String(body.material_name ?? "").slice(0, 200),
-      category: String(body.category ?? "Other").slice(0, 50),
-      unit_type: String(body.unit_type ?? "each").slice(0, 50),
-      unit_cost: Number(body.unit_cost) || 0,
-    })
-    .eq("id", id)
-    .eq(tenantColumn, tenantId);
+    const { id } = await params;
+    const body = await req.json();
+    const db = createServerClient();
+    const businessContext = await getBusinessContextForSession(db, session);
+    if (!canWriteBusinessData(businessContext.role)) {
+      return NextResponse.json(
+        { error: "Only owners, admins, or editors can update shared materials." },
+        { status: 403 },
+      );
+    }
+    const tenantColumn = getTenantScopeColumn(businessContext);
+    const tenantId = getTenantScopeId(businessContext);
+    const { data, error } = await db
+      .from("user_materials")
+      .update({
+        material_name: String(body.material_name ?? "").slice(0, 200),
+        category: String(body.category ?? "Other").slice(0, 50),
+        unit_type: String(body.unit_type ?? "each").slice(0, 50),
+        unit_cost: Number(body.unit_cost) || 0,
+      })
+      .eq("id", id)
+      .eq(tenantColumn, tenantId)
+      .select("id")
+      .maybeSingle();
 
-  if (error) {
-    Sentry.captureException(error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
-  }
-  revalidateTag("products", "max");
-  return NextResponse.json({ ok: true });
+    if (error) {
+      Sentry.captureException(error);
+      return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    }
+    if (!data) {
+      return NextResponse.json({ error: "Material not found" }, { status: 404 });
+    }
+    revalidateTag("products", "max");
+    return NextResponse.json({ ok: true });
   } catch (error) {
     Sentry.captureException(error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
@@ -59,33 +64,38 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-  const session = await auth();
-  if (!session?.user?.id)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const session = await auth();
+    if (!session?.user?.id)
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { id } = await params;
-  const db = createServerClient();
-  const businessContext = await getBusinessContextForSession(db, session);
-  if (!businessContext.canDeleteBusinessData) {
-    return NextResponse.json(
-      { error: "Only business owners or admins can delete shared materials." },
-      { status: 403 },
-    );
-  }
-  const tenantColumn = getTenantScopeColumn(businessContext);
-  const tenantId = getTenantScopeId(businessContext);
-  const { error } = await db
-    .from("user_materials")
-    .delete()
-    .eq("id", id)
-    .eq(tenantColumn, tenantId);
+    const { id } = await params;
+    const db = createServerClient();
+    const businessContext = await getBusinessContextForSession(db, session);
+    if (!businessContext.canDeleteBusinessData) {
+      return NextResponse.json(
+        { error: "Only business owners or admins can delete shared materials." },
+        { status: 403 },
+      );
+    }
+    const tenantColumn = getTenantScopeColumn(businessContext);
+    const tenantId = getTenantScopeId(businessContext);
+    const { data, error } = await db
+      .from("user_materials")
+      .delete()
+      .eq("id", id)
+      .eq(tenantColumn, tenantId)
+      .select("id")
+      .maybeSingle();
 
-  if (error) {
-    Sentry.captureException(error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
-  }
-  revalidateTag("products", "max");
-  return NextResponse.json({ ok: true });
+    if (error) {
+      Sentry.captureException(error);
+      return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    }
+    if (!data) {
+      return NextResponse.json({ error: "Material not found" }, { status: 404 });
+    }
+    revalidateTag("products", "max");
+    return NextResponse.json({ ok: true });
   } catch (error) {
     Sentry.captureException(error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
