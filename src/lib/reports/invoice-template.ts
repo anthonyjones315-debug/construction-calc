@@ -87,8 +87,8 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
           </tr>`;
         })
         .join("")
-    : payload.results
-        .map(
+    : [
+        ...payload.results.map(
           (row: EstimateResult) => `
           <tr>
             <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; color: #111827; font-size: 13px;">${row.label}</td>
@@ -97,8 +97,20 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
             <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: right; color: #374151; font-size: 13px;">${safeNumber(row.value)}</td>
             <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: 600; color: #111827; font-size: 13px;">${safeNumber(row.value)}</td>
           </tr>`,
-        )
-        .join("");
+        ),
+        ...(Array.isArray(payload.material_list)
+          ? payload.material_list.map(
+              (item: string) => `
+          <tr>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; color: #111827; font-size: 13px;">${item}</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: center; color: #374151; font-size: 13px;">1</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: center; color: #6b7280; font-size: 13px;">item</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: right; color: #374151; font-size: 13px;">—</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: 600; color: #111827; font-size: 13px;">—</td>
+          </tr>`,
+            )
+          : []),
+      ].join("");
 
   // Extract tax info from inputs if available
   const subtotalCents = typeof inputs?.subtotal_cents === "number" ? inputs.subtotal_cents : null;
