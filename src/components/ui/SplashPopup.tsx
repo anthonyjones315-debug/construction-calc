@@ -19,8 +19,12 @@ import {
 
 const STORAGE_KEY = "operators_manual_splash_v1";
 
-export function SplashPopup() {
-  const [show, setShow] = useState(false);
+type SplashPopupProps = {
+  forceOpen?: boolean;
+};
+
+export function SplashPopup({ forceOpen = false }: SplashPopupProps = {}) {
+  const [show, setShow] = useState(forceOpen);
 
   function dismiss() {
     setShow(false);
@@ -32,6 +36,10 @@ export function SplashPopup() {
   }
 
   useEffect(() => {
+    if (forceOpen) {
+      setShow(true);
+      return;
+    }
     try {
       if (!localStorage.getItem(STORAGE_KEY)) {
         const timer = setTimeout(() => setShow(true), 1200);
@@ -40,7 +48,7 @@ export function SplashPopup() {
     } catch {
       /* private browsing */
     }
-  }, []);
+  }, [forceOpen]);
 
   useEffect(() => {
     if (!show) return;
@@ -78,8 +86,8 @@ export function SplashPopup() {
           <button
             type="button"
             onClick={dismiss}
-            className="absolute right-3 top-3 z-20 flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-[--color-ink-dim] transition-colors hover:bg-[--color-surface-alt] hover:text-[--color-ink]"
-            aria-label="Close"
+            className="absolute right-3 top-3 z-20 flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-[--color-ink-dim] transition-colors hover:bg-[--color-surface-alt] hover:text-[--color-ink] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand]"
+            aria-label="Close guide modal"
           >
             <X className="w-5 h-5" aria-hidden />
           </button>
