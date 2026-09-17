@@ -23,7 +23,7 @@ type WelcomeGuidePopupProps = {
 export function WelcomeGuidePopup({
   forceOpen = false,
 }: WelcomeGuidePopupProps) {
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(forceOpen);
   const [dontShowAgain, setDontShowAgain] = useState(false);
 
   const persistDismissal = useCallback(() => {
@@ -110,7 +110,7 @@ export function WelcomeGuidePopup({
           <button
             type="button"
             onClick={dismiss}
-            className="absolute right-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
+            className="absolute right-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-brand focus-visible:ring-offset-2"
             aria-label="Close welcome guide"
           >
             <X className="h-5 w-5" aria-hidden />
@@ -159,7 +159,7 @@ export function WelcomeGuidePopup({
               type="checkbox"
               checked={dontShowAgain}
               onChange={(event) => setDontShowAgain(event.target.checked)}
-              className="h-4 w-4 rounded border-slate-300 text-blue-brand focus:ring-[--color-blue-brand]/30"
+              className="h-4 w-4 rounded border-slate-300 text-blue-brand focus:ring-[--color-blue-brand]/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-brand focus-visible:ring-offset-2"
             />
             Don&apos;t show this popup again
           </label>
@@ -167,14 +167,14 @@ export function WelcomeGuidePopup({
           <div className="mt-3 flex flex-col gap-2 pb-[env(safe-area-inset-bottom,0px)]">
             <Link
               href={routes.guide}
-              className="flex min-h-[44px] w-full items-center justify-center rounded-xl bg-blue-brand px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[--color-blue-dark]"
+              className="flex min-h-[44px] w-full items-center justify-center rounded-xl bg-blue-brand px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[--color-blue-dark] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-brand focus-visible:ring-offset-2"
               onClick={dismiss}
             >
               Open Welcome Guide
             </Link>
             <Link
               href={routes.commandCenter}
-              className="flex min-h-[44px] w-full items-center justify-center rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+              className="flex min-h-[44px] w-full items-center justify-center rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-brand focus-visible:ring-offset-2"
               onClick={dismiss}
             >
               Go to Command Center
@@ -182,7 +182,7 @@ export function WelcomeGuidePopup({
             <button
               type="button"
               onClick={dismiss}
-              className="min-h-[44px] w-full rounded-xl text-xs text-slate-400 transition-colors hover:bg-slate-50 hover:text-slate-600"
+              className="min-h-[44px] w-full rounded-xl text-xs text-slate-400 transition-colors hover:bg-slate-50 hover:text-slate-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-brand focus-visible:ring-offset-2"
             >
               Close for now
             </button>
