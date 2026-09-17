@@ -11,6 +11,7 @@ import {
   normalizeEstimateStatus,
   type EstimateStatus,
 } from "@/lib/estimates/status";
+import { getDateTimeFormatter } from "@/utils/formatters";
 import {
   centsToDollars,
   multiplyDollars,
@@ -57,6 +58,7 @@ type ProjectMargin = {
   projectCost: number | null;
   costBasis: "estimated" | "actual" | "mixed" | null;
   updatedAt: string;
+  updatedAtTime: number;
 };
 
 type CostBucket = "material" | "labor";
@@ -70,6 +72,7 @@ type VarianceAlert = {
   delta: number;
   deltaPercent: number;
   updatedAt: string;
+  updatedAtTime: number;
 };
 
 const LABOR_KEYWORDS = [
@@ -295,6 +298,7 @@ function getVarianceAlerts(estimate: SavedEstimate): VarianceAlert[] {
   }
 
   const updatedAt = estimate.updated_at ?? estimate.created_at;
+  const updatedAtTime = Date.parse(updatedAt) || 0;
 
   return (Object.keys(totalsByBucket) as CostBucket[])
     .filter((bucket) => {
@@ -319,6 +323,7 @@ function getVarianceAlerts(estimate: SavedEstimate): VarianceAlert[] {
         delta,
         deltaPercent: estimated > 0 ? (delta / estimated) * 100 : 0,
         updatedAt,
+        updatedAtTime,
       };
     });
 }
@@ -396,6 +401,7 @@ function computeFinancialDashboard(estimates: SavedEstimate[]) {
       const revenue = normalizeDollars(toFiniteNumber(estimate.total_cost));
       const trackedProjectCost = getTrackedProjectCost(estimate);
       const margin = getProjectProfitMargin(estimate);
+      const updatedAt = estimate.updated_at ?? estimate.created_at;
 
       return {
         id: estimate.id,
@@ -405,12 +411,13 @@ function computeFinancialDashboard(estimates: SavedEstimate[]) {
         revenue,
         projectCost: trackedProjectCost.cost,
         costBasis: trackedProjectCost.basis,
-        updatedAt: estimate.updated_at ?? estimate.created_at,
+        updatedAt,
+        // Pre-compute timestamp so array sorting performs fast numeric comparisons
+        // rather than instantiating new Date() objects O(N log N) times.
+        updatedAtTime: Date.parse(updatedAt) || 0,
       };
     })
-    .sort((a, b) => {
-      return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
-    });
+    .sort((a, b) => b.updatedAtTime - a.updatedAtTime);
 
   const billedProjects = projectMargins.filter((project) => {
     return isEstimateSettled(project.status);
@@ -450,9 +457,8 @@ function computeFinancialDashboard(estimates: SavedEstimate[]) {
 
   const varianceAlerts = estimates
     .flatMap((estimate) => getVarianceAlerts(estimate))
-    .sort((a, b) => {
-      return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
-    });
+    // Pre-computed numeric timestamp sort avoids O(N log N) Date allocations
+    .sort((a, b) => b.updatedAtTime - a.updatedAtTime);
 
   return {
     billedAmount,
@@ -491,7 +497,8 @@ export function FinancialDashboard({
           ? "Refreshing live metrics…"
           : "Live metrics update every 15s"}
         {lastUpdatedAt
-          ? ` · Last sync ${lastUpdatedAt.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`
+          ? /* Performance optimization: Use cached DateTimeFormatter to avoid repeated Intl instantiations on render */
+            ` · Last sync ${getDateTimeFormatter({ hour: "numeric", minute: "2-digit" }).format(lastUpdatedAt)}`
           : ""}
       </p>
 
