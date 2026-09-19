@@ -14,6 +14,17 @@ type InvoiceTemplateInput = {
   contractorLogoUrl: string | null;
 };
 
+/** Escape special HTML characters to prevent HTML injection and XSS vulnerabilities */
+function escapeHtml(str: string | null | undefined): string {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 /** Safely format a number to 2 decimal places, avoiding floating point display errors */
 function safeNumber(value: string | number): string {
   if (typeof value === "number") {
@@ -39,23 +50,27 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
   const { payload, contractorName, contractorContact, contractorLogoUrl } =
     input;
 
-  const safeContractorName = contractorName || "Your Contractor";
-  const contactLine = contractorContact?.trim() || "";
-  const jobName =
+  const safeContractorName = escapeHtml(contractorName || "Your Contractor");
+  const contactLine = escapeHtml(contractorContact?.trim() || "");
+  const jobName = escapeHtml(
     typeof payload.metadata.jobName === "string" && payload.metadata.jobName
       ? payload.metadata.jobName
-      : payload.name;
-  const calculatorLabel = payload.metadata.calculatorLabel;
-  const generatedAt = new Date(payload.metadata.generatedAt).toLocaleDateString(
-    "en-US",
-    { year: "numeric", month: "long", day: "numeric" },
+      : payload.name,
   );
-  const clientName = payload.client_name ?? "";
-  const jobAddress = payload.job_site_address ?? "";
+  const calculatorLabel = escapeHtml(payload.metadata.calculatorLabel);
+  const generatedAt = escapeHtml(
+    new Date(payload.metadata.generatedAt).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }),
+  );
+  const clientName = escapeHtml(payload.client_name ?? "");
+  const jobAddress = escapeHtml(payload.job_site_address ?? "");
 
   const quoteNote =
     typeof payload.quote_note === "string" && payload.quote_note.trim()
-      ? payload.quote_note.trim()
+      ? escapeHtml(payload.quote_note.trim())
       : null;
 
   const dollars =
@@ -66,15 +81,19 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
   // Build line items from budget_items (stored in inputs.line_items) if available
   const inputs = payload.inputs as Record<string, unknown> | undefined;
   const rawLineItems = inputs?.line_items;
-  const budgetItems: Record<string, unknown>[] = Array.isArray(rawLineItems) ? rawLineItems : [];
+  const budgetItems: Record<string, unknown>[] = Array.isArray(rawLineItems)
+    ? rawLineItems
+    : [];
   const hasBudgetItems = budgetItems.length > 0;
 
   const lineItemRows = hasBudgetItems
     ? budgetItems
         .map((item: Record<string, unknown>) => {
-          const desc = String(item.name ?? item.description ?? "Item");
+          const desc = escapeHtml(
+            String(item.name ?? item.description ?? "Item"),
+          );
           const qty = Number(item.quantity ?? 1);
-          const unit = String(item.unit ?? "ea");
+          const unit = escapeHtml(String(item.unit ?? "ea"));
           const price = Number(item.pricePerUnit ?? item.unitPrice ?? 0);
           const total = qty * price;
           return `
@@ -91,9 +110,9 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
         .map(
           (row: EstimateResult) => `
           <tr>
-            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; color: #111827; font-size: 13px;">${row.label}</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; color: #111827; font-size: 13px;">${escapeHtml(row.label)}</td>
             <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: center; color: #374151; font-size: 13px;">1</td>
-            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: center; color: #6b7280; font-size: 13px;">${row.unit ?? ""}</td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: center; color: #6b7280; font-size: 13px;">${escapeHtml(row.unit ?? "")}</td>
             <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: right; color: #374151; font-size: 13px;">${safeNumber(row.value)}</td>
             <td style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: 600; color: #111827; font-size: 13px;">${safeNumber(row.value)}</td>
           </tr>`,
@@ -101,9 +120,12 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
         .join("");
 
   // Extract tax info from inputs if available
-  const subtotalCents = typeof inputs?.subtotal_cents === "number" ? inputs.subtotal_cents : null;
-  const taxCents = typeof inputs?.tax_cents === "number" ? inputs.tax_cents : null;
-  const totalCents = typeof inputs?.total_cents === "number" ? inputs.total_cents : null;
+  const subtotalCents =
+    typeof inputs?.subtotal_cents === "number" ? inputs.subtotal_cents : null;
+  const taxCents =
+    typeof inputs?.tax_cents === "number" ? inputs.tax_cents : null;
+  const totalCents =
+    typeof inputs?.total_cents === "number" ? inputs.total_cents : null;
 
   const hasBreakdown = subtotalCents !== null && totalCents !== null;
   const subtotal = hasBreakdown ? formatCurrency(subtotalCents / 100) : null;
@@ -112,19 +134,32 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
 
   // Get tax label
   const selectedCounty = inputs?.selected_county ?? inputs?.tax_county;
-  const taxLabel = selectedCounty
-    ? `Tax (${String(selectedCounty).charAt(0).toUpperCase() + String(selectedCounty).slice(1)} County)`
-    : "Tax";
+  const taxLabel = escapeHtml(
+    selectedCounty
+      ? `Tax (${String(selectedCounty).charAt(0).toUpperCase() + String(selectedCounty).slice(1)} County)`
+      : "Tax",
+  );
 
   // Control number
-  const controlNumber = inputs?.control_number ?? "";
+  const controlNumber = escapeHtml((inputs?.control_number as string) ?? "");
 
   // Contractor signature
   const signature = payload.signature as
     | { signatureDataUrl?: string; signedAt?: string; signerName?: string }
     | undefined;
 
-
+  const materials = Array.isArray(payload.material_list)
+    ? payload.material_list
+    : [];
+  const materialsSection =
+    materials.length > 0
+      ? `<div style="margin-top: 24px; padding: 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;">
+        <p style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 6px;">Materials List</p>
+        <ul style="margin: 0; padding-left: 18px; font-size: 12px; color: #374151; line-height: 1.6;">
+          ${materials.map((m) => `<li>${escapeHtml(m)}</li>`).join("")}
+        </ul>
+      </div>`
+      : "";
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -240,7 +275,7 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
         </div>
       </div>
 
-
+      ${materialsSection}
 
       <!-- Signature -->
       ${
