@@ -282,11 +282,11 @@ export function ProfileSettings() {
                 {uploading ? "Uploading..." : "Upload Logo"}
               </button>
               {logoSaved ? (
-                <p className="mt-1 text-xs font-medium text-green-600">
+                <p id="logo-file-hint" className="mt-1 text-xs font-medium text-green-600">
                   Logo saved.
                 </p>
               ) : (
-                <p className="mt-1 text-xs text-[--color-ink-dim]">
+                <p id="logo-file-hint" className="mt-1 text-xs text-[--color-ink-dim]">
                   PNG, JPG or SVG, max 2MB
                 </p>
               )}
@@ -295,6 +295,8 @@ export function ProfileSettings() {
                 type="file"
                 accept="image/*"
                 className="hidden"
+                aria-label="Upload company logo"
+                aria-describedby="logo-file-hint"
                 disabled={!isOwner}
                 onChange={handleLogoUpload}
               />
