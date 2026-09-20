@@ -73,12 +73,13 @@ export function ConsentSettings() {
           ))}
         </div>
         <div className="mt-4 flex flex-wrap items-center gap-3">
-          <a
-            href="#"
-            className="termly-display-preferences inline-flex items-center gap-1 rounded-lg bg-[--color-blue-brand] px-3 py-2 text-sm font-semibold text-white hover:bg-[--color-blue-dark]"
+          <button
+            type="button"
+            aria-label="Open Termly cookie consent preferences"
+            className="termly-display-preferences inline-flex items-center gap-1 rounded-lg bg-[--color-blue-brand] px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-[--color-blue-dark] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand] focus-visible:ring-offset-2"
           >
             Open Termly Preferences
-          </a>
+          </button>
           <p className="text-xs text-[--color-ink-dim]">
             Changes apply through Termly across analytics, ads, and personalization features.
           </p>
