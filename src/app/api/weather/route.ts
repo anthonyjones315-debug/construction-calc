@@ -103,7 +103,10 @@ export async function GET(req: Request) {
   } catch (error: unknown) {
     Sentry.captureException(error);
     console.error("[WEATHER_API_ERROR]", error);
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Weather error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch weather data." },
+      { status: 500 },
+    );
   }
 }
 
