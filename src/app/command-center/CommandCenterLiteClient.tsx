@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { Route } from "next";
 import { useMemo, useState } from "react";
+import { getDateTimeFormatter } from "@/utils/formatters";
 import {
   ArrowRight,
   Calculator,
@@ -123,34 +124,34 @@ export default function CommandCenterLiteClient({
     "idle",
   );
 
-  const signedCount = useMemo(
-    () =>
-      recentEstimates.filter(
-        (estimate) =>
-          estimate.status === "SIGNED" || estimate.status === "Approved",
-      ).length,
-    [recentEstimates],
-  );
+  // Single-pass memoization for estimate counts to avoid iterating over recentEstimates 3 times
+  const { signedCount, sentCount, draftCount } = useMemo(() => {
+    let signed = 0;
+    let sent = 0;
+    let draft = 0;
 
-  const sentCount = useMemo(
-    () =>
-      recentEstimates.filter(
-        (estimate) =>
-          estimate.status === "PENDING" || estimate.status === "Sent",
-      ).length,
-    [recentEstimates],
-  );
+    for (let i = 0; i < recentEstimates.length; i++) {
+      const status = recentEstimates[i].status;
+      if (status === "SIGNED" || status === "Approved") {
+        signed++;
+      } else if (status === "PENDING" || status === "Sent") {
+        sent++;
+      } else {
+        draft++;
+      }
+    }
 
-  const draftCount = useMemo(
+    return { signedCount: signed, sentCount: sent, draftCount: draft };
+  }, [recentEstimates]);
+
+  const shortDateFormatter = useMemo(
     () =>
-      recentEstimates.filter(
-        (estimate) =>
-          estimate.status !== "SIGNED" &&
-          estimate.status !== "Approved" &&
-          estimate.status !== "PENDING" &&
-          estimate.status !== "Sent",
-      ).length,
-    [recentEstimates],
+      getDateTimeFormatter({
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }),
+    [],
   );
 
   const quickLinks: Array<{
@@ -465,14 +466,7 @@ export default function CommandCenterLiteClient({
                       {estimate.clientName || "No client"}
                     </p>
                     <p className="mt-0.5 text-[10px] text-slate-400">
-                      {new Date(estimate.updatedAt).toLocaleDateString(
-                        "en-US",
-                        {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        },
-                      )}
+                      {shortDateFormatter.format(new Date(estimate.updatedAt))}
                     </p>
                   </div>
                   <span
