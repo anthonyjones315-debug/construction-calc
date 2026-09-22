@@ -72,10 +72,10 @@ function KanbanCard({ project }: { project: KanbanProject }) {
       <button
         {...attributes}
         {...listeners}
-        className="absolute left-1 top-1/2 -translate-y-1/2 cursor-grab rounded p-0.5 text-slate-300 opacity-0 transition-opacity group-hover:opacity-100 active:cursor-grabbing"
-        aria-label="Drag to reorder"
+        className="absolute left-1 top-1/2 -translate-y-1/2 cursor-grab rounded p-0.5 text-slate-300 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none active:cursor-grabbing"
+        aria-label={`Drag ${project.name} to reorder`}
       >
-        <GripVertical className="h-3.5 w-3.5" />
+        <GripVertical className="h-3.5 w-3.5" aria-hidden="true" />
       </button>
       <div className="ml-4">
         <p className="text-xs font-semibold text-slate-800 truncate">
@@ -83,20 +83,20 @@ function KanbanCard({ project }: { project: KanbanProject }) {
         </p>
         {project.customerName && (
           <p className="mt-0.5 flex items-center gap-1 text-[10px] text-slate-500 truncate">
-            <User className="h-2.5 w-2.5" />
+            <User className="h-2.5 w-2.5" aria-hidden="true" />
             {project.customerName}
           </p>
         )}
         <div className="mt-1 flex items-center gap-2">
           {project.pipelineValue && (
             <span className="flex items-center gap-0.5 text-[10px] font-medium text-emerald-600">
-              <DollarSign className="h-2.5 w-2.5" />
+              <DollarSign className="h-2.5 w-2.5" aria-hidden="true" />
               {project.pipelineValue}
             </span>
           )}
           {project.startDate && (
             <span className="flex items-center gap-0.5 text-[10px] text-slate-400">
-              <Calendar className="h-2.5 w-2.5" />
+              <Calendar className="h-2.5 w-2.5" aria-hidden="true" />
               {project.startDate}
             </span>
           )}
