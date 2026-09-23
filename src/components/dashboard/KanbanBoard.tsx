@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, memo } from "react";
 import {
   DndContext,
   DragOverlay,
@@ -47,7 +47,8 @@ type Props = {
 
 /* ──────────────────── sortable card ──────────────────── */
 
-function KanbanCard({ project }: { project: KanbanProject }) {
+// Memoized to avoid re-rendering untouched project cards during board/drag updates
+const KanbanCard = memo(function KanbanCard({ project }: { project: KanbanProject }) {
   const {
     attributes,
     listeners,
@@ -104,17 +105,21 @@ function KanbanCard({ project }: { project: KanbanProject }) {
       </div>
     </div>
   );
-}
+});
 
 /* ──────────────────── column ──────────────────── */
 
-function KanbanColumn({
+// Memoized to prevent re-rendering unaffected columns during card drags
+const KanbanColumn = memo(function KanbanColumn({
   column,
   items,
 }: {
   column: (typeof COLUMNS)[number];
   items: KanbanProject[];
 }) {
+  // Memoize item IDs to preserve array identity for SortableContext, preventing @dnd-kit re-initialization overhead
+  const itemIds = useMemo(() => items.map((p) => p.id), [items]);
+
   return (
     <div className="flex min-h-[220px] w-[160px] shrink-0 flex-col rounded-2xl border border-slate-200 bg-slate-50/80 p-2 sm:min-h-[320px] sm:w-full sm:min-w-[180px] snap-start">
       <div className="mb-2 flex items-center gap-2 px-1">
@@ -130,7 +135,7 @@ function KanbanColumn({
         </span>
       </div>
       <SortableContext
-        items={items.map((p) => p.id)}
+        items={itemIds}
         strategy={verticalListSortingStrategy}
       >
         <div className="flex flex-1 flex-col gap-1.5 overflow-y-auto pr-0.5">
@@ -148,7 +153,7 @@ function KanbanColumn({
       </SortableContext>
     </div>
   );
-}
+});
 
 /* ──────────────────── board ──────────────────── */
 
