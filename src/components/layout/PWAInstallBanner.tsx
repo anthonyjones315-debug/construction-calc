@@ -45,7 +45,11 @@ function isStandaloneMode(): boolean {
   );
 }
 
-export function PWAInstallBanner() {
+export type PWAInstallBannerProps = {
+  forceVisible?: boolean;
+};
+
+export function PWAInstallBanner({ forceVisible }: PWAInstallBannerProps = {}) {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [visible, setVisible] = useState(false);
@@ -159,11 +163,12 @@ export function PWAInstallBanner() {
     setDeferredPrompt(null);
   }
 
-  if (!visible || isStandalone) return null;
+  const isShowing = forceVisible ?? (visible && !isStandalone);
+
+  if (!isShowing) return null;
 
   return (
-    <div
-      role="banner"
+    <aside
       aria-label="Install Pro Construction Calc"
       className="fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom,0px)+0.5rem)] z-[55] px-3 sm:bottom-auto sm:top-[calc(env(safe-area-inset-top,0px)+2.5rem)] sm:px-4 md:top-[calc(env(safe-area-inset-top,0px)+3rem)]"
     >
@@ -191,7 +196,7 @@ export function PWAInstallBanner() {
               type="button"
               onClick={dismiss}
               aria-label="Dismiss install tip"
-              className="shrink-0 rounded-lg border border-white/25 px-2 py-1 text-xs text-white/80 transition hover:text-white focus:outline-none focus:ring-2 focus:ring-white/50"
+              className="shrink-0 rounded-lg border border-white/25 px-2 py-1 text-xs text-white/80 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
             >
               ✕
             </button>
@@ -209,7 +214,7 @@ export function PWAInstallBanner() {
               <button
                 type="button"
                 onClick={install}
-                className="rounded-lg border border-white/30 bg-white/15 px-3 py-1 text-xs font-black uppercase tracking-wider text-white transition hover:bg-white/25 focus:outline-none focus:ring-2 focus:ring-white/50"
+                className="rounded-lg border border-white/30 bg-white/15 px-3 py-1 text-xs font-black uppercase tracking-wider text-white transition hover:bg-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
               >
                 Install
               </button>
@@ -217,7 +222,7 @@ export function PWAInstallBanner() {
                 type="button"
                 onClick={dismiss}
                 aria-label="Dismiss install banner"
-                className="rounded-lg border border-white/25 px-2 py-1 text-xs text-white/80 transition hover:text-white focus:outline-none focus:ring-2 focus:ring-white/50"
+                className="rounded-lg border border-white/25 px-2 py-1 text-xs text-white/80 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
               >
                 ✕
               </button>
@@ -225,6 +230,6 @@ export function PWAInstallBanner() {
           </>
         )}
       </div>
-    </div>
+    </aside>
   );
 }
