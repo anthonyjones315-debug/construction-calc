@@ -26,6 +26,15 @@ function safeNumber(value: string | number): string {
   return value;
 }
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 function formatCurrency(value: number): string {
   return getNumberFormatter({
     style: "currency",
@@ -211,6 +220,18 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
           </tbody>
         </table>
       </div>
+
+      <!-- Material List -->
+      ${
+        Array.isArray(payload.material_list) && payload.material_list.length > 0
+          ? `<div style="margin-top: 16px; padding: 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;">
+              <p style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 6px;">Materials List</p>
+              <ul style="font-size: 12px; color: #374151; padding-left: 16px;">
+                ${payload.material_list.map((m) => `<li>${escapeHtml(String(m))}</li>`).join("")}
+              </ul>
+            </div>`
+          : ""
+      }
 
       <!-- Totals -->
       <div style="margin-top: 4px; display: flex; justify-content: flex-end;">

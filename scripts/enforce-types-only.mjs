@@ -21,7 +21,9 @@ const approvedFiles = new Set([
   "eslint.config.mjs",
   "e2e/lib/axe.min.js",
   "postcss.config.mjs",
+  "replace_imports.cjs",
   "scripts/benchmark-frontend-metrics.mjs",
+  "scripts/benchmark-intl.cjs",
   "scripts/check-calculations.mjs",
   "scripts/check-color-contrast.mjs",
   "scripts/check-structural-syntax.mjs",
@@ -31,6 +33,7 @@ const approvedFiles = new Set([
   "scripts/liquid-orange-glass-performance-test.mjs",
   "scripts/performance-test.js",
   "scripts/rewrite-calcs-paths.mjs",
+  "scripts/sync-local-db.mjs",
   "scripts/test-supabase.mjs",
 ]);
 
