@@ -1,7 +1,7 @@
 "use client";
 
 import * as Sentry from "@sentry/nextjs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { X, Mail, Loader2 } from "lucide-react";
 import posthog from "posthog-js";
 
@@ -54,6 +54,17 @@ export function EmailEstimateModal({
   );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [open, onClose]);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const email = to.trim().toLowerCase();
@@ -104,7 +115,7 @@ export function EmailEstimateModal({
       <div
         className="fixed inset-0 z-[70] bg-black/30"
         onClick={onClose}
-        aria-hidden
+        aria-hidden="true"
       />
       <div
         role="dialog"
@@ -117,10 +128,10 @@ export function EmailEstimateModal({
           <button
             type="button"
             onClick={onClose}
-            className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-lg text-[--color-ink-dim] transition-colors hover:bg-[--color-surface-alt] hover:text-[--color-ink]"
-            aria-label="Close"
+            className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-lg text-[--color-ink-dim] transition-colors hover:bg-[--color-surface-alt] hover:text-[--color-ink] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand]"
+            aria-label="Close email estimate modal"
           >
-            <X className="h-4 w-4" aria-hidden />
+            <X className="h-4 w-4" aria-hidden="true" />
           </button>
 
           <h2
@@ -194,19 +205,19 @@ export function EmailEstimateModal({
                 <button
                   type="submit"
                   disabled={status === "sending"}
-                  className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[--color-blue-brand] px-4 text-sm font-bold text-white transition hover:bg-[--color-blue-dark] disabled:opacity-60"
+                  className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[--color-blue-brand] px-4 text-sm font-bold text-white transition hover:bg-[--color-blue-dark] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand]/50 disabled:opacity-60"
                 >
                   {status === "sending" ? (
-                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
                   ) : (
-                    <Mail className="h-4 w-4" aria-hidden />
+                    <Mail className="h-4 w-4" aria-hidden="true" />
                   )}
                   {status === "sending" ? "Sending…" : "Send"}
                 </button>
                 <button
                   type="button"
                   onClick={onClose}
-                  className="rounded-xl border border-[--color-border] bg-[--color-surface-alt] px-4 py-2 text-sm font-semibold text-[--color-ink] transition hover:bg-[--color-surface]"
+                  className="rounded-xl border border-[--color-border] bg-[--color-surface-alt] px-4 py-2 text-sm font-semibold text-[--color-ink] transition hover:bg-[--color-surface] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand]/50"
                 >
                   Close
                 </button>
