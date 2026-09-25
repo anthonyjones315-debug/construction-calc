@@ -46,4 +46,51 @@ describe("generateInvoiceHtml", () => {
     expect(html).toContain("#ea580c");
     expect(html).toContain("Kitchen Remodel");
   });
+
+  it("escapes user-controlled HTML tags to prevent HTML injection/XSS", () => {
+    const payload: FinalizeEstimateInput = {
+      name: "<script>alert('xss-name')</script>",
+      calculator_id: "interior/flooring-waste",
+      client_name: "<img src=x onerror=alert('xss-client')>",
+      job_site_address: "<b>123 Main St</b>",
+      quote_note: "<iframe src='http://malicious.com'></iframe>",
+      total_cost: 500,
+      results: [
+        { label: "<svg onload=alert(1)>", value: 500, unit: "<i>sq ft</i>" },
+      ],
+      material_list: ["<script>alert('xss-mat')</script>"],
+      inputs: {
+        selected_county: "Oneida",
+      },
+      metadata: {
+        title: "Malicious Estimate",
+        calculatorLabel: "<span>Calc</span>",
+        generatedAt: "March 17, 2026",
+        jobName: "<script>alert('job')</script>",
+      },
+      signature: {
+        signerName: null,
+        signerEmail: null,
+        signatureDataUrl: null,
+        signedAt: null,
+      },
+    };
+
+    const html = generateInvoiceHtml({
+      payload,
+      contractorName: "<b>Hacked Contractor</b>",
+      contractorContact: "<script>alert('contact')</script>",
+      contractorLogoUrl: null,
+    });
+
+    expect(html).not.toContain("<script>alert");
+    expect(html).not.toContain("<img src=x");
+    expect(html).not.toContain("<b>123 Main St</b>");
+    expect(html).not.toContain("<iframe");
+    expect(html).not.toContain("<svg onload");
+
+    expect(html).toContain("&lt;script&gt;alert(&#039;xss-mat&#039;)&lt;/script&gt;");
+    expect(html).toContain("&lt;img src=x onerror=alert(&#039;xss-client&#039;)&gt;");
+    expect(html).toContain("&lt;b&gt;Hacked Contractor&lt;/b&gt;");
+  });
 });
