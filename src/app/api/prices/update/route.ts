@@ -10,13 +10,8 @@ import {
 import { MARKET_PRICES_BASE } from "@/data";
 import type { MarketPrices } from "@/types";
 
-async function getPricesForCurrentUser(): Promise<MarketPrices> {
+async function getPricesForCurrentUser(session: NonNullable<Awaited<ReturnType<typeof auth>>>): Promise<MarketPrices> {
   const prices: MarketPrices = { ...MARKET_PRICES_BASE };
-  const session = await auth();
-
-  if (!session?.user?.id) {
-    return prices;
-  }
 
   const db = createServerClient();
   const businessContext = await getBusinessContextForSession(db, session);
@@ -48,7 +43,12 @@ async function getPricesForCurrentUser(): Promise<MarketPrices> {
 
 export async function POST() {
   try {
-    const prices = await getPricesForCurrentUser();
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const prices = await getPricesForCurrentUser(session);
     return NextResponse.json({ prices });
   } catch (err) {
     Sentry.captureException(err);
