@@ -73,14 +73,22 @@ export function TwoFactorInput({
       className="fixed inset-0 z-50 flex items-center justify-center glass-modal-overlay"
       onKeyDown={handleKeyDown}
     >
-      <div className="w-full max-w-md glass-modal">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="two-factor-title"
+        className="w-full max-w-md glass-modal"
+      >
         <div className="glass-modal-header flex items-start justify-between">
           <div className="flex items-center gap-3">
             <GlassIconBadge className="rounded-full">
               <ShieldCheck className="w-6 h-6" />
             </GlassIconBadge>
             <div>
-              <h2 className="text-xl font-semibold text-[--color-ink]">
+              <h2
+                id="two-factor-title"
+                className="text-xl font-semibold text-[--color-ink]"
+              >
                 Enter verification code
               </h2>
               <p className="text-sm text-[--color-ink-mid]">
@@ -90,8 +98,8 @@ export function TwoFactorInput({
           </div>
           <button
             onClick={onCancel}
-            className="text-[--color-ink-dim] transition-colors hover:text-[--color-ink]"
-            aria-label="Close"
+            className="rounded-lg text-[--color-ink-dim] transition-colors hover:text-[--color-ink] focus:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand]"
+            aria-label="Close verification dialog"
           >
             <XCircle className="w-6 h-6" />
           </button>
@@ -111,7 +119,7 @@ export function TwoFactorInput({
               maxLength={TWO_FACTOR_CODE_LENGTH}
               value={code}
               onChange={(e) => setCode(e.target.value.replace(/[^0-9]/g, ""))}
-              className="glass-input w-full rounded-lg px-4 py-3 text-center font-mono text-2xl tracking-[0.35em] text-[--color-ink]"
+              className="glass-input w-full rounded-lg px-4 py-3 text-center font-mono text-2xl tracking-[0.35em] text-[--color-ink] focus:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand]"
               placeholder="000000"
               disabled={isSubmitting}
               aria-invalid={!!submitError}
@@ -134,7 +142,7 @@ export function TwoFactorInput({
             <GlassButton
               type="button"
               onClick={onCancel}
-              className="w-full px-4 py-2 md:w-auto"
+              className="w-full px-4 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand] md:w-auto"
             >
               Cancel
             </GlassButton>
@@ -142,7 +150,7 @@ export function TwoFactorInput({
               type="submit"
               variant="primary"
               disabled={code.length !== TWO_FACTOR_CODE_LENGTH || isSubmitting}
-              className="w-full px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50 md:w-auto"
+              className="w-full px-4 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand] disabled:cursor-not-allowed disabled:opacity-50 md:w-auto"
             >
               {isSubmitting ? "Verifying..." : "Verify"}
             </GlassButton>
