@@ -35,6 +35,16 @@ function formatCurrency(value: number): string {
   }).format(Math.round(value * 100) / 100);
 }
 
+function escapeHtml(str: string | null | undefined): string {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
   const { payload, contractorName, contractorContact, contractorLogoUrl } =
     input;
@@ -211,6 +221,17 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
           </tbody>
         </table>
       </div>
+
+      ${
+        Array.isArray(payload.material_list) && payload.material_list.length > 0
+          ? `<div style="margin-top: 16px;">
+              <p style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 6px;">Materials List</p>
+              <ul style="padding-left: 20px; font-size: 12px; color: #374151;">
+                ${payload.material_list.map((mat) => `<li>${escapeHtml(mat)}</li>`).join("")}
+              </ul>
+            </div>`
+          : ""
+      }
 
       <!-- Totals -->
       <div style="margin-top: 4px; display: flex; justify-content: flex-end;">
