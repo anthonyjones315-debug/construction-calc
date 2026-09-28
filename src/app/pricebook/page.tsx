@@ -3,7 +3,7 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import type { UserMaterial } from "@/lib/supabase/client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@clerk/nextjs";
 import Image from "next/image";
 import {
@@ -192,15 +192,20 @@ function PriceBookContent() {
     );
   }
 
-  const materialRows = materials ?? [];
+  const materialRows = useMemo(() => materials ?? [], [materials]);
 
-  const grouped = CATEGORIES.reduce(
-    (acc, cat) => {
-      const rows = materialRows.filter((m) => m.category === cat);
-      if (rows.length || cat === "Other") acc[cat] = rows;
-      return acc;
-    },
-    {} as Record<string, UserMaterial[]>,
+  // Memoize grouped categories to avoid array filtering allocations on every re-render
+  const grouped = useMemo(
+    () =>
+      CATEGORIES.reduce(
+        (acc, cat) => {
+          const rows = materialRows.filter((m) => m.category === cat);
+          if (rows.length || cat === "Other") acc[cat] = rows;
+          return acc;
+        },
+        {} as Record<string, UserMaterial[]>,
+      ),
+    [materialRows],
   );
 
   return (
