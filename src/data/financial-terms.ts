@@ -479,16 +479,21 @@ export function getFinancialTermLabel(key: FinancialTermKey): string {
   return FINANCIAL_TERM_LOOKUP.get(key)?.label ?? key;
 }
 
+// Pre-compute normalized search targets for financial terms to avoid re-normalizing strings on every definition lookup
+const PREPARED_FINANCIAL_TERMS = FINANCIAL_TERMS_INTERNAL.map((term) => ({
+  definition: term.definition,
+  targets: [
+    normalize(term.key),
+    normalize(term.label),
+    ...(term.aliases ?? []).map((alias) => normalize(alias)),
+  ],
+}));
+
 export function getFinancialTermDefinition(labelOrKey: string): string | undefined {
   const normalized = normalize(labelOrKey);
-  const match = FINANCIAL_TERMS_INTERNAL.find((term) => {
-    const targets = [
-      normalize(term.key),
-      normalize(term.label),
-      ...(term.aliases ?? []).map((alias) => normalize(alias)),
-    ];
-    return targets.some((target) => normalized === target || normalized.includes(target));
-  });
+  const match = PREPARED_FINANCIAL_TERMS.find((entry) =>
+    entry.targets.some((target) => normalized === target || normalized.includes(target)),
+  );
   return match?.definition;
 }
 
