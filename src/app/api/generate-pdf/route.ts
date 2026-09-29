@@ -111,11 +111,12 @@ export async function POST(request: NextRequest) {
     });
 
     const browserlessResponse = await fetch(
-      `https://production-sfo.browserless.io/pdf?token=${browserlessToken}`,
+      "https://production-sfo.browserless.io/pdf",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${browserlessToken}`,
         },
         body: JSON.stringify({
           html,
