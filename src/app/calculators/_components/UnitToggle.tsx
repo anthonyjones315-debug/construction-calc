@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { triggerHaptic } from "@/hooks/useHaptic";
 
 type UnitToggleOption<T extends string> = {
@@ -20,12 +21,22 @@ export function UnitToggle<T extends string>({
   options,
   onChange,
 }: UnitToggleProps<T>) {
+  const reactGeneratedId = React.useId();
+  const labelId = `unit-toggle-label-${reactGeneratedId}`;
+
   return (
     <div className="space-y-1">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[--color-nav-text]/75">
+      <p
+        id={labelId}
+        className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[--color-nav-text]/75"
+      >
         {label}
       </p>
-      <div className="inline-flex rounded-full border border-[--color-border] bg-[--color-surface-alt] p-0.5">
+      <div
+        role="group"
+        aria-labelledby={labelId}
+        className="inline-flex rounded-full border border-[--color-border] bg-[--color-surface-alt] p-0.5"
+      >
         {options.map((option) => {
           const active = option.value === value;
           return (
@@ -36,7 +47,7 @@ export function UnitToggle<T extends string>({
                 triggerHaptic([10]);
                 onChange(option.value);
               }}
-              className={`min-h-8 rounded-full border-2 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] transition-all ${
+              className={`min-h-8 rounded-full border-2 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand] ${
                 active
                   ? "border-[--color-blue-brand] bg-[--color-blue-soft] text-[--color-blue-brand]"
                   : "border-transparent text-[--color-ink-mid] hover:border-[--color-border-strong] hover:text-[--color-ink]"
