@@ -78,7 +78,8 @@ export default function CartPage() {
                       <button
                         type="button"
                         onClick={() => removeCartItem(item.id)}
-                        className="text-xs font-semibold text-red-600 hover:text-red-700"
+                        aria-label={`Remove ${item.estimateName} from queue`}
+                        className="rounded px-1.5 py-0.5 text-xs font-semibold text-red-600 transition-colors hover:text-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/50"
                       >
                         Remove
                       </button>
@@ -97,14 +98,14 @@ export default function CartPage() {
                   <button
                     type="button"
                     onClick={clearCart}
-                    className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-[--color-ink] hover:bg-slate-50"
+                    className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-[--color-ink] transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand]/50"
                   >
                     Clear queue
                   </button>
                   <button
                     type="button"
                     onClick={handleCreateInvoiceBatch}
-                    className="rounded-xl bg-[--color-blue-brand] px-4 py-2 text-sm font-bold text-white hover:brightness-95"
+                    className="rounded-xl bg-[--color-blue-brand] px-4 py-2 text-sm font-bold text-white transition-all hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand]/50"
                   >
                     Create invoice batch
                   </button>
