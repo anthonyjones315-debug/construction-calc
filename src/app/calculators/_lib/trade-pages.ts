@@ -1318,25 +1318,56 @@ export function getTradePage(key: TradePageKey): TradePageDefinition {
   return tradePages[key];
 }
 
+// Pre-computed lookup of trade calculators grouped by category and sorted by preferred order.
+// Built once at module initialization to eliminate runtime filtering and array sorting on every call.
+const PRECOMPUTED_TRADE_CALCULATORS_BY_CATEGORY: Record<
+  TradePageDefinition["category"],
+  TradePageDefinition[]
+> = (() => {
+  const allPages = Object.values(tradePages);
+  const result: Partial<
+    Record<TradePageDefinition["category"], TradePageDefinition[]>
+  > = {};
+
+  // Dynamically extract all unique categories present across tradePages and categoryLinks
+  const categories = Array.from(
+    new Set([
+      ...allPages.map((p) => p.category),
+      ...(Object.keys(categoryLinks) as TradePageDefinition["category"][]),
+    ]),
+  );
+
+  for (const category of categories) {
+    const preferredHrefs = categoryLinks[category]?.map((link) => link.href) ?? [];
+    const preferredOrderMap = new Map<string, number>();
+    preferredHrefs.forEach((href, index) => preferredOrderMap.set(href, index));
+
+    const categoryCalculators = allPages.filter(
+      (page) => page.type === "calculator" && page.category === category,
+    );
+
+    categoryCalculators.sort((a, b) => {
+      const aIndex = preferredOrderMap.get(a.canonicalPath);
+      const bIndex = preferredOrderMap.get(b.canonicalPath);
+
+      if (aIndex !== undefined && bIndex !== undefined) return aIndex - bIndex;
+      if (aIndex !== undefined) return -1;
+      if (bIndex !== undefined) return 1;
+      return a.title.localeCompare(b.title);
+    });
+
+    result[category] = categoryCalculators;
+  }
+
+  return result;
+})();
+
 export function getTradeCalculators(
   category: TradePageDefinition["category"],
 ): TradePageDefinition[] {
-  const calculators = Object.values(tradePages).filter(
-    (page) => page.type === "calculator" && page.category === category,
-  );
-
-  const preferredOrder =
-    categoryLinks[category]?.map((link) => link.href) ?? [];
-
-  return calculators.sort((a, b) => {
-    const aIndex = preferredOrder.indexOf(a.canonicalPath);
-    const bIndex = preferredOrder.indexOf(b.canonicalPath);
-
-    if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
-    if (aIndex !== -1) return -1;
-    if (bIndex !== -1) return 1;
-    return a.title.localeCompare(b.title);
-  });
+  return PRECOMPUTED_TRADE_CALCULATORS_BY_CATEGORY[category]
+    ? [...PRECOMPUTED_TRADE_CALCULATORS_BY_CATEGORY[category]!]
+    : [];
 }
 
 export function getTradePageByPath(
