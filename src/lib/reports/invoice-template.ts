@@ -5,7 +5,7 @@
  */
 
 import type { EstimatePayload, EstimateResult } from "@/lib/estimates/types";
-import { getNumberFormatter } from "@/utils/formatters";
+import { getDateTimeFormatter, getNumberFormatter } from "@/utils/formatters";
 
 type InvoiceTemplateInput = {
   payload: EstimatePayload;
@@ -26,6 +26,8 @@ function safeNumber(value: string | number): string {
   return value;
 }
 
+// Optimization: Use centralized cached getNumberFormatter and getDateTimeFormatter
+// to eliminate repeated Intl construction overhead during HTML template generation.
 function formatCurrency(value: number): string {
   return getNumberFormatter({
     style: "currency",
@@ -46,10 +48,11 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
       ? payload.metadata.jobName
       : payload.name;
   const calculatorLabel = payload.metadata.calculatorLabel;
-  const generatedAt = new Date(payload.metadata.generatedAt).toLocaleDateString(
-    "en-US",
-    { year: "numeric", month: "long", day: "numeric" },
-  );
+  const generatedAt = getDateTimeFormatter({
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(new Date(payload.metadata.generatedAt));
   const clientName = payload.client_name ?? "";
   const jobAddress = payload.job_site_address ?? "";
 
@@ -273,6 +276,18 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
           <p style="font-size: 10px; color: #9ca3af; margin-top: 4px;">Date: ____________</p>
         </div>
       </div>`
+      }
+
+      ${
+        Array.isArray(payload.material_list) && payload.material_list.length > 0
+          ? `<!-- Materials -->
+      <div style="margin-top: 24px; padding: 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;">
+        <p style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 6px;">Material List</p>
+        <ul style="padding-left: 16px; font-size: 12px; color: #374151;">
+          ${payload.material_list.map((m) => `<li style="margin-bottom: 2px;">${m}</li>`).join("")}
+        </ul>
+      </div>`
+          : ""
       }
 
       <!-- Notes -->
