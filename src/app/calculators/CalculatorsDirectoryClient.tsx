@@ -53,6 +53,12 @@ type SearchablePage = {
   href: string;
   categoryLabel: string;
   keywords: string[];
+  // Pre-computed lowercased search targets to eliminate repeated string allocations on search keystrokes
+  titleLower: string;
+  descriptionLower: string;
+  categoryLower: string;
+  keywordsLower: string;
+  hrefLower: string;
 };
 
 function buildSearchIndex(): SearchablePage[] {
@@ -70,14 +76,22 @@ function buildSearchIndex(): SearchablePage[] {
     outdoor: "Fences, Driveways & Patios",
   };
 
-  return Object.values(tradePages).map((page) => ({
-    key: page.key,
-    title: page.title,
-    description: page.description,
-    href: page.canonicalPath,
-    categoryLabel: categoryLabelByKey[page.category],
-    keywords: page.keywords,
-  }));
+  return Object.values(tradePages).map((page) => {
+    const categoryLabel = categoryLabelByKey[page.category];
+    return {
+      key: page.key,
+      title: page.title,
+      description: page.description,
+      href: page.canonicalPath,
+      categoryLabel,
+      keywords: page.keywords,
+      titleLower: page.title.toLowerCase(),
+      descriptionLower: page.description.toLowerCase(),
+      categoryLower: categoryLabel.toLowerCase(),
+      keywordsLower: page.keywords.join(" ").toLowerCase(),
+      hrefLower: page.canonicalPath.toLowerCase(),
+    };
+  });
 }
 
 const SEARCH_INDEX: SearchablePage[] = buildSearchIndex();
@@ -90,23 +104,19 @@ function searchPages(query: string, limit = 8): RankedResult[] {
 
   const results: RankedResult[] = [];
 
+  // Query pre-computed lowercased targets directly to avoid repeated string normalization & allocations
   for (const page of SEARCH_INDEX) {
-    const haystackTitle = page.title.toLowerCase();
-    const haystackDescription = page.description.toLowerCase();
-    const haystackCategory = page.categoryLabel.toLowerCase();
-    const haystackKeywords = page.keywords.join(" ").toLowerCase();
-
     let score = 0;
 
-    if (haystackTitle === q) score += 80;
-    else if (haystackTitle.includes(q)) score += 60;
+    if (page.titleLower === q) score += 80;
+    else if (page.titleLower.includes(q)) score += 60;
 
-    if (haystackCategory.includes(q)) score += 20;
-    if (haystackKeywords.includes(q)) score += 25;
-    if (haystackDescription.includes(q)) score += 10;
+    if (page.categoryLower.includes(q)) score += 20;
+    if (page.keywordsLower.includes(q)) score += 25;
+    if (page.descriptionLower.includes(q)) score += 10;
 
     // Small bonus for calculators whose slug or path directly references the query.
-    if (page.href.toLowerCase().includes(q)) score += 15;
+    if (page.hrefLower.includes(q)) score += 15;
 
     if (score > 0) {
       results.push({ ...page, score });
