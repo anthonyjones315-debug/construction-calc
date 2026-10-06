@@ -9,6 +9,7 @@ import { getRecentPaths } from "@/lib/recommendations/activity";
 import {
   HardHat,
   Search,
+  X,
   BrickWall,
   Hammer,
   Triangle,
@@ -222,6 +223,17 @@ export function CalculatorsDirectoryClient() {
                   onChange={(event) => setQuery(event.target.value)}
                   aria-label="Search construction calculators by trade, task, or name"
                 />
+                {query && (
+                  <button
+                    type="button"
+                    onClick={() => setQuery("")}
+                    className="ml-2 flex h-8 w-8 items-center justify-center rounded-full text-[--color-ink-dim] transition-colors hover:bg-slate-100 hover:text-[--color-ink] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[--color-blue-brand]"
+                    aria-label="Clear search query"
+                    title="Clear search"
+                  >
+                    <X className="h-4 w-4" aria-hidden />
+                  </button>
+                )}
               </div>
             </div>
             <p className="mt-4 text-xs font-semibold tracking-wider text-[--color-ink-dim] uppercase">
