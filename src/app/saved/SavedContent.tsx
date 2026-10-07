@@ -28,6 +28,7 @@ import { sanitizeFilename } from "@/utils/sanitize-filename";
 import { useContractorProfile } from "@/components/pdf/useContractorProfile";
 import { useHaptic } from "@/hooks/useHaptic";
 import { routes } from "@routes";
+import { getDateTimeFormatter } from "@/utils/formatters";
 import {
   toCents,
   multiplyCents,
@@ -485,11 +486,11 @@ export function SavedContent({
 
     const invoiceDoc = createInvoicePDF({
       estimateTitle: estimate.name,
-      generatedAt: new Date().toLocaleDateString("en-US", {
+      generatedAt: getDateTimeFormatter({
         year: "numeric",
         month: "long",
         day: "numeric",
-      }),
+      }).format(new Date()),
       invoiceNumber: invoice.invoiceNumber,
       issuedDate: invoice.issuedDate,
       dueDate: invoice.dueDate,
@@ -1327,10 +1328,11 @@ export function SavedContent({
               finalize.calculatorLabel
                 ? finalize.calculatorLabel
                 : estimate.calculator_id,
-            generatedAt: new Date(estimate.created_at).toLocaleDateString(
-              "en-US",
-              { year: "numeric", month: "long", day: "numeric" },
-            ),
+            generatedAt: getDateTimeFormatter({
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            }).format(new Date(estimate.created_at)),
             jobName:
               typeof finalize.jobName === "string" && finalize.jobName
                 ? finalize.jobName
@@ -1634,7 +1636,7 @@ export function SavedContent({
                     {materials.map((item) => (
                       <option key={item.id} value={item.id}>
                         {item.material_name} ·{" "}
-                        {USD_CURRENCY.format(item.unit_cost)}/
+                    {USD_CURRENCY.format(item.unit_cost)}/
                         {item.unit_type ?? "each"}
                       </option>
                     ))}
@@ -1783,11 +1785,11 @@ export function SavedContent({
                 <span className="font-semibold text-[--color-ink]">
                   Created:
                 </span>{" "}
-                {new Date(deleteTarget.created_at).toLocaleDateString("en-US", {
+                {getDateTimeFormatter({
                   month: "short",
                   day: "numeric",
                   year: "numeric",
-                })}
+                }).format(new Date(deleteTarget.created_at))}
               </p>
             </div>
 
@@ -1846,11 +1848,11 @@ export function SavedContent({
                     </p>
                     <div className="flex items-center gap-3 mt-1 flex-wrap">
                       <span className="text-xs text-[--color-ink-dim]">
-                        {new Date(est.created_at).toLocaleDateString("en-US", {
+                        {getDateTimeFormatter({
                           month: "short",
                           day: "numeric",
                           year: "numeric",
-                        })}
+                        }).format(new Date(est.created_at))}
                       </span>
                       {hero && (
                         <span className="inline-flex items-center rounded-full border border-[--color-blue-brand]/35 bg-[--color-blue-brand]/10 px-2 py-0.5 text-xs font-bold text-[--color-blue-brand]">

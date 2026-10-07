@@ -1,0 +1,3 @@
+## 2026-03-17 - Module Singletons vs Dynamic Formatter Lookups
+**Learning:** Top-level module-scoped `Intl.NumberFormat` singletons (e.g. `const USD = new Intl.NumberFormat(...)`) are instantiated once when the module is imported and perform zero Map lookups or key sorting during renders. Replacing static singletons with dynamic `getNumberFormatter()` cache lookups adds unnecessary function call and Map lookup overhead.
+**Action:** Preserve module-level static singletons for fixed currency/number formatting options, and reserve `getDateTimeFormatter` / `getNumberFormatter` for replacing inline `toLocaleDateString()` or `toLocaleString()` calls created inside component render loops or callbacks.
