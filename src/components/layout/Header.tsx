@@ -90,7 +90,7 @@ export function Header() {
         <Link
           href={isSignedIn ? routes.commandCenter : routes.home}
           prefetch={false}
-          className="flex shrink-0 items-center gap-1 text-xs font-display font-black tracking-wide text-slate-900 transition-colors hover:text-[--color-blue-brand] sm:text-base"
+          className="flex shrink-0 items-center gap-1 rounded-lg text-xs font-display font-black tracking-wide text-slate-900 transition-colors hover:text-[--color-blue-brand] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand] focus-visible:ring-offset-2 sm:text-base"
           aria-label="Pro Construction Calc"
         >
           <Image
@@ -132,7 +132,7 @@ export function Header() {
                 key={href}
                 href={href}
                 prefetch={false}
-                className="flex min-h-7 items-center rounded-lg px-2 py-1 text-xs text-slate-600 transition-colors hover:text-[--color-blue-brand]"
+                className="flex min-h-7 items-center rounded-lg px-2 py-1 text-xs text-slate-600 transition-colors hover:text-[--color-blue-brand] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand] focus-visible:ring-offset-1"
               >
                 {label}
               </Link>
@@ -147,7 +147,7 @@ export function Header() {
             <Link
               href={routes.commandCenter}
               prefetch={false}
-              className={`inline-flex h-7 min-w-[84px] items-center justify-center rounded-full border px-2 text-[9px] font-black uppercase tracking-[0.16em] ${
+              className={`inline-flex h-7 min-w-[84px] items-center justify-center rounded-full border px-2 text-[9px] font-black uppercase tracking-[0.16em] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand] focus-visible:ring-offset-1 ${
                 isCommandCenterActive
                   ? "border-[--color-blue-brand]/45 bg-[--color-blue-soft] text-[--color-blue-dark]"
                   : "border-slate-300 bg-white text-slate-700 hover:border-[--color-blue-brand]/45 hover:text-[--color-blue-brand]"
@@ -163,7 +163,7 @@ export function Header() {
           <Link
             href={routes.cart}
             prefetch={false}
-            className="inline-flex min-h-7 items-center gap-1 rounded-full border border-slate-300 bg-white px-1.5 py-1 text-[9px] font-semibold uppercase tracking-[0.14em] text-slate-700 transition hover:border-[--color-blue-brand]/45 hover:text-[--color-blue-brand] sm:px-2.5"
+            className="inline-flex min-h-7 items-center gap-1 rounded-full border border-slate-300 bg-white px-1.5 py-1 text-[9px] font-semibold uppercase tracking-[0.14em] text-slate-700 transition hover:border-[--color-blue-brand]/45 hover:text-[--color-blue-brand] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand] focus-visible:ring-offset-1 sm:px-2.5"
             aria-label={`Estimate queue ${estimateCount} item${estimateCount === 1 ? "" : "s"}`}
           >
             <ClipboardList className="h-3.5 w-3.5" aria-hidden />
@@ -190,7 +190,7 @@ export function Header() {
             <button
               type="button"
               onClick={openSignIn}
-              className="btn-tactile flex min-h-7 items-center rounded-lg bg-[--color-blue-brand] px-3 text-[10px] font-black uppercase tracking-[0.08em] text-white transition-all duration-200 hover:bg-[--color-blue-dark] active:scale-[0.98] sm:px-3.5 sm:text-[11px]"
+              className="btn-tactile flex min-h-7 items-center rounded-lg bg-[--color-blue-brand] px-3 text-[10px] font-black uppercase tracking-[0.08em] text-white transition-all duration-200 hover:bg-[--color-blue-dark] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand] focus-visible:ring-offset-2 active:scale-[0.98] sm:px-3.5 sm:text-[11px]"
             >
               Sign In
             </button>
@@ -227,7 +227,7 @@ export function Header() {
 
           {/* Mobile hamburger */}
           <button
-            className="btn-tactile flex h-8 min-h-8 w-8 items-center justify-center rounded-lg text-slate-600 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900 active:scale-[0.98] md:hidden"
+            className="btn-tactile flex h-8 min-h-8 w-8 items-center justify-center rounded-lg text-slate-600 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand] focus-visible:ring-offset-1 active:scale-[0.98] md:hidden"
             onClick={() => setMobileNavOpen((o) => !o)}
             aria-expanded={mobileNavOpen}
             aria-controls="mobile-navigation"
@@ -260,7 +260,7 @@ export function Header() {
               href={routes.commandCenter}
               prefetch={false}
               onClick={() => setMobileNavOpen(false)}
-              className={`flex min-h-10 items-center gap-2 rounded-lg px-4 py-1.5 text-sm transition-colors hover:bg-[--color-blue-soft] hover:text-[--color-blue-brand] ${
+              className={`flex min-h-10 items-center gap-2 rounded-lg px-4 py-1.5 text-sm transition-colors hover:bg-[--color-blue-soft] hover:text-[--color-blue-brand] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand] focus-visible:ring-offset-1 ${
                 isCommandCenterActive
                   ? "text-blue-brand font-bold"
                   : "text-slate-700"
@@ -281,7 +281,7 @@ export function Header() {
               href={href}
               prefetch={false}
               onClick={() => setMobileNavOpen(false)}
-              className="flex min-h-10 items-center rounded-lg px-4 py-1.5 text-sm text-slate-700 transition-colors hover:bg-[--color-blue-soft] hover:text-[--color-blue-brand]"
+              className="flex min-h-10 items-center rounded-lg px-4 py-1.5 text-sm text-slate-700 transition-colors hover:bg-[--color-blue-soft] hover:text-[--color-blue-brand] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand] focus-visible:ring-offset-1"
             >
               {label}
             </Link>
@@ -290,7 +290,7 @@ export function Header() {
             href={routes.cart}
             prefetch={false}
             onClick={() => setMobileNavOpen(false)}
-            className="flex min-h-10 items-center rounded-lg px-4 py-1.5 text-sm text-slate-700 transition-colors hover:bg-[--color-blue-soft] hover:text-[--color-blue-brand]"
+            className="flex min-h-10 items-center rounded-lg px-4 py-1.5 text-sm text-slate-700 transition-colors hover:bg-[--color-blue-soft] hover:text-[--color-blue-brand] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand] focus-visible:ring-offset-1"
           >
             <ClipboardList
               className="h-4 w-4 mr-2 text-slate-400"
@@ -308,7 +308,7 @@ export function Header() {
                   setMobileNavOpen(false);
                   openSignIn();
                 }}
-                className="btn-tactile flex min-h-10 w-full items-center justify-center rounded-lg bg-[--color-blue-brand] px-4 text-xs font-black uppercase text-white"
+                className="btn-tactile flex min-h-10 w-full items-center justify-center rounded-lg bg-[--color-blue-brand] px-4 text-xs font-black uppercase text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand] focus-visible:ring-offset-1"
               >
                 Sign In
               </Link>
@@ -320,7 +320,7 @@ export function Header() {
                   setMobileNavOpen(false);
                   openSignUp();
                 }}
-                className="btn-tactile flex min-h-10 w-full items-center justify-center rounded-lg border border-slate-300 bg-white px-4 text-xs font-black uppercase text-slate-700"
+                className="btn-tactile flex min-h-10 w-full items-center justify-center rounded-lg border border-slate-300 bg-white px-4 text-xs font-black uppercase text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand] focus-visible:ring-offset-1"
               >
                 Sign Up
               </Link>
