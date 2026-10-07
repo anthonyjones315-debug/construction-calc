@@ -46,4 +46,52 @@ describe("generateInvoiceHtml", () => {
     expect(html).toContain("#ea580c");
     expect(html).toContain("Kitchen Remodel");
   });
+
+  it("sanitizes user inputs against HTML injection and XSS", () => {
+    const payload: FinalizeEstimateInput = {
+      name: "<script>alert('xss-name')</script>",
+      calculator_id: "interior/flooring-waste",
+      client_name: "<img src=x onerror=alert('xss-client')>",
+      job_site_address: "<iframe src='evil.com'></iframe>",
+      quote_note: "<b>Note:</b> <script>steal()</script>",
+      total_cost: 500.0,
+      results: [
+        { label: "<svg onload=alert(1)>", value: 100, unit: "<b>unit</b>" },
+      ],
+      material_list: ["<script>xssInMaterial()</script>"],
+      inputs: {},
+      metadata: {
+        title: "XSS Test",
+        calculatorLabel: "<p>Unsafe Label</p>",
+        generatedAt: "March 17, 2026",
+        jobName: "<script>xssJob()</script>",
+      },
+      signature: {
+        signerName: null,
+        signerEmail: null,
+        signatureDataUrl: null,
+        signedAt: null,
+      },
+    };
+
+    const html = generateInvoiceHtml({
+      payload,
+      contractorName: "<b>Hacked Contractor</b>",
+      contractorContact: "<a href='javascript:alert(1)'>Call Me</a>",
+      contractorLogoUrl: null,
+    });
+
+    // Verify raw unescaped HTML tags are NOT present in the output
+    expect(html).not.toContain("<script>alert('xss-name')</script>");
+    expect(html).not.toContain("<img src=x onerror=alert('xss-client')>");
+    expect(html).not.toContain("<iframe src='evil.com'></iframe>");
+    expect(html).not.toContain("<b>Hacked Contractor</b>");
+    expect(html).not.toContain("<script>xssInMaterial()</script>");
+
+    // Verify escaped entities are present instead
+    expect(html).toContain("&lt;img src=x onerror=alert(&#39;xss-client&#39;)&gt;");
+    expect(html).toContain("&lt;iframe src=&#39;evil.com&#39;&gt;&lt;/iframe&gt;");
+    expect(html).toContain("&lt;b&gt;Hacked Contractor&lt;/b&gt;");
+    expect(html).toContain("&lt;script&gt;xssInMaterial()&lt;/script&gt;");
+  });
 });
