@@ -11,6 +11,7 @@ import {
   normalizeEstimateStatus,
   type EstimateStatus,
 } from "@/lib/estimates/status";
+import { getDateTimeFormatter } from "@/utils/formatters";
 import {
   centsToDollars,
   multiplyDollars,
@@ -491,7 +492,7 @@ export function FinancialDashboard({
           ? "Refreshing live metrics…"
           : "Live metrics update every 15s"}
         {lastUpdatedAt
-          ? ` · Last sync ${lastUpdatedAt.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`
+          ? ` · Last sync ${getDateTimeFormatter({ hour: "numeric", minute: "2-digit" }).format(lastUpdatedAt)}`
           : ""}
       </p>
 
