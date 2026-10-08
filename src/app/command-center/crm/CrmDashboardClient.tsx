@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Users, Search, Plus, Phone, Mail, MapPin, MoreHorizontal, ArrowRight, ArrowLeft } from "lucide-react";
 import type { ClientDTO } from "@/lib/dal/clients";
@@ -14,10 +14,27 @@ export function CrmDashboardClient({ initialClients }: { initialClients: ClientD
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingClient, setEditingClient] = useState<ClientDTO | null>(null);
 
-  const filteredClients = clients.filter((client) => {
-    const haystack = [client.name, client.email, client.phone, client.address].join(" ").toLowerCase();
-    return haystack.includes(searchQuery.toLowerCase());
-  });
+  // Performance Optimization: Wrap client search query filtering in useMemo
+  // and pre-compute lowercased search query outside client iterations.
+  // This avoids redundant array allocations and string lowercasing on unrelated re-renders.
+  const filteredClients = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return clients;
+
+    return clients.filter((client) => {
+      const name = client.name ? client.name.toLowerCase() : "";
+      const email = client.email ? client.email.toLowerCase() : "";
+      const phone = client.phone ? client.phone.toLowerCase() : "";
+      const address = client.address ? client.address.toLowerCase() : "";
+
+      return (
+        name.includes(query) ||
+        email.includes(query) ||
+        phone.includes(query) ||
+        address.includes(query)
+      );
+    });
+  }, [clients, searchQuery]);
 
   const handleCreateNew = () => {
     setEditingClient(null);
