@@ -50,11 +50,17 @@ const emptyRow = {
   unit_cost: 0,
 };
 
-function PriceBookContent() {
+export function PriceBookContent({
+  initialMaterials,
+}: {
+  initialMaterials?: UserMaterial[];
+} = {}) {
   const { userId, isLoaded } = useAuth();
   const session = userId ? { user: { id: userId } } : null;
   const status = isLoaded ? (userId ? "authenticated" : "unauthenticated") : "loading";
-  const [materials, setMaterials] = useState<UserMaterial[] | null>(null);
+  const [materials, setMaterials] = useState<UserMaterial[] | null>(
+    initialMaterials ?? null,
+  );
   const [editId, setEditId] = useState<string | null>(null);
   const [editRow, setEditRow] = useState({ ...emptyRow });
   const [newRow, setNewRow] = useState({ ...emptyRow });
@@ -216,10 +222,11 @@ function PriceBookContent() {
           </p>
         </div>
         <button
+          type="button"
           onClick={() => setAdding(true)}
-          className="flex items-center gap-2 bg-[--color-blue-brand] hover:bg-[--color-blue-dark] text-white font-bold px-4 py-2.5 rounded-xl text-sm transition-all"
+          className="flex items-center gap-2 bg-[--color-blue-brand] hover:bg-[--color-blue-dark] text-white font-bold px-4 py-2.5 rounded-xl text-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand] focus-visible:ring-offset-2"
         >
-          <Plus className="w-4 h-4" /> Add Material
+          <Plus className="w-4 h-4" aria-hidden /> Add Material
         </button>
       </div>
 
@@ -259,14 +266,16 @@ function PriceBookContent() {
               setNewRow((r) => ({ ...r, material_name: e.target.value }))
             }
             placeholder="Material name"
-            className="col-span-2 sm:col-span-1 input-base"
+            aria-label="New material name"
+            className="col-span-2 sm:col-span-1 input-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand]"
           />
           <select
             value={newRow.category}
             onChange={(e) =>
               setNewRow((r) => ({ ...r, category: e.target.value }))
             }
-            className="input-base"
+            aria-label="New material category"
+            className="input-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand]"
           >
             {CATEGORIES.map((c) => (
               <option key={c}>{c}</option>
@@ -277,7 +286,8 @@ function PriceBookContent() {
             onChange={(e) =>
               setNewRow((r) => ({ ...r, unit_type: e.target.value }))
             }
-            className="input-base"
+            aria-label="New material unit type"
+            className="input-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand]"
           >
             {UNIT_TYPES.map((u) => (
               <option key={u}>{u}</option>
@@ -297,7 +307,8 @@ function PriceBookContent() {
                   unit_cost: parseFloat(e.target.value) || 0,
                 }))
               }
-              className="input-base flex-1"
+              aria-label="New material unit cost in dollars"
+              className="input-base flex-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand]"
               placeholder="0.00"
             />
           </div>
@@ -305,19 +316,19 @@ function PriceBookContent() {
             <button
               type="button"
               onClick={() => setAdding(false)}
-              className="rounded-lg border border-[--color-border] px-3 py-1.5 text-sm text-[--color-ink-dim] transition-colors hover:border-[--color-blue-brand]/35 hover:text-[--color-ink]"
+              className="rounded-lg border border-[--color-border] px-3 py-1.5 text-sm text-[--color-ink-dim] transition-colors hover:border-[--color-blue-brand]/35 hover:text-[--color-ink] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="flex items-center gap-1.5 px-4 py-1.5 bg-[--color-blue-brand] text-white text-sm font-bold rounded-lg"
+              className="flex items-center gap-1.5 px-4 py-1.5 bg-[--color-blue-brand] text-white text-sm font-bold rounded-lg transition-colors hover:bg-[--color-blue-dark] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand] focus-visible:ring-offset-2 disabled:opacity-50"
             >
               {saving ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden />
               ) : (
-                <Check className="w-3.5 h-3.5" />
+                <Check className="w-3.5 h-3.5" aria-hidden />
               )}{" "}
               Save
             </button>
@@ -332,8 +343,9 @@ function PriceBookContent() {
             No materials yet. Add your local pricing to auto-fill calculators.
           </p>
           <button
+            type="button"
             onClick={() => setAdding(true)}
-            className="text-[--color-blue-brand] font-medium text-sm hover:underline"
+            className="text-[--color-blue-brand] font-medium text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand] rounded-md px-2 py-1"
           >
             + Add your first material
           </button>
@@ -379,7 +391,8 @@ function PriceBookContent() {
                                       material_name: e.target.value,
                                     }))
                                   }
-                                  className="input-base w-full text-xs"
+                                  aria-label={`Edit name for ${mat.material_name}`}
+                                  className="input-base w-full text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand]"
                                 />
                               </td>
                               <td className="px-3 py-2 hidden sm:table-cell">
@@ -391,7 +404,8 @@ function PriceBookContent() {
                                       unit_type: e.target.value,
                                     }))
                                   }
-                                  className="input-base text-xs"
+                                  aria-label={`Edit unit type for ${mat.material_name}`}
+                                  className="input-base text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand]"
                                 >
                                   {UNIT_TYPES.map((u) => (
                                     <option key={u}>{u}</option>
@@ -412,22 +426,27 @@ function PriceBookContent() {
                                         parseFloat(e.target.value) || 0,
                                     }))
                                   }
-                                  className="input-base w-24 text-right text-xs ml-auto"
+                                  aria-label={`Edit cost per unit for ${mat.material_name}`}
+                                  className="input-base w-24 text-right text-xs ml-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand]"
                                 />
                               </td>
                               <td className="px-3 py-2">
                                 <div className="flex gap-1">
                                   <button
+                                    type="button"
                                     onClick={() => handleUpdate(mat.id)}
-                                    className="rounded p-1.5 text-emerald-600 transition-colors hover:bg-emerald-500/10"
+                                    aria-label={`Save changes for ${mat.material_name}`}
+                                    className="rounded p-1.5 text-emerald-600 transition-colors hover:bg-emerald-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
                                   >
-                                    <Check className="w-3.5 h-3.5" />
+                                    <Check className="w-3.5 h-3.5" aria-hidden />
                                   </button>
                                   <button
+                                    type="button"
                                     onClick={() => setEditId(null)}
-                                    className="rounded p-1.5 text-[--color-ink-dim] transition-colors hover:bg-[--color-surface-alt]"
+                                    aria-label={`Cancel editing ${mat.material_name}`}
+                                    className="rounded p-1.5 text-[--color-ink-dim] transition-colors hover:bg-[--color-surface-alt] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
                                   >
-                                    <X className="w-3.5 h-3.5" />
+                                    <X className="w-3.5 h-3.5" aria-hidden />
                                   </button>
                                 </div>
                               </td>
@@ -446,6 +465,7 @@ function PriceBookContent() {
                               <td className="px-3 py-3">
                                 <div className="flex gap-1">
                                   <button
+                                    type="button"
                                     onClick={() => {
                                       if (String(mat.id).startsWith("pending-"))
                                         return;
@@ -457,19 +477,22 @@ function PriceBookContent() {
                                         unit_cost: mat.unit_cost,
                                       });
                                     }}
-                                    className="rounded p-1.5 text-[--color-ink-dim] transition-all hover:bg-[--color-blue-soft] hover:text-[--color-blue-brand]"
+                                    aria-label={`Edit ${mat.material_name}`}
+                                    className="rounded p-1.5 text-[--color-ink-dim] transition-all hover:bg-[--color-blue-soft] hover:text-[--color-blue-brand] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand]"
                                   >
-                                    <Pencil className="w-3.5 h-3.5" />
+                                    <Pencil className="w-3.5 h-3.5" aria-hidden />
                                   </button>
                                   <button
+                                    type="button"
                                     onClick={() => {
                                       if (String(mat.id).startsWith("pending-"))
                                         return;
                                       handleDelete(mat.id);
                                     }}
-                                    className="rounded p-1.5 text-[--color-ink-dim] transition-all hover:bg-red-500/10 hover:text-red-500"
+                                    aria-label={`Delete ${mat.material_name}`}
+                                    className="rounded p-1.5 text-[--color-ink-dim] transition-all hover:bg-red-500/10 hover:text-red-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
                                   >
-                                    <Trash2 className="w-3.5 h-3.5" />
+                                    <Trash2 className="w-3.5 h-3.5" aria-hidden />
                                   </button>
                                 </div>
                               </td>
