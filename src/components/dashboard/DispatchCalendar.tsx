@@ -91,7 +91,8 @@ function SlideOver({
           <h3 className="text-sm font-bold text-slate-800">Event Details</h3>
           <button
             onClick={onClose}
-            className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+            aria-label="Close event details"
+            className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand]"
           >
             <X className="h-4 w-4" />
           </button>
