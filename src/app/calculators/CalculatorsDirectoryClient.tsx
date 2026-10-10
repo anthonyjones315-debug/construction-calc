@@ -9,6 +9,8 @@ import { getRecentPaths } from "@/lib/recommendations/activity";
 import {
   HardHat,
   Search,
+  X,
+  SearchX,
   BrickWall,
   Hammer,
   Triangle,
@@ -222,6 +224,16 @@ export function CalculatorsDirectoryClient() {
                   onChange={(event) => setQuery(event.target.value)}
                   aria-label="Search construction calculators by trade, task, or name"
                 />
+                {query && (
+                  <button
+                    type="button"
+                    onClick={() => setQuery("")}
+                    className="btn-tactile rounded-full p-1.5 text-[--color-ink-dim] transition-colors hover:bg-[--color-surface-alt] hover:text-[--color-ink] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[--color-blue-brand]"
+                    aria-label="Clear search input"
+                  >
+                    <X className="h-4 w-4" aria-hidden />
+                  </button>
+                )}
               </div>
             </div>
             <p className="mt-4 text-xs font-semibold tracking-wider text-[--color-ink-dim] uppercase">
@@ -254,11 +266,30 @@ export function CalculatorsDirectoryClient() {
         {/* ── Search results (replaces chip strip when active) ─── */}
         {!showRecommended && (
           <div className="mx-auto w-full max-w-5xl px-4 pt-4 sm:px-6">
+            <div role="status" aria-live="polite" className="sr-only">
+              {results.length === 0
+                ? `No calculators found matching "${query}"`
+                : `${results.length} calculator${results.length === 1 ? "" : "s"} found`}
+            </div>
             {results.length === 0 ? (
-              <p className="text-xs text-slate-500">
-                No calculators match that search. Try a different trade or task
-                name.
-              </p>
+              <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[--color-border] bg-white p-6 text-center sm:p-8">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[--color-surface-alt]">
+                  <SearchX className="h-5 w-5 text-[--color-ink-dim]" aria-hidden />
+                </div>
+                <p className="mt-3 text-sm font-bold text-[--color-ink]">
+                  No calculators match &quot;{query}&quot;
+                </p>
+                <p className="mt-1 text-xs text-[--color-ink-mid]">
+                  Try searching for a different trade, task name, or keyword.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setQuery("")}
+                  className="btn-tactile mt-4 rounded-xl border border-[--color-border] bg-[--color-surface-alt] px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider text-[--color-blue-brand] transition-colors hover:bg-[--color-blue-soft] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[--color-blue-brand]"
+                >
+                  Clear Search
+                </button>
+              </div>
             ) : (
               <div className="grid items-stretch gap-2 sm:grid-cols-2 lg:grid-cols-3">
                 {results.map((page) => (
