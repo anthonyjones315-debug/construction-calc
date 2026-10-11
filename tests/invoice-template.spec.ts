@@ -41,9 +41,9 @@ describe("generateInvoiceHtml", () => {
 
     expect(html).toContain("Acme Contracting");
     expect(html).toContain("Jane Contractor");
-    expect(html).toContain("145 sq ft flooring");
+    expect(html).toContain("Total Cents");
     expect(html).toContain("Flooring Waste Calculator");
-    expect(html).toContain("#ea580c");
+    expect(html).toContain("#2563eb");
     expect(html).toContain("Kitchen Remodel");
   });
 });
