@@ -46,4 +46,59 @@ describe("generateInvoiceHtml", () => {
     expect(html).toContain("#ea580c");
     expect(html).toContain("Kitchen Remodel");
   });
+
+  it("sanitizes user inputs to prevent HTML injection and XSS", () => {
+    const payload: FinalizeEstimateInput = {
+      name: "Remodel & Addition <script>",
+      calculator_id: "interior/flooring-waste",
+      client_name: "John <img src=x onerror=alert(1)> Doe",
+      job_site_address: "123 Main St & 'Quote'",
+      total_cost: 500,
+      quote_note: "<iframe src=javascript:alert(1)></iframe>",
+      results: [
+        { label: "Item <b style='color:red'>X</b>", value: 500, unit: "sq ft <tag>" },
+      ],
+      material_list: ["<script>bad()</script> Oak Planks"],
+      inputs: {
+        selected_county: "Erie",
+      },
+      metadata: {
+        title: "Estimate",
+        calculatorLabel: "<b>Custom Calc</b>",
+        generatedAt: "March 17, 2026",
+        jobName: "Remodel & Addition <script>",
+      },
+      signature: {
+        signerName: "Signer <Name>",
+        signerEmail: "test@example.com",
+        signatureDataUrl: "https://example.com/logo.png\" onload=\"alert(1)",
+        signedAt: "2026-03-17T00:00:00Z",
+      },
+    };
+
+    const html = generateInvoiceHtml({
+      payload,
+      contractorName: "Evil <script>Corp</script>",
+      contractorContact: "555 & 1234",
+      contractorLogoUrl: "http://example.com/logo.png' onerror='alert(1)",
+    });
+
+    expect(html).not.toContain("Remodel & Addition <script>");
+    expect(html).toContain("Remodel &amp; Addition &lt;script&gt;");
+
+    expect(html).not.toContain("<img src=x onerror=alert(1)>");
+    expect(html).toContain("John &lt;img src=x onerror=alert(1)&gt; Doe");
+
+    expect(html).not.toContain("<script>bad()</script>");
+    expect(html).toContain("&lt;script&gt;bad()&lt;/script&gt; Oak Planks");
+
+    expect(html).not.toContain("Evil <script>Corp</script>");
+    expect(html).toContain("Evil &lt;script&gt;Corp&lt;/script&gt;");
+
+    expect(html).not.toContain("logo.png\" onload=\"alert(1)");
+    expect(html).toContain("logo.png&quot; onload=&quot;alert(1)");
+
+    expect(html).not.toContain("<iframe src=javascript:alert(1)>");
+    expect(html).toContain("&lt;iframe src=javascript:alert(1)&gt;&lt;/iframe&gt;");
+  });
 });
