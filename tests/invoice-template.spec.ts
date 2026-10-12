@@ -14,9 +14,12 @@ describe("generateInvoiceHtml", () => {
         { label: "Total Cents", value: 184255, unit: "cents" },
         { label: "Waste Factor", value: 10, unit: "%" },
       ],
-      material_list: ["145 sq ft flooring", "2 boxes trim"],
+      material_list: ["2 boxes trim"],
       inputs: {
         selected_county: "Oneida",
+        line_items: [
+          { name: "145 sq ft flooring", quantity: 1, unit: "sq ft", pricePerUnit: 1842.55 },
+        ],
       },
       metadata: {
         title: "Kitchen Remodel Estimate",

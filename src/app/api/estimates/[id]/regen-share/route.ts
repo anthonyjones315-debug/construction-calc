@@ -60,10 +60,18 @@ export async function POST(
       .eq(tenantColumn, tenantId)
       .single();
 
-    if (estimateError || !estimateRow) {
+    if (estimateError) {
+      Sentry.captureException(estimateError);
       return NextResponse.json(
-        { error: estimateError?.message ?? "Estimate not found." },
-        { status: estimateError ? 500 : 404 },
+        { error: "Internal Server Error" },
+        { status: 500 },
+      );
+    }
+
+    if (!estimateRow) {
+      return NextResponse.json(
+        { error: "Estimate not found." },
+        { status: 404 },
       );
     }
 
