@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { memo, useState, useCallback, useMemo } from "react";
 import {
   DndContext,
   DragOverlay,
@@ -47,7 +47,13 @@ type Props = {
 
 /* ──────────────────── sortable card ──────────────────── */
 
-function KanbanCard({ project }: { project: KanbanProject }) {
+// Performance: Wrapped with React.memo to prevent re-rendering cards
+// during drag operations when unrelated board/column state changes.
+const KanbanCard = memo(function KanbanCard({
+  project,
+}: {
+  project: KanbanProject;
+}) {
   const {
     attributes,
     listeners,
@@ -104,17 +110,22 @@ function KanbanCard({ project }: { project: KanbanProject }) {
       </div>
     </div>
   );
-}
+});
 
 /* ──────────────────── column ──────────────────── */
 
-function KanbanColumn({
+// Performance: Wrapped with React.memo and memoized itemIds array
+// to maintain referential stability for @dnd-kit/sortable's SortableContext,
+// preventing unnecessary context updates and column re-renders during drag events.
+const KanbanColumn = memo(function KanbanColumn({
   column,
   items,
 }: {
   column: (typeof COLUMNS)[number];
   items: KanbanProject[];
 }) {
+  const itemIds = useMemo(() => items.map((p) => p.id), [items]);
+
   return (
     <div className="flex min-h-[220px] w-[160px] shrink-0 flex-col rounded-2xl border border-slate-200 bg-slate-50/80 p-2 sm:min-h-[320px] sm:w-full sm:min-w-[180px] snap-start">
       <div className="mb-2 flex items-center gap-2 px-1">
@@ -129,10 +140,7 @@ function KanbanColumn({
           {items.length}
         </span>
       </div>
-      <SortableContext
-        items={items.map((p) => p.id)}
-        strategy={verticalListSortingStrategy}
-      >
+      <SortableContext items={itemIds} strategy={verticalListSortingStrategy}>
         <div className="flex flex-1 flex-col gap-1.5 overflow-y-auto pr-0.5">
           {items.map((project) => (
             <KanbanCard key={project.id} project={project} />
@@ -148,7 +156,7 @@ function KanbanColumn({
       </SortableContext>
     </div>
   );
-}
+});
 
 /* ──────────────────── board ──────────────────── */
 
@@ -211,9 +219,7 @@ export function KanbanBoard({ projects, onStatusChange }: Props) {
       if (oldStatus === newStatus) return;
 
       setItems((prev) =>
-        prev.map((p) =>
-          p.id === projectId ? { ...p, status: newStatus } : p,
-        ),
+        prev.map((p) => (p.id === projectId ? { ...p, status: newStatus } : p)),
       );
 
       onStatusChange?.(projectId, newStatus);
@@ -228,7 +234,10 @@ export function KanbanBoard({ projects, onStatusChange }: Props) {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1 snap-x snap-mandatory scroll-smooth" style={{ WebkitOverflowScrolling: 'touch' }}>
+      <div
+        className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1 snap-x snap-mandatory scroll-smooth"
+        style={{ WebkitOverflowScrolling: "touch" }}
+      >
         {COLUMNS.map((col) => (
           <KanbanColumn
             key={col.id}
