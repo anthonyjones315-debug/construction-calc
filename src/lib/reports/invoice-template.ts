@@ -100,6 +100,16 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
         )
         .join("");
 
+  const materialListRows =
+    Array.isArray(payload.material_list) && payload.material_list.length > 0
+      ? `<div style="margin-top: 24px; padding: 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;">
+        <p style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 6px;">Materials Required</p>
+        <ul style="padding-left: 18px; font-size: 12px; color: #374151; line-height: 1.6;">
+          ${payload.material_list.map((item) => `<li>${item}</li>`).join("")}
+        </ul>
+      </div>`
+      : "";
+
   // Extract tax info from inputs if available
   const subtotalCents = typeof inputs?.subtotal_cents === "number" ? inputs.subtotal_cents : null;
   const taxCents = typeof inputs?.tax_cents === "number" ? inputs.tax_cents : null;
@@ -124,8 +134,6 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
     | { signatureDataUrl?: string; signedAt?: string; signerName?: string }
     | undefined;
 
-
-
   return `<!DOCTYPE html>
 <html lang="en">
   <head>
@@ -136,7 +144,7 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
       :root { --color-primary: #ea580c; }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
 
       html {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -240,7 +248,8 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
         </div>
       </div>
 
-
+      <!-- Material List -->
+      ${materialListRows}
 
       <!-- Signature -->
       ${
@@ -283,31 +292,28 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
         </p>
       </div>
 
-        <!-- Quote Note (customer-facing) -->
-        ${
-          quoteNote
-            ? `<section class="glass-panel px-5 py-4">
-               <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/80">
-                 Note
-               </p>
-               <p class="mt-1 text-sm text-white/90 whitespace-pre-line">${quoteNote}</p>
-             </section>`
-            : ""
-        }
+      <!-- Quote Note (customer-facing) -->
+      ${
+        quoteNote
+          ? `<section class="glass-panel px-5 py-4">
+             <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/80">
+               Note
+             </p>
+             <p class="mt-1 text-sm text-white/90 whitespace-pre-line">${quoteNote}</p>
+           </section>`
+          : ""
+      }
 
-
-
-        <!-- Footer -->
-        <footer class="pt-4 text-center text-[8pt] text-slate-500">
-          <p>Powered by Pro Construction Calc</p>
-          <p class="text-[8pt] mt-0.5">
-            <a href="https://proconstructioncalc.com/terms" class="text-slate-500 hover:text-blue-400">Terms</a>
-            <span class="mx-1">•</span>
-            <a href="https://proconstructioncalc.com/privacy" class="text-slate-500 hover:text-blue-400">Privacy</a>
-          </p>
-        </footer>
+      <!-- Footer -->
+      <footer class="pt-4 text-center text-[8pt] text-slate-500">
+        <p>Powered by Pro Construction Calc</p>
+        <p class="text-[8pt] mt-0.5">
+          <a href="https://proconstructioncalc.com/terms" class="text-slate-500 hover:text-blue-400">Terms</a>
+          <span class="mx-1">•</span>
+          <a href="https://proconstructioncalc.com/privacy" class="text-slate-500 hover:text-blue-400">Privacy</a>
+        </p>
+      </footer>
       <span style="display:none;color:#ea580c;"></span>
-      </main>
     </div>
     <script>document.fonts.ready.then(() => { window.__fontsReady = true; });</script>
   </body>
