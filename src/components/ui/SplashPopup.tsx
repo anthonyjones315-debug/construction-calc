@@ -19,8 +19,12 @@ import {
 
 const STORAGE_KEY = "operators_manual_splash_v1";
 
-export function SplashPopup() {
-  const [show, setShow] = useState(false);
+type SplashPopupProps = {
+  forceOpen?: boolean;
+};
+
+export function SplashPopup({ forceOpen = false }: SplashPopupProps) {
+  const [show, setShow] = useState(forceOpen);
 
   function dismiss() {
     setShow(false);
@@ -33,14 +37,22 @@ export function SplashPopup() {
 
   useEffect(() => {
     try {
+      if (forceOpen) {
+        const timer = setTimeout(() => setShow(true), 0);
+        return () => clearTimeout(timer);
+      }
+
       if (!localStorage.getItem(STORAGE_KEY)) {
         const timer = setTimeout(() => setShow(true), 1200);
         return () => clearTimeout(timer);
       }
     } catch {
-      /* private browsing */
+      if (forceOpen) {
+        const timer = setTimeout(() => setShow(true), 0);
+        return () => clearTimeout(timer);
+      }
     }
-  }, []);
+  }, [forceOpen]);
 
   useEffect(() => {
     if (!show) return;
@@ -78,8 +90,8 @@ export function SplashPopup() {
           <button
             type="button"
             onClick={dismiss}
-            className="absolute right-3 top-3 z-20 flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-[--color-ink-dim] transition-colors hover:bg-[--color-surface-alt] hover:text-[--color-ink]"
-            aria-label="Close"
+            className="absolute right-3 top-3 z-20 flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-[--color-ink-dim] transition-colors hover:bg-[--color-surface-alt] hover:text-[--color-ink] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand]"
+            aria-label="Close how-to guide popup"
           >
             <X className="w-5 h-5" aria-hidden />
           </button>
@@ -138,7 +150,7 @@ export function SplashPopup() {
           <div className="mt-3 flex flex-col gap-2">
             <Link
               href={routes.guide}
-              className="flex min-h-[44px] w-full items-center justify-center rounded-xl bg-[--color-blue-brand] px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[--color-blue-dark] cursor-pointer"
+              className="flex min-h-[44px] w-full items-center justify-center rounded-xl bg-[--color-blue-brand] px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[--color-blue-dark] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand] cursor-pointer"
               onClick={dismiss}
             >
               Open How-To Guide
@@ -146,13 +158,13 @@ export function SplashPopup() {
             <GlassButton
               type="button"
               onClick={dismiss}
-              className="min-h-[44px] w-full rounded-xl border-transparent bg-transparent text-xs text-[--color-ink-mid] shadow-none hover:bg-[--color-surface-alt] hover:text-[--color-ink]"
+              className="min-h-[44px] w-full rounded-xl border-transparent bg-transparent text-xs text-[--color-ink-mid] shadow-none hover:bg-[--color-surface-alt] hover:text-[--color-ink] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand]"
             >
               Skip and open calculators
             </GlassButton>
             <Link
               href={routes.fieldNotes}
-              className="flex min-h-[44px] w-full cursor-pointer items-center justify-center rounded-xl text-xs text-primary transition-colors hover:bg-[--color-blue-soft]"
+              className="flex min-h-[44px] w-full cursor-pointer items-center justify-center rounded-xl text-xs text-primary transition-colors hover:bg-[--color-blue-soft] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand]"
               onClick={dismiss}
             >
               Browse Field Notes →
