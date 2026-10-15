@@ -25,12 +25,13 @@ async function checkTable(
       .limit(1);
 
     if (error) {
+      Sentry.captureException(error);
       return {
         schema,
         table,
         ok: false,
         count: null,
-        error: error.message,
+        error: "Database check failed",
       };
     }
 
@@ -42,12 +43,13 @@ async function checkTable(
       error: null,
     };
   } catch (error) {
+    Sentry.captureException(error);
     return {
       schema,
       table,
       ok: false,
       count: null,
-      error: error instanceof Error ? error.message : String(error),
+      error: "Database check failed",
     };
   }
 }
