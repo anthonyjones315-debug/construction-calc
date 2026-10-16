@@ -22,6 +22,7 @@ export function FAQAccordion({ items }: { items: FAQItem[] }) {
     <div className="flex flex-col gap-3">
       {items.map((item, index) => {
         const isOpen = openItems[index] === true;
+        const buttonId = `${baseId}-button-${index}`;
         const panelId = `${baseId}-panel-${index}`;
 
         return (
@@ -30,11 +31,12 @@ export function FAQAccordion({ items }: { items: FAQItem[] }) {
             className="rounded-2xl border border-[--color-border] bg-white transition-all duration-200 hover:border-[--color-blue-brand]/40 hover:shadow-sm"
           >
             <button
+              id={buttonId}
               type="button"
               aria-expanded={isOpen}
               aria-controls={panelId}
               onClick={() => toggleItem(index)}
-              className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left focus:outline-none"
+              className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand] focus-visible:ring-offset-2"
             >
               <h2 className="text-base font-bold tracking-tight text-[--color-ink]">
                 {item.q}
@@ -50,6 +52,8 @@ export function FAQAccordion({ items }: { items: FAQItem[] }) {
             {isOpen && (
               <div
                 id={panelId}
+                role="region"
+                aria-labelledby={buttonId}
                 className="border-t border-[--color-border]/60 bg-[--color-surface-alt]/50 px-5 py-4 text-[14px] leading-relaxed text-[--color-ink-mid]"
               >
                 {item.a}
