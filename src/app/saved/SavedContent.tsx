@@ -1837,6 +1837,7 @@ export function SavedContent({
         <div className="space-y-3">
           {estimates.map((est) => {
             const hero = est.results?.find((r) => r.highlight);
+            const margin = getProjectProfitMargin(est);
             return (
               <div key={est.id} className="content-card p-4">
                 <div className="flex items-center justify-between gap-4">
@@ -1865,17 +1866,17 @@ export function SavedContent({
                       <span className="inline-flex items-center rounded-full border border-[--color-border] bg-[--color-surface-alt] px-2 py-0.5 text-xs text-[--color-ink-dim]">
                         {formatStatus(getEstimateStatus(est))}
                       </span>
-                      {getProjectProfitMargin(est) !== null && (
+                      {margin !== null && (
                         <span
                           className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-bold ${
-                            (getProjectProfitMargin(est) ?? 0) < 0
+                            margin < 0
                               ? "border-red-500/35 bg-red-500/10 text-red-500"
-                              : (getProjectProfitMargin(est) ?? 0) > 0
+                              : margin > 0
                                 ? "border-emerald-500/35 bg-emerald-500/10 text-emerald-700"
                                 : "border-[--color-border] bg-[--color-surface-alt] text-[--color-ink-dim]"
                           }`}
                         >
-                          Margin {getProjectProfitMargin(est)?.toFixed(1)}%
+                          Margin {margin.toFixed(1)}%
                         </span>
                       )}
                       <span className="inline-flex items-center rounded-full border border-[--color-border] bg-[--color-surface-alt] px-2 py-0.5 text-xs text-[--color-ink-dim]">
