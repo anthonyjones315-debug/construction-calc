@@ -375,9 +375,15 @@ function getTrackedProjectCost(estimate: SavedEstimate): {
   };
 }
 
-export function getProjectProfitMargin(estimate: SavedEstimate): number | null {
+export function getProjectProfitMargin(
+  estimate: SavedEstimate,
+  trackedCostOverride?: number | null,
+): number | null {
   const revenue = normalizeDollars(toFiniteNumber(estimate.total_cost));
-  const trackedCost = getTrackedProjectCost(estimate).cost;
+  const trackedCost =
+    trackedCostOverride !== undefined
+      ? trackedCostOverride
+      : getTrackedProjectCost(estimate).cost;
   const revenueCents = toCents(revenue);
   const trackedCostCents = trackedCost === null ? null : toCents(trackedCost);
 
@@ -395,7 +401,8 @@ function computeFinancialDashboard(estimates: SavedEstimate[]) {
     .map<ProjectMargin>((estimate) => {
       const revenue = normalizeDollars(toFiniteNumber(estimate.total_cost));
       const trackedProjectCost = getTrackedProjectCost(estimate);
-      const margin = getProjectProfitMargin(estimate);
+      // Reuse pre-computed trackedProjectCost.cost to avoid running getTrackedProjectCost twice
+      const margin = getProjectProfitMargin(estimate, trackedProjectCost.cost);
 
       return {
         id: estimate.id,
