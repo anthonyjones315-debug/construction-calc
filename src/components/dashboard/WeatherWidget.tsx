@@ -19,14 +19,14 @@ type WeatherData = {
 function WeatherIcon({ icon }: { icon: string }) {
   const cls = "h-6 w-6";
   if (icon.includes("rain") || icon.includes("drizzle"))
-    return <CloudRain className={`${cls} text-blue-500`} />;
-  if (icon.includes("snow")) return <Snowflake className={`${cls} text-cyan-400`} />;
+    return <CloudRain className={`${cls} text-blue-500`} aria-hidden="true" />;
+  if (icon.includes("snow")) return <Snowflake className={`${cls} text-cyan-400`} aria-hidden="true" />;
   if (icon.includes("thunder"))
-    return <CloudLightning className={`${cls} text-amber-500`} />;
+    return <CloudLightning className={`${cls} text-amber-500`} aria-hidden="true" />;
   if (icon.includes("clear") || icon.includes("sun"))
-    return <Sun className={`${cls} text-amber-400`} />;
-  if (icon.includes("wind")) return <Wind className={`${cls} text-slate-400`} />;
-  return <Cloud className={`${cls} text-slate-400`} />;
+    return <Sun className={`${cls} text-amber-400`} aria-hidden="true" />;
+  if (icon.includes("wind")) return <Wind className={`${cls} text-slate-400`} aria-hidden="true" />;
+  return <Cloud className={`${cls} text-slate-400`} aria-hidden="true" />;
 }
 
 export function WeatherWidget({ zip }: { zip?: string | null }) {
@@ -62,7 +62,11 @@ export function WeatherWidget({ zip }: { zip?: string | null }) {
   if (!zip) return null;
   if (loading) {
     return (
-      <div className="animate-pulse rounded-2xl border border-slate-200 bg-white p-4">
+      <div
+        className="animate-pulse rounded-2xl border border-slate-200 bg-white p-4"
+        role="status"
+        aria-label="Loading 3-day weather forecast"
+      >
         <div className="h-4 w-24 rounded bg-slate-200" />
         <div className="mt-3 flex gap-3">
           {[1, 2, 3].map((i) => (
@@ -74,7 +78,10 @@ export function WeatherWidget({ zip }: { zip?: string | null }) {
   }
   if (error) {
     return (
-      <div className="rounded-2xl border border-red-100 bg-red-50 p-4 text-xs text-red-500">
+      <div
+        className="rounded-2xl border border-red-100 bg-red-50 p-4 text-xs text-red-500"
+        role="alert"
+      >
         {error}
       </div>
     );
@@ -82,7 +89,10 @@ export function WeatherWidget({ zip }: { zip?: string | null }) {
   if (!weather) return null;
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+    <section
+      className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+      aria-label={`3-Day Forecast for ${weather.location}`}
+    >
       <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
         3-Day Forecast – {weather.location}
       </p>
@@ -108,6 +118,6 @@ export function WeatherWidget({ zip }: { zip?: string | null }) {
           </div>
         ))}
       </div>
-    </div>
+    </section>
   );
 }
