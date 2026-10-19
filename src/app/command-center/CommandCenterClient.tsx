@@ -39,6 +39,7 @@ import { CommandCenterCalculator } from "./CommandCenterCalculator";
 import { getTradePageByPath, tradePages } from "@/app/calculators/_lib/trade-pages";
 import { useProMode } from "@/hooks/useProMode";
 import { useStore } from "@/lib/store";
+import { getDateTimeFormatter } from "@/utils/formatters";
 import { KanbanBoard, type KanbanProject } from "@/components/dashboard/KanbanBoard";
 import { DispatchCalendar, type CalendarEvent } from "@/components/dashboard/DispatchCalendar";
 import { Calendar as CalendarIcon, Columns3 } from "lucide-react";
@@ -328,11 +329,11 @@ function roleBadgeClasses(role: string): string {
 }
 
 function formatJoinedAt(value: string) {
-  return new Date(value).toLocaleDateString("en-US", {
+  return getDateTimeFormatter({
     month: "short",
     day: "numeric",
     year: "numeric",
-  });
+  }).format(new Date(value));
 }
 
 function initialsForName(name: string): string {
@@ -663,27 +664,47 @@ export default function CommandCenterClient({
     : undefined;
   const latestCartItems = estimateCart.slice(-3).reverse();
   const cartItemCount = estimateCart.length;
-  const signedEstimateCount = recentEstimates.filter((estimate) =>
-    ["SIGNED", "Approved"].includes(estimate.status ?? ""),
-  ).length;
-  const sentEstimateCount = recentEstimates.filter((estimate) =>
-    ["PENDING", "Sent"].includes(estimate.status ?? ""),
-  ).length;
-  const draftEstimateCount = Math.max(
-    recentEstimates.length - signedEstimateCount - sentEstimateCount,
-    0,
-  );
-  const todayLabel = new Intl.DateTimeFormat("en-US", {
-    weekday: "long",
-    month: "short",
-    day: "numeric",
-  }).format(new Date());
-  const lastEstimateLabel = recentEstimates[0]
-    ? new Date(recentEstimates[0].updatedAt).toLocaleDateString("en-US", {
+  const { signedEstimateCount, sentEstimateCount, draftEstimateCount } =
+    useMemo(() => {
+      let signed = 0;
+      let sent = 0;
+      let draft = 0;
+
+      for (const estimate of recentEstimates) {
+        const status = estimate.status ?? "";
+        if (status === "SIGNED" || status === "Approved") {
+          signed++;
+        } else if (status === "PENDING" || status === "Sent") {
+          sent++;
+        } else {
+          draft++;
+        }
+      }
+
+      return {
+        signedEstimateCount: signed,
+        sentEstimateCount: sent,
+        draftEstimateCount: draft,
+      };
+    }, [recentEstimates]);
+
+  const todayLabel = useMemo(
+    () =>
+      getDateTimeFormatter({
+        weekday: "long",
         month: "short",
         day: "numeric",
-      })
-    : "No estimate activity yet";
+      }).format(new Date()),
+    [],
+  );
+
+  const lastEstimateLabel = useMemo(() => {
+    if (!recentEstimates[0]) return "No estimate activity yet";
+    return getDateTimeFormatter({
+      month: "short",
+      day: "numeric",
+    }).format(new Date(recentEstimates[0].updatedAt));
+  }, [recentEstimates]);
   const recentEstimatePreview = recentEstimates.slice(0, 4);
   const memberPreview = members.slice(0, 6);
 
@@ -696,10 +717,10 @@ export default function CommandCenterClient({
         status: estimateStatusToKanbanColumn(est.status),
         customerName: est.clientName,
         pipelineValue: null,
-        startDate: new Date(est.updatedAt).toLocaleDateString("en-US", {
+        startDate: getDateTimeFormatter({
           month: "short",
           day: "numeric",
-        }),
+        }).format(new Date(est.updatedAt)),
       })),
     [recentEstimates],
   );
@@ -1402,10 +1423,10 @@ export default function CommandCenterClient({
                   <div className="mt-4 flex items-center justify-between">
                     <p className="text-xs text-[--color-ink-dim]">
                       Updated{" "}
-                      {new Date(estimate.updatedAt).toLocaleDateString("en-US", {
+                      {getDateTimeFormatter({
                         month: "short",
                         day: "numeric",
-                      })}
+                      }).format(new Date(estimate.updatedAt))}
                     </p>
                     <div className="flex items-center gap-2">
                        <button
