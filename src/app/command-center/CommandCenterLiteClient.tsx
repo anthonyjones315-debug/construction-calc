@@ -17,6 +17,7 @@ import {
   Lightbulb,
 } from "lucide-react";
 import { routes, getEstimateDetailRoute } from "@routes";
+import { getDateTimeFormatter } from "@/utils/formatters";
 import SignedEstimatesNotificationsClient from "./SignedEstimatesNotificationsClient";
 
 type TeamMember = {
@@ -123,35 +124,25 @@ export default function CommandCenterLiteClient({
     "idle",
   );
 
-  const signedCount = useMemo(
-    () =>
-      recentEstimates.filter(
-        (estimate) =>
-          estimate.status === "SIGNED" || estimate.status === "Approved",
-      ).length,
-    [recentEstimates],
-  );
+  // Calculate status counts in a single pass to eliminate redundant filter iterations
+  const { signedCount, sentCount, draftCount } = useMemo(() => {
+    let signed = 0;
+    let sent = 0;
+    let draft = 0;
 
-  const sentCount = useMemo(
-    () =>
-      recentEstimates.filter(
-        (estimate) =>
-          estimate.status === "PENDING" || estimate.status === "Sent",
-      ).length,
-    [recentEstimates],
-  );
+    for (let i = 0; i < recentEstimates.length; i++) {
+      const status = recentEstimates[i].status;
+      if (status === "SIGNED" || status === "Approved") {
+        signed++;
+      } else if (status === "PENDING" || status === "Sent") {
+        sent++;
+      } else {
+        draft++;
+      }
+    }
 
-  const draftCount = useMemo(
-    () =>
-      recentEstimates.filter(
-        (estimate) =>
-          estimate.status !== "SIGNED" &&
-          estimate.status !== "Approved" &&
-          estimate.status !== "PENDING" &&
-          estimate.status !== "Sent",
-      ).length,
-    [recentEstimates],
-  );
+    return { signedCount: signed, sentCount: sent, draftCount: draft };
+  }, [recentEstimates]);
 
   const quickLinks: Array<{
     label: string;
@@ -465,14 +456,11 @@ export default function CommandCenterLiteClient({
                       {estimate.clientName || "No client"}
                     </p>
                     <p className="mt-0.5 text-[10px] text-slate-400">
-                      {new Date(estimate.updatedAt).toLocaleDateString(
-                        "en-US",
-                        {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        },
-                      )}
+                      {getDateTimeFormatter({
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      }).format(new Date(estimate.updatedAt))}
                     </p>
                   </div>
                   <span
