@@ -72,8 +72,8 @@ function KanbanCard({ project }: { project: KanbanProject }) {
       <button
         {...attributes}
         {...listeners}
-        className="absolute left-1 top-1/2 -translate-y-1/2 cursor-grab rounded p-0.5 text-slate-300 opacity-0 transition-opacity group-hover:opacity-100 active:cursor-grabbing"
-        aria-label="Drag to reorder"
+        className="absolute left-1 top-1/2 -translate-y-1/2 cursor-grab rounded p-0.5 text-slate-400 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand] focus-visible:ring-offset-1 active:cursor-grabbing hover:text-slate-600"
+        aria-label={`Reorder project ${project.name}`}
       >
         <GripVertical className="h-3.5 w-3.5" />
       </button>
@@ -139,7 +139,7 @@ function KanbanColumn({
           ))}
           {items.length === 0 && (
             <div className="flex flex-1 items-center justify-center rounded-lg border-2 border-dashed border-slate-200 p-4">
-              <p className="text-[10px] uppercase tracking-wider text-slate-300">
+              <p className="text-[10px] font-medium uppercase tracking-wider text-slate-400">
                 Drop here
               </p>
             </div>
