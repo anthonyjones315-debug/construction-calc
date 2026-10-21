@@ -23,15 +23,23 @@ export function Footer() {
           </span>
         </div>
         <div className="flex items-center gap-x-3 text-[9px] uppercase tracking-[0.12em] text-[--color-ink-dim]">
-          <Link href={routes.privacy} prefetch={false} className="transition-colors hover:text-[--color-blue-brand]">
+          <Link
+            href={routes.privacy}
+            prefetch={false}
+            className="transition-colors hover:text-[--color-blue-brand] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand] rounded-xs"
+          >
             Privacy
           </Link>
-          <Link href={routes.terms} prefetch={false} className="transition-colors hover:text-[--color-blue-brand]">
+          <Link
+            href={routes.terms}
+            prefetch={false}
+            className="transition-colors hover:text-[--color-blue-brand] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand] rounded-xs"
+          >
             Terms
           </Link>
           <a
             href={`mailto:${BUSINESS_EMAIL}`}
-            className="transition-colors hover:text-[--color-blue-brand]"
+            className="transition-colors hover:text-[--color-blue-brand] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand] rounded-xs"
           >
             Contact
           </a>
