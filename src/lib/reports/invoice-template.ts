@@ -5,7 +5,7 @@
  */
 
 import type { EstimatePayload, EstimateResult } from "@/lib/estimates/types";
-import { getNumberFormatter } from "@/utils/formatters";
+import { getDateTimeFormatter, getNumberFormatter } from "@/utils/formatters";
 
 type InvoiceTemplateInput = {
   payload: EstimatePayload;
@@ -13,6 +13,15 @@ type InvoiceTemplateInput = {
   contractorContact: string | null;
   contractorLogoUrl: string | null;
 };
+
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
 
 /** Safely format a number to 2 decimal places, avoiding floating point display errors */
 function safeNumber(value: string | number): string {
@@ -46,10 +55,12 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
       ? payload.metadata.jobName
       : payload.name;
   const calculatorLabel = payload.metadata.calculatorLabel;
-  const generatedAt = new Date(payload.metadata.generatedAt).toLocaleDateString(
-    "en-US",
-    { year: "numeric", month: "long", day: "numeric" },
-  );
+  // Use cached DateTimeFormatter to avoid re-instantiating Intl.DateTimeFormat on every invocation
+  const generatedAt = getDateTimeFormatter({
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(new Date(payload.metadata.generatedAt));
   const clientName = payload.client_name ?? "";
   const jobAddress = payload.job_site_address ?? "";
 
@@ -212,6 +223,18 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
         </table>
       </div>
 
+      <!-- Material List (if available) -->
+      ${
+        payload.material_list && payload.material_list.length > 0
+          ? `<div style="margin-top: 20px;">
+              <p style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 6px;">Material List</p>
+              <ul style="padding-left: 18px; font-size: 12px; color: #374151;">
+                ${payload.material_list.map((m) => `<li>${escapeHtml(m)}</li>`).join("")}
+              </ul>
+            </div>`
+          : ""
+      }
+
       <!-- Totals -->
       <div style="margin-top: 4px; display: flex; justify-content: flex-end;">
         <div style="width: 260px;">
@@ -252,7 +275,7 @@ export function generateInvoiceHtml(input: InvoiceTemplateInput): string {
           <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 8px; background: #ffffff;">
             <img src="${signature.signatureDataUrl}" alt="Signature" style="height: 48px; object-fit: contain;" />
           </div>
-          ${signature.signedAt ? `<p style="font-size: 10px; color: #9ca3af; margin-top: 4px;">Signed ${new Date(signature.signedAt).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}</p>` : ""}
+          ${signature.signedAt ? `<p style="font-size: 10px; color: #9ca3af; margin-top: 4px;">Signed ${getDateTimeFormatter({ year: "numeric", month: "short", day: "numeric" }).format(new Date(signature.signedAt))}</p>` : ""}
         </div>
         <div style="flex: 1;">
           <p style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 8px;">Client Signature</p>
