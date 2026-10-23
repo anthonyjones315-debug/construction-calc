@@ -90,8 +90,8 @@ export function TwoFactorInput({
           </div>
           <button
             onClick={onCancel}
-            className="text-[--color-ink-dim] transition-colors hover:text-[--color-ink]"
-            aria-label="Close"
+            className="rounded-lg text-[--color-ink-dim] transition-colors hover:text-[--color-ink] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand]"
+            aria-label="Close verification dialog"
           >
             <XCircle className="w-6 h-6" />
           </button>

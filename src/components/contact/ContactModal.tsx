@@ -34,8 +34,8 @@ export function ContactModal({
           <button
             type="button"
             onClick={onClose}
-            className="glass-panel-deep absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-xl p-0 text-copy-secondary transition-colors hover:text-copy-primary"
-            aria-label="Close"
+            className="glass-panel-deep absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-xl p-0 text-copy-secondary transition-colors hover:text-copy-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand]"
+            aria-label="Close contact modal"
           >
             <X className="h-4 w-4" aria-hidden />
           </button>
