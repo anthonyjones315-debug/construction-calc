@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import { Users, Search, Plus, Phone, Mail, MapPin, MoreHorizontal, ArrowRight, ArrowLeft } from "lucide-react";
 import type { ClientDTO } from "@/lib/dal/clients";
@@ -14,10 +14,20 @@ export function CrmDashboardClient({ initialClients }: { initialClients: ClientD
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingClient, setEditingClient] = useState<ClientDTO | null>(null);
 
-  const filteredClients = clients.filter((client) => {
-    const haystack = [client.name, client.email, client.phone, client.address].join(" ").toLowerCase();
-    return haystack.includes(searchQuery.toLowerCase());
-  });
+  // Memoize search filtering and eliminate intermediate array allocations per item
+  const filteredClients = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return clients;
+
+    return clients.filter((client) => {
+      return (
+        client.name?.toLowerCase().includes(query) ||
+        client.email?.toLowerCase().includes(query) ||
+        client.phone?.toLowerCase().includes(query) ||
+        client.address?.toLowerCase().includes(query)
+      );
+    });
+  }, [clients, searchQuery]);
 
   const handleCreateNew = () => {
     setEditingClient(null);
