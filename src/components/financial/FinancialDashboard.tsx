@@ -11,11 +11,11 @@ import {
   normalizeEstimateStatus,
   type EstimateStatus,
 } from "@/lib/estimates/status";
+import { getDateTimeFormatter } from "@/utils/formatters";
 import {
   centsToDollars,
   multiplyDollars,
   normalizeDollars,
-  sumCents,
   toCents,
 } from "@/utils/money";
 
@@ -140,26 +140,43 @@ function getBudgetItemBucket(item: unknown): CostBucket | null {
   if (!item || typeof item !== "object") return null;
 
   const row = item as Record<string, unknown>;
-  const searchableText = [
-    row.category,
-    row.type,
-    row.cost_type,
-    row.costType,
-    row.group,
-    row.itemType,
-    row.name,
-    row.label,
-    row.unit,
-  ]
-    .filter(Boolean)
-    .join(" ")
-    .toLowerCase();
+  const category = String(row.category ?? "").toLowerCase();
+  const type = String(row.type ?? "").toLowerCase();
+  const costType = String(row.cost_type ?? row.costType ?? "").toLowerCase();
+  const group = String(row.group ?? "").toLowerCase();
+  const itemType = String(row.itemType ?? "").toLowerCase();
+  const name = String(row.name ?? "").toLowerCase();
+  const label = String(row.label ?? "").toLowerCase();
+  const unit = String(row.unit ?? "").toLowerCase();
 
-  if (LABOR_KEYWORDS.some((keyword) => searchableText.includes(keyword))) {
+  const isLabor = (str: string) =>
+    str.length > 0 && LABOR_KEYWORDS.some((keyword) => str.includes(keyword));
+  const isMaterial = (str: string) =>
+    str.length > 0 && MATERIAL_KEYWORDS.some((keyword) => str.includes(keyword));
+
+  if (
+    isLabor(category) ||
+    isLabor(type) ||
+    isLabor(costType) ||
+    isLabor(group) ||
+    isLabor(itemType) ||
+    isLabor(name) ||
+    isLabor(label) ||
+    isLabor(unit)
+  ) {
     return "labor";
   }
 
-  if (MATERIAL_KEYWORDS.some((keyword) => searchableText.includes(keyword))) {
+  if (
+    isMaterial(category) ||
+    isMaterial(type) ||
+    isMaterial(costType) ||
+    isMaterial(group) ||
+    isMaterial(itemType) ||
+    isMaterial(name) ||
+    isMaterial(label) ||
+    isMaterial(unit)
+  ) {
     return "material";
   }
 
@@ -375,9 +392,16 @@ function getTrackedProjectCost(estimate: SavedEstimate): {
   };
 }
 
-export function getProjectProfitMargin(estimate: SavedEstimate): number | null {
+export function getProjectProfitMargin(
+  estimate: SavedEstimate,
+  precomputedTrackedCost?: number | null,
+): number | null {
   const revenue = normalizeDollars(toFiniteNumber(estimate.total_cost));
-  const trackedCost = getTrackedProjectCost(estimate).cost;
+  // Reuse pre-computed tracked cost if available to avoid redundant scans
+  const trackedCost =
+    precomputedTrackedCost !== undefined
+      ? precomputedTrackedCost
+      : getTrackedProjectCost(estimate).cost;
   const revenueCents = toCents(revenue);
   const trackedCostCents = trackedCost === null ? null : toCents(trackedCost);
 
@@ -395,7 +419,8 @@ function computeFinancialDashboard(estimates: SavedEstimate[]) {
     .map<ProjectMargin>((estimate) => {
       const revenue = normalizeDollars(toFiniteNumber(estimate.total_cost));
       const trackedProjectCost = getTrackedProjectCost(estimate);
-      const margin = getProjectProfitMargin(estimate);
+      // Pass precomputed cost to avoid duplicate cost scan
+      const margin = getProjectProfitMargin(estimate, trackedProjectCost.cost);
 
       return {
         id: estimate.id,
@@ -412,36 +437,38 @@ function computeFinancialDashboard(estimates: SavedEstimate[]) {
       return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
     });
 
-  const billedProjects = projectMargins.filter((project) => {
-    return isEstimateSettled(project.status);
-  });
-  const unbilledProjects = projectMargins.filter((project) => {
-    return isEstimateOpen(project.status);
-  });
-  const marginProjects = projectMargins.filter((project) => {
-    return (
+  // Single-pass aggregation over project margins to avoid multiple .filter/.map iterations
+  let billedCents = 0;
+  let billedCount = 0;
+  let unbilledCents = 0;
+  let unbilledCount = 0;
+  let marginRevenueCents = 0;
+  let marginGrossProfitCents = 0;
+
+  for (const project of projectMargins) {
+    const revCents = toCents(project.revenue);
+    if (isEstimateSettled(project.status)) {
+      billedCents += revCents;
+      billedCount++;
+    }
+    if (isEstimateOpen(project.status)) {
+      unbilledCents += revCents;
+      unbilledCount++;
+    }
+    if (
       project.margin !== null &&
       project.projectCost !== null &&
       project.revenue > 0
-    );
-  });
+    ) {
+      marginRevenueCents += revCents;
+      marginGrossProfitCents += revCents - toCents(project.projectCost);
+    }
+  }
 
-  const billedAmount = centsToDollars(
-    sumCents(billedProjects.map((project) => toCents(project.revenue))),
-  );
-  const unbilledAmount = centsToDollars(
-    sumCents(unbilledProjects.map((project) => toCents(project.revenue))),
-  );
-  const marginRevenueTotal = centsToDollars(
-    sumCents(marginProjects.map((project) => toCents(project.revenue))),
-  );
-  const marginGrossProfitTotal = centsToDollars(
-    sumCents(
-      marginProjects.map((project) =>
-        toCents(project.revenue) - toCents(project.projectCost ?? 0),
-      ),
-    ),
-  );
+  const billedAmount = centsToDollars(billedCents);
+  const unbilledAmount = centsToDollars(unbilledCents);
+  const marginRevenueTotal = centsToDollars(marginRevenueCents);
+  const marginGrossProfitTotal = centsToDollars(marginGrossProfitCents);
 
   const portfolioMargin =
     marginRevenueTotal > 0
@@ -456,9 +483,9 @@ function computeFinancialDashboard(estimates: SavedEstimate[]) {
 
   return {
     billedAmount,
-    billedCount: billedProjects.length,
+    billedCount,
     unbilledAmount,
-    unbilledCount: unbilledProjects.length,
+    unbilledCount,
     portfolioMargin,
     projectMargins,
     varianceAlerts,
@@ -491,7 +518,7 @@ export function FinancialDashboard({
           ? "Refreshing live metrics…"
           : "Live metrics update every 15s"}
         {lastUpdatedAt
-          ? ` · Last sync ${lastUpdatedAt.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`
+          ? ` · Last sync ${getDateTimeFormatter({ hour: "numeric", minute: "2-digit" }).format(lastUpdatedAt)}`
           : ""}
       </p>
 

@@ -1,0 +1,3 @@
+## 2026-03-24 - Pre-computing and Reusing Tracked Project Costs in Financial Calculations
+**Learning:** In `FinancialDashboard.tsx` and `SavedContent.tsx`, project profit margin evaluation (`getProjectProfitMargin`) scanned estimate budget items and performed nested string normalization on every call. Multiple calls inside render loops (such as rendering estimate card badges) resulted in N * 4 scans of budget items per render frame.
+**Action:** Pass precomputed tracked costs when available and extract profit margin values once per item in render loops rather than evaluating in-line JSX conditionals multiple times.
