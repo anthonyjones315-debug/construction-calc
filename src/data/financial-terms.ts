@@ -468,6 +468,21 @@ function normalize(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]/g, "");
 }
 
+/** Pre-computed normalized targets for fast definition lookups without re-normalizing strings. */
+type PreparedFinancialTerm = {
+  definition: string;
+  normalizedTargets: string[];
+};
+
+const PREPARED_FINANCIAL_TERMS: PreparedFinancialTerm[] = FINANCIAL_TERMS_INTERNAL.map((term) => ({
+  definition: term.definition,
+  normalizedTargets: [
+    normalize(term.key),
+    normalize(term.label),
+    ...(term.aliases ?? []).map((alias) => normalize(alias)),
+  ],
+}));
+
 export function getFinancialCalculatorCopy(path: string): FinancialCalculatorCopy | null {
   const match = FINANCIAL_CALCULATOR_COPY.find((entry) =>
     path.toLowerCase().includes(entry.pathFragment.toLowerCase()),
@@ -481,14 +496,9 @@ export function getFinancialTermLabel(key: FinancialTermKey): string {
 
 export function getFinancialTermDefinition(labelOrKey: string): string | undefined {
   const normalized = normalize(labelOrKey);
-  const match = FINANCIAL_TERMS_INTERNAL.find((term) => {
-    const targets = [
-      normalize(term.key),
-      normalize(term.label),
-      ...(term.aliases ?? []).map((alias) => normalize(alias)),
-    ];
-    return targets.some((target) => normalized === target || normalized.includes(target));
-  });
+  const match = PREPARED_FINANCIAL_TERMS.find((term) =>
+    term.normalizedTargets.some((target) => normalized === target || normalized.includes(target)),
+  );
   return match?.definition;
 }
 

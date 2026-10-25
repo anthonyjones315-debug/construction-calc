@@ -5,7 +5,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { JsonLD, getPageMetadata } from "@/seo";
 import { FINANCIAL_TERMS } from "@/data/financial-terms";
-import { NYS_COUNTY_TAX_RATES } from "@/data/nys-tax-rates";
+import { getNysCountyRate } from "@/data/nys-tax-rates";
 import { routes } from "@routes";
 
 export const metadata: Metadata = getPageMetadata({
@@ -15,9 +15,9 @@ export const metadata: Metadata = getPageMetadata({
   path: "/financial-terms",
 });
 
-const ONEIDA_RATE = NYS_COUNTY_TAX_RATES.find((c) => c.county === "Oneida")?.combinedRate ?? 8.75;
-const MADISON_RATE = NYS_COUNTY_TAX_RATES.find((c) => c.county === "Madison")?.combinedRate ?? 8.0;
-const HERKIMER_RATE = NYS_COUNTY_TAX_RATES.find((c) => c.county === "Herkimer")?.combinedRate ?? 8.25;
+const ONEIDA_RATE = getNysCountyRate("Oneida")?.combinedRate ?? 8.75;
+const MADISON_RATE = getNysCountyRate("Madison")?.combinedRate ?? 8.0;
+const HERKIMER_RATE = getNysCountyRate("Herkimer")?.combinedRate ?? 8.25;
 
 export default function FinancialTermsPage() {
   const schema = {
