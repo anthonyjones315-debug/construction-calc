@@ -79,14 +79,15 @@ export const NYS_COUNTY_TAX_RATES: NysCountyTaxRate[] = [
   { county: "Yates", combinedRate: 8.0 },
 ];
 
+/** Pre-computed Map for O(1) county tax rate lookups by lowercased county name. */
+export const NYS_COUNTY_TAX_RATES_MAP = new Map<string, NysCountyTaxRate>(
+  NYS_COUNTY_TAX_RATES.map((entry) => [entry.county.toLowerCase(), entry]),
+);
+
 export function getNysCountyRate(countyName: string): NysCountyTaxRate | null {
   const normalized = countyName.trim().toLowerCase();
   if (!normalized) return null;
 
-  const match = NYS_COUNTY_TAX_RATES.find(
-    (entry) => entry.county.toLowerCase() === normalized,
-  );
-
-  return match ?? null;
+  return NYS_COUNTY_TAX_RATES_MAP.get(normalized) ?? null;
 }
 

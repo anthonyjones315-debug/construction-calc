@@ -1,0 +1,3 @@
+## 2026-03-28 - Module-Scope Map and Normalized Target Pre-Computation
+**Learning:** Static dataset lookup functions (such as county tax rates or financial term definitions) were performing $O(N)$ array searches with inline string normalization on every invocation. Pre-computing a `Map` or pre-normalized target objects at module initialization speeds up lookups to $O(1)$ without changing any runtime behavior or API contracts.
+**Action:** When inspecting data lookup utilities or reference datasets, check if lookups perform repeated string normalization or linear scans, and refactor them to module-scoped `Map` instances or pre-normalized lookup objects.

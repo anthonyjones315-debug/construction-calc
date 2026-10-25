@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { NYS_COUNTY_TAX_RATES } from "@/data/nys-tax-rates";
+import { getNysCountyRate } from "@/data/nys-tax-rates";
 import { useStore } from "@/lib/store";
 import { routes } from "@routes";
 
 const TRI_COUNTY_TAX_RATES = ["Oneida", "Madison", "Herkimer"]
   .map((county) => {
-    const match = NYS_COUNTY_TAX_RATES.find((entry) => entry.county === county);
+    const match = getNysCountyRate(county);
     return {
       county,
       combinedRate: match?.combinedRate ?? 0,
