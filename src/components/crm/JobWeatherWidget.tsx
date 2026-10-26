@@ -36,36 +36,47 @@ export function JobWeatherWidget({ address = "78701" }: { address?: string }) {
 
   const getWeatherIcon = (condition: string) => {
     switch (condition) {
-      case "Clear": return <Sun className="w-8 h-8 text-amber-500" />;
-      case "Cloudy": return <Cloud className="w-8 h-8 text-slate-400" />;
-      case "Rain": return <CloudRain className="w-8 h-8 text-blue-500" />;
-      case "Snow": return <Snowflake className="w-8 h-8 text-sky-300" />;
-      case "Storm": return <CloudLightning className="w-8 h-8 text-indigo-500" />;
-      default: return <Sun className="w-8 h-8 text-amber-500" />;
+      case "Clear": return <Sun className="w-8 h-8 text-amber-500" aria-hidden="true" />;
+      case "Cloudy": return <Cloud className="w-8 h-8 text-slate-400" aria-hidden="true" />;
+      case "Rain": return <CloudRain className="w-8 h-8 text-blue-500" aria-hidden="true" />;
+      case "Snow": return <Snowflake className="w-8 h-8 text-sky-300" aria-hidden="true" />;
+      case "Storm": return <CloudLightning className="w-8 h-8 text-indigo-500" aria-hidden="true" />;
+      default: return <Sun className="w-8 h-8 text-amber-500" aria-hidden="true" />;
     }
   };
 
   if (loading) {
     return (
-      <div className="animate-pulse bg-slate-50 border border-slate-200 rounded-2xl p-4 flex items-center justify-center min-h-[100px]">
+      <section
+        role="status"
+        aria-label="Loading job site weather"
+        className="animate-pulse bg-slate-50 border border-slate-200 rounded-2xl p-4 flex items-center justify-center min-h-[100px]"
+      >
         <span className="text-sm font-semibold text-slate-400">Loading Job Weather...</span>
-      </div>
+      </section>
     );
   }
 
   if (error || !weather) {
     return (
-      <div className="bg-red-50 border border-red-100 rounded-2xl p-4 flex items-center justify-center min-h-[100px]">
+      <section
+        role="alert"
+        aria-label="Job site weather unavailable"
+        className="bg-red-50 border border-red-100 rounded-2xl p-4 flex items-center justify-center min-h-[100px]"
+      >
         <span className="text-sm font-semibold text-red-500">Weather Unavailable</span>
-      </div>
+      </section>
     );
   }
 
   return (
-    <div className="bg-gradient-to-br from-white to-slate-50 border border-slate-200 shadow-sm rounded-2xl p-5 flex items-center justify-between">
+    <section
+      aria-label="Job site weather"
+      className="bg-gradient-to-br from-white to-slate-50 border border-slate-200 shadow-sm rounded-2xl p-5 flex items-center justify-between"
+    >
       <div>
         <div className="flex items-center gap-1.5 text-[--color-ink-mid] mb-1">
-          <MapPin className="w-3.5 h-3.5" />
+          <MapPin className="w-3.5 h-3.5" aria-hidden="true" />
           <span className="text-xs font-bold uppercase tracking-wider truncate max-w-[150px]">
             {weather.address.split(",")[0]}
           </span>
@@ -75,12 +86,18 @@ export function JobWeatherWidget({ address = "78701" }: { address?: string }) {
         </div>
       </div>
 
-      <div className="flex flex-col items-end">
+      <div
+        className="flex flex-col items-end"
+        role="group"
+        aria-label={`Condition: ${weather.condition}`}
+        title={`Condition: ${weather.condition}`}
+      >
+        <span className="sr-only">Condition: {weather.condition}</span>
         {getWeatherIcon(weather.condition)}
         <div className="flex items-center gap-1 text-xs font-semibold text-slate-500 mt-2">
-          <Wind className="w-3 h-3" /> {weather.windspeed} mph
+          <Wind className="w-3 h-3" aria-hidden="true" /> {weather.windspeed} mph
         </div>
       </div>
-    </div>
+    </section>
   );
 }
