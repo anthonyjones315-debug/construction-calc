@@ -7,6 +7,8 @@ import {
   normalizeBusinessJoinCode,
   rotateBusinessJoinCode,
 } from "@/lib/supabase/join-code";
+import { getClientIp } from "@/lib/http/client-ip";
+import { checkMemoryRateLimit } from "@/lib/rate-limit/memory";
 
 const SEAT_LIMIT = 10;
 
@@ -16,6 +18,18 @@ function isValidCodeFormat(code: string): boolean {
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = getClientIp(req);
+    const rl = checkMemoryRateLimit("command-center-join-ip", ip, 5, 600_000);
+    if (!rl.ok) {
+      return NextResponse.json(
+        { error: "Too many join attempts. Try again later." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(rl.retryAfterSeconds) },
+        },
+      );
+    }
+
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
