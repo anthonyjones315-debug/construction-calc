@@ -44,13 +44,26 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 })
   }
 
-  const { calculatorId, results, context } = body
+  if (
+    typeof body?.calculatorId !== "string" ||
+    typeof body?.results !== "string"
+  ) {
+    return NextResponse.json(
+      { error: "Missing or invalid required fields." },
+      { status: 400 },
+    );
+  }
+
+  // Enforce type safety and length limits to prevent token exhaustion / DoS
+  const calculatorId = body.calculatorId.trim().slice(0, 100);
+  const results = body.results.trim().slice(0, 4000);
+  const rawContext = typeof body.context === "string" ? body.context.trim().slice(0, 1000) : "";
 
   if (!calculatorId || !results) {
     return NextResponse.json({ error: 'Missing required fields.' }, { status: 400 })
   }
 
-  const contextLine = context ? `\nAdditional context: ${context}` : ''
+  const contextLine = rawContext ? `\nAdditional context: ${rawContext}` : ''
   const prompt = `You are a professional construction estimator AI assistant. A contractor just ran a ${calculatorId} calculation. Analyze the results and provide 3-5 brief, practical tips to optimize their project. Be specific, actionable, and field-ready. Use markdown for formatting.
 
 Calculator: ${calculatorId}
