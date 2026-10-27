@@ -11,7 +11,7 @@ describe("generateInvoiceHtml", () => {
       job_site_address: "123 Main St, Utica, NY",
       total_cost: 1842.55,
       results: [
-        { label: "Total Cents", value: 184255, unit: "cents" },
+        { label: "145 sq ft flooring", value: 1842.55, unit: "sq ft" },
         { label: "Waste Factor", value: 10, unit: "%" },
       ],
       material_list: ["145 sq ft flooring", "2 boxes trim"],
