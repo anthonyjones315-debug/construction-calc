@@ -68,19 +68,32 @@ export function TwoFactorInput({
     }
   };
 
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      onCancel();
+    }
+  };
+
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center glass-modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="two-factor-title"
+      className="fixed inset-0 z-50 flex items-center justify-center glass-modal-overlay p-4"
       onKeyDown={handleKeyDown}
+      onClick={handleOverlayClick}
     >
       <div className="w-full max-w-md glass-modal">
         <div className="glass-modal-header flex items-start justify-between">
           <div className="flex items-center gap-3">
             <GlassIconBadge className="rounded-full">
-              <ShieldCheck className="w-6 h-6" />
+              <ShieldCheck className="w-6 h-6" aria-hidden="true" />
             </GlassIconBadge>
             <div>
-              <h2 className="text-xl font-semibold text-[--color-ink]">
+              <h2
+                id="two-factor-title"
+                className="text-xl font-semibold text-[--color-ink]"
+              >
                 Enter verification code
               </h2>
               <p className="text-sm text-[--color-ink-mid]">
@@ -89,11 +102,12 @@ export function TwoFactorInput({
             </div>
           </div>
           <button
+            type="button"
             onClick={onCancel}
-            className="text-[--color-ink-dim] transition-colors hover:text-[--color-ink]"
-            aria-label="Close"
+            className="rounded-full p-1 text-[--color-ink-dim] transition-colors hover:text-[--color-ink] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-blue-brand] focus-visible:ring-offset-2"
+            aria-label="Close verification dialog"
           >
-            <XCircle className="w-6 h-6" />
+            <XCircle className="w-6 h-6" aria-hidden="true" />
           </button>
         </div>
 
