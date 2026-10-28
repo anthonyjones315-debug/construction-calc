@@ -12,18 +12,7 @@ export async function GET() {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json(
-        {
-          profile: {
-            businessName: null,
-            logoUrl: null,
-            businessAddress: null,
-            businessPhone: null,
-            businessEmail: null,
-          },
-        },
-        { status: 200 },
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const db = createServerClient();
