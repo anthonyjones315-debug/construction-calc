@@ -15,7 +15,6 @@ import {
   centsToDollars,
   multiplyDollars,
   normalizeDollars,
-  sumCents,
   toCents,
 } from "@/utils/money";
 
@@ -426,22 +425,30 @@ function computeFinancialDashboard(estimates: SavedEstimate[]) {
     );
   });
 
-  const billedAmount = centsToDollars(
-    sumCents(billedProjects.map((project) => toCents(project.revenue))),
-  );
-  const unbilledAmount = centsToDollars(
-    sumCents(unbilledProjects.map((project) => toCents(project.revenue))),
-  );
-  const marginRevenueTotal = centsToDollars(
-    sumCents(marginProjects.map((project) => toCents(project.revenue))),
-  );
-  const marginGrossProfitTotal = centsToDollars(
-    sumCents(
-      marginProjects.map((project) =>
-        toCents(project.revenue) - toCents(project.projectCost ?? 0),
-      ),
-    ),
-  );
+  // Optimization: Single-pass for loops avoid intermediate array allocations (.map)
+  let billedCents = 0;
+  for (let i = 0; i < billedProjects.length; i++) {
+    billedCents += toCents(billedProjects[i].revenue);
+  }
+  const billedAmount = centsToDollars(billedCents);
+
+  let unbilledCents = 0;
+  for (let i = 0; i < unbilledProjects.length; i++) {
+    unbilledCents += toCents(unbilledProjects[i].revenue);
+  }
+  const unbilledAmount = centsToDollars(unbilledCents);
+
+  let marginRevenueCents = 0;
+  let marginGrossProfitCents = 0;
+  for (let i = 0; i < marginProjects.length; i++) {
+    const proj = marginProjects[i];
+    const revCents = toCents(proj.revenue);
+    const costCents = toCents(proj.projectCost ?? 0);
+    marginRevenueCents += revCents;
+    marginGrossProfitCents += revCents - costCents;
+  }
+  const marginRevenueTotal = centsToDollars(marginRevenueCents);
+  const marginGrossProfitTotal = centsToDollars(marginGrossProfitCents);
 
   const portfolioMargin =
     marginRevenueTotal > 0

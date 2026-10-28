@@ -92,7 +92,15 @@ export function centsToDollars(cents: number): number {
  * Add integer cents values without losing precision.
  */
 export function sumCents(values: number[]): number {
-  return values.reduce((sum, value) => sum + (Number.isFinite(value) ? Math.trunc(value) : 0), 0);
+  // Optimization: Single-pass for loop avoids callback overhead of Array.prototype.reduce
+  let sum = 0;
+  for (let i = 0; i < values.length; i++) {
+    const val = values[i];
+    if (Number.isFinite(val)) {
+      sum += Math.trunc(val);
+    }
+  }
+  return sum;
 }
 
 export function normalizeDollars(amount: number): number {
@@ -104,5 +112,10 @@ export function multiplyDollars(unitCost: number, quantity: number): number {
 }
 
 export function sumDollars(values: number[]): number {
-  return centsToDollars(sumCents(values.map((value) => toCents(value))));
+  // Optimization: Single-pass for loop avoids intermediate mapped array allocation (.map)
+  let totalCents = 0;
+  for (let i = 0; i < values.length; i++) {
+    totalCents += toCents(values[i]);
+  }
+  return centsToDollars(totalCents);
 }
