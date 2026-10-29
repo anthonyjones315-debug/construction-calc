@@ -4,6 +4,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { getSafeEstimate } from "@/lib/dal/estimates";
 import { routes } from "@routes";
+import { getNumberFormatter, getDateTimeFormatter } from "@/utils/formatters";
 
 type InvoiceStatus = "Draft" | "Sent" | "Partially Paid" | "Paid";
 
@@ -44,12 +45,6 @@ function fallbackEstimateControlNumber(estimateId: string): string {
 type Props = {
   params: Promise<{ id: string }>;
 };
-
-const USD_CURRENCY = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0,
-});
 
 function parseInvoices(
   inputs: Record<string, unknown> | null | undefined,
@@ -143,7 +138,7 @@ export default async function SavedEstimateDetailPage({ params }: Props) {
               <p>
                 <span className="font-semibold text-[--color-ink]">Total:</span>{" "}
                 {estimate.totalCost !== null
-                  ? USD_CURRENCY.format(estimate.totalCost)
+                  ? getNumberFormatter({ style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(estimate.totalCost)
                   : "Not set"}
               </p>
               <p>
@@ -156,13 +151,13 @@ export default async function SavedEstimateDetailPage({ params }: Props) {
                 <span className="font-semibold text-[--color-ink]">
                   Created:
                 </span>{" "}
-                {new Date(estimate.createdAt).toLocaleDateString("en-US")}
+                {getDateTimeFormatter("en-US").format(new Date(estimate.createdAt))}
               </p>
               <p>
                 <span className="font-semibold text-[--color-ink]">
                   Updated:
                 </span>{" "}
-                {new Date(estimate.updatedAt).toLocaleDateString("en-US")}
+                {getDateTimeFormatter("en-US").format(new Date(estimate.updatedAt))}
               </p>
             </div>
           </section>
@@ -199,7 +194,7 @@ export default async function SavedEstimateDetailPage({ params }: Props) {
                         </td>
                         <td className="px-2 py-2">{invoice.status}</td>
                         <td className="px-2 py-2">
-                          {USD_CURRENCY.format(invoice.amount)}
+                          {getNumberFormatter({ style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(invoice.amount)}
                         </td>
                         <td className="px-2 py-2">
                           {invoice.issuedDate || "—"}
