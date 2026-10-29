@@ -191,7 +191,7 @@ export function PWAInstallBanner() {
               type="button"
               onClick={dismiss}
               aria-label="Dismiss install tip"
-              className="shrink-0 rounded-lg border border-white/25 px-2 py-1 text-xs text-white/80 transition hover:text-white focus:outline-none focus:ring-2 focus:ring-white/50"
+              className="shrink-0 rounded-lg border border-white/25 px-2 py-1 text-xs text-white/80 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-blue-brand"
             >
               ✕
             </button>
@@ -209,7 +209,7 @@ export function PWAInstallBanner() {
               <button
                 type="button"
                 onClick={install}
-                className="rounded-lg border border-white/30 bg-white/15 px-3 py-1 text-xs font-black uppercase tracking-wider text-white transition hover:bg-white/25 focus:outline-none focus:ring-2 focus:ring-white/50"
+                className="rounded-lg border border-white/30 bg-white/15 px-3 py-1 text-xs font-black uppercase tracking-wider text-white transition hover:bg-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-blue-brand"
               >
                 Install
               </button>
@@ -217,7 +217,7 @@ export function PWAInstallBanner() {
                 type="button"
                 onClick={dismiss}
                 aria-label="Dismiss install banner"
-                className="rounded-lg border border-white/25 px-2 py-1 text-xs text-white/80 transition hover:text-white focus:outline-none focus:ring-2 focus:ring-white/50"
+                className="rounded-lg border border-white/25 px-2 py-1 text-xs text-white/80 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-blue-brand"
               >
                 ✕
               </button>
