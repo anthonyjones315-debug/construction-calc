@@ -171,21 +171,24 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
     }
 
-    // Build a partial update — only include keys that were sent
-    const allowed = [
-      "business_name",
-      "business_email",
-      "business_phone",
-      "business_address",
-      "business_website",
-      "business_tax_id",
-      "logo_url",
-    ] as const;
+    // Build a partial update — only include keys that were sent with strict field length limits
+    const fieldMaxLengths: Record<string, number> = {
+      business_name: 200,
+      business_email: 200,
+      business_phone: 50,
+      business_address: 500,
+      business_website: 200,
+      business_tax_id: 100,
+      logo_url: 500,
+    };
 
     const patch: Record<string, unknown> = {};
-    for (const key of allowed) {
+    for (const [key, maxLength] of Object.entries(fieldMaxLengths)) {
       if (key in body) {
-        patch[key] = String((body as Record<string, unknown>)[key] ?? "").slice(0, 500).trim() || null;
+        patch[key] =
+          String((body as Record<string, unknown>)[key] ?? "")
+            .slice(0, maxLength)
+            .trim() || null;
       }
     }
 
