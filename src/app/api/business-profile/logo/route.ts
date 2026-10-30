@@ -114,9 +114,10 @@ export async function POST(req: NextRequest) {
         requestId,
         message: error.message,
       });
+      Sentry.captureException(error);
       return NextResponse.json(
         {
-          error: `Upload failed: ${error.message} (ref: ${requestId})`,
+          error: "Failed to upload logo.",
         },
         { status: 500 },
       );
