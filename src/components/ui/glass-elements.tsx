@@ -415,13 +415,43 @@ export function ProResult({
               <GlassButton
                 type="button"
                 onClick={handleCopy}
-                className="min-h-7 rounded-lg border-[--color-border] px-2 py-1 text-xs font-bold uppercase tracking-widest text-copy-secondary hover:border-primary/40"
-                aria-label={copied ? "Copied to clipboard" : "Copy material list"}
+                className={cx(
+                  "min-h-7 rounded-lg border px-2 py-1 text-xs font-bold uppercase tracking-widest transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
+                  copied
+                    ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                    : "border-[--color-border] text-copy-secondary hover:border-primary/40",
+                )}
+                aria-label={copied ? "Copied material list to clipboard" : "Copy material list"}
               >
-                {copied ? "Copied" : "Copy"}
+                <span className="inline-flex items-center gap-1">
+                  {copied ? (
+                    <>
+                      <svg
+                        aria-hidden="true"
+                        className="h-3 w-3 text-emerald-600 dark:text-emerald-400"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={3}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                      <span>Copied</span>
+                    </>
+                  ) : (
+                    <span>Copy</span>
+                  )}
+                </span>
               </GlassButton>
             ) : null}
           </div>
+          <span className="sr-only" role="status" aria-live="polite">
+            {copied ? "Material list copied to clipboard" : ""}
+          </span>
           <ul className="mt-1.5 space-y-1 text-xs text-[--color-ink]">
             {materialList.map((line) => (
               <li
@@ -440,7 +470,7 @@ export function ProResult({
           type="button"
           variant="primary"
           onClick={onFinalize}
-          className="min-h-10 w-full rounded-xl text-[11px] font-bold uppercase tracking-[0.12em]"
+          className="min-h-10 w-full rounded-xl text-[11px] font-bold uppercase tracking-[0.12em] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
         >
           <span className="inline-flex items-center justify-center gap-2">
             {finalizeIcon}
