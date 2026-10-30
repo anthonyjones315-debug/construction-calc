@@ -28,6 +28,7 @@ import {
   toCents,
   sumDollars,
 } from "@/utils/money";
+import { getDateTimeFormatter } from "@/utils/formatters";
 
 // ─── Local types ────────────────────────────────────────────────────────────
 
@@ -100,6 +101,24 @@ const USD = new Intl.NumberFormat("en-US", {
   minimumFractionDigits: 2,
   maximumFractionDigits: 2,
 });
+
+function formatDateMedium(date: Date | string | number): string {
+  const d = date instanceof Date ? date : new Date(date);
+  return getDateTimeFormatter({
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  }).format(d);
+}
+
+function formatDateLong(date: Date | string | number): string {
+  const d = date instanceof Date ? date : new Date(date);
+  return getDateTimeFormatter({
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(d);
+}
 
 function todayIso(): string {
   return new Date().toISOString().slice(0, 10);
@@ -409,11 +428,7 @@ export function EstimateDetail({ estimate }: Props) {
           typeof finalize.calculatorLabel === "string" && finalize.calculatorLabel
             ? finalize.calculatorLabel
             : estimate.calculatorId,
-        generatedAt: new Date().toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        }),
+        generatedAt: formatDateLong(new Date()),
         jobName:
           typeof finalize.jobName === "string" && finalize.jobName
             ? finalize.jobName
@@ -729,11 +744,7 @@ export function EstimateDetail({ estimate }: Props) {
       const blob = await pdf(
         createInvoicePDF({
           estimateTitle: draft.name || estimate.name,
-          generatedAt: new Date().toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          }),
+          generatedAt: formatDateLong(new Date()),
           invoiceNumber: invoice.invoiceNumber,
           issuedDate: invoice.issuedDate,
           dueDate: invoice.dueDate,
@@ -824,12 +835,7 @@ export function EstimateDetail({ estimate }: Props) {
           Saved Estimates
         </Link>
         <span className="text-xs text-[--color-ink-dim]">
-          Created{" "}
-          {new Date(estimate.createdAt).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-          })}
+          Created {formatDateMedium(estimate.createdAt)}
         </span>
       </div>
 
