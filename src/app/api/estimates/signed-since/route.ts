@@ -38,7 +38,10 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       Sentry.captureException(error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json(
+        { error: "Internal Server Error" },
+        { status: 500 },
+      );
     }
 
     const estimates = data ?? [];
