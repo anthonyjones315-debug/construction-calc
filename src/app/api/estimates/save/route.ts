@@ -103,7 +103,6 @@ export async function POST(req: NextRequest) {
   }
 
   const body = parsed.data;
-  const projectUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "unknown";
 
   try {
     const db = createServerClient();
@@ -209,19 +208,17 @@ export async function POST(req: NextRequest) {
         },
         extra: { requestId, userId: session.user.id, schemaHint, correctedData },
       });
+      // Return generic error message to prevent leaking database schema or internal URLs
       return NextResponse.json(
-        {
-          error: schemaHint
-            ? `${schemaHint} Raw error: ${error.message}. Project: ${projectUrl} (ref: ${requestId})`
-            : `Save failed: ${error.message} (ref: ${requestId})`,
-        },
+        { error: "Internal Server Error" },
         { status: 500 },
       );
     }
 
     if (!data?.id) {
+      console.error("[save-estimate] missing estimate id", { requestId, userId: session.user.id });
       return NextResponse.json(
-        { error: `Save failed: missing estimate id (ref: ${requestId})` },
+        { error: "Internal Server Error" },
         { status: 500 },
       );
     }
